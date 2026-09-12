@@ -36,6 +36,7 @@
       flex-direction: column;
       align-items: center;
       padding: 20px 16px;
+      transition: background-color 0.3s;
     }
 
     .app-container {
@@ -44,6 +45,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+      transition: all 0.3s ease;
     }
 
     /* Executive Top Bar */
@@ -73,10 +75,7 @@
       letter-spacing: 1px;
     }
 
-    .sys-date {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
+    .sys-date { font-size: 0.8rem; color: var(--text-muted); }
 
     .upload-controls {
       display: flex;
@@ -89,6 +88,31 @@
     .file-input-wrapper input[type="file"] {
       position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;
     }
+
+    /* How It Works Quick Bar */
+    .quick-guide-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .guide-link-btn {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .guide-link-btn:hover { text-decoration: underline; }
 
     /* Routine & Radar Bar */
     .routine-bar {
@@ -156,7 +180,7 @@
       animation: alert-flash 1s infinite alternate ease-in-out;
     }
 
-    /* Timer Hero Card */
+    /* Timer Cockpit Card */
     .timer-hero {
       background: var(--bg-surface);
       border: 1px solid var(--border);
@@ -169,6 +193,7 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
     }
 
     .overall-progress-bar-container {
@@ -181,11 +206,18 @@
       transition: width 0.3s ease;
     }
 
+    .top-actions-row {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
     .badge-row {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 10px;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -213,6 +245,18 @@
       display: none; background: rgba(239, 68, 68, 0.2); color: var(--danger); border-color: var(--danger);
     }
 
+    .btn-zen-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-zen-toggle:hover { color: var(--text-main); border-color: var(--accent); }
+
     .current-task-title {
       font-size: 1.85rem;
       font-weight: 800;
@@ -229,7 +273,6 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     }
 
-    /* Digital Face Clock */
     .clock-display {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: clamp(3.8rem, 11vw, 5.8rem);
@@ -391,6 +434,16 @@
 
     .panel-header h2 { font-size: 1rem; font-weight: 700; }
 
+    .pacing-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+      border: 1px solid var(--border);
+    }
+
     .task-list {
       list-style: none;
       max-height: 380px;
@@ -491,6 +544,27 @@
     .overrun-early { color: var(--purple); font-weight: 600; }
 
     .empty-state { text-align: center; padding: 24px 16px; color: var(--text-muted); font-size: 0.85rem; }
+
+    /* Zen Focus Mode Styling */
+    body.zen-mode header,
+    body.zen-mode .quick-guide-bar,
+    body.zen-mode .routine-bar,
+    body.zen-mode .dashboard-grid {
+      display: none !important;
+    }
+
+    body.zen-mode .timer-hero {
+      box-shadow: none;
+      border: none;
+      background: transparent;
+      padding-top: 10vh;
+    }
+
+    body.zen-mode .clock-display {
+      font-size: clamp(5.5rem, 16vw, 9rem);
+      background: transparent;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -502,14 +576,23 @@
         <span class="sys-date" id="systemDate">Mon, Sep 12</span>
       </div>
       <div class="upload-controls">
-        <button type="button" class="btn btn-outline" id="downloadPromptBtn" title="Download Master LLM Prompt">Download Prompt (.md)</button>
-        <button type="button" class="btn btn-outline" id="loadSampleBtn">Load Hybrid Sample</button>
+        <button type="button" class="btn btn-outline" id="downloadPromptBtn" title="Download Master LLM Prompt">Prompt (.md)</button>
+        <button type="button" class="btn btn-outline" id="loadSampleBtn">Load Sample</button>
+        <button type="button" class="btn btn-outline" id="clearSessionBtn" title="Clear saved session data">Reset All</button>
         <div class="file-input-wrapper">
           <button type="button" class="btn btn-primary">Upload CSV</button>
           <input type="file" id="csvFileInput" accept=".csv,text/csv,text/plain" />
         </div>
       </div>
     </header>
+
+    <!-- Quick Guide / Concept Summary Bar -->
+    <div class="quick-guide-bar">
+      <div>
+        <strong>The Anchor & Flow Method:</strong> 📅 Hard meetings anchor your wall-clock, while ⏱ fluid tasks flow dynamically between them.
+      </div>
+      <a href="guide.html" class="guide-link-btn">Read the Master Guide &rarr;</a>
+    </div>
 
     <!-- Routine Selection & Calendar Anchor Radar -->
     <div class="routine-bar">
@@ -534,15 +617,17 @@
         <div class="overall-progress-bar" id="overallProgressBar"></div>
       </div>
 
-      <div class="badge-row">
-        <span class="badge" id="stepProgressBadge">Step 0 of 0</span>
-        <span class="badge anchor-type" id="anchorTypeBadge">Flow Task</span>
-        <span class="badge parent-context" id="parentContextBadge">Part of: None</span>
-        <span class="badge overtime-badge" id="overtimeBadge">Overtime: +00:00</span>
+      <div class="top-actions-row">
+        <div class="badge-row">
+          <span class="badge" id="stepProgressBadge">Step 0 of 0</span>
+          <span class="badge anchor-type" id="anchorTypeBadge">Flow Task</span>
+          <span class="badge parent-context" id="parentContextBadge">Part of: None</span>
+          <span class="badge overtime-badge" id="overtimeBadge">Overtime: +00:00</span>
+        </div>
+        <button type="button" class="btn-zen-toggle" id="zenToggleBtn" title="Toggle Zen Mode (Press 'Z')">⊙ Zen Mode</button>
       </div>
 
       <div class="current-task-title" id="currentTaskTitle">No Schedule Loaded</div>
-
       <div class="wall-clock-meta" id="wallClockMeta">Start: --:--:-- &bull; Projected End: --:--:--</div>
 
       <div class="clock-display" id="clockDisplay">00:00</div>
@@ -593,8 +678,11 @@
 
       <section class="panel-card">
         <div class="panel-header">
-          <h2>Wall-Clock Execution Log</h2>
-          <button type="button" class="btn btn-outline" id="exportCsvBtn" style="padding: 4px 10px; font-size: 0.78rem;" disabled>Export CSV</button>
+          <h2>Execution Log</h2>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <span class="pacing-badge" id="pacingBadge">Velocity: 1.0x</span>
+            <button type="button" class="btn btn-outline" id="exportCsvBtn" style="padding: 4px 10px; font-size: 0.78rem;" disabled>Export CSV</button>
+          </div>
         </div>
         <div class="table-container">
           <table class="results-table">
@@ -619,9 +707,9 @@
 
   <script>
     (function () {
-      const PROMPT_MARKDOWN_CONTENT = `# Master "Anchor & Flow" CSV Generator Prompt\n\n[Full prompt embedded for download]\n`;
+      const STORAGE_KEY_ROUTINES = 'anchor_flow_routines_v1';
+      const STORAGE_KEY_RESULTS = 'anchor_flow_results_v1';
 
-      // Hybrid Sample: Demonstrating hard-coded calendar times merged with flow tasks
       const SAMPLE_CSV = `Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start
 Work Day,Morning Alignment,0,,
 Work Day,Email Triaging & Planning,20,Morning Alignment,
@@ -662,6 +750,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       const taskListContainer = document.getElementById('taskListContainer');
       const resultsTableBody = document.getElementById('resultsTableBody');
       const exportCsvBtn = document.getElementById('exportCsvBtn');
+      const pacingBadge = document.getElementById('pacingBadge');
 
       const backgroundBanner = document.getElementById('backgroundBanner');
       const backgroundBannerText = document.getElementById('backgroundBannerText');
@@ -672,6 +761,8 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       const resetBtn = document.getElementById('resetBtn');
       const nextBtn = document.getElementById('nextBtn');
       const finishEarlyBtn = document.getElementById('finishEarlyBtn');
+      const zenToggleBtn = document.getElementById('zenToggleBtn');
+      const clearSessionBtn = document.getElementById('clearSessionBtn');
 
       const routineCompletedBanner = document.getElementById('routineCompletedBanner');
       const completedRoutineTitle = document.getElementById('completedRoutineTitle');
@@ -682,7 +773,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       const loadSampleBtn = document.getElementById('loadSampleBtn');
       const csvFileInput = document.getElementById('csvFileInput');
 
-      // Update System Wall-Clock
+      // Update System Clock
       function updateSystemClock() {
         const now = new Date();
         systemClock.textContent = now.toLocaleTimeString([], { hour12: false });
@@ -691,6 +782,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       setInterval(updateSystemClock, 1000);
       updateSystemClock();
 
+      // Steve Jobs Design Refinement: Harmonic Audio Chime
       function getAudioContext() {
         try {
           if (!audioCtx) {
@@ -704,35 +796,39 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         return audioCtx;
       }
 
-      function playBeepTone() {
+      function playHarmonicChime() {
         try {
           const ctx = getAudioContext();
           if (!ctx) return;
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
 
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(800, ctx.currentTime);
+          const now = ctx.currentTime;
+          // Dual harmonic frequencies (800Hz base + 1200Hz warm overtone)
+          [800, 1200].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
 
-          gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.05);
-          gain.gain.setValueAtTime(0.3, ctx.currentTime + 0.5);
-          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+            osc.type = i === 0 ? 'sine' : 'triangle';
+            osc.frequency.setValueAtTime(freq, now);
 
-          osc.connect(gain);
-          gain.connect(ctx.destination);
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(0.25 / (i + 1), now + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.85);
 
-          osc.start(ctx.currentTime);
-          osc.stop(ctx.currentTime + 0.6);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.85);
+          });
         } catch (e) {
-          console.warn('Tone playback error:', e);
+          console.warn('Harmonic chime failed:', e);
         }
       }
 
       function startAudioAlertLoop() {
         stopAudioAlertLoop();
-        playBeepTone();
-        alertInterval = setInterval(playBeepTone, 3000);
+        playHarmonicChime();
+        alertInterval = setInterval(playHarmonicChime, 3000);
       }
 
       function stopAudioAlertLoop() {
@@ -764,6 +860,66 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           .replace(/"/g, '&quot;');
       }
 
+      // LocalStorage Persistence
+      function saveStateToStorage() {
+        try {
+          const serializable = {};
+          routineStates.forEach((val, key) => {
+            serializable[key] = {
+              name: val.name,
+              tasks: val.tasks,
+              actionableTaskIndices: val.actionableTaskIndices,
+              currentActionableStep: val.currentActionableStep,
+              remainingSeconds: val.remainingSeconds,
+              overtimeSeconds: val.overtimeSeconds,
+              elapsedSeconds: val.elapsedSeconds,
+              extendedSeconds: val.extendedSeconds,
+              timerState: val.timerState === 'running' ? 'paused' : val.timerState,
+              totalMins: val.totalMins
+            };
+          });
+          localStorage.setItem(STORAGE_KEY_ROUTINES, JSON.stringify(serializable));
+          localStorage.setItem(STORAGE_KEY_RESULTS, JSON.stringify(recordedResults));
+        } catch (e) {
+          console.warn('Could not auto-save state:', e);
+        }
+      }
+
+      function loadStateFromStorage() {
+        try {
+          const rawRoutines = localStorage.getItem(STORAGE_KEY_ROUTINES);
+          const rawResults = localStorage.getItem(STORAGE_KEY_RESULTS);
+
+          if (rawResults) {
+            recordedResults = JSON.parse(rawResults) || [];
+            if (recordedResults.length > 0) {
+              exportCsvBtn.disabled = false;
+              renderResultsTable();
+            }
+          }
+
+          if (rawRoutines) {
+            const parsed = JSON.parse(rawRoutines);
+            routineStates.clear();
+            Object.keys(parsed).forEach(rName => {
+              const item = parsed[rName];
+              routineStates.set(rName, {
+                ...item,
+                actualStartTime: null
+              });
+            });
+            if (routineStates.size > 0) {
+              populateRoutineDropdown();
+              startGlobalTickLoop();
+              return true;
+            }
+          }
+        } catch (e) {
+          console.warn('Could not load storage state:', e);
+        }
+        return false;
+      }
+
       function parseCSVLine(line) {
         const cols = [];
         let cur = '';
@@ -780,7 +936,6 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         return cols;
       }
 
-      // Parses CSV supporting 5 cols: [Routine, Task Name, Duration (Mins), Parent Task, Scheduled Start]
       function parseCSVContent(csvText) {
         stopAudioAlertLoop();
         clearInterval(globalMasterInterval);
@@ -844,7 +999,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
             durationMins: durationMins,
             durationSecs: Math.round(durationMins * 60),
             parentTask: parentTask,
-            scheduledStart: scheduledStart, // e.g. "14:30"
+            scheduledStart: scheduledStart,
             isHeader: durationMins === 0,
             isAnchor: scheduledStart.length > 0,
             status: 'pending'
@@ -884,6 +1039,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           });
         });
 
+        saveStateToStorage();
         populateRoutineDropdown();
         startGlobalTickLoop();
       }
@@ -917,12 +1073,10 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         updateBackgroundBanner();
       }
 
-      // Master tick interval
       function startGlobalTickLoop() {
         if (globalMasterInterval) clearInterval(globalMasterInterval);
 
         globalMasterInterval = setInterval(() => {
-          // 1. Tick Running Routine
           if (activeRunningRoutine) {
             const rState = routineStates.get(activeRunningRoutine);
             if (rState) {
@@ -946,15 +1100,14 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
                 updateControls();
               }
               updateBackgroundBanner();
+              saveStateToStorage();
             }
           }
 
-          // 2. Scan for Upcoming Hard Calendar Anchors across routines
           checkUpcomingAnchors();
         }, 1000);
       }
 
-      // Radar: Evaluates real computer time against hard-coded meeting anchors
       function checkUpcomingAnchors() {
         const state = routineStates.get(currentViewedRoutine);
         if (!state) return;
@@ -1066,7 +1219,6 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           parentContextBadge.textContent = 'Standalone';
         }
 
-        // Wall clock projected calculations
         if (state.actualStartTime) {
           const projectedEnd = new Date(state.actualStartTime.getTime() + (state.remainingSeconds * 1000));
           wallClockMeta.textContent = `Started: ${state.actualStartTime.toLocaleTimeString()}  •  Projected End: ${projectedEnd.toLocaleTimeString()}`;
@@ -1237,13 +1389,34 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         });
 
         exportCsvBtn.disabled = false;
+        saveStateToStorage();
         renderResultsTable();
+        updatePacingMultiplier();
+      }
+
+      // Steve Jobs Innovation: Real-Time Estimation Multiplier
+      function updatePacingMultiplier() {
+        if (recordedResults.length === 0) {
+          pacingBadge.textContent = 'Velocity: 1.0x';
+          return;
+        }
+
+        let totalTarget = 0;
+        let totalActual = 0;
+        recordedResults.forEach(r => {
+          totalTarget += r.finalTargetSecs;
+          totalActual += r.actualSecs;
+        });
+
+        const ratio = totalTarget > 0 ? (totalActual / totalTarget) : 1.0;
+        pacingBadge.textContent = `Velocity: ${ratio.toFixed(2)}x (${ratio > 1 ? '+' : ''}${Math.round((ratio - 1) * 100)}%)`;
+        pacingBadge.style.color = ratio > 1.1 ? 'var(--danger)' : (ratio < 0.95 ? 'var(--success)' : 'var(--accent)');
       }
 
       function renderResultsTable() {
         resultsTableBody.innerHTML = '';
         if (recordedResults.length === 0) {
-          resultsTableBody.innerHTML = '<tr><td colspan="4" class="empty-state">Completed task results will appear here.</td></tr>';
+          resultsTableBody.innerHTML = '<tr><td colspan="4" class="empty-state">Completed task timestamps will be recorded here.</td></tr>';
           return;
         }
 
@@ -1297,6 +1470,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           else state.remainingSeconds = 1;
         }
 
+        saveStateToStorage();
         updateDisplayForViewed();
         updateControls();
         updateBackgroundBanner();
@@ -1315,7 +1489,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         getAudioContext();
 
         if (!state.actualStartTime) {
-          state.actualStartTime = new Date(); // Lock real computer start time
+          state.actualStartTime = new Date();
         }
 
         if (activeRunningRoutine && activeRunningRoutine !== currentViewedRoutine) {
@@ -1326,6 +1500,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         activeRunningRoutine = currentViewedRoutine;
         state.timerState = (state.overtimeSeconds > 0) ? 'alarm_overtime' : 'running';
 
+        saveStateToStorage();
         updateDisplayForViewed();
         updateControls();
         updateBackgroundBanner();
@@ -1337,6 +1512,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         state.timerState = 'paused';
         if (activeRunningRoutine === currentViewedRoutine) activeRunningRoutine = null;
 
+        saveStateToStorage();
         updateDisplayForViewed();
         updateControls();
         updateBackgroundBanner();
@@ -1360,6 +1536,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           state.remainingSeconds = state.tasks[activeIndex].durationSecs;
         }
 
+        saveStateToStorage();
         updateDisplayForViewed();
         updateControls();
         updateBackgroundBanner();
@@ -1388,6 +1565,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         state.extendedSeconds = 0;
         state.actualStartTime = null;
 
+        saveStateToStorage();
         transitionStep(state, currentActiveIdx);
       }
 
@@ -1415,6 +1593,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         state.extendedSeconds = 0;
         state.actualStartTime = null;
 
+        saveStateToStorage();
         transitionStep(state, currentActiveIdx);
       }
 
@@ -1427,10 +1606,11 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
           state.tasks[nextActiveIdx].status = 'active';
           state.remainingSeconds = state.tasks[nextActiveIdx].durationSecs;
-          state.actualStartTime = new Date(); // Begin logging next task's start time immediately
+          state.actualStartTime = new Date();
           state.timerState = 'running';
           activeRunningRoutine = state.name;
 
+          saveStateToStorage();
           renderChecklist();
           updateDisplayForViewed();
           updateControls();
@@ -1442,6 +1622,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           state.timerState = 'completed';
           if (activeRunningRoutine === state.name) activeRunningRoutine = null;
 
+          saveStateToStorage();
           updateDisplayForViewed();
           renderChecklist();
           updateControls();
@@ -1470,6 +1651,31 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           switchNextRoutineBtn.style.display = 'none';
         }
       }
+
+      // Zen Focus Mode Toggle
+      function toggleZenMode() {
+        document.body.classList.toggle('zen-mode');
+        const isZen = document.body.classList.contains('zen-mode');
+        zenToggleBtn.textContent = isZen ? '✕ Exit Zen' : '⊙ Zen Mode';
+      }
+      zenToggleBtn.addEventListener('click', toggleZenMode);
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'z' || e.key === 'Z') {
+          if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+            toggleZenMode();
+          }
+        }
+      });
+
+      // Clear Session Data
+      clearSessionBtn.addEventListener('click', () => {
+        if (confirm('Clear saved schedule and audit history for today?')) {
+          localStorage.removeItem(STORAGE_KEY_ROUTINES);
+          localStorage.removeItem(STORAGE_KEY_RESULTS);
+          location.reload();
+        }
+      });
 
       function downloadPromptMarkdown() {
         const blob = new Blob([PROMPT_MARKDOWN_CONTENT], { type: 'text/markdown;charset=utf-8;' });
@@ -1556,7 +1762,10 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         reader.readAsText(file);
       });
 
-      parseCSVContent(SAMPLE_CSV);
+      // Restore session on load or populate default sample
+      if (!loadStateFromStorage()) {
+        parseCSVContent(SAMPLE_CSV);
+      }
     })();
   </script>
 </body>
