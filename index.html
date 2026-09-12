@@ -228,26 +228,20 @@
     }
 
     /* Clock Face */
-    .clock-container {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
     .clock-display {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: clamp(3.6rem, 11vw, 5.8rem);
+      font-size: clamp(3.8rem, 11vw, 6rem);
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       color: var(--text-main);
-      padding: 8px 24px;
+      padding: 8px 28px;
       border-radius: 12px;
       background: rgba(15, 23, 42, 0.6);
       border: 1px solid var(--border);
       letter-spacing: 2px;
       user-select: none;
       transition: color 0.2s, border-color 0.2s;
+      margin-bottom: 16px;
     }
 
     .clock-display.alert {
@@ -269,20 +263,75 @@
       }
     }
 
+    /* Time Extension Bar */
+    .time-adjust-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .adjust-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 2px;
+    }
+
+    .adjust-divider {
+      color: var(--border);
+      font-size: 0.85rem;
+      margin: 0 4px;
+    }
+
     .btn-nudge {
-      padding: 8px 12px;
+      padding: 5px 10px;
       font-size: 0.8rem;
+      font-weight: 600;
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text-muted);
-    }
-    .btn-nudge:hover:not(:disabled) {
+      border-radius: 6px;
       color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .btn-nudge:hover:not(:disabled) {
+      background: var(--border);
       border-color: var(--text-muted);
     }
 
-    /* Controls */
+    .btn-nudge.add {
+      color: var(--accent);
+    }
+    .btn-nudge.add:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.15);
+    }
+
+    .btn-nudge.subtract {
+      color: var(--text-muted);
+    }
+    .btn-nudge.subtract:hover:not(:disabled) {
+      color: var(--text-main);
+    }
+
+    .btn-nudge:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Action Controls */
     .controls-row {
       display: flex;
       gap: 10px;
@@ -561,7 +610,7 @@
     <header>
       <div class="title-group">
         <h1>Multi-Routine Sequence Timer</h1>
-        <p>Early-finish recording, overtime alerts, and variance export</p>
+        <p>Dynamic time extension, early-finish recording, and performance analytics</p>
       </div>
       <div class="upload-controls">
         <button type="button" class="btn btn-outline" id="downloadPromptBtn" title="Download the LLM prompt as a .md file">Download Prompt (.md)</button>
@@ -582,7 +631,7 @@
       <div style="font-size: 0.85rem; color: var(--text-muted);" id="routineStatsText">0 tasks</div>
     </div>
 
-    <!-- Background Routine Active Alert / Progress Banner -->
+    <!-- Background Notification Banner -->
     <div class="background-routine-banner" id="backgroundBanner">
       <span id="backgroundBannerText">⏳ Routine "Morning" is running in the background (02:14)</span>
       <button type="button" class="btn btn-primary" id="jumpToRunningBtn" style="padding: 4px 10px; font-size: 0.78rem;">Switch Back</button>
@@ -602,11 +651,22 @@
 
       <div class="current-task-title" id="currentTaskTitle">No Routine Selected</div>
 
-      <!-- Clock & Adjustment Controls -->
-      <div class="clock-container">
-        <button type="button" class="btn btn-nudge" id="nudgeDownBtn" title="Fast-forward remaining time by 1 min" disabled>-1m</button>
-        <div class="clock-display" id="clockDisplay">00:00</div>
-        <button type="button" class="btn btn-nudge" id="nudgeUpBtn" title="Add 1 min" disabled>+1m</button>
+      <!-- Clock Face -->
+      <div class="clock-display" id="clockDisplay">00:00</div>
+
+      <!-- Multi-Tier Time Extension / Adjustment Bar -->
+      <div class="time-adjust-bar">
+        <span class="adjust-label">Add Time:</span>
+        <button type="button" class="btn-nudge add" data-seconds="60">+1m</button>
+        <button type="button" class="btn-nudge add" data-seconds="300">+5m</button>
+        <button type="button" class="btn-nudge add" data-seconds="600">+10m</button>
+        <button type="button" class="btn-nudge add" data-seconds="1800">+30m</button>
+        <button type="button" class="btn-nudge add" data-seconds="3600">+1h</button>
+        <span class="adjust-divider">|</span>
+        <span class="adjust-label">Trim:</span>
+        <button type="button" class="btn-nudge subtract" data-seconds="-60">-1m</button>
+        <button type="button" class="btn-nudge subtract" data-seconds="-300">-5m</button>
+        <button type="button" class="btn-nudge subtract" data-seconds="-600">-10m</button>
       </div>
 
       <!-- Controls -->
@@ -648,8 +708,8 @@
             <thead>
               <tr>
                 <th>Task</th>
-                <th>Target</th>
-                <th>Actual</th>
+                <th>Target (Base + Added)</th>
+                <th>Actual Elapsed</th>
                 <th>Variance / Result</th>
               </tr>
             </thead>
@@ -711,10 +771,9 @@ Evening Routine,Tidy Workspace & Plan Next Day,5,Wind Down Protocol
 Evening Routine,Breathing & Yoga Nidra,15,Wind Down Protocol
 Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
 
-      // Master State Map: routineName -> routineState
       let routineStates = new Map();
       let currentViewedRoutine = '';
-      let activeRunningRoutine = null; // Routine name currently running timer
+      let activeRunningRoutine = null;
 
       let globalMasterInterval = null;
       let recordedResults = [];
@@ -745,8 +804,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       const resetBtn = document.getElementById('resetBtn');
       const nextBtn = document.getElementById('nextBtn');
       const finishEarlyBtn = document.getElementById('finishEarlyBtn');
-      const nudgeDownBtn = document.getElementById('nudgeDownBtn');
-      const nudgeUpBtn = document.getElementById('nudgeUpBtn');
 
       const routineCompletedBanner = document.getElementById('routineCompletedBanner');
       const completedRoutineTitle = document.getElementById('completedRoutineTitle');
@@ -814,8 +871,8 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
       }
 
-      function formatVariance(plannedSecs, actualSecs) {
-        const diff = actualSecs - plannedSecs;
+      function formatVariance(targetSecs, actualSecs) {
+        const diff = actualSecs - targetSecs;
         if (diff === 0) return `<span class="overrun-exact">On Time (Exact)</span>`;
         if (diff > 0) return `<span class="overrun-pos">+${formatMMSS(diff)} Over</span>`;
         return `<span class="overrun-early">Saved ${formatMMSS(Math.abs(diff))}</span>`;
@@ -846,7 +903,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         return cols;
       }
 
-      // Parses CSV and instantiates persistent state objects per routine
       function parseCSVContent(csvText) {
         stopAudioAlertLoop();
         clearInterval(globalMasterInterval);
@@ -910,7 +966,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           });
         }
 
-        // Initialize state for each routine
         tempRoutines.forEach((tasksList, rName) => {
           const actionableIndices = [];
           let totalMins = 0;
@@ -936,6 +991,8 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
             currentActionableStep: 0,
             remainingSeconds: initialRemaining,
             overtimeSeconds: 0,
+            elapsedSeconds: 0,
+            extendedSeconds: 0,
             timerState: 'idle',
             totalMins: totalMins
           });
@@ -963,7 +1020,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         switchViewedRoutine(names[0]);
       }
 
-      // Switches viewed routine WITHOUT resetting any task or timer data
       function switchViewedRoutine(routineName) {
         if (!routineStates.has(routineName)) return;
         currentViewedRoutine = routineName;
@@ -979,7 +1035,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         updateBackgroundBanner();
       }
 
-      // Global Tick: Updates whichever routine is actively running
+      // Master tick interval: updates active running routine
       function startGlobalTickLoop() {
         if (globalMasterInterval) clearInterval(globalMasterInterval);
 
@@ -989,6 +1045,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           if (!rState) return;
 
           if (rState.timerState === 'running') {
+            rState.elapsedSeconds++;
             if (rState.remainingSeconds > 0) {
               rState.remainingSeconds--;
               if (rState.remainingSeconds === 0) {
@@ -998,10 +1055,10 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
               }
             }
           } else if (rState.timerState === 'alarm_overtime') {
+            rState.elapsedSeconds++;
             rState.overtimeSeconds++;
           }
 
-          // If currently looking at the active running routine, refresh clock directly
           if (currentViewedRoutine === activeRunningRoutine) {
             updateDisplayForViewed();
             updateControls();
@@ -1093,8 +1150,15 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         if (!state) return;
 
         const hasTasks = state.actionableTaskIndices.length > 0 && state.currentActionableStep < state.actionableTaskIndices.length;
-        nudgeDownBtn.disabled = !hasTasks || state.timerState === 'alarm_overtime' || state.timerState === 'completed';
-        nudgeUpBtn.disabled = !hasTasks || state.timerState === 'alarm_overtime' || state.timerState === 'completed';
+        const canAdjust = hasTasks && state.timerState !== 'completed';
+
+        // Add buttons remain active even during overtime/alarm so user can extend time
+        document.querySelectorAll('.btn-nudge.add').forEach(btn => {
+          btn.disabled = !canAdjust;
+        });
+        document.querySelectorAll('.btn-nudge.subtract').forEach(btn => {
+          btn.disabled = !canAdjust || state.timerState === 'alarm_overtime';
+        });
 
         if (!hasTasks) {
           startBtn.disabled = true;
@@ -1192,19 +1256,28 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         if (activeElem) activeElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
-      function recordCompletedTask(routineName, task, plannedSecs, actualSecs, overtimeSecs, wasEarly) {
+      function recordCompletedTask(routineName, task, plannedSecs, extendedSecs, actualSecs, overtimeSecs, wasEarly) {
+        const finalTargetSecs = plannedSecs + extendedSecs;
         let statusText = 'On Time';
-        if (overtimeSecs > 0) statusText = 'Overtime';
-        else if (wasEarly) statusText = 'Finished Early';
+
+        if (overtimeSecs > 0) {
+          statusText = 'Overtime';
+        } else if (wasEarly) {
+          statusText = 'Finished Early';
+        } else if (extendedSecs > 0) {
+          statusText = 'Extended';
+        }
 
         recordedResults.push({
           routine: routineName,
           taskName: task.name,
           parentCategory: task.parentTask || 'None',
           plannedSecs: plannedSecs,
+          extendedSecs: extendedSecs,
+          finalTargetSecs: finalTargetSecs,
           actualSecs: actualSecs,
           overtimeSecs: overtimeSecs,
-          varianceSecs: actualSecs - plannedSecs,
+          varianceSecs: actualSecs - finalTargetSecs,
           status: statusText,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
@@ -1222,26 +1295,77 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
 
         recordedResults.slice().reverse().forEach((res) => {
           const tr = document.createElement('tr');
+          const extBadge = res.extendedSecs > 0 
+            ? `<span style="font-size: 0.72rem; color: var(--accent); font-weight:600;"> (+${formatMMSS(res.extendedSecs)})</span>` 
+            : '';
+
           tr.innerHTML = `
             <td>
               <strong style="color: var(--text-main);">${escapeHtml(res.taskName)}</strong><br/>
               <span style="font-size: 0.72rem; color: var(--text-muted);">${escapeHtml(res.routine)} &bull; ${escapeHtml(res.parentCategory)}</span>
             </td>
-            <td>${formatMMSS(res.plannedSecs)}</td>
-            <td>${formatMMSS(res.actualSecs)}</td>
-            <td>${formatVariance(res.plannedSecs, res.actualSecs)}</td>
+            <td>${formatMMSS(res.plannedSecs)}${extBadge}</td>
+            <td><strong>${formatMMSS(res.actualSecs)}</strong></td>
+            <td>${formatVariance(res.finalTargetSecs, res.actualSecs)}</td>
           `;
           resultsTableBody.appendChild(tr);
         });
       }
 
-      // Controls for viewed routine
+      // Dynamic Time Extension / Trim Logic
+      function addTimeToCurrentTask(secondsToAdd) {
+        const state = routineStates.get(currentViewedRoutine);
+        if (!state) return;
+        if (state.actionableTaskIndices.length === 0 || state.currentActionableStep >= state.actionableTaskIndices.length) return;
+
+        getAudioContext();
+
+        if (secondsToAdd > 0) {
+          state.extendedSeconds += secondsToAdd;
+
+          // If currently in alarm/overtime, adding time stops the alarm and returns to countdown
+          if (state.timerState === 'alarm_overtime') {
+            stopAudioAlertLoop();
+            clockDisplay.classList.remove('alert');
+            overtimeBadge.style.display = 'none';
+
+            state.remainingSeconds = secondsToAdd;
+            state.overtimeSeconds = 0;
+            state.timerState = 'running';
+            activeRunningRoutine = state.name;
+          } else {
+            state.remainingSeconds += secondsToAdd;
+          }
+        } else {
+          // Trimming remaining time
+          const secondsToSubtract = Math.abs(secondsToAdd);
+          if (state.timerState === 'alarm_overtime') return;
+
+          if (state.remainingSeconds > secondsToSubtract) {
+            state.remainingSeconds -= secondsToSubtract;
+          } else {
+            state.remainingSeconds = 1; // Prompt immediate completion
+          }
+        }
+
+        updateDisplayForViewed();
+        updateControls();
+        updateBackgroundBanner();
+      }
+
+      // Nudge Button Event Delegation
+      document.querySelectorAll('.btn-nudge').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const delta = parseInt(e.target.getAttribute('data-seconds'), 10);
+          if (!isNaN(delta)) addTimeToCurrentTask(delta);
+        });
+      });
+
       function startTimer() {
         const state = routineStates.get(currentViewedRoutine);
         if (!state) return;
         getAudioContext();
 
-        // If another routine was running, pause it gracefully
         if (activeRunningRoutine && activeRunningRoutine !== currentViewedRoutine) {
           const other = routineStates.get(activeRunningRoutine);
           if (other && other.timerState === 'running') other.timerState = 'paused';
@@ -1275,6 +1399,8 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
 
         state.timerState = 'idle';
         state.overtimeSeconds = 0;
+        state.elapsedSeconds = 0;
+        state.extendedSeconds = 0;
 
         if (state.actionableTaskIndices.length > 0 && state.currentActionableStep < state.actionableTaskIndices.length) {
           const activeIndex = state.actionableTaskIndices[state.currentActionableStep];
@@ -1297,11 +1423,13 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         task.status = 'done';
 
         const planned = task.durationSecs;
-        const actual = Math.max(1, planned - state.remainingSeconds);
-        recordCompletedTask(state.name, task, planned, actual, 0, true);
+        const actual = Math.max(1, state.elapsedSeconds);
+        recordCompletedTask(state.name, task, planned, state.extendedSeconds, actual, 0, true);
 
         state.currentActionableStep++;
         state.overtimeSeconds = 0;
+        state.elapsedSeconds = 0;
+        state.extendedSeconds = 0;
 
         transitionStep(state, currentActiveIdx);
       }
@@ -1317,12 +1445,14 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         task.status = 'done';
 
         const planned = task.durationSecs;
-        const actual = (planned - state.remainingSeconds) + state.overtimeSeconds;
+        const actual = Math.max(1, state.elapsedSeconds);
         const wasEarly = state.remainingSeconds > 0 && state.overtimeSeconds === 0;
-        recordCompletedTask(state.name, task, planned, actual, state.overtimeSeconds, wasEarly);
+        recordCompletedTask(state.name, task, planned, state.extendedSeconds, actual, state.overtimeSeconds, wasEarly);
 
         state.currentActionableStep++;
         state.overtimeSeconds = 0;
+        state.elapsedSeconds = 0;
+        state.extendedSeconds = 0;
 
         transitionStep(state, currentActiveIdx);
       }
@@ -1379,7 +1509,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         }
       }
 
-      // Download prompt as .md file
       function downloadPromptMarkdown() {
         const blob = new Blob([PROMPT_MARKDOWN_CONTENT], { type: 'text/markdown;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
@@ -1392,21 +1521,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         URL.revokeObjectURL(url);
       }
 
-      nudgeDownBtn.addEventListener('click', () => {
-        const state = routineStates.get(currentViewedRoutine);
-        if (!state) return;
-        if (state.remainingSeconds > 60) state.remainingSeconds -= 60;
-        else state.remainingSeconds = 1;
-        clockDisplay.textContent = formatMMSS(state.remainingSeconds);
-      });
-
-      nudgeUpBtn.addEventListener('click', () => {
-        const state = routineStates.get(currentViewedRoutine);
-        if (!state) return;
-        state.remainingSeconds += 60;
-        clockDisplay.textContent = formatMMSS(state.remainingSeconds);
-      });
-
       function exportResultsCSV() {
         if (recordedResults.length === 0) return;
 
@@ -1414,11 +1528,15 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           "Routine",
           "Task Name",
           "Parent Category",
-          "Target Duration (Secs)",
+          "Initial Target (Secs)",
+          "Time Added (Secs)",
+          "Final Target (Secs)",
           "Actual Duration (Secs)",
           "Variance (Secs)",
           "Status",
-          "Target (MM:SS)",
+          "Initial Target (MM:SS)",
+          "Time Added (MM:SS)",
+          "Final Target (MM:SS)",
           "Actual (MM:SS)",
           "Logged At"
         ];
@@ -1428,10 +1546,14 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           `"${r.taskName}"`,
           `"${r.parentCategory}"`,
           r.plannedSecs,
+          r.extendedSecs,
+          r.finalTargetSecs,
           r.actualSecs,
           r.varianceSecs,
           `"${r.status}"`,
           `"${formatMMSS(r.plannedSecs)}"`,
+          `"${formatMMSS(r.extendedSecs)}"`,
+          `"${formatMMSS(r.finalTargetSecs)}"`,
           `"${formatMMSS(r.actualSecs)}"`,
           `"${r.timestamp}"`
         ]);
