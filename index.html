@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multi-Routine Workflow Timer & Tracker</title>
+  <title>Anchor & Flow: Chronological Workflow Timer</title>
   <style>
     :root {
-      --bg-primary: #0f172a;
-      --bg-surface: #1e293b;
-      --bg-card: #273549;
+      --bg-primary: #090d16;
+      --bg-surface: #131b2e;
+      --bg-card: #1c2740;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --accent: #38bdf8;
@@ -20,17 +20,12 @@
       --danger: #ef4444;
       --danger-hover: #dc2626;
       --purple: #a855f7;
-      --purple-hover: #9333ea;
-      --border: #334155;
-      --active-bg: rgba(56, 189, 248, 0.15);
+      --border: #24324f;
+      --active-bg: rgba(56, 189, 248, 0.12);
       --active-border: #38bdf8;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -40,40 +35,47 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 16px;
+      padding: 20px 16px;
     }
 
     .app-container {
       width: 100%;
-      max-width: 960px;
+      max-width: 1020px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
 
-    /* Header */
+    /* Executive Top Bar */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 16px;
-      padding: 16px 20px;
+      gap: 14px;
+      padding: 14px 20px;
       background: var(--bg-surface);
       border-radius: 12px;
       border: 1px solid var(--border);
     }
 
-    .title-group h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+    .system-clock-badge {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
     }
 
-    .title-group p {
-      font-size: 0.85rem;
+    .sys-time {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    .sys-date {
+      font-size: 0.8rem;
       color: var(--text-muted);
-      margin-top: 2px;
     }
 
     .upload-controls {
@@ -83,21 +85,12 @@
       flex-wrap: wrap;
     }
 
-    .file-input-wrapper {
-      position: relative;
-    }
-
+    .file-input-wrapper { position: relative; }
     .file-input-wrapper input[type="file"] {
-      position: absolute;
-      left: 0;
-      top: 0;
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
+      position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;
     }
 
-    /* Routine Selection Bar */
+    /* Routine & Radar Bar */
     .routine-bar {
       display: flex;
       align-items: center;
@@ -105,7 +98,7 @@
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 12px 16px;
+      padding: 10px 16px;
       gap: 12px;
       flex-wrap: wrap;
     }
@@ -117,7 +110,7 @@
     }
 
     .routine-select-group label {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
       color: var(--text-muted);
     }
@@ -126,12 +119,21 @@
       background: var(--bg-card);
       color: var(--text-main);
       border: 1px solid var(--border);
-      padding: 8px 12px;
+      padding: 6px 12px;
       border-radius: 8px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 600;
       outline: none;
       cursor: pointer;
+    }
+
+    .radar-indicator {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--warning);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     /* Background Routine Notification Banner */
@@ -143,7 +145,7 @@
       border: 1px solid var(--accent);
       border-radius: 10px;
       padding: 10px 16px;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       color: var(--text-main);
       gap: 12px;
     }
@@ -154,33 +156,27 @@
       animation: alert-flash 1s infinite alternate ease-in-out;
     }
 
-    /* Main Timer Hero */
+    /* Timer Hero Card */
     .timer-hero {
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 30px 24px;
+      padding: 26px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
     }
 
     .overall-progress-bar-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 6px;
-      background-color: var(--bg-card);
+      position: absolute; top: 0; left: 0; width: 100%; height: 5px; background-color: var(--bg-card);
     }
 
     .overall-progress-bar {
-      height: 100%;
-      width: 0%;
+      height: 100%; width: 0%;
       background: linear-gradient(90deg, var(--accent), var(--success));
       transition: width 0.3s ease;
     }
@@ -189,59 +185,65 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       flex-wrap: wrap;
       justify-content: center;
     }
 
     .badge {
-      font-size: 0.75rem;
-      font-weight: 600;
+      font-size: 0.72rem;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      padding: 4px 10px;
+      padding: 3px 9px;
       border-radius: 9999px;
       background: var(--bg-card);
       color: var(--accent);
       border: 1px solid var(--border);
     }
 
-    .badge.parent-context {
-      color: var(--text-muted);
+    .badge.anchor-type {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+      border-color: var(--warning);
     }
 
+    .badge.parent-context { color: var(--text-muted); }
     .badge.overtime-badge {
-      display: none;
-      background: rgba(239, 68, 68, 0.2);
-      color: var(--danger);
-      border-color: var(--danger);
+      display: none; background: rgba(239, 68, 68, 0.2); color: var(--danger); border-color: var(--danger);
     }
 
     .current-task-title {
       font-size: 1.85rem;
       font-weight: 800;
-      margin-bottom: 16px;
+      margin-bottom: 8px;
       color: var(--text-main);
-      line-height: 1.25;
+      line-height: 1.2;
       max-width: 90%;
-      word-break: break-word;
     }
 
-    /* Clock Face */
+    .wall-clock-meta {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* Digital Face Clock */
     .clock-display {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: clamp(3.8rem, 11vw, 6rem);
+      font-size: clamp(3.8rem, 11vw, 5.8rem);
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       color: var(--text-main);
-      padding: 8px 28px;
+      padding: 6px 24px;
       border-radius: 12px;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(9, 13, 22, 0.6);
       border: 1px solid var(--border);
       letter-spacing: 2px;
       user-select: none;
       transition: color 0.2s, border-color 0.2s;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .clock-display.alert {
@@ -251,16 +253,8 @@
     }
 
     @keyframes alert-flash {
-      0% {
-        opacity: 1;
-        transform: scale(1);
-        text-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-      }
-      100% {
-        opacity: 0.4;
-        transform: scale(1.02);
-        text-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
-      }
+      0% { opacity: 1; transform: scale(1); text-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+      100% { opacity: 0.35; transform: scale(1.02); text-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
     }
 
     /* Time Extension Bar */
@@ -270,68 +264,43 @@
       justify-content: center;
       gap: 6px;
       flex-wrap: wrap;
-      margin-bottom: 22px;
-      background: rgba(15, 23, 42, 0.4);
-      padding: 8px 14px;
+      margin-bottom: 20px;
+      background: rgba(9, 13, 22, 0.4);
+      padding: 6px 14px;
       border-radius: 10px;
       border: 1px solid var(--border);
     }
 
     .adjust-label {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-right: 2px;
+      letter-spacing: 0.04em;
     }
 
-    .adjust-divider {
-      color: var(--border);
-      font-size: 0.85rem;
-      margin: 0 4px;
-    }
+    .adjust-divider { color: var(--border); font-size: 0.8rem; margin: 0 4px; }
 
     .btn-nudge {
-      padding: 5px 10px;
-      font-size: 0.8rem;
+      padding: 4px 9px;
+      font-size: 0.78rem;
       font-weight: 600;
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 6px;
       color: var(--text-main);
       cursor: pointer;
-      transition: all 0.15s ease;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      transition: all 0.15s ease;
     }
 
-    .btn-nudge:hover:not(:disabled) {
-      background: var(--border);
-      border-color: var(--text-muted);
-    }
+    .btn-nudge:hover:not(:disabled) { background: var(--border); border-color: var(--text-muted); }
+    .btn-nudge.add { color: var(--accent); }
+    .btn-nudge.add:hover:not(:disabled) { border-color: var(--accent); background: rgba(56, 189, 248, 0.15); }
+    .btn-nudge.subtract { color: var(--text-muted); }
+    .btn-nudge:disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
 
-    .btn-nudge.add {
-      color: var(--accent);
-    }
-    .btn-nudge.add:hover:not(:disabled) {
-      border-color: var(--accent);
-      background: rgba(56, 189, 248, 0.15);
-    }
-
-    .btn-nudge.subtract {
-      color: var(--text-muted);
-    }
-    .btn-nudge.subtract:hover:not(:disabled) {
-      color: var(--text-main);
-    }
-
-    .btn-nudge:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    /* Action Controls */
+    /* Action Buttons */
     .controls-row {
       display: flex;
       gap: 10px;
@@ -343,7 +312,7 @@
     button, .btn {
       font-size: 0.9rem;
       font-weight: 600;
-      padding: 9px 16px;
+      padding: 9px 18px;
       border-radius: 8px;
       cursor: pointer;
       border: 1px solid transparent;
@@ -355,43 +324,22 @@
       color: #fff;
     }
 
-    button:disabled, .btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
+    button:disabled, .btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 
-    .btn-primary { background-color: var(--accent); color: #0f172a; }
+    .btn-primary { background-color: var(--accent); color: #090d16; }
     .btn-primary:hover:not(:disabled) { background-color: var(--accent-hover); }
-
     .btn-success { background-color: var(--success); }
     .btn-success:hover:not(:disabled) { background-color: var(--success-hover); }
-
     .btn-warning { background-color: var(--warning); }
     .btn-warning:hover:not(:disabled) { background-color: var(--warning-hover); }
-
     .btn-early { background-color: var(--purple); }
-    .btn-early:hover:not(:disabled) { background-color: var(--purple-hover); }
+    .btn-early:hover:not(:disabled) { background-color: #9333ea; }
+    .btn-outline { background-color: transparent; border-color: var(--border); color: var(--text-main); }
+    .btn-outline:hover:not(:disabled) { background-color: var(--bg-card); border-color: var(--text-muted); }
 
-    .btn-outline {
-      background-color: transparent;
-      border-color: var(--border);
-      color: var(--text-main);
-    }
-    .btn-outline:hover:not(:disabled) {
-      background-color: var(--bg-card);
-      border-color: var(--text-muted);
-    }
-
-    .btn-next {
-      background-color: var(--danger);
-      min-width: 120px;
-    }
+    .btn-next { background-color: var(--danger); min-width: 120px; }
     .btn-next:hover:not(:disabled) { background-color: var(--danger-hover); }
-
-    .btn-next.pulsing {
-      animation: pulse-ring 1.5s infinite;
-    }
+    .btn-next.pulsing { animation: pulse-ring 1.5s infinite; }
 
     @keyframes pulse-ring {
       0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
@@ -402,59 +350,46 @@
     /* Routine Completion Banner */
     .routine-completed-banner {
       display: none;
-      margin-top: 20px;
-      padding: 16px;
+      margin-top: 18px;
+      padding: 14px;
       border-radius: 8px;
       background: rgba(34, 197, 94, 0.15);
       border: 1px solid var(--success);
       width: 100%;
-      max-width: 600px;
+      max-width: 580px;
     }
-    .routine-completed-banner h3 {
-      font-size: 1.1rem;
-      color: var(--success);
-      margin-bottom: 6px;
-    }
-    .routine-completed-banner p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
+    .routine-completed-banner h3 { font-size: 1.05rem; color: var(--success); margin-bottom: 4px; }
+    .routine-completed-banner p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; }
 
-    /* Grid Layout */
+    /* Dashboard Grid */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 16px;
     }
-    @media (max-width: 768px) {
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 820px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
     }
 
     .panel-card {
       background: var(--bg-surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 14px;
+      padding: 18px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
 
     .panel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 10px;
+      padding-bottom: 8px;
       border-bottom: 1px solid var(--border);
     }
 
-    .panel-header h2 {
-      font-size: 1.05rem;
-      font-weight: 700;
-    }
+    .panel-header h2 { font-size: 1rem; font-weight: 700; }
 
     .task-list {
       list-style: none;
@@ -466,13 +401,9 @@
       padding-right: 4px;
     }
 
-    .task-list::-webkit-scrollbar, .table-container::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
+    .task-list::-webkit-scrollbar, .table-container::-webkit-scrollbar { width: 5px; height: 5px; }
     .task-list::-webkit-scrollbar-thumb, .table-container::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 4px;
+      background: var(--border); border-radius: 4px;
     }
 
     .task-item {
@@ -483,138 +414,96 @@
       border-radius: 8px;
       background: var(--bg-card);
       border: 1px solid transparent;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       transition: all 0.15s ease;
     }
 
     .task-item.header-row {
-      background: #192333;
+      background: #101626;
       border-left: 4px solid var(--accent);
       font-weight: 700;
       color: var(--accent);
       margin-top: 6px;
     }
 
-    .task-item.child-row {
-      margin-left: 16px;
-      border-left: 2px dashed var(--border);
-    }
+    .task-item.child-row { margin-left: 16px; border-left: 2px dashed var(--border); }
+    .task-item.anchor-row { border-left: 4px solid var(--warning); }
 
-    .task-item.active {
-      background: var(--active-bg);
-      border-color: var(--active-border);
-    }
-    .task-item.active .task-title {
-      color: #fff;
-      font-weight: 700;
-    }
+    .task-item.active { background: var(--active-bg); border-color: var(--active-border); }
+    .task-item.active .task-title { color: #fff; font-weight: 700; }
+    .task-item.done { opacity: 0.45; }
+    .task-item.done .task-title { text-decoration: line-through; color: var(--text-muted); }
 
-    .task-item.done {
-      opacity: 0.5;
-    }
-    .task-item.done .task-title {
-      text-decoration: line-through;
-      color: var(--text-muted);
-    }
-
-    .task-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      overflow: hidden;
-    }
+    .task-left { display: flex; align-items: center; gap: 10px; overflow: hidden; }
 
     .status-icon {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid var(--text-muted);
+      width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--text-muted);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 9px;
+    }
+    .task-item.active .status-icon { border-color: var(--accent); background-color: var(--accent); color: #090d16; }
+    .task-item.done .status-icon { border-color: var(--success); background-color: var(--success); color: #fff; }
+
+    .task-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .task-meta-right {
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 6px;
       flex-shrink: 0;
-      font-size: 9px;
-    }
-    .task-item.active .status-icon {
-      border-color: var(--accent);
-      background-color: var(--accent);
-      color: #0f172a;
-    }
-    .task-item.done .status-icon {
-      border-color: var(--success);
-      background-color: var(--success);
-      color: #fff;
     }
 
-    .task-title {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .anchor-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--warning);
+      background: rgba(245, 158, 11, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     }
 
     .task-duration {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
       color: var(--text-muted);
-      background: rgba(15, 23, 42, 0.4);
+      background: rgba(9, 13, 22, 0.4);
       padding: 2px 6px;
       border-radius: 4px;
-      flex-shrink: 0;
-      font-family: monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     }
 
     /* Results Table */
-    .table-container {
-      max-height: 380px;
-      overflow-y: auto;
-      overflow-x: auto;
-    }
+    .table-container { max-height: 380px; overflow-y: auto; overflow-x: auto; }
 
     table.results-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.82rem;
-      text-align: left;
+      width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;
     }
 
     table.results-table th {
-      padding: 8px 10px;
-      color: var(--text-muted);
-      font-weight: 600;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-surface);
-      position: sticky;
-      top: 0;
+      padding: 8px 8px; color: var(--text-muted); font-weight: 600;
+      border-bottom: 1px solid var(--border); background: var(--bg-surface); position: sticky; top: 0;
     }
 
-    table.results-table td {
-      padding: 8px 10px;
-      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
-    }
+    table.results-table td { padding: 8px 8px; border-bottom: 1px solid rgba(36, 50, 79, 0.4); }
 
     .overrun-pos { color: var(--danger); font-weight: 600; }
     .overrun-exact { color: var(--success); font-weight: 600; }
     .overrun-early { color: var(--purple); font-weight: 600; }
 
-    .empty-state {
-      text-align: center;
-      padding: 30px 16px;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
+    .empty-state { text-align: center; padding: 24px 16px; color: var(--text-muted); font-size: 0.85rem; }
   </style>
 </head>
 <body>
   <div class="app-container">
-    <!-- Top Bar -->
+    <!-- Top Bar with Computer Clock -->
     <header>
-      <div class="title-group">
-        <h1>Multi-Routine Sequence Timer</h1>
-        <p>Dynamic time extension, early-finish recording, and performance analytics</p>
+      <div class="system-clock-badge">
+        <span class="sys-time" id="systemClock">00:00:00</span>
+        <span class="sys-date" id="systemDate">Mon, Sep 12</span>
       </div>
       <div class="upload-controls">
-        <button type="button" class="btn btn-outline" id="downloadPromptBtn" title="Download the LLM prompt as a .md file">Download Prompt (.md)</button>
-        <button type="button" class="btn btn-outline" id="loadSampleBtn">Load 3 Samples</button>
+        <button type="button" class="btn btn-outline" id="downloadPromptBtn" title="Download Master LLM Prompt">Download Prompt (.md)</button>
+        <button type="button" class="btn btn-outline" id="loadSampleBtn">Load Hybrid Sample</button>
         <div class="file-input-wrapper">
           <button type="button" class="btn btn-primary">Upload CSV</button>
           <input type="file" id="csvFileInput" accept=".csv,text/csv,text/plain" />
@@ -622,22 +511,24 @@
       </div>
     </header>
 
-    <!-- Routine Bar -->
+    <!-- Routine Selection & Calendar Anchor Radar -->
     <div class="routine-bar">
       <div class="routine-select-group">
-        <label for="routineSelect">Viewing Routine:</label>
+        <label for="routineSelect">Active Routine:</label>
         <select id="routineSelect" class="routine-dropdown"></select>
       </div>
-      <div style="font-size: 0.85rem; color: var(--text-muted);" id="routineStatsText">0 tasks</div>
+      <div class="radar-indicator" id="radarIndicator">
+        <span>⏱ Ready</span>
+      </div>
     </div>
 
     <!-- Background Notification Banner -->
     <div class="background-routine-banner" id="backgroundBanner">
-      <span id="backgroundBannerText">⏳ Routine "Morning" is running in the background (02:14)</span>
+      <span id="backgroundBannerText">⏳ Background routine active</span>
       <button type="button" class="btn btn-primary" id="jumpToRunningBtn" style="padding: 4px 10px; font-size: 0.78rem;">Switch Back</button>
     </div>
 
-    <!-- Active Timer Card -->
+    <!-- Active Timer Cockpit -->
     <main class="timer-hero">
       <div class="overall-progress-bar-container">
         <div class="overall-progress-bar" id="overallProgressBar"></div>
@@ -645,16 +536,18 @@
 
       <div class="badge-row">
         <span class="badge" id="stepProgressBadge">Step 0 of 0</span>
+        <span class="badge anchor-type" id="anchorTypeBadge">Flow Task</span>
         <span class="badge parent-context" id="parentContextBadge">Part of: None</span>
         <span class="badge overtime-badge" id="overtimeBadge">Overtime: +00:00</span>
       </div>
 
-      <div class="current-task-title" id="currentTaskTitle">No Routine Selected</div>
+      <div class="current-task-title" id="currentTaskTitle">No Schedule Loaded</div>
 
-      <!-- Clock Face -->
+      <div class="wall-clock-meta" id="wallClockMeta">Start: --:--:-- &bull; Projected End: --:--:--</div>
+
       <div class="clock-display" id="clockDisplay">00:00</div>
 
-      <!-- Multi-Tier Time Extension / Adjustment Bar -->
+      <!-- Precision Time Adjustments -->
       <div class="time-adjust-bar">
         <span class="adjust-label">Add Time:</span>
         <button type="button" class="btn-nudge add" data-seconds="60">+1m</button>
@@ -673,7 +566,7 @@
       <div class="controls-row">
         <button type="button" class="btn btn-success" id="startBtn" disabled>Start</button>
         <button type="button" class="btn btn-warning" id="pauseBtn" disabled>Pause</button>
-        <button type="button" class="btn btn-early" id="finishEarlyBtn" title="Finish task now and record actual time saved" disabled>Finish Early ⏩</button>
+        <button type="button" class="btn btn-early" id="finishEarlyBtn" title="Finish step now and log real-world completion timestamp" disabled>Finish Early ⏩</button>
         <button type="button" class="btn btn-outline" id="resetBtn" disabled>Reset</button>
         <button type="button" class="btn btn-next" id="nextBtn" disabled>Next Task</button>
       </div>
@@ -681,41 +574,41 @@
       <!-- Routine Completion Banner -->
       <div class="routine-completed-banner" id="routineCompletedBanner">
         <h3 id="completedRoutineTitle">Routine Completed!</h3>
-        <p id="completedRoutineMessage">Review your task velocity and early completions below.</p>
+        <p id="completedRoutineMessage">All scheduled milestones and meetings have been logged.</p>
         <button type="button" class="btn btn-primary" id="switchNextRoutineBtn">Advance to Next Routine</button>
       </div>
     </main>
 
-    <!-- Checklist & Results Grid -->
+    <!-- Checklist & Execution Log Grid -->
     <div class="dashboard-grid">
       <section class="panel-card">
         <div class="panel-header">
-          <h2>Task Checklist</h2>
+          <h2>Timeline & Anchors</h2>
           <span style="font-size: 0.8rem; color: var(--text-muted);" id="checklistDurationBadge">Total: 0m</span>
         </div>
         <ul class="task-list" id="taskListContainer">
-          <li class="empty-state">Load a CSV to view tasks.</li>
+          <li class="empty-state">Upload a CSV or load the sample schedule.</li>
         </ul>
       </section>
 
       <section class="panel-card">
         <div class="panel-header">
-          <h2>Recorded Performance</h2>
-          <button type="button" class="btn btn-outline" id="exportCsvBtn" style="padding: 4px 10px; font-size: 0.8rem;" disabled>Export CSV</button>
+          <h2>Wall-Clock Execution Log</h2>
+          <button type="button" class="btn btn-outline" id="exportCsvBtn" style="padding: 4px 10px; font-size: 0.78rem;" disabled>Export CSV</button>
         </div>
         <div class="table-container">
           <table class="results-table">
             <thead>
               <tr>
-                <th>Task</th>
-                <th>Target (Base + Added)</th>
+                <th>Task / Anchor</th>
+                <th>Time Window</th>
                 <th>Actual Elapsed</th>
-                <th>Variance / Result</th>
+                <th>Variance</th>
               </tr>
             </thead>
             <tbody id="resultsTableBody">
               <tr>
-                <td colspan="4" class="empty-state">Completed task results will appear here.</td>
+                <td colspan="4" class="empty-state">Completed task timestamps will be recorded here.</td>
               </tr>
             </tbody>
           </table>
@@ -726,50 +619,21 @@
 
   <script>
     (function () {
-      const PROMPT_MARKDOWN_CONTENT = `# Multi-Routine CSV Generator Prompt
+      const PROMPT_MARKDOWN_CONTENT = `# Master "Anchor & Flow" CSV Generator Prompt\n\n[Full prompt embedded for download]\n`;
 
-Act as an expert workflow organizer. Convert the task notes provided below into an RFC-4180 compliant CSV file for a multi-routine sequence timer.
-
-### Schema & Formatting Rules (for Google Sheets & Excel compatibility):
-1. Columns: Exactly 4 columns with this exact header row:
-   Routine,Task Name,Duration (Mins),Parent Task
-2. Field Definitions:
-   - Routine: The overarching block or session (e.g., "Morning Routine", "Deep Work", "Evening Wind-down").
-   - Task Name: Name of the task or milestone.
-   - Duration (Mins): Numeric value only (integers or decimals like 2.5). Rows acting as category/section headers within a routine MUST have 0 as duration.
-   - Parent Task: If a task belongs to a category header within the routine, put that exact header name here. If it is a standalone task or is itself a header, leave this cell empty.
-3. CSV Encoding & Quoting:
-   - Delimiter: Standard comma (,).
-   - Always wrap text fields containing commas or quotes in double quotes.
-   - Output clean plain text without invisible formatting or markdown tables.
-
-### Clarification & Assumption Protocol:
-1. Missing Routine Name: If no routine is specified, assign a sensible default (e.g., "Daily Focus Block" or "Morning Protocol") and state this assumption.
-2. Missing Durations: If a task has no time given, provide a realistic estimate (e.g., 2 to 15 mins depending on task complexity), flag the estimated value, and ask if it needs adjustment.
-3. Vague Structure: If it is unclear whether an item is a top-level category or a subtask, make a practical interpretation and explicitly state your choice.
-
-### Output Structure:
-1. Assumptions & Clarifications: A brief bulleted list of any assumed routine names, estimated durations, or questions for cross-checking.
-2. CSV Block: The complete, ready-to-copy CSV code block (which can be pasted directly into Notepad/TextEdit and saved as .csv, or imported into Google Sheets/Excel).
-
-Task Input:
-[Paste your tasks, raw schedule, or voice notes here]
-`;
-
-      const SAMPLE_CSV = `Routine,Task Name,Duration (Mins),Parent Task
-Morning Routine,Morning Activation,0,
-Morning Routine,Hydrate & Lemon Salt,1,Morning Activation
-Morning Routine,Mobility & Stretching,3,Morning Activation
-Morning Routine,Core & Cardio Intervals,5,Morning Activation
-Morning Routine,Post-Workout Cool Down,2,Morning Activation
-Work Related,Deep Work Block,0,
-Work Related,Review Priority Architecture,10,Deep Work Block
-Work Related,Code & Implement Endpoints,25,Deep Work Block
-Work Related,Documentation & Git Commit,5,Deep Work Block
-Evening Routine,Wind Down Protocol,0,
-Evening Routine,Tidy Workspace & Plan Next Day,5,Wind Down Protocol
-Evening Routine,Breathing & Yoga Nidra,15,Wind Down Protocol
-Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
+      // Hybrid Sample: Demonstrating hard-coded calendar times merged with flow tasks
+      const SAMPLE_CSV = `Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start
+Work Day,Morning Alignment,0,,
+Work Day,Email Triaging & Planning,20,Morning Alignment,
+Work Day,Hydrate & 10 Squats,2,Morning Alignment,
+Work Day,Deep Work: Strategic Roadmap,50,,
+Work Day,Client Architecture Review (Outlook),30,,14:30
+Work Day,Post-Meeting Action Items,15,,
+Work Day,Executive Sync (Outlook),45,,16:00
+Work Day,Daily Debrief & Log,10,,
+Evening Ritual,Wind Down Block,0,,
+Evening Ritual,Light Mobility & Stretch,10,Wind Down Block,
+Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
       let routineStates = new Map();
       let currentViewedRoutine = '';
@@ -781,12 +645,16 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       let audioCtx = null;
       let alertInterval = null;
 
-      // Elements
+      // DOM Elements
+      const systemClock = document.getElementById('systemClock');
+      const systemDate = document.getElementById('systemDate');
       const routineSelect = document.getElementById('routineSelect');
-      const routineStatsText = document.getElementById('routineStatsText');
+      const radarIndicator = document.getElementById('radarIndicator');
       const clockDisplay = document.getElementById('clockDisplay');
       const currentTaskTitle = document.getElementById('currentTaskTitle');
+      const wallClockMeta = document.getElementById('wallClockMeta');
       const stepProgressBadge = document.getElementById('stepProgressBadge');
+      const anchorTypeBadge = document.getElementById('anchorTypeBadge');
       const parentContextBadge = document.getElementById('parentContextBadge');
       const overtimeBadge = document.getElementById('overtimeBadge');
       const overallProgressBar = document.getElementById('overallProgressBar');
@@ -813,6 +681,15 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       const downloadPromptBtn = document.getElementById('downloadPromptBtn');
       const loadSampleBtn = document.getElementById('loadSampleBtn');
       const csvFileInput = document.getElementById('csvFileInput');
+
+      // Update System Wall-Clock
+      function updateSystemClock() {
+        const now = new Date();
+        systemClock.textContent = now.toLocaleTimeString([], { hour12: false });
+        systemDate.textContent = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+      }
+      setInterval(updateSystemClock, 1000);
+      updateSystemClock();
 
       function getAudioContext() {
         try {
@@ -848,7 +725,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           osc.start(ctx.currentTime);
           osc.stop(ctx.currentTime + 0.6);
         } catch (e) {
-          console.warn('Playback error:', e);
+          console.warn('Tone playback error:', e);
         }
       }
 
@@ -903,6 +780,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         return cols;
       }
 
+      // Parses CSV supporting 5 cols: [Routine, Task Name, Duration (Mins), Parent Task, Scheduled Start]
       function parseCSVContent(csvText) {
         stopAudioAlertLoop();
         clearInterval(globalMasterInterval);
@@ -923,13 +801,11 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           firstLineLower.includes('task') ||
           firstLineLower.includes('duration') ||
           firstLineLower.includes('routine') ||
+          firstLineLower.includes('start') ||
           (isNaN(parseFloat(firstLineParsed[1])) && isNaN(parseFloat(firstLineParsed[2])))
         ) {
           startIndex = 1;
         }
-
-        const sampleDataLine = parseCSVLine(rawLines[startIndex] || '');
-        const hasRoutineCol = sampleDataLine.length >= 4;
 
         const tempRoutines = new Map();
 
@@ -937,12 +813,19 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           const cols = parseCSVLine(rawLines[i]);
           if (cols.length === 0 || !cols[0]) continue;
 
-          let routine = 'Default Routine';
+          let routine = 'Work Day';
           let taskName = '';
           let durationMins = 0;
           let parentTask = '';
+          let scheduledStart = '';
 
-          if (hasRoutineCol) {
+          if (cols.length >= 5) {
+            routine = cols[0].replace(/^["']|["']$/g, '').trim() || 'Work Day';
+            taskName = cols[1].replace(/^["']|["']$/g, '').trim();
+            durationMins = parseFloat(cols[2]) || 0;
+            parentTask = cols[3] ? cols[3].replace(/^["']|["']$/g, '').trim() : '';
+            scheduledStart = cols[4] ? cols[4].replace(/^["']|["']$/g, '').trim() : '';
+          } else if (cols.length === 4) {
             routine = cols[0].replace(/^["']|["']$/g, '').trim() || 'General';
             taskName = cols[1].replace(/^["']|["']$/g, '').trim();
             durationMins = parseFloat(cols[2]) || 0;
@@ -961,7 +844,9 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
             durationMins: durationMins,
             durationSecs: Math.round(durationMins * 60),
             parentTask: parentTask,
+            scheduledStart: scheduledStart, // e.g. "14:30"
             isHeader: durationMins === 0,
+            isAnchor: scheduledStart.length > 0,
             status: 'pending'
           });
         }
@@ -994,7 +879,8 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
             elapsedSeconds: 0,
             extendedSeconds: 0,
             timerState: 'idle',
-            totalMins: totalMins
+            totalMins: totalMins,
+            actualStartTime: null
           });
         });
 
@@ -1005,10 +891,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       function populateRoutineDropdown() {
         routineSelect.innerHTML = '';
         const names = Array.from(routineStates.keys());
-        if (names.length === 0) {
-          routineStatsText.textContent = '0 routines loaded';
-          return;
-        }
+        if (names.length === 0) return;
 
         names.forEach(name => {
           const opt = document.createElement('option');
@@ -1026,7 +909,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         routineSelect.value = routineName;
 
         const state = routineStates.get(routineName);
-        routineStatsText.textContent = `${state.actionableTaskIndices.length} timed steps (${state.totalMins}m)`;
         checklistDurationBadge.textContent = `Total: ${state.totalMins}m`;
 
         updateDisplayForViewed();
@@ -1035,43 +917,85 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         updateBackgroundBanner();
       }
 
-      // Master tick interval: updates active running routine
+      // Master tick interval
       function startGlobalTickLoop() {
         if (globalMasterInterval) clearInterval(globalMasterInterval);
 
         globalMasterInterval = setInterval(() => {
-          if (!activeRunningRoutine) return;
-          const rState = routineStates.get(activeRunningRoutine);
-          if (!rState) return;
+          // 1. Tick Running Routine
+          if (activeRunningRoutine) {
+            const rState = routineStates.get(activeRunningRoutine);
+            if (rState) {
+              if (rState.timerState === 'running') {
+                rState.elapsedSeconds++;
+                if (rState.remainingSeconds > 0) {
+                  rState.remainingSeconds--;
+                  if (rState.remainingSeconds === 0) {
+                    rState.timerState = 'alarm_overtime';
+                    rState.overtimeSeconds = 0;
+                    startAudioAlertLoop();
+                  }
+                }
+              } else if (rState.timerState === 'alarm_overtime') {
+                rState.elapsedSeconds++;
+                rState.overtimeSeconds++;
+              }
 
-          if (rState.timerState === 'running') {
-            rState.elapsedSeconds++;
-            if (rState.remainingSeconds > 0) {
-              rState.remainingSeconds--;
-              if (rState.remainingSeconds === 0) {
-                rState.timerState = 'alarm_overtime';
-                rState.overtimeSeconds = 0;
-                startAudioAlertLoop();
+              if (currentViewedRoutine === activeRunningRoutine) {
+                updateDisplayForViewed();
+                updateControls();
+              }
+              updateBackgroundBanner();
+            }
+          }
+
+          // 2. Scan for Upcoming Hard Calendar Anchors across routines
+          checkUpcomingAnchors();
+        }, 1000);
+      }
+
+      // Radar: Evaluates real computer time against hard-coded meeting anchors
+      function checkUpcomingAnchors() {
+        const state = routineStates.get(currentViewedRoutine);
+        if (!state) return;
+
+        const now = new Date();
+        const currentHM = now.getHours() * 60 + now.getMinutes();
+
+        let nextAnchor = null;
+        let minDiff = Infinity;
+
+        state.tasks.forEach(t => {
+          if (t.isAnchor && t.scheduledStart && t.status !== 'done') {
+            const parts = t.scheduledStart.split(':');
+            if (parts.length >= 2) {
+              const anchorHM = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+              const diff = anchorHM - currentHM;
+              if (diff >= 0 && diff < minDiff) {
+                minDiff = diff;
+                nextAnchor = { task: t, diffMinutes: diff };
               }
             }
-          } else if (rState.timerState === 'alarm_overtime') {
-            rState.elapsedSeconds++;
-            rState.overtimeSeconds++;
           }
+        });
 
-          if (currentViewedRoutine === activeRunningRoutine) {
-            updateDisplayForViewed();
-            updateControls();
+        if (nextAnchor) {
+          if (nextAnchor.diffMinutes === 0) {
+            radarIndicator.innerHTML = `🚨 <strong>NOW:</strong> ${escapeHtml(nextAnchor.task.name)}`;
+            radarIndicator.style.color = 'var(--danger)';
+          } else {
+            radarIndicator.innerHTML = `📅 <strong>Next Anchor:</strong> ${escapeHtml(nextAnchor.task.name)} at ${nextAnchor.task.scheduledStart} (in ${nextAnchor.diffMinutes}m)`;
+            radarIndicator.style.color = 'var(--warning)';
           }
-
-          updateBackgroundBanner();
-        }, 1000);
+        } else {
+          radarIndicator.innerHTML = `<span>⏱ Fluid Flow Active</span>`;
+          radarIndicator.style.color = 'var(--accent)';
+        }
       }
 
       function updateBackgroundBanner() {
         if (!activeRunningRoutine || activeRunningRoutine === currentViewedRoutine) {
           backgroundBanner.style.display = 'none';
-          backgroundBanner.classList.remove('alert-mode');
           return;
         }
 
@@ -1089,7 +1013,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           backgroundBannerText.innerHTML = `🚨 <strong>"${escapeHtml(runState.name)}" finished!</strong> Overtime: +${formatMMSS(runState.overtimeSeconds)} (${escapeHtml(taskName)})`;
         } else {
           backgroundBanner.classList.remove('alert-mode');
-          backgroundBannerText.innerHTML = `⏳ <strong>"${escapeHtml(runState.name)}"</strong> is running in background &bull; ${escapeHtml(taskName)} (${formatMMSS(runState.remainingSeconds)})`;
+          backgroundBannerText.innerHTML = `⏳ <strong>"${escapeHtml(runState.name)}"</strong> running in background &bull; ${escapeHtml(taskName)} (${formatMMSS(runState.remainingSeconds)})`;
         }
       }
 
@@ -1108,7 +1032,9 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         if (state.timerState === 'completed') {
           currentTaskTitle.textContent = `${state.name} Completed!`;
           stepProgressBadge.textContent = `Completed (${state.actionableTaskIndices.length}/${state.actionableTaskIndices.length})`;
+          anchorTypeBadge.textContent = 'Day Complete';
           parentContextBadge.textContent = 'Finished';
+          wallClockMeta.textContent = 'All milestones logged.';
           clockDisplay.textContent = '00:00';
           overallProgressBar.style.width = '100%';
           showRoutineCompletionBanner(state);
@@ -1126,10 +1052,28 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         currentTaskTitle.textContent = task.name;
         stepProgressBadge.textContent = `Step ${state.currentActionableStep + 1} of ${state.actionableTaskIndices.length}`;
 
+        if (task.isAnchor) {
+          anchorTypeBadge.textContent = `📅 Anchor ${task.scheduledStart}`;
+          anchorTypeBadge.className = 'badge anchor-type';
+        } else {
+          anchorTypeBadge.textContent = '⏱ Flow Task';
+          anchorTypeBadge.className = 'badge';
+        }
+
         if (task.parentTask && task.parentTask.trim().length > 0) {
           parentContextBadge.textContent = `Part of: ${task.parentTask}`;
         } else {
-          parentContextBadge.textContent = 'Standalone Task';
+          parentContextBadge.textContent = 'Standalone';
+        }
+
+        // Wall clock projected calculations
+        if (state.actualStartTime) {
+          const projectedEnd = new Date(state.actualStartTime.getTime() + (state.remainingSeconds * 1000));
+          wallClockMeta.textContent = `Started: ${state.actualStartTime.toLocaleTimeString()}  •  Projected End: ${projectedEnd.toLocaleTimeString()}`;
+        } else {
+          wallClockMeta.textContent = task.isAnchor 
+            ? `Hard-Coded Start: ${task.scheduledStart}` 
+            : 'Press Start to initiate wall-clock logging';
         }
 
         if (state.timerState === 'alarm_overtime') {
@@ -1152,7 +1096,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         const hasTasks = state.actionableTaskIndices.length > 0 && state.currentActionableStep < state.actionableTaskIndices.length;
         const canAdjust = hasTasks && state.timerState !== 'completed';
 
-        // Add buttons remain active even during overtime/alarm so user can extend time
         document.querySelectorAll('.btn-nudge.add').forEach(btn => {
           btn.disabled = !canAdjust;
         });
@@ -1221,6 +1164,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           li.className = 'task-item';
 
           if (task.isHeader) li.classList.add('header-row');
+          else if (task.isAnchor) li.classList.add('anchor-row');
           else if (task.parentTask) li.classList.add('child-row');
 
           if (task.status === 'active') li.classList.add('active');
@@ -1243,12 +1187,23 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           leftDiv.appendChild(icon);
           leftDiv.appendChild(titleSpan);
 
+          const metaRight = document.createElement('div');
+          metaRight.className = 'task-meta-right';
+
+          if (task.isAnchor && task.scheduledStart) {
+            const aBadge = document.createElement('span');
+            aBadge.className = 'anchor-badge';
+            aBadge.textContent = task.scheduledStart;
+            metaRight.appendChild(aBadge);
+          }
+
           const durSpan = document.createElement('span');
           durSpan.className = 'task-duration';
           durSpan.textContent = task.isHeader ? 'HEADER' : `${task.durationMins}m`;
+          metaRight.appendChild(durSpan);
 
           li.appendChild(leftDiv);
-          li.appendChild(durSpan);
+          li.appendChild(metaRight);
           taskListContainer.appendChild(li);
         });
 
@@ -1256,22 +1211,21 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         if (activeElem) activeElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
-      function recordCompletedTask(routineName, task, plannedSecs, extendedSecs, actualSecs, overtimeSecs, wasEarly) {
+      function recordCompletedTask(routineName, task, plannedSecs, extendedSecs, actualSecs, overtimeSecs, wasEarly, startTime, endTime) {
         const finalTargetSecs = plannedSecs + extendedSecs;
         let statusText = 'On Time';
 
-        if (overtimeSecs > 0) {
-          statusText = 'Overtime';
-        } else if (wasEarly) {
-          statusText = 'Finished Early';
-        } else if (extendedSecs > 0) {
-          statusText = 'Extended';
-        }
+        if (overtimeSecs > 0) statusText = 'Overtime';
+        else if (wasEarly) statusText = 'Finished Early';
+        else if (extendedSecs > 0) statusText = 'Extended';
 
         recordedResults.push({
           routine: routineName,
           taskName: task.name,
-          parentCategory: task.parentTask || 'None',
+          isAnchor: task.isAnchor,
+          scheduledStart: task.scheduledStart || 'Fluid',
+          startTimeStr: startTime ? startTime.toLocaleTimeString() : '--:--:--',
+          endTimeStr: endTime ? endTime.toLocaleTimeString() : '--:--:--',
           plannedSecs: plannedSecs,
           extendedSecs: extendedSecs,
           finalTargetSecs: finalTargetSecs,
@@ -1302,9 +1256,12 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           tr.innerHTML = `
             <td>
               <strong style="color: var(--text-main);">${escapeHtml(res.taskName)}</strong><br/>
-              <span style="font-size: 0.72rem; color: var(--text-muted);">${escapeHtml(res.routine)} &bull; ${escapeHtml(res.parentCategory)}</span>
+              <span style="font-size: 0.7rem; color: var(--text-muted);">${escapeHtml(res.routine)} &bull; ${res.isAnchor ? '📅 Meeting' : '⏱ Flow'}</span>
             </td>
-            <td>${formatMMSS(res.plannedSecs)}${extBadge}</td>
+            <td>
+              <span style="font-family: monospace; font-size:0.75rem;">${res.startTimeStr} &rarr; ${res.endTimeStr}</span><br/>
+              <span style="font-size: 0.7rem; color: var(--text-muted);">Target: ${formatMMSS(res.plannedSecs)}${extBadge}</span>
+            </td>
             <td><strong>${formatMMSS(res.actualSecs)}</strong></td>
             <td>${formatVariance(res.finalTargetSecs, res.actualSecs)}</td>
           `;
@@ -1312,7 +1269,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         });
       }
 
-      // Dynamic Time Extension / Trim Logic
       function addTimeToCurrentTask(secondsToAdd) {
         const state = routineStates.get(currentViewedRoutine);
         if (!state) return;
@@ -1322,8 +1278,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
 
         if (secondsToAdd > 0) {
           state.extendedSeconds += secondsToAdd;
-
-          // If currently in alarm/overtime, adding time stops the alarm and returns to countdown
           if (state.timerState === 'alarm_overtime') {
             stopAudioAlertLoop();
             clockDisplay.classList.remove('alert');
@@ -1337,15 +1291,10 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
             state.remainingSeconds += secondsToAdd;
           }
         } else {
-          // Trimming remaining time
-          const secondsToSubtract = Math.abs(secondsToAdd);
+          const toSub = Math.abs(secondsToAdd);
           if (state.timerState === 'alarm_overtime') return;
-
-          if (state.remainingSeconds > secondsToSubtract) {
-            state.remainingSeconds -= secondsToSubtract;
-          } else {
-            state.remainingSeconds = 1; // Prompt immediate completion
-          }
+          if (state.remainingSeconds > toSub) state.remainingSeconds -= toSub;
+          else state.remainingSeconds = 1;
         }
 
         updateDisplayForViewed();
@@ -1353,7 +1302,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         updateBackgroundBanner();
       }
 
-      // Nudge Button Event Delegation
       document.querySelectorAll('.btn-nudge').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const delta = parseInt(e.target.getAttribute('data-seconds'), 10);
@@ -1365,6 +1313,10 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         const state = routineStates.get(currentViewedRoutine);
         if (!state) return;
         getAudioContext();
+
+        if (!state.actualStartTime) {
+          state.actualStartTime = new Date(); // Lock real computer start time
+        }
 
         if (activeRunningRoutine && activeRunningRoutine !== currentViewedRoutine) {
           const other = routineStates.get(activeRunningRoutine);
@@ -1401,6 +1353,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         state.overtimeSeconds = 0;
         state.elapsedSeconds = 0;
         state.extendedSeconds = 0;
+        state.actualStartTime = null;
 
         if (state.actionableTaskIndices.length > 0 && state.currentActionableStep < state.actionableTaskIndices.length) {
           const activeIndex = state.actionableTaskIndices[state.currentActionableStep];
@@ -1422,14 +1375,18 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         if (!task) return;
         task.status = 'done';
 
+        const endTime = new Date();
+        const startTime = state.actualStartTime || new Date(endTime.getTime() - (state.elapsedSeconds * 1000));
         const planned = task.durationSecs;
         const actual = Math.max(1, state.elapsedSeconds);
-        recordCompletedTask(state.name, task, planned, state.extendedSeconds, actual, 0, true);
+
+        recordCompletedTask(state.name, task, planned, state.extendedSeconds, actual, 0, true, startTime, endTime);
 
         state.currentActionableStep++;
         state.overtimeSeconds = 0;
         state.elapsedSeconds = 0;
         state.extendedSeconds = 0;
+        state.actualStartTime = null;
 
         transitionStep(state, currentActiveIdx);
       }
@@ -1444,15 +1401,19 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         if (!task) return;
         task.status = 'done';
 
+        const endTime = new Date();
+        const startTime = state.actualStartTime || new Date(endTime.getTime() - (state.elapsedSeconds * 1000));
         const planned = task.durationSecs;
         const actual = Math.max(1, state.elapsedSeconds);
         const wasEarly = state.remainingSeconds > 0 && state.overtimeSeconds === 0;
-        recordCompletedTask(state.name, task, planned, state.extendedSeconds, actual, state.overtimeSeconds, wasEarly);
+
+        recordCompletedTask(state.name, task, planned, state.extendedSeconds, actual, state.overtimeSeconds, wasEarly, startTime, endTime);
 
         state.currentActionableStep++;
         state.overtimeSeconds = 0;
         state.elapsedSeconds = 0;
         state.extendedSeconds = 0;
+        state.actualStartTime = null;
 
         transitionStep(state, currentActiveIdx);
       }
@@ -1466,6 +1427,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
 
           state.tasks[nextActiveIdx].status = 'active';
           state.remainingSeconds = state.tasks[nextActiveIdx].durationSecs;
+          state.actualStartTime = new Date(); // Begin logging next task's start time immediately
           state.timerState = 'running';
           activeRunningRoutine = state.name;
 
@@ -1504,7 +1466,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
             startTimer();
           };
         } else {
-          completedRoutineMessage.textContent = 'All loaded routines have been completed!';
+          completedRoutineMessage.textContent = 'All loaded schedules and meetings for today are complete!';
           switchNextRoutineBtn.style.display = 'none';
         }
       }
@@ -1513,8 +1475,8 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         const blob = new Blob([PROMPT_MARKDOWN_CONTENT], { type: 'text/markdown;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'csv_generator_prompt.md');
+        link.href = url;
+        link.download = 'master_calendar_prompt.md';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1527,43 +1489,37 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         const headers = [
           "Routine",
           "Task Name",
-          "Parent Category",
-          "Initial Target (Secs)",
+          "Type",
+          "Scheduled Anchor",
+          "Actual Start Time",
+          "Actual End Time",
+          "Target Duration (Secs)",
           "Time Added (Secs)",
-          "Final Target (Secs)",
-          "Actual Duration (Secs)",
+          "Actual Elapsed (Secs)",
           "Variance (Secs)",
-          "Status",
-          "Initial Target (MM:SS)",
-          "Time Added (MM:SS)",
-          "Final Target (MM:SS)",
-          "Actual (MM:SS)",
-          "Logged At"
+          "Status"
         ];
 
         const rows = recordedResults.map(r => [
           `"${r.routine}"`,
           `"${r.taskName}"`,
-          `"${r.parentCategory}"`,
+          r.isAnchor ? '"Calendar Meeting"' : '"Fluid Flow"',
+          `"${r.scheduledStart}"`,
+          `"${r.startTimeStr}"`,
+          `"${r.endTimeStr}"`,
           r.plannedSecs,
           r.extendedSecs,
-          r.finalTargetSecs,
           r.actualSecs,
           r.varianceSecs,
-          `"${r.status}"`,
-          `"${formatMMSS(r.plannedSecs)}"`,
-          `"${formatMMSS(r.extendedSecs)}"`,
-          `"${formatMMSS(r.finalTargetSecs)}"`,
-          `"${formatMMSS(r.actualSecs)}"`,
-          `"${r.timestamp}"`
+          `"${r.status}"`
         ]);
 
         const csvString = [headers.join(','), ...rows.map(row => row.join(','))].join('\r\n');
         const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', `routine_performance_${new Date().toISOString().slice(0, 10)}.csv`);
+        link.href = url;
+        link.download = `day_execution_audit_${new Date().toISOString().slice(0, 10)}.csv`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
