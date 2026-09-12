@@ -640,7 +640,6 @@
 
   <script>
     (function () {
-      // Embedded prompt markdown for instant offline download
       const PROMPT_MARKDOWN_CONTENT = `# Multi-Routine CSV Generator Prompt
 
 Act as an expert workflow organizer. Convert the task notes provided below into an RFC-4180 compliant CSV file for a multi-routine sequence timer.
@@ -796,6 +795,15 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         return `<span class="overrun-early">Saved ${formatMMSS(Math.abs(diff))}</span>`;
       }
 
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
       function parseCSVLine(line) {
         const cols = [];
         let cur = '';
@@ -891,6 +899,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
 
       function loadRoutine(routineName) {
         clearInterval(timerInterval);
+        timerInterval = null;
         stopAudioAlertLoop();
         clockDisplay.classList.remove('alert');
         overtimeBadge.style.display = 'none';
@@ -1098,8 +1107,8 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>
-              <strong style="color: var(--text-main);">${res.taskName}</strong><br/>
-              <span style="font-size: 0.72rem; color: var(--text-muted);">${res.routine} &bull; ${res.parentCategory}</span>
+              <strong style="color: var(--text-main);">${escapeHtml(res.taskName)}</strong><br/>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">${escapeHtml(res.routine)} &bull; ${escapeHtml(res.parentCategory)}</span>
             </td>
             <td>${formatMMSS(res.plannedSecs)}</td>
             <td>${formatMMSS(res.actualSecs)}</td>
@@ -1113,7 +1122,10 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         if (actionableTaskIndices.length === 0 || currentActionableStep >= actionableTaskIndices.length) return;
         getAudioContext();
 
-        if (timerState === 'running' || timerState === 'alarm_overtime') return;
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
 
         timerState = (overtimeSeconds > 0) ? 'alarm_overtime' : 'running';
         updateControls();
@@ -1167,15 +1179,16 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       function finishEarly() {
         if (currentActionableStep >= actionableTaskIndices.length) return;
 
-        const currentActiveIdx = actionableTaskIndices[currentActionableStep];
-        const task = routineTasks[currentActiveIdx];
-        task.status = 'done';
-
         clearInterval(timerInterval);
         timerInterval = null;
         stopAudioAlertLoop();
         clockDisplay.classList.remove('alert');
         overtimeBadge.style.display = 'none';
+
+        const currentActiveIdx = actionableTaskIndices[currentActionableStep];
+        const task = routineTasks[currentActiveIdx];
+        if (!task) return;
+        task.status = 'done';
 
         const planned = task.durationSecs;
         const actual = Math.max(1, planned - remainingSeconds);
@@ -1183,28 +1196,34 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
 
         currentActionableStep++;
         overtimeSeconds = 0;
+        timerState = 'idle';
 
         transitionToNextStep(currentActiveIdx);
       }
 
       function advanceToNextTask() {
+        clearInterval(timerInterval);
+        timerInterval = null;
         stopAudioAlertLoop();
         clockDisplay.classList.remove('alert');
         overtimeBadge.style.display = 'none';
 
         if (currentActionableStep >= actionableTaskIndices.length) return;
 
-        const currentActiveIdx = actionableTaskIndices[currentActiveIdx];
+        // Corrected index reference
+        const currentActiveIdx = actionableTaskIndices[currentActionableStep];
         const task = routineTasks[currentActiveIdx];
+        if (!task) return;
         task.status = 'done';
 
         const planned = task.durationSecs;
         const actual = (planned - remainingSeconds) + overtimeSeconds;
-        const wasEarly = remainingSeconds > 0;
+        const wasEarly = remainingSeconds > 0 && overtimeSeconds === 0;
         recordCompletedTask(task, planned, actual, overtimeSeconds, wasEarly);
 
         currentActionableStep++;
         overtimeSeconds = 0;
+        timerState = 'idle';
 
         transitionToNextStep(currentActiveIdx);
       }
@@ -1257,7 +1276,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         }
       }
 
-      // Download the prompt as a .md file
       function downloadPromptMarkdown() {
         const blob = new Blob([PROMPT_MARKDOWN_CONTENT], { type: 'text/markdown;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
