@@ -134,6 +134,26 @@
       cursor: pointer;
     }
 
+    /* Background Routine Notification Banner */
+    .background-routine-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      gap: 12px;
+    }
+
+    .background-routine-banner.alert-mode {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: var(--danger);
+      animation: alert-flash 1s infinite alternate ease-in-out;
+    }
+
     /* Main Timer Hero */
     .timer-hero {
       background: var(--bg-surface);
@@ -262,7 +282,7 @@
       border-color: var(--text-muted);
     }
 
-    /* Action Buttons */
+    /* Controls */
     .controls-row {
       display: flex;
       gap: 10px;
@@ -556,10 +576,16 @@
     <!-- Routine Bar -->
     <div class="routine-bar">
       <div class="routine-select-group">
-        <label for="routineSelect">Active Routine:</label>
+        <label for="routineSelect">Viewing Routine:</label>
         <select id="routineSelect" class="routine-dropdown"></select>
       </div>
       <div style="font-size: 0.85rem; color: var(--text-muted);" id="routineStatsText">0 tasks</div>
+    </div>
+
+    <!-- Background Routine Active Alert / Progress Banner -->
+    <div class="background-routine-banner" id="backgroundBanner">
+      <span id="backgroundBannerText">⏳ Routine "Morning" is running in the background (02:14)</span>
+      <button type="button" class="btn btn-primary" id="jumpToRunningBtn" style="padding: 4px 10px; font-size: 0.78rem;">Switch Back</button>
     </div>
 
     <!-- Active Timer Card -->
@@ -685,18 +711,14 @@ Evening Routine,Tidy Workspace & Plan Next Day,5,Wind Down Protocol
 Evening Routine,Breathing & Yoga Nidra,15,Wind Down Protocol
 Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
 
-      let routinesMap = new Map();
-      let currentRoutineName = '';
-      let routineTasks = [];
-      let actionableTaskIndices = [];
-      let currentActionableStep = 0;
+      // Master State Map: routineName -> routineState
+      let routineStates = new Map();
+      let currentViewedRoutine = '';
+      let activeRunningRoutine = null; // Routine name currently running timer
 
-      let remainingSeconds = 0;
-      let overtimeSeconds = 0;
-      let timerInterval = null;
-      let timerState = 'idle';
-
+      let globalMasterInterval = null;
       let recordedResults = [];
+
       let audioCtx = null;
       let alertInterval = null;
 
@@ -713,6 +735,10 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       const taskListContainer = document.getElementById('taskListContainer');
       const resultsTableBody = document.getElementById('resultsTableBody');
       const exportCsvBtn = document.getElementById('exportCsvBtn');
+
+      const backgroundBanner = document.getElementById('backgroundBanner');
+      const backgroundBannerText = document.getElementById('backgroundBannerText');
+      const jumpToRunningBtn = document.getElementById('jumpToRunningBtn');
 
       const startBtn = document.getElementById('startBtn');
       const pauseBtn = document.getElementById('pauseBtn');
@@ -820,8 +846,14 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         return cols;
       }
 
+      // Parses CSV and instantiates persistent state objects per routine
       function parseCSVContent(csvText) {
-        routinesMap.clear();
+        stopAudioAlertLoop();
+        clearInterval(globalMasterInterval);
+        globalMasterInterval = null;
+        activeRunningRoutine = null;
+
+        routineStates.clear();
         if (!csvText || !csvText.trim()) return;
 
         const rawLines = csvText.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
@@ -843,6 +875,8 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         const sampleDataLine = parseCSVLine(rawLines[startIndex] || '');
         const hasRoutineCol = sampleDataLine.length >= 4;
 
+        const tempRoutines = new Map();
+
         for (let i = startIndex; i < rawLines.length; i++) {
           const cols = parseCSVLine(rawLines[i]);
           if (cols.length === 0 || !cols[0]) continue;
@@ -863,9 +897,9 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
             parentTask = cols[2] ? cols[2].replace(/^["']|["']$/g, '').trim() : '';
           }
 
-          if (!routinesMap.has(routine)) routinesMap.set(routine, []);
+          if (!tempRoutines.has(routine)) tempRoutines.set(routine, []);
 
-          routinesMap.get(routine).push({
+          tempRoutines.get(routine).push({
             routine: routine,
             name: taskName,
             durationMins: durationMins,
@@ -876,12 +910,44 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           });
         }
 
+        // Initialize state for each routine
+        tempRoutines.forEach((tasksList, rName) => {
+          const actionableIndices = [];
+          let totalMins = 0;
+          tasksList.forEach((t, idx) => {
+            if (!t.isHeader && t.durationSecs > 0) {
+              actionableIndices.push(idx);
+              totalMins += t.durationMins;
+            }
+          });
+
+          let initialRemaining = 0;
+          if (actionableIndices.length > 0) {
+            const firstIdx = actionableIndices[0];
+            for (let i = 0; i < firstIdx; i++) tasksList[i].status = 'done';
+            tasksList[firstIdx].status = 'active';
+            initialRemaining = tasksList[firstIdx].durationSecs;
+          }
+
+          routineStates.set(rName, {
+            name: rName,
+            tasks: tasksList,
+            actionableTaskIndices: actionableIndices,
+            currentActionableStep: 0,
+            remainingSeconds: initialRemaining,
+            overtimeSeconds: 0,
+            timerState: 'idle',
+            totalMins: totalMins
+          });
+        });
+
         populateRoutineDropdown();
+        startGlobalTickLoop();
       }
 
       function populateRoutineDropdown() {
         routineSelect.innerHTML = '';
-        const names = Array.from(routinesMap.keys());
+        const names = Array.from(routineStates.keys());
         if (names.length === 0) {
           routineStatsText.textContent = '0 routines loaded';
           return;
@@ -894,56 +960,141 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           routineSelect.appendChild(opt);
         });
 
-        loadRoutine(names[0]);
+        switchViewedRoutine(names[0]);
       }
 
-      function loadRoutine(routineName) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        stopAudioAlertLoop();
+      // Switches viewed routine WITHOUT resetting any task or timer data
+      function switchViewedRoutine(routineName) {
+        if (!routineStates.has(routineName)) return;
+        currentViewedRoutine = routineName;
+        routineSelect.value = routineName;
+
+        const state = routineStates.get(routineName);
+        routineStatsText.textContent = `${state.actionableTaskIndices.length} timed steps (${state.totalMins}m)`;
+        checklistDurationBadge.textContent = `Total: ${state.totalMins}m`;
+
+        updateDisplayForViewed();
+        updateControls();
+        renderChecklist();
+        updateBackgroundBanner();
+      }
+
+      // Global Tick: Updates whichever routine is actively running
+      function startGlobalTickLoop() {
+        if (globalMasterInterval) clearInterval(globalMasterInterval);
+
+        globalMasterInterval = setInterval(() => {
+          if (!activeRunningRoutine) return;
+          const rState = routineStates.get(activeRunningRoutine);
+          if (!rState) return;
+
+          if (rState.timerState === 'running') {
+            if (rState.remainingSeconds > 0) {
+              rState.remainingSeconds--;
+              if (rState.remainingSeconds === 0) {
+                rState.timerState = 'alarm_overtime';
+                rState.overtimeSeconds = 0;
+                startAudioAlertLoop();
+              }
+            }
+          } else if (rState.timerState === 'alarm_overtime') {
+            rState.overtimeSeconds++;
+          }
+
+          // If currently looking at the active running routine, refresh clock directly
+          if (currentViewedRoutine === activeRunningRoutine) {
+            updateDisplayForViewed();
+            updateControls();
+          }
+
+          updateBackgroundBanner();
+        }, 1000);
+      }
+
+      function updateBackgroundBanner() {
+        if (!activeRunningRoutine || activeRunningRoutine === currentViewedRoutine) {
+          backgroundBanner.style.display = 'none';
+          backgroundBanner.classList.remove('alert-mode');
+          return;
+        }
+
+        const runState = routineStates.get(activeRunningRoutine);
+        if (!runState) {
+          backgroundBanner.style.display = 'none';
+          return;
+        }
+
+        backgroundBanner.style.display = 'flex';
+        const taskName = runState.tasks[runState.actionableTaskIndices[runState.currentActionableStep]]?.name || 'Task';
+
+        if (runState.timerState === 'alarm_overtime') {
+          backgroundBanner.classList.add('alert-mode');
+          backgroundBannerText.innerHTML = `🚨 <strong>"${escapeHtml(runState.name)}" finished!</strong> Overtime: +${formatMMSS(runState.overtimeSeconds)} (${escapeHtml(taskName)})`;
+        } else {
+          backgroundBanner.classList.remove('alert-mode');
+          backgroundBannerText.innerHTML = `⏳ <strong>"${escapeHtml(runState.name)}"</strong> is running in background &bull; ${escapeHtml(taskName)} (${formatMMSS(runState.remainingSeconds)})`;
+        }
+      }
+
+      jumpToRunningBtn.addEventListener('click', () => {
+        if (activeRunningRoutine) switchViewedRoutine(activeRunningRoutine);
+      });
+
+      function updateDisplayForViewed() {
+        const state = routineStates.get(currentViewedRoutine);
+        if (!state) return;
+
         clockDisplay.classList.remove('alert');
         overtimeBadge.style.display = 'none';
         routineCompletedBanner.style.display = 'none';
 
-        currentRoutineName = routineName;
-        routineTasks = routinesMap.get(routineName) || [];
-        actionableTaskIndices = [];
-
-        let totalMins = 0;
-        routineTasks.forEach((t, idx) => {
-          t.status = 'pending';
-          if (!t.isHeader && t.durationSecs > 0) {
-            actionableTaskIndices.push(idx);
-            totalMins += t.durationMins;
-          }
-        });
-
-        currentActionableStep = 0;
-        overtimeSeconds = 0;
-        timerState = 'idle';
-
-        routineStatsText.textContent = `${actionableTaskIndices.length} timed steps (${totalMins}m)`;
-        checklistDurationBadge.textContent = `Total: ${totalMins}m`;
-
-        if (actionableTaskIndices.length > 0) {
-          const firstIdx = actionableTaskIndices[0];
-          for (let i = 0; i < firstIdx; i++) routineTasks[i].status = 'done';
-          routineTasks[firstIdx].status = 'active';
-          remainingSeconds = routineTasks[firstIdx].durationSecs;
-        } else {
-          remainingSeconds = 0;
+        if (state.timerState === 'completed') {
+          currentTaskTitle.textContent = `${state.name} Completed!`;
+          stepProgressBadge.textContent = `Completed (${state.actionableTaskIndices.length}/${state.actionableTaskIndices.length})`;
+          parentContextBadge.textContent = 'Finished';
+          clockDisplay.textContent = '00:00';
+          overallProgressBar.style.width = '100%';
+          showRoutineCompletionBanner(state);
+          return;
         }
 
-        updateControls();
-        updateDisplay();
-        renderChecklist();
+        if (state.actionableTaskIndices.length === 0 || state.currentActionableStep >= state.actionableTaskIndices.length) {
+          currentTaskTitle.textContent = 'No Active Tasks';
+          clockDisplay.textContent = '00:00';
+          overallProgressBar.style.width = '0%';
+          return;
+        }
+
+        const task = state.tasks[state.actionableTaskIndices[state.currentActionableStep]];
+        currentTaskTitle.textContent = task.name;
+        stepProgressBadge.textContent = `Step ${state.currentActionableStep + 1} of ${state.actionableTaskIndices.length}`;
+
+        if (task.parentTask && task.parentTask.trim().length > 0) {
+          parentContextBadge.textContent = `Part of: ${task.parentTask}`;
+        } else {
+          parentContextBadge.textContent = 'Standalone Task';
+        }
+
+        if (state.timerState === 'alarm_overtime') {
+          clockDisplay.textContent = `+${formatMMSS(state.overtimeSeconds)}`;
+          clockDisplay.classList.add('alert');
+          overtimeBadge.textContent = `Overtime: +${formatMMSS(state.overtimeSeconds)}`;
+          overtimeBadge.style.display = 'inline-block';
+        } else {
+          clockDisplay.textContent = formatMMSS(state.remainingSeconds);
+        }
+
+        const percent = (state.currentActionableStep / state.actionableTaskIndices.length) * 100;
+        overallProgressBar.style.width = `${percent}%`;
       }
 
       function updateControls() {
-        const hasTasks = actionableTaskIndices.length > 0 && currentActionableStep < actionableTaskIndices.length;
+        const state = routineStates.get(currentViewedRoutine);
+        if (!state) return;
 
-        nudgeDownBtn.disabled = !hasTasks || timerState === 'alarm_overtime' || timerState === 'completed';
-        nudgeUpBtn.disabled = !hasTasks || timerState === 'alarm_overtime' || timerState === 'completed';
+        const hasTasks = state.actionableTaskIndices.length > 0 && state.currentActionableStep < state.actionableTaskIndices.length;
+        nudgeDownBtn.disabled = !hasTasks || state.timerState === 'alarm_overtime' || state.timerState === 'completed';
+        nudgeUpBtn.disabled = !hasTasks || state.timerState === 'alarm_overtime' || state.timerState === 'completed';
 
         if (!hasTasks) {
           startBtn.disabled = true;
@@ -955,35 +1106,35 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           return;
         }
 
-        if (timerState === 'idle') {
+        if (state.timerState === 'idle') {
           startBtn.disabled = false;
           pauseBtn.disabled = true;
           finishEarlyBtn.disabled = false;
           resetBtn.disabled = false;
           nextBtn.disabled = true;
           nextBtn.classList.remove('pulsing');
-        } else if (timerState === 'running') {
+        } else if (state.timerState === 'running') {
           startBtn.disabled = true;
           pauseBtn.disabled = false;
           finishEarlyBtn.disabled = false;
           resetBtn.disabled = false;
           nextBtn.disabled = true;
           nextBtn.classList.remove('pulsing');
-        } else if (timerState === 'paused') {
+        } else if (state.timerState === 'paused') {
           startBtn.disabled = false;
           pauseBtn.disabled = true;
           finishEarlyBtn.disabled = false;
           resetBtn.disabled = false;
           nextBtn.disabled = true;
           nextBtn.classList.remove('pulsing');
-        } else if (timerState === 'alarm_overtime') {
+        } else if (state.timerState === 'alarm_overtime') {
           startBtn.disabled = true;
           pauseBtn.disabled = true;
           finishEarlyBtn.disabled = true;
           resetBtn.disabled = false;
           nextBtn.disabled = false;
           nextBtn.classList.add('pulsing');
-        } else if (timerState === 'completed') {
+        } else if (state.timerState === 'completed') {
           startBtn.disabled = true;
           pauseBtn.disabled = true;
           finishEarlyBtn.disabled = true;
@@ -994,13 +1145,14 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       }
 
       function renderChecklist() {
+        const state = routineStates.get(currentViewedRoutine);
         taskListContainer.innerHTML = '';
-        if (routineTasks.length === 0) {
+        if (!state || state.tasks.length === 0) {
           taskListContainer.innerHTML = '<li class="empty-state">No tasks available for this routine.</li>';
           return;
         }
 
-        routineTasks.forEach((task) => {
+        state.tasks.forEach((task) => {
           const li = document.createElement('li');
           li.className = 'task-item';
 
@@ -1040,48 +1192,13 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         if (activeElem) activeElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
-      function updateDisplay() {
-        if (actionableTaskIndices.length === 0 || currentActionableStep >= actionableTaskIndices.length) {
-          if (routineTasks.length > 0 && currentActionableStep >= actionableTaskIndices.length) {
-            currentTaskTitle.textContent = `${currentRoutineName} Completed!`;
-            stepProgressBadge.textContent = `Completed (${actionableTaskIndices.length}/${actionableTaskIndices.length})`;
-            parentContextBadge.textContent = 'Finished';
-            clockDisplay.textContent = '00:00';
-            overallProgressBar.style.width = '100%';
-          }
-          return;
-        }
-
-        const task = routineTasks[actionableTaskIndices[currentActionableStep]];
-        currentTaskTitle.textContent = task.name;
-        stepProgressBadge.textContent = `Step ${currentActionableStep + 1} of ${actionableTaskIndices.length}`;
-
-        if (task.parentTask && task.parentTask.trim().length > 0) {
-          parentContextBadge.textContent = `Part of: ${task.parentTask}`;
-        } else {
-          parentContextBadge.textContent = 'Standalone Task';
-        }
-
-        if (timerState === 'alarm_overtime') {
-          clockDisplay.textContent = `+${formatMMSS(overtimeSeconds)}`;
-          overtimeBadge.textContent = `Overtime: +${formatMMSS(overtimeSeconds)}`;
-          overtimeBadge.style.display = 'inline-block';
-        } else {
-          clockDisplay.textContent = formatMMSS(remainingSeconds);
-          overtimeBadge.style.display = 'none';
-        }
-
-        const percent = (currentActionableStep / actionableTaskIndices.length) * 100;
-        overallProgressBar.style.width = `${percent}%`;
-      }
-
-      function recordCompletedTask(task, plannedSecs, actualSecs, overtimeSecs, wasEarly) {
+      function recordCompletedTask(routineName, task, plannedSecs, actualSecs, overtimeSecs, wasEarly) {
         let statusText = 'On Time';
         if (overtimeSecs > 0) statusText = 'Overtime';
         else if (wasEarly) statusText = 'Finished Early';
 
         recordedResults.push({
-          routine: currentRoutineName,
+          routine: routineName,
           taskName: task.name,
           parentCategory: task.parentTask || 'None',
           plannedSecs: plannedSecs,
@@ -1118,147 +1235,134 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         });
       }
 
+      // Controls for viewed routine
       function startTimer() {
-        if (actionableTaskIndices.length === 0 || currentActionableStep >= actionableTaskIndices.length) return;
+        const state = routineStates.get(currentViewedRoutine);
+        if (!state) return;
         getAudioContext();
 
-        if (timerInterval) {
-          clearInterval(timerInterval);
-          timerInterval = null;
+        // If another routine was running, pause it gracefully
+        if (activeRunningRoutine && activeRunningRoutine !== currentViewedRoutine) {
+          const other = routineStates.get(activeRunningRoutine);
+          if (other && other.timerState === 'running') other.timerState = 'paused';
         }
 
-        timerState = (overtimeSeconds > 0) ? 'alarm_overtime' : 'running';
+        activeRunningRoutine = currentViewedRoutine;
+        state.timerState = (state.overtimeSeconds > 0) ? 'alarm_overtime' : 'running';
+
+        updateDisplayForViewed();
         updateControls();
-
-        timerInterval = setInterval(() => {
-          if (remainingSeconds > 0) {
-            remainingSeconds--;
-            clockDisplay.textContent = formatMMSS(remainingSeconds);
-
-            if (remainingSeconds === 0) {
-              timerState = 'alarm_overtime';
-              overtimeSeconds = 0;
-              clockDisplay.classList.add('alert');
-              startAudioAlertLoop();
-              updateControls();
-            }
-          } else {
-            overtimeSeconds++;
-            clockDisplay.textContent = `+${formatMMSS(overtimeSeconds)}`;
-            overtimeBadge.textContent = `Overtime: +${formatMMSS(overtimeSeconds)}`;
-            overtimeBadge.style.display = 'inline-block';
-          }
-        }, 1000);
+        updateBackgroundBanner();
       }
 
       function pauseTimer() {
-        if (timerState !== 'running' && timerState !== 'alarm_overtime') return;
-        clearInterval(timerInterval);
-        timerInterval = null;
-        timerState = 'paused';
+        const state = routineStates.get(currentViewedRoutine);
+        if (!state) return;
+        state.timerState = 'paused';
+        if (activeRunningRoutine === currentViewedRoutine) activeRunningRoutine = null;
+
+        updateDisplayForViewed();
         updateControls();
+        updateBackgroundBanner();
       }
 
       function resetCurrentStep() {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        stopAudioAlertLoop();
-        clockDisplay.classList.remove('alert');
-        overtimeBadge.style.display = 'none';
+        const state = routineStates.get(currentViewedRoutine);
+        if (!state) return;
 
-        if (actionableTaskIndices.length > 0 && currentActionableStep < actionableTaskIndices.length) {
-          const activeIndex = actionableTaskIndices[currentActionableStep];
-          remainingSeconds = routineTasks[activeIndex].durationSecs;
-          overtimeSeconds = 0;
-          timerState = 'idle';
+        stopAudioAlertLoop();
+        if (activeRunningRoutine === currentViewedRoutine) activeRunningRoutine = null;
+
+        state.timerState = 'idle';
+        state.overtimeSeconds = 0;
+
+        if (state.actionableTaskIndices.length > 0 && state.currentActionableStep < state.actionableTaskIndices.length) {
+          const activeIndex = state.actionableTaskIndices[state.currentActionableStep];
+          state.remainingSeconds = state.tasks[activeIndex].durationSecs;
         }
-        updateDisplay();
+
+        updateDisplayForViewed();
         updateControls();
+        updateBackgroundBanner();
       }
 
       function finishEarly() {
-        if (currentActionableStep >= actionableTaskIndices.length) return;
+        const state = routineStates.get(currentViewedRoutine);
+        if (!state || state.currentActionableStep >= state.actionableTaskIndices.length) return;
 
-        clearInterval(timerInterval);
-        timerInterval = null;
         stopAudioAlertLoop();
-        clockDisplay.classList.remove('alert');
-        overtimeBadge.style.display = 'none';
-
-        const currentActiveIdx = actionableTaskIndices[currentActionableStep];
-        const task = routineTasks[currentActiveIdx];
+        const currentActiveIdx = state.actionableTaskIndices[state.currentActionableStep];
+        const task = state.tasks[currentActiveIdx];
         if (!task) return;
         task.status = 'done';
 
         const planned = task.durationSecs;
-        const actual = Math.max(1, planned - remainingSeconds);
-        recordCompletedTask(task, planned, actual, 0, true);
+        const actual = Math.max(1, planned - state.remainingSeconds);
+        recordCompletedTask(state.name, task, planned, actual, 0, true);
 
-        currentActionableStep++;
-        overtimeSeconds = 0;
-        timerState = 'idle';
+        state.currentActionableStep++;
+        state.overtimeSeconds = 0;
 
-        transitionToNextStep(currentActiveIdx);
+        transitionStep(state, currentActiveIdx);
       }
 
       function advanceToNextTask() {
-        clearInterval(timerInterval);
-        timerInterval = null;
+        const state = routineStates.get(currentViewedRoutine);
+        if (!state || state.currentActionableStep >= state.actionableTaskIndices.length) return;
+
         stopAudioAlertLoop();
-        clockDisplay.classList.remove('alert');
-        overtimeBadge.style.display = 'none';
-
-        if (currentActionableStep >= actionableTaskIndices.length) return;
-
-        // Corrected index reference
-        const currentActiveIdx = actionableTaskIndices[currentActionableStep];
-        const task = routineTasks[currentActiveIdx];
+        const currentActiveIdx = state.actionableTaskIndices[state.currentActionableStep];
+        const task = state.tasks[currentActiveIdx];
         if (!task) return;
         task.status = 'done';
 
         const planned = task.durationSecs;
-        const actual = (planned - remainingSeconds) + overtimeSeconds;
-        const wasEarly = remainingSeconds > 0 && overtimeSeconds === 0;
-        recordCompletedTask(task, planned, actual, overtimeSeconds, wasEarly);
+        const actual = (planned - state.remainingSeconds) + state.overtimeSeconds;
+        const wasEarly = state.remainingSeconds > 0 && state.overtimeSeconds === 0;
+        recordCompletedTask(state.name, task, planned, actual, state.overtimeSeconds, wasEarly);
 
-        currentActionableStep++;
-        overtimeSeconds = 0;
-        timerState = 'idle';
+        state.currentActionableStep++;
+        state.overtimeSeconds = 0;
 
-        transitionToNextStep(currentActiveIdx);
+        transitionStep(state, currentActiveIdx);
       }
 
-      function transitionToNextStep(previousActiveIdx) {
-        if (currentActionableStep < actionableTaskIndices.length) {
-          const nextActiveIdx = actionableTaskIndices[currentActionableStep];
+      function transitionStep(state, previousActiveIdx) {
+        if (state.currentActionableStep < state.actionableTaskIndices.length) {
+          const nextActiveIdx = state.actionableTaskIndices[state.currentActionableStep];
           for (let i = previousActiveIdx + 1; i < nextActiveIdx; i++) {
-            routineTasks[i].status = 'done';
+            state.tasks[i].status = 'done';
           }
 
-          routineTasks[nextActiveIdx].status = 'active';
-          remainingSeconds = routineTasks[nextActiveIdx].durationSecs;
+          state.tasks[nextActiveIdx].status = 'active';
+          state.remainingSeconds = state.tasks[nextActiveIdx].durationSecs;
+          state.timerState = 'running';
+          activeRunningRoutine = state.name;
 
           renderChecklist();
-          updateDisplay();
-          startTimer();
+          updateDisplayForViewed();
+          updateControls();
+          updateBackgroundBanner();
         } else {
-          for (let i = previousActiveIdx + 1; i < routineTasks.length; i++) {
-            routineTasks[i].status = 'done';
+          for (let i = previousActiveIdx + 1; i < state.tasks.length; i++) {
+            state.tasks[i].status = 'done';
           }
-          timerState = 'completed';
-          updateDisplay();
+          state.timerState = 'completed';
+          if (activeRunningRoutine === state.name) activeRunningRoutine = null;
+
+          updateDisplayForViewed();
           renderChecklist();
           updateControls();
-          showRoutineCompletionBanner();
+          updateBackgroundBanner();
         }
       }
 
-      function showRoutineCompletionBanner() {
+      function showRoutineCompletionBanner(state) {
         routineCompletedBanner.style.display = 'block';
-        completedRoutineTitle.textContent = `🎉 "${currentRoutineName}" Complete!`;
+        completedRoutineTitle.textContent = `🎉 "${state.name}" Complete!`;
 
-        const routineKeys = Array.from(routinesMap.keys());
-        const currentIdx = routineKeys.indexOf(currentRoutineName);
+        const routineKeys = Array.from(routineStates.keys());
+        const currentIdx = routineKeys.indexOf(state.name);
         const nextRoutineName = routineKeys[currentIdx + 1];
 
         if (nextRoutineName) {
@@ -1266,16 +1370,16 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           switchNextRoutineBtn.textContent = `Start Next: ${nextRoutineName}`;
           switchNextRoutineBtn.style.display = 'inline-flex';
           switchNextRoutineBtn.onclick = () => {
-            routineSelect.value = nextRoutineName;
-            loadRoutine(nextRoutineName);
+            switchViewedRoutine(nextRoutineName);
             startTimer();
           };
         } else {
-          completedRoutineMessage.textContent = 'All loaded routines in the schedule have been executed!';
+          completedRoutineMessage.textContent = 'All loaded routines have been completed!';
           switchNextRoutineBtn.style.display = 'none';
         }
       }
 
+      // Download prompt as .md file
       function downloadPromptMarkdown() {
         const blob = new Blob([PROMPT_MARKDOWN_CONTENT], { type: 'text/markdown;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
@@ -1289,14 +1393,18 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       }
 
       nudgeDownBtn.addEventListener('click', () => {
-        if (remainingSeconds > 60) remainingSeconds -= 60;
-        else remainingSeconds = 1;
-        clockDisplay.textContent = formatMMSS(remainingSeconds);
+        const state = routineStates.get(currentViewedRoutine);
+        if (!state) return;
+        if (state.remainingSeconds > 60) state.remainingSeconds -= 60;
+        else state.remainingSeconds = 1;
+        clockDisplay.textContent = formatMMSS(state.remainingSeconds);
       });
 
       nudgeUpBtn.addEventListener('click', () => {
-        remainingSeconds += 60;
-        clockDisplay.textContent = formatMMSS(remainingSeconds);
+        const state = routineStates.get(currentViewedRoutine);
+        if (!state) return;
+        state.remainingSeconds += 60;
+        clockDisplay.textContent = formatMMSS(state.remainingSeconds);
       });
 
       function exportResultsCSV() {
@@ -1349,7 +1457,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       downloadPromptBtn.addEventListener('click', downloadPromptMarkdown);
 
       routineSelect.addEventListener('change', (e) => {
-        loadRoutine(e.target.value);
+        switchViewedRoutine(e.target.value);
       });
 
       loadSampleBtn.addEventListener('click', () => {
