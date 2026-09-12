@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Routine Workflow Timer & Tracker</title>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-card: #273549;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --success: #22c55e;
+      --success-hover: #16a34a;
+      --warning: #f59e0b;
+      --warning-hover: #d97706;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --purple: #a855f7;
+      --purple-hover: #9333ea;
+      --border: #334155;
+      --active-bg: rgba(56, 189, 248, 0.15);
+      --active-border: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 16px 20px;
+      background: var(--bg-surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .title-group h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .title-group p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .upload-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+    }
+
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    /* Routine Selection Bar */
+    .routine-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .routine-select-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .routine-select-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    select.routine-dropdown {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Main Timer Hero */
+    .timer-hero {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .overall-progress-bar-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background-color: var(--bg-card);
+    }
+
+    .overall-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--success));
+      transition: width 0.3s ease;
+    }
+
+    .badge-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: var(--bg-card);
+      color: var(--accent);
+      border: 1px solid var(--border);
+    }
+
+    .badge.parent-context {
+      color: var(--text-muted);
+    }
+
+    .badge.overtime-badge {
+      display: none;
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .current-task-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: var(--text-main);
+      line-height: 1.25;
+      max-width: 90%;
+      word-break: break-word;
+    }
+
+    /* Clock Face & Granular Adjustments */
+    .clock-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .clock-display {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: clamp(3.6rem, 11vw, 5.8rem);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-main);
+      padding: 8px 24px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      letter-spacing: 2px;
+      user-select: none;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .clock-display.alert {
+      color: var(--danger);
+      border-color: var(--danger);
+      animation: alert-flash 1s infinite alternate ease-in-out;
+    }
+
+    @keyframes alert-flash {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+        text-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+      }
+      100% {
+        opacity: 0.4;
+        transform: scale(1.02);
+        text-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+      }
+    }
+
+    .btn-nudge {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+    }
+    .btn-nudge:hover:not(:disabled) {
+      color: var(--text-main);
+      border-color: var(--text-muted);
+    }
+
+    /* Action Buttons */
+    .controls-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    button, .btn {
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #fff;
+    }
+
+    button:disabled, .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .btn-primary { background-color: var(--accent); color: #0f172a; }
+    .btn-primary:hover:not(:disabled) { background-color: var(--accent-hover); }
+
+    .btn-success { background-color: var(--success); }
+    .btn-success:hover:not(:disabled) { background-color: var(--success-hover); }
+
+    .btn-warning { background-color: var(--warning); }
+    .btn-warning:hover:not(:disabled) { background-color: var(--warning-hover); }
+
+    .btn-early {
+      background-color: var(--purple);
+    }
+    .btn-early:hover:not(:disabled) {
+      background-color: var(--purple-hover);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border-color: var(--border);
+      color: var(--text-main);
+    }
+    .btn-outline:hover:not(:disabled) {
+      background-color: var(--bg-card);
+      border-color: var(--text-muted);
+    }
+
+    .btn-next {
+      background-color: var(--danger);
+      min-width: 130px;
+    }
+    .btn-next:hover:not(:disabled) { background-color: var(--danger-hover); }
+
+    .btn-next.pulsing {
+      animation: pulse-ring 1.5s infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    /* Routine Completion Banner */
+    .routine-completed-banner {
+      display: none;
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 8px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid var(--success);
+      width: 100%;
+      max-width: 600px;
+    }
+    .routine-completed-banner h3 {
+      font-size: 1.1rem;
+      color: var(--success);
+      margin-bottom: 6px;
+    }
+    .routine-completed-banner p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* Grid Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-header h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .task-list {
+      list-style: none;
+      max-height: 380px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 4px;
+    }
+
+    .task-list::-webkit-scrollbar, .table-container::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .task-list::-webkit-scrollbar-thumb, .table-container::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--bg-card);
+      border: 1px solid transparent;
+      font-size: 0.9rem;
+      transition: all 0.15s ease;
+    }
+
+    .task-item.header-row {
+      background: #192333;
+      border-left: 4px solid var(--accent);
+      font-weight: 700;
+      color: var(--accent);
+      margin-top: 6px;
+    }
+
+    .task-item.child-row {
+      margin-left: 16px;
+      border-left: 2px dashed var(--border);
+    }
+
+    .task-item.active {
+      background: var(--active-bg);
+      border-color: var(--active-border);
+    }
+    .task-item.active .task-title {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .task-item.done {
+      opacity: 0.5;
+    }
+    .task-item.done .task-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .status-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 9px;
+    }
+    .task-item.active .status-icon {
+      border-color: var(--accent);
+      background-color: var(--accent);
+      color: #0f172a;
+    }
+    .task-item.done .status-icon {
+      border-color: var(--success);
+      background-color: var(--success);
+      color: #fff;
+    }
+
+    .task-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .task-duration {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      font-family: monospace;
+    }
+
+    /* Results Table */
+    .table-container {
+      max-height: 380px;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+
+    table.results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: left;
+    }
+
+    table.results-table th {
+      padding: 8px 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-surface);
+      position: sticky;
+      top: 0;
+    }
+
+    table.results-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+    }
+
+    .overrun-pos {
+      color: var(--danger);
+      font-weight: 600;
+    }
+    .overrun-exact {
+      color: var(--success);
+      font-weight: 600;
+    }
+    .overrun-early {
+      color: var(--purple);
+      font-weight: 600;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px 16px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Bar -->
+    <header>
+      <div class="title-group">
+        <h1>Multi-Routine Sequence Timer</h1>
+        <p>Early-finish recording, overtime alerts, and variance export</p>
+      </div>
+      <div class="upload-controls">
+        <button type="button" class="btn btn-outline" id="loadSampleBtn">Load 3 Sample Routines</button>
+        <div class="file-input-wrapper">
+          <button type="button" class="btn btn-primary">Upload CSV</button>
+          <input type="file" id="csvFileInput" accept=".csv,text/csv,text/plain" />
+        </div>
+      </div>
+    </header>
+
+    <!-- Routine Bar -->
+    <div class="routine-bar">
+      <div class="routine-select-group">
+        <label for="routineSelect">Active Routine:</label>
+        <select id="routineSelect" class="routine-dropdown"></select>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-muted);" id="routineStatsText">0 tasks</div>
+    </div>
+
+    <!-- Active Timer Card -->
+    <main class="timer-hero">
+      <div class="overall-progress-bar-container">
+        <div class="overall-progress-bar" id="overallProgressBar"></div>
+      </div>
+
+      <div class="badge-row">
+        <span class="badge" id="stepProgressBadge">Step 0 of 0</span>
+        <span class="badge parent-context" id="parentContextBadge">Part of: None</span>
+        <span class="badge overtime-badge" id="overtimeBadge">Overtime: +00:00</span>
+      </div>
+
+      <div class="current-task-title" id="currentTaskTitle">No Routine Selected</div>
+
+      <!-- Clock & Jump/Fast-Forward Adjustment Controls -->
+      <div class="clock-container">
+        <button type="button" class="btn btn-nudge" id="nudgeDownBtn" title="Fast forward remaining time by 1 minute" disabled>-1m</button>
+        <div class="clock-display" id="clockDisplay">00:00</div>
+        <button type="button" class="btn btn-nudge" id="nudgeUpBtn" title="Add 1 minute" disabled>+1m</button>
+      </div>
+
+      <!-- Control Buttons -->
+      <div class="controls-row">
+        <button type="button" class="btn btn-success" id="startBtn" disabled>Start</button>
+        <button type="button" class="btn btn-warning" id="pauseBtn" disabled>Pause</button>
+        <button type="button" class="btn btn-early" id="finishEarlyBtn" title="Finish task now and record actual time saved" disabled>Finish Early ⏩</button>
+        <button type="button" class="btn btn-outline" id="resetBtn" disabled>Reset</button>
+        <button type="button" class="btn btn-next" id="nextBtn" disabled>Next Task</button>
+      </div>
+
+      <!-- Routine Completed Banner -->
+      <div class="routine-completed-banner" id="routineCompletedBanner">
+        <h3 id="completedRoutineTitle">Routine Completed!</h3>
+        <p id="completedRoutineMessage">Review your task velocity and early completions below.</p>
+        <button type="button" class="btn btn-primary" id="switchNextRoutineBtn">Advance to Next Routine</button>
+      </div>
+    </main>
+
+    <!-- Checklist & Results Grid -->
+    <div class="dashboard-grid">
+      <!-- Left: Checklist -->
+      <section class="panel-card">
+        <div class="panel-header">
+          <h2>Task Checklist</h2>
+          <span style="font-size: 0.8rem; color: var(--text-muted);" id="checklistDurationBadge">Total: 0m</span>
+        </div>
+        <ul class="task-list" id="taskListContainer">
+          <li class="empty-state">Load a CSV to view tasks.</li>
+        </ul>
+      </section>
+
+      <!-- Right: Performance History & CSV Export -->
+      <section class="panel-card">
+        <div class="panel-header">
+          <h2>Recorded Performance</h2>
+          <button type="button" class="btn btn-outline" id="exportCsvBtn" style="padding: 4px 10px; font-size: 0.8rem;" disabled>Export CSV</button>
+        </div>
+        <div class="table-container">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Target</th>
+                <th>Actual</th>
+                <th>Variance / Result</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody">
+              <tr>
+                <td colspan="4" class="empty-state">Completed task results will appear here.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const SAMPLE_CSV = `Routine,Task Name,Duration (Mins),Parent Task
+Morning Routine,Morning Activation,0,
+Morning Routine,Hydrate & Lemon Salt,1,Morning Activation
+Morning Routine,Mobility & Stretching,3,Morning Activation
+Morning Routine,Core & Cardio Intervals,5,Morning Activation
+Morning Routine,Post-Workout Cool Down,2,Morning Activation
+Work Related,Deep Work Block,0,
+Work Related,Review Priority Architecture,10,Deep Work Block
+Work Related,Code & Implement Endpoints,25,Deep Work Block
+Work Related,Documentation & Git Commit,5,Deep Work Block
+Evening Routine,Wind Down Protocol,0,
+Evening Routine,Tidy Workspace & Plan Next Day,5,Wind Down Protocol
+Evening Routine,Breathing & Yoga Nidra,15,Wind Down Protocol
+Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
+
+      let routinesMap = new Map();
+      let currentRoutineName = '';
+      let routineTasks = [];
+      let actionableTaskIndices = [];
+      let currentActionableStep = 0;
+
+      let remainingSeconds = 0;
+      let overtimeSeconds = 0;
+      let timerInterval = null;
+      let timerState = 'idle'; // 'idle' | 'running' | 'paused' | 'alarm_overtime' | 'completed'
+
+      let recordedResults = [];
+
+      let audioCtx = null;
+      let alertInterval = null;
+
+      // Elements
+      const routineSelect = document.getElementById('routineSelect');
+      const routineStatsText = document.getElementById('routineStatsText');
+      const clockDisplay = document.getElementById('clockDisplay');
+      const currentTaskTitle = document.getElementById('currentTaskTitle');
+      const stepProgressBadge = document.getElementById('stepProgressBadge');
+      const parentContextBadge = document.getElementById('parentContextBadge');
+      const overtimeBadge = document.getElementById('overtimeBadge');
+      const overallProgressBar = document.getElementById('overallProgressBar');
+      const checklistDurationBadge = document.getElementById('checklistDurationBadge');
+      const taskListContainer = document.getElementById('taskListContainer');
+      const resultsTableBody = document.getElementById('resultsTableBody');
+      const exportCsvBtn = document.getElementById('exportCsvBtn');
+
+      const startBtn = document.getElementById('startBtn');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const finishEarlyBtn = document.getElementById('finishEarlyBtn');
+      const nudgeDownBtn = document.getElementById('nudgeDownBtn');
+      const nudgeUpBtn = document.getElementById('nudgeUpBtn');
+
+      const routineCompletedBanner = document.getElementById('routineCompletedBanner');
+      const completedRoutineTitle = document.getElementById('completedRoutineTitle');
+      const completedRoutineMessage = document.getElementById('completedRoutineMessage');
+      const switchNextRoutineBtn = document.getElementById('switchNextRoutineBtn');
+
+      const loadSampleBtn = document.getElementById('loadSampleBtn');
+      const csvFileInput = document.getElementById('csvFileInput');
+
+      function getAudioContext() {
+        try {
+          if (!audioCtx) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) audioCtx = new AudioContextClass();
+          }
+          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        } catch (err) {
+          console.warn('Audio init error:', err);
+        }
+        return audioCtx;
+      }
+
+      function playBeepTone() {
+        try {
+          const ctx = getAudioContext();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, ctx.currentTime);
+
+          gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.05);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime + 0.5);
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.6);
+        } catch (e) {
+          console.warn('Tone playback error:', e);
+        }
+      }
+
+      function startAudioAlertLoop() {
+        stopAudioAlertLoop();
+        playBeepTone();
+        alertInterval = setInterval(playBeepTone, 3000);
+      }
+
+      function stopAudioAlertLoop() {
+        if (alertInterval) {
+          clearInterval(alertInterval);
+          alertInterval = null;
+        }
+      }
+
+      function formatMMSS(totalSecs) {
+        const mins = Math.floor(Math.abs(totalSecs) / 60);
+        const secs = Math.abs(totalSecs) % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      function formatVariance(plannedSecs, actualSecs) {
+        const diff = actualSecs - plannedSecs;
+        if (diff === 0) return `<span class="overrun-exact">On Time (Exact)</span>`;
+        if (diff > 0) return `<span class="overrun-pos">+${formatMMSS(diff)} Over</span>`;
+        return `<span class="overrun-early">Saved ${formatMMSS(Math.abs(diff))}</span>`;
+      }
+
+      function parseCSVLine(line) {
+        const cols = [];
+        let cur = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const c = line[i];
+          if (c === '"' || c === "'") inQuotes = !inQuotes;
+          else if (c === ',' && !inQuotes) {
+            cols.push(cur.trim());
+            cur = '';
+          } else cur += c;
+        }
+        cols.push(cur.trim());
+        return cols;
+      }
+
+      function parseCSVContent(csvText) {
+        routinesMap.clear();
+        if (!csvText || !csvText.trim()) return;
+
+        const rawLines = csvText.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+        if (rawLines.length === 0) return;
+
+        let startIndex = 0;
+        const firstLineParsed = parseCSVLine(rawLines[0]);
+        const firstLineLower = rawLines[0].toLowerCase();
+
+        if (
+          firstLineLower.includes('task') ||
+          firstLineLower.includes('duration') ||
+          firstLineLower.includes('routine') ||
+          (isNaN(parseFloat(firstLineParsed[1])) && isNaN(parseFloat(firstLineParsed[2])))
+        ) {
+          startIndex = 1;
+        }
+
+        const sampleDataLine = parseCSVLine(rawLines[startIndex] || '');
+        const hasRoutineCol = sampleDataLine.length >= 4;
+
+        for (let i = startIndex; i < rawLines.length; i++) {
+          const cols = parseCSVLine(rawLines[i]);
+          if (cols.length === 0 || !cols[0]) continue;
+
+          let routine = 'Default Routine';
+          let taskName = '';
+          let durationMins = 0;
+          let parentTask = '';
+
+          if (hasRoutineCol) {
+            routine = cols[0].replace(/^["']|["']$/g, '').trim() || 'General';
+            taskName = cols[1].replace(/^["']|["']$/g, '').trim();
+            durationMins = parseFloat(cols[2]) || 0;
+            parentTask = cols[3] ? cols[3].replace(/^["']|["']$/g, '').trim() : '';
+          } else {
+            taskName = cols[0].replace(/^["']|["']$/g, '').trim();
+            durationMins = parseFloat(cols[1]) || 0;
+            parentTask = cols[2] ? cols[2].replace(/^["']|["']$/g, '').trim() : '';
+          }
+
+          if (!routinesMap.has(routine)) routinesMap.set(routine, []);
+
+          routinesMap.get(routine).push({
+            routine: routine,
+            name: taskName,
+            durationMins: durationMins,
+            durationSecs: Math.round(durationMins * 60),
+            parentTask: parentTask,
+            isHeader: durationMins === 0,
+            status: 'pending'
+          });
+        }
+
+        populateRoutineDropdown();
+      }
+
+      function populateRoutineDropdown() {
+        routineSelect.innerHTML = '';
+        const names = Array.from(routinesMap.keys());
+        if (names.length === 0) {
+          routineStatsText.textContent = '0 routines loaded';
+          return;
+        }
+
+        names.forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          routineSelect.appendChild(opt);
+        });
+
+        loadRoutine(names[0]);
+      }
+
+      function loadRoutine(routineName) {
+        clearInterval(timerInterval);
+        stopAudioAlertLoop();
+        clockDisplay.classList.remove('alert');
+        overtimeBadge.style.display = 'none';
+        routineCompletedBanner.style.display = 'none';
+
+        currentRoutineName = routineName;
+        routineTasks = routinesMap.get(routineName) || [];
+        actionableTaskIndices = [];
+
+        let totalMins = 0;
+        routineTasks.forEach((t, idx) => {
+          t.status = 'pending';
+          if (!t.isHeader && t.durationSecs > 0) {
+            actionableTaskIndices.push(idx);
+            totalMins += t.durationMins;
+          }
+        });
+
+        currentActionableStep = 0;
+        overtimeSeconds = 0;
+        timerState = 'idle';
+
+        routineStatsText.textContent = `${actionableTaskIndices.length} timed steps (${totalMins}m)`;
+        checklistDurationBadge.textContent = `Total: ${totalMins}m`;
+
+        if (actionableTaskIndices.length > 0) {
+          const firstIdx = actionableTaskIndices[0];
+          for (let i = 0; i < firstIdx; i++) routineTasks[i].status = 'done';
+          routineTasks[firstIdx].status = 'active';
+          remainingSeconds = routineTasks[firstIdx].durationSecs;
+        } else {
+          remainingSeconds = 0;
+        }
+
+        updateControls();
+        updateDisplay();
+        renderChecklist();
+      }
+
+      function updateControls() {
+        const hasTasks = actionableTaskIndices.length > 0 && currentActionableStep < actionableTaskIndices.length;
+
+        nudgeDownBtn.disabled = !hasTasks || timerState === 'alarm_overtime' || timerState === 'completed';
+        nudgeUpBtn.disabled = !hasTasks || timerState === 'alarm_overtime' || timerState === 'completed';
+
+        if (!hasTasks) {
+          startBtn.disabled = true;
+          pauseBtn.disabled = true;
+          finishEarlyBtn.disabled = true;
+          resetBtn.disabled = true;
+          nextBtn.disabled = true;
+          nextBtn.classList.remove('pulsing');
+          return;
+        }
+
+        if (timerState === 'idle') {
+          startBtn.disabled = false;
+          pauseBtn.disabled = true;
+          finishEarlyBtn.disabled = false; // Can finish immediately if needed
+          resetBtn.disabled = false;
+          nextBtn.disabled = true;
+          nextBtn.classList.remove('pulsing');
+        } else if (timerState === 'running') {
+          startBtn.disabled = true;
+          pauseBtn.disabled = false;
+          finishEarlyBtn.disabled = false; // Fast forward & record early finish
+          resetBtn.disabled = false;
+          nextBtn.disabled = true;
+          nextBtn.classList.remove('pulsing');
+        } else if (timerState === 'paused') {
+          startBtn.disabled = false;
+          pauseBtn.disabled = true;
+          finishEarlyBtn.disabled = false;
+          resetBtn.disabled = false;
+          nextBtn.disabled = true;
+          nextBtn.classList.remove('pulsing');
+        } else if (timerState === 'alarm_overtime') {
+          startBtn.disabled = true;
+          pauseBtn.disabled = true;
+          finishEarlyBtn.disabled = true;
+          resetBtn.disabled = false;
+          nextBtn.disabled = false;
+          nextBtn.classList.add('pulsing');
+        } else if (timerState === 'completed') {
+          startBtn.disabled = true;
+          pauseBtn.disabled = true;
+          finishEarlyBtn.disabled = true;
+          resetBtn.disabled = false;
+          nextBtn.disabled = true;
+          nextBtn.classList.remove('pulsing');
+        }
+      }
+
+      function renderChecklist() {
+        taskListContainer.innerHTML = '';
+        if (routineTasks.length === 0) {
+          taskListContainer.innerHTML = '<li class="empty-state">No tasks available for this routine.</li>';
+          return;
+        }
+
+        routineTasks.forEach((task) => {
+          const li = document.createElement('li');
+          li.className = 'task-item';
+
+          if (task.isHeader) li.classList.add('header-row');
+          else if (task.parentTask) li.classList.add('child-row');
+
+          if (task.status === 'active') li.classList.add('active');
+          if (task.status === 'done') li.classList.add('done');
+
+          const leftDiv = document.createElement('div');
+          leftDiv.className = 'task-left';
+
+          const icon = document.createElement('span');
+          icon.className = 'status-icon';
+          if (task.isHeader) icon.textContent = '#';
+          else if (task.status === 'done') icon.textContent = '✓';
+          else if (task.status === 'active') icon.textContent = '▶';
+          else icon.textContent = '';
+
+          const titleSpan = document.createElement('span');
+          titleSpan.className = 'task-title';
+          titleSpan.textContent = task.name;
+
+          leftDiv.appendChild(icon);
+          leftDiv.appendChild(titleSpan);
+
+          const durSpan = document.createElement('span');
+          durSpan.className = 'task-duration';
+          durSpan.textContent = task.isHeader ? 'HEADER' : `${task.durationMins}m`;
+
+          li.appendChild(leftDiv);
+          li.appendChild(durSpan);
+          taskListContainer.appendChild(li);
+        });
+
+        const activeElem = taskListContainer.querySelector('.task-item.active');
+        if (activeElem) activeElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function updateDisplay() {
+        if (actionableTaskIndices.length === 0 || currentActionableStep >= actionableTaskIndices.length) {
+          if (routineTasks.length > 0 && currentActionableStep >= actionableTaskIndices.length) {
+            currentTaskTitle.textContent = `${currentRoutineName} Completed!`;
+            stepProgressBadge.textContent = `Completed (${actionableTaskIndices.length}/${actionableTaskIndices.length})`;
+            parentContextBadge.textContent = 'Finished';
+            clockDisplay.textContent = '00:00';
+            overallProgressBar.style.width = '100%';
+          }
+          return;
+        }
+
+        const task = routineTasks[actionableTaskIndices[currentActionableStep]];
+        currentTaskTitle.textContent = task.name;
+        stepProgressBadge.textContent = `Step ${currentActionableStep + 1} of ${actionableTaskIndices.length}`;
+
+        if (task.parentTask && task.parentTask.trim().length > 0) {
+          parentContextBadge.textContent = `Part of: ${task.parentTask}`;
+        } else {
+          parentContextBadge.textContent = 'Standalone Task';
+        }
+
+        if (timerState === 'alarm_overtime') {
+          clockDisplay.textContent = `+${formatMMSS(overtimeSeconds)}`;
+          overtimeBadge.textContent = `Overtime: +${formatMMSS(overtimeSeconds)}`;
+          overtimeBadge.style.display = 'inline-block';
+        } else {
+          clockDisplay.textContent = formatMMSS(remainingSeconds);
+          overtimeBadge.style.display = 'none';
+        }
+
+        const percent = (currentActionableStep / actionableTaskIndices.length) * 100;
+        overallProgressBar.style.width = `${percent}%`;
+      }
+
+      function recordCompletedTask(task, plannedSecs, actualSecs, overtimeSecs, wasEarly) {
+        let statusText = 'On Time';
+        if (overtimeSecs > 0) statusText = 'Overtime';
+        else if (wasEarly) statusText = 'Finished Early';
+
+        recordedResults.push({
+          routine: currentRoutineName,
+          taskName: task.name,
+          parentCategory: task.parentTask || 'None',
+          plannedSecs: plannedSecs,
+          actualSecs: actualSecs,
+          overtimeSecs: overtimeSecs,
+          varianceSecs: actualSecs - plannedSecs,
+          status: statusText,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+
+        exportCsvBtn.disabled = false;
+        renderResultsTable();
+      }
+
+      function renderResultsTable() {
+        resultsTableBody.innerHTML = '';
+        if (recordedResults.length === 0) {
+          resultsTableBody.innerHTML = '<tr><td colspan="4" class="empty-state">Completed task results will appear here.</td></tr>';
+          return;
+        }
+
+        recordedResults.slice().reverse().forEach((res) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>
+              <strong style="color: var(--text-main);">${res.taskName}</strong><br/>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">${res.routine} &bull; ${res.parentCategory}</span>
+            </td>
+            <td>${formatMMSS(res.plannedSecs)}</td>
+            <td>${formatMMSS(res.actualSecs)}</td>
+            <td>${formatVariance(res.plannedSecs, res.actualSecs)}</td>
+          `;
+          resultsTableBody.appendChild(tr);
+        });
+      }
+
+      function startTimer() {
+        if (actionableTaskIndices.length === 0 || currentActionableStep >= actionableTaskIndices.length) return;
+        getAudioContext();
+
+        if (timerState === 'running' || timerState === 'alarm_overtime') return;
+
+        timerState = (overtimeSeconds > 0) ? 'alarm_overtime' : 'running';
+        updateControls();
+
+        timerInterval = setInterval(() => {
+          if (remainingSeconds > 0) {
+            remainingSeconds--;
+            clockDisplay.textContent = formatMMSS(remainingSeconds);
+
+            if (remainingSeconds === 0) {
+              timerState = 'alarm_overtime';
+              overtimeSeconds = 0;
+              clockDisplay.classList.add('alert');
+              startAudioAlertLoop();
+              updateControls();
+            }
+          } else {
+            overtimeSeconds++;
+            clockDisplay.textContent = `+${formatMMSS(overtimeSeconds)}`;
+            overtimeBadge.textContent = `Overtime: +${formatMMSS(overtimeSeconds)}`;
+            overtimeBadge.style.display = 'inline-block';
+          }
+        }, 1000);
+      }
+
+      function pauseTimer() {
+        if (timerState !== 'running' && timerState !== 'alarm_overtime') return;
+        clearInterval(timerInterval);
+        timerInterval = null;
+        timerState = 'paused';
+        updateControls();
+      }
+
+      function resetCurrentStep() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        stopAudioAlertLoop();
+        clockDisplay.classList.remove('alert');
+        overtimeBadge.style.display = 'none';
+
+        if (actionableTaskIndices.length > 0 && currentActionableStep < actionableTaskIndices.length) {
+          const activeIndex = actionableTaskIndices[currentActionableStep];
+          remainingSeconds = routineTasks[activeIndex].durationSecs;
+          overtimeSeconds = 0;
+          timerState = 'idle';
+        }
+        updateDisplay();
+        updateControls();
+      }
+
+      // Fast-forward or finish early
+      function finishEarly() {
+        if (currentActionableStep >= actionableTaskIndices.length) return;
+
+        const currentActiveIdx = actionableTaskIndices[currentActionableStep];
+        const task = routineTasks[currentActiveIdx];
+        task.status = 'done';
+
+        clearInterval(timerInterval);
+        timerInterval = null;
+        stopAudioAlertLoop();
+        clockDisplay.classList.remove('alert');
+        overtimeBadge.style.display = 'none';
+
+        const planned = task.durationSecs;
+        // Actual elapsed time is total planned minus remaining seconds
+        const actual = Math.max(1, planned - remainingSeconds);
+        recordCompletedTask(task, planned, actual, 0, true);
+
+        currentActionableStep++;
+        overtimeSeconds = 0;
+
+        transitionToNextStep(currentActiveIdx);
+      }
+
+      // Regular Next Task (called when at 00:00 / overtime)
+      function advanceToNextTask() {
+        stopAudioAlertLoop();
+        clockDisplay.classList.remove('alert');
+        overtimeBadge.style.display = 'none';
+
+        if (currentActionableStep >= actionableTaskIndices.length) return;
+
+        const currentActiveIdx = actionableTaskIndices[currentActionableStep];
+        const task = routineTasks[currentActiveIdx];
+        task.status = 'done';
+
+        const planned = task.durationSecs;
+        const actual = (planned - remainingSeconds) + overtimeSeconds;
+        const wasEarly = remainingSeconds > 0;
+        recordCompletedTask(task, planned, actual, overtimeSeconds, wasEarly);
+
+        currentActionableStep++;
+        overtimeSeconds = 0;
+
+        transitionToNextStep(currentActiveIdx);
+      }
+
+      function transitionToNextStep(previousActiveIdx) {
+        if (currentActionableStep < actionableTaskIndices.length) {
+          const nextActiveIdx = actionableTaskIndices[currentActionableStep];
+          for (let i = previousActiveIdx + 1; i < nextActiveIdx; i++) {
+            routineTasks[i].status = 'done';
+          }
+
+          routineTasks[nextActiveIdx].status = 'active';
+          remainingSeconds = routineTasks[nextActiveIdx].durationSecs;
+
+          renderChecklist();
+          updateDisplay();
+          startTimer();
+        } else {
+          for (let i = previousActiveIdx + 1; i < routineTasks.length; i++) {
+            routineTasks[i].status = 'done';
+          }
+          timerState = 'completed';
+          updateDisplay();
+          renderChecklist();
+          updateControls();
+          showRoutineCompletionBanner();
+        }
+      }
+
+      function showRoutineCompletionBanner() {
+        routineCompletedBanner.style.display = 'block';
+        completedRoutineTitle.textContent = `🎉 "${currentRoutineName}" Complete!`;
+
+        const routineKeys = Array.from(routinesMap.keys());
+        const currentIdx = routineKeys.indexOf(currentRoutineName);
+        const nextRoutineName = routineKeys[currentIdx + 1];
+
+        if (nextRoutineName) {
+          completedRoutineMessage.textContent = `All steps logged. Up next: "${nextRoutineName}".`;
+          switchNextRoutineBtn.textContent = `Start Next: ${nextRoutineName}`;
+          switchNextRoutineBtn.style.display = 'inline-flex';
+          switchNextRoutineBtn.onclick = () => {
+            routineSelect.value = nextRoutineName;
+            loadRoutine(nextRoutineName);
+            startTimer();
+          };
+        } else {
+          completedRoutineMessage.textContent = 'All loaded routines in the schedule have been executed!';
+          switchNextRoutineBtn.style.display = 'none';
+        }
+      }
+
+      // Fast-forward remaining time by -1m, or add +1m
+      nudgeDownBtn.addEventListener('click', () => {
+        if (remainingSeconds > 60) {
+          remainingSeconds -= 60;
+        } else {
+          remainingSeconds = 1; // Drop to 1 sec so it triggers completion immediately
+        }
+        clockDisplay.textContent = formatMMSS(remainingSeconds);
+      });
+
+      nudgeUpBtn.addEventListener('click', () => {
+        remainingSeconds += 60;
+        clockDisplay.textContent = formatMMSS(remainingSeconds);
+      });
+
+      function exportResultsCSV() {
+        if (recordedResults.length === 0) return;
+
+        const headers = [
+          "Routine",
+          "Task Name",
+          "Parent Category",
+          "Target Duration (Secs)",
+          "Actual Duration (Secs)",
+          "Variance (Secs)",
+          "Status",
+          "Target (MM:SS)",
+          "Actual (MM:SS)",
+          "Logged At"
+        ];
+
+        const rows = recordedResults.map(r => [
+          `"${r.routine}"`,
+          `"${r.taskName}"`,
+          `"${r.parentCategory}"`,
+          r.plannedSecs,
+          r.actualSecs,
+          r.varianceSecs,
+          `"${r.status}"`,
+          `"${formatMMSS(r.plannedSecs)}"`,
+          `"${formatMMSS(r.actualSecs)}"`,
+          `"${r.timestamp}"`
+        ]);
+
+        const csvString = [headers.join(','), ...rows.map(row => row.join(','))].join('\r\n');
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `routine_performance_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      startBtn.addEventListener('click', startTimer);
+      pauseBtn.addEventListener('click', pauseTimer);
+      resetBtn.addEventListener('click', resetCurrentStep);
+      finishEarlyBtn.addEventListener('click', finishEarly);
+      nextBtn.addEventListener('click', advanceToNextTask);
+      exportCsvBtn.addEventListener('click', exportResultsCSV);
+
+      routineSelect.addEventListener('change', (e) => {
+        loadRoutine(e.target.value);
+      });
+
+      loadSampleBtn.addEventListener('click', () => {
+        getAudioContext();
+        parseCSVContent(SAMPLE_CSV);
+      });
+
+      csvFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        getAudioContext();
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          parseCSVContent(event.target.result);
+          csvFileInput.value = '';
+        };
+        reader.readAsText(file);
+      });
+
+      parseCSVContent(SAMPLE_CSV);
+    })();
+  </script>
+</body>
+</html>
