@@ -78,7 +78,7 @@
 
     .upload-controls {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -207,7 +207,7 @@
       word-break: break-word;
     }
 
-    /* Clock Face & Granular Adjustments */
+    /* Clock Face */
     .clock-container {
       display: flex;
       align-items: center;
@@ -272,9 +272,9 @@
     }
 
     button, .btn {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      padding: 10px 18px;
+      padding: 9px 16px;
       border-radius: 8px;
       cursor: pointer;
       border: 1px solid transparent;
@@ -301,12 +301,8 @@
     .btn-warning { background-color: var(--warning); }
     .btn-warning:hover:not(:disabled) { background-color: var(--warning-hover); }
 
-    .btn-early {
-      background-color: var(--purple);
-    }
-    .btn-early:hover:not(:disabled) {
-      background-color: var(--purple-hover);
-    }
+    .btn-early { background-color: var(--purple); }
+    .btn-early:hover:not(:disabled) { background-color: var(--purple-hover); }
 
     .btn-outline {
       background-color: transparent;
@@ -320,7 +316,7 @@
 
     .btn-next {
       background-color: var(--danger);
-      min-width: 130px;
+      min-width: 120px;
     }
     .btn-next:hover:not(:disabled) { background-color: var(--danger-hover); }
 
@@ -527,18 +523,9 @@
       border-bottom: 1px solid rgba(51, 65, 85, 0.4);
     }
 
-    .overrun-pos {
-      color: var(--danger);
-      font-weight: 600;
-    }
-    .overrun-exact {
-      color: var(--success);
-      font-weight: 600;
-    }
-    .overrun-early {
-      color: var(--purple);
-      font-weight: 600;
-    }
+    .overrun-pos { color: var(--danger); font-weight: 600; }
+    .overrun-exact { color: var(--success); font-weight: 600; }
+    .overrun-early { color: var(--purple); font-weight: 600; }
 
     .empty-state {
       text-align: center;
@@ -557,7 +544,8 @@
         <p>Early-finish recording, overtime alerts, and variance export</p>
       </div>
       <div class="upload-controls">
-        <button type="button" class="btn btn-outline" id="loadSampleBtn">Load 3 Sample Routines</button>
+        <button type="button" class="btn btn-outline" id="downloadPromptBtn" title="Download the LLM prompt as a .md file">Download Prompt (.md)</button>
+        <button type="button" class="btn btn-outline" id="loadSampleBtn">Load 3 Samples</button>
         <div class="file-input-wrapper">
           <button type="button" class="btn btn-primary">Upload CSV</button>
           <input type="file" id="csvFileInput" accept=".csv,text/csv,text/plain" />
@@ -588,14 +576,14 @@
 
       <div class="current-task-title" id="currentTaskTitle">No Routine Selected</div>
 
-      <!-- Clock & Jump/Fast-Forward Adjustment Controls -->
+      <!-- Clock & Adjustment Controls -->
       <div class="clock-container">
-        <button type="button" class="btn btn-nudge" id="nudgeDownBtn" title="Fast forward remaining time by 1 minute" disabled>-1m</button>
+        <button type="button" class="btn btn-nudge" id="nudgeDownBtn" title="Fast-forward remaining time by 1 min" disabled>-1m</button>
         <div class="clock-display" id="clockDisplay">00:00</div>
-        <button type="button" class="btn btn-nudge" id="nudgeUpBtn" title="Add 1 minute" disabled>+1m</button>
+        <button type="button" class="btn btn-nudge" id="nudgeUpBtn" title="Add 1 min" disabled>+1m</button>
       </div>
 
-      <!-- Control Buttons -->
+      <!-- Controls -->
       <div class="controls-row">
         <button type="button" class="btn btn-success" id="startBtn" disabled>Start</button>
         <button type="button" class="btn btn-warning" id="pauseBtn" disabled>Pause</button>
@@ -604,7 +592,7 @@
         <button type="button" class="btn btn-next" id="nextBtn" disabled>Next Task</button>
       </div>
 
-      <!-- Routine Completed Banner -->
+      <!-- Routine Completion Banner -->
       <div class="routine-completed-banner" id="routineCompletedBanner">
         <h3 id="completedRoutineTitle">Routine Completed!</h3>
         <p id="completedRoutineMessage">Review your task velocity and early completions below.</p>
@@ -614,7 +602,6 @@
 
     <!-- Checklist & Results Grid -->
     <div class="dashboard-grid">
-      <!-- Left: Checklist -->
       <section class="panel-card">
         <div class="panel-header">
           <h2>Task Checklist</h2>
@@ -625,7 +612,6 @@
         </ul>
       </section>
 
-      <!-- Right: Performance History & CSV Export -->
       <section class="panel-card">
         <div class="panel-header">
           <h2>Recorded Performance</h2>
@@ -654,6 +640,37 @@
 
   <script>
     (function () {
+      // Embedded prompt markdown for instant offline download
+      const PROMPT_MARKDOWN_CONTENT = `# Multi-Routine CSV Generator Prompt
+
+Act as an expert workflow organizer. Convert the task notes provided below into an RFC-4180 compliant CSV file for a multi-routine sequence timer.
+
+### Schema & Formatting Rules (for Google Sheets & Excel compatibility):
+1. Columns: Exactly 4 columns with this exact header row:
+   Routine,Task Name,Duration (Mins),Parent Task
+2. Field Definitions:
+   - Routine: The overarching block or session (e.g., "Morning Routine", "Deep Work", "Evening Wind-down").
+   - Task Name: Name of the task or milestone.
+   - Duration (Mins): Numeric value only (integers or decimals like 2.5). Rows acting as category/section headers within a routine MUST have 0 as duration.
+   - Parent Task: If a task belongs to a category header within the routine, put that exact header name here. If it is a standalone task or is itself a header, leave this cell empty.
+3. CSV Encoding & Quoting:
+   - Delimiter: Standard comma (,).
+   - Always wrap text fields containing commas or quotes in double quotes.
+   - Output clean plain text without invisible formatting or markdown tables.
+
+### Clarification & Assumption Protocol:
+1. Missing Routine Name: If no routine is specified, assign a sensible default (e.g., "Daily Focus Block" or "Morning Protocol") and state this assumption.
+2. Missing Durations: If a task has no time given, provide a realistic estimate (e.g., 2 to 15 mins depending on task complexity), flag the estimated value, and ask if it needs adjustment.
+3. Vague Structure: If it is unclear whether an item is a top-level category or a subtask, make a practical interpretation and explicitly state your choice.
+
+### Output Structure:
+1. Assumptions & Clarifications: A brief bulleted list of any assumed routine names, estimated durations, or questions for cross-checking.
+2. CSV Block: The complete, ready-to-copy CSV code block (which can be pasted directly into Notepad/TextEdit and saved as .csv, or imported into Google Sheets/Excel).
+
+Task Input:
+[Paste your tasks, raw schedule, or voice notes here]
+`;
+
       const SAMPLE_CSV = `Routine,Task Name,Duration (Mins),Parent Task
 Morning Routine,Morning Activation,0,
 Morning Routine,Hydrate & Lemon Salt,1,Morning Activation
@@ -678,10 +695,9 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       let remainingSeconds = 0;
       let overtimeSeconds = 0;
       let timerInterval = null;
-      let timerState = 'idle'; // 'idle' | 'running' | 'paused' | 'alarm_overtime' | 'completed'
+      let timerState = 'idle';
 
       let recordedResults = [];
-
       let audioCtx = null;
       let alertInterval = null;
 
@@ -712,6 +728,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       const completedRoutineMessage = document.getElementById('completedRoutineMessage');
       const switchNextRoutineBtn = document.getElementById('switchNextRoutineBtn');
 
+      const downloadPromptBtn = document.getElementById('downloadPromptBtn');
       const loadSampleBtn = document.getElementById('loadSampleBtn');
       const csvFileInput = document.getElementById('csvFileInput');
 
@@ -749,7 +766,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
           osc.start(ctx.currentTime);
           osc.stop(ctx.currentTime + 0.6);
         } catch (e) {
-          console.warn('Tone playback error:', e);
+          console.warn('Playback error:', e);
         }
       }
 
@@ -932,14 +949,14 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         if (timerState === 'idle') {
           startBtn.disabled = false;
           pauseBtn.disabled = true;
-          finishEarlyBtn.disabled = false; // Can finish immediately if needed
+          finishEarlyBtn.disabled = false;
           resetBtn.disabled = false;
           nextBtn.disabled = true;
           nextBtn.classList.remove('pulsing');
         } else if (timerState === 'running') {
           startBtn.disabled = true;
           pauseBtn.disabled = false;
-          finishEarlyBtn.disabled = false; // Fast forward & record early finish
+          finishEarlyBtn.disabled = false;
           resetBtn.disabled = false;
           nextBtn.disabled = true;
           nextBtn.classList.remove('pulsing');
@@ -1147,7 +1164,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         updateControls();
       }
 
-      // Fast-forward or finish early
       function finishEarly() {
         if (currentActionableStep >= actionableTaskIndices.length) return;
 
@@ -1162,7 +1178,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         overtimeBadge.style.display = 'none';
 
         const planned = task.durationSecs;
-        // Actual elapsed time is total planned minus remaining seconds
         const actual = Math.max(1, planned - remainingSeconds);
         recordCompletedTask(task, planned, actual, 0, true);
 
@@ -1172,7 +1187,6 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         transitionToNextStep(currentActiveIdx);
       }
 
-      // Regular Next Task (called when at 00:00 / overtime)
       function advanceToNextTask() {
         stopAudioAlertLoop();
         clockDisplay.classList.remove('alert');
@@ -1180,7 +1194,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
 
         if (currentActionableStep >= actionableTaskIndices.length) return;
 
-        const currentActiveIdx = actionableTaskIndices[currentActionableStep];
+        const currentActiveIdx = actionableTaskIndices[currentActiveIdx];
         const task = routineTasks[currentActiveIdx];
         task.status = 'done';
 
@@ -1243,13 +1257,22 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
         }
       }
 
-      // Fast-forward remaining time by -1m, or add +1m
+      // Download the prompt as a .md file
+      function downloadPromptMarkdown() {
+        const blob = new Blob([PROMPT_MARKDOWN_CONTENT], { type: 'text/markdown;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'csv_generator_prompt.md');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
       nudgeDownBtn.addEventListener('click', () => {
-        if (remainingSeconds > 60) {
-          remainingSeconds -= 60;
-        } else {
-          remainingSeconds = 1; // Drop to 1 sec so it triggers completion immediately
-        }
+        if (remainingSeconds > 60) remainingSeconds -= 60;
+        else remainingSeconds = 1;
         clockDisplay.textContent = formatMMSS(remainingSeconds);
       });
 
@@ -1305,6 +1328,7 @@ Evening Routine,Reading & Disconnect,10,Wind Down Protocol`;
       finishEarlyBtn.addEventListener('click', finishEarly);
       nextBtn.addEventListener('click', advanceToNextTask);
       exportCsvBtn.addEventListener('click', exportResultsCSV);
+      downloadPromptBtn.addEventListener('click', downloadPromptMarkdown);
 
       routineSelect.addEventListener('change', (e) => {
         loadRoutine(e.target.value);
