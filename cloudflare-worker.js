@@ -19,14 +19,30 @@ export default {
       return new Response(null, {
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type',
         }
       });
     }
 
+    // Friendly health check on browser GET
+    if (request.method === 'GET') {
+      return new Response(JSON.stringify({
+        status: 'online',
+        service: 'Anchor & Flow AI Proxy (Cloudflare Worker)',
+        message: 'Proxy is running, healthy, and ready to process requests!',
+        origin: 'https://acnbrr21.github.io/my-routine-timer/'
+      }, null, 2), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+    }
+
     if (request.method !== 'POST') {
-      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      return new Response(JSON.stringify({ error: 'Method not allowed. Send a POST request with JSON.' }), {
         status: 405,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });

@@ -1529,7 +1529,7 @@ Work Day,Executive Sync (Outlook),45,,14:30</pre>
             <span style="color: var(--purple);">Shared Serverless Proxy (For Public Visitors):</span>
           </label>
           <div style="display: flex; gap: 8px; align-items: center;">
-            <input type="text" id="proxyUrlInput" class="chat-input" style="flex: 1;" placeholder="https://your-worker.workers.dev or /api/ai" />
+            <input type="text" id="proxyUrlInput" class="chat-input" style="flex: 1;" value="https://anchor-flow-proxy.rishi-roy.workers.dev" placeholder="https://anchor-flow-proxy.rishi-roy.workers.dev" />
             <button type="button" class="btn btn-outline btn-sm" id="testProxyBtn">Test Proxy</button>
           </div>
           <span id="proxyStatusSpan" style="font-size: 0.76rem; color: var(--text-muted); display: block; margin-top: 4px;">Connect a free Cloudflare Worker or Vercel API route to give all public visitors live OpenAI access without asking them for keys.</span>
@@ -1656,6 +1656,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       const STORAGE_KEY_OPENAI = 'anchor_flow_openai_key';
       const STORAGE_KEY_DEEPSEEK = 'anchor_flow_deepseek_key';
       const STORAGE_KEY_PROXY = 'anchor_flow_proxy_url';
+      const DEFAULT_PROXY_URL = 'https://anchor-flow-proxy.rishi-roy.workers.dev';
       const openaiKeyInput = document.getElementById('openaiKeyInput');
 
 
@@ -3472,7 +3473,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       async function executeMultiTierAi(systemPrompt, userPrompt) {
         const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
         const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
-        const proxyUrl = localStorage.getItem(STORAGE_KEY_PROXY) || '';
+        const proxyUrl = localStorage.getItem(STORAGE_KEY_PROXY) || DEFAULT_PROXY_URL;
 
         // 1. Direct OpenAI Key
         if (openaiKey) {
@@ -3533,7 +3534,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
 
         // 3. Shared Serverless Proxy (Cloudflare Worker or Vercel /api/ai)
-        const targetProxy = proxyUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('vercel.app') ? '/api/ai' : '');
+        const targetProxy = proxyUrl || DEFAULT_PROXY_URL || (window.location.origin.includes('localhost') || window.location.origin.includes('vercel.app') ? '/api/ai' : '');
         if (targetProxy) {
           try {
             const res = await fetch(targetProxy, {
@@ -3655,7 +3656,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
         const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
 
-        const proxyUrlGuru = localStorage.getItem(STORAGE_KEY_PROXY) || '';
+        const proxyUrlGuru = localStorage.getItem(STORAGE_KEY_PROXY) || DEFAULT_PROXY_URL;
         if (guruEngineBadge) {
           if (openaiKey) {
             guruEngineBadge.className = 'engine-tag openai';
@@ -3806,7 +3807,7 @@ Format as JSON:
         const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
         const chatEngineBadge = document.getElementById('chatEngineBadge');
 
-        const proxyUrl = localStorage.getItem(STORAGE_KEY_PROXY) || '';
+        const proxyUrl = localStorage.getItem(STORAGE_KEY_PROXY) || DEFAULT_PROXY_URL;
         if (chatEngineBadge) {
           if (openaiKey) {
             chatEngineBadge.className = 'engine-tag openai';
@@ -4395,7 +4396,7 @@ Return ONLY a JSON object:
         if (openaiKeyInput) openaiKeyInput.value = localStorage.getItem(STORAGE_KEY_OPENAI) || '';
         if (deepseekKeyInput) deepseekKeyInput.value = localStorage.getItem(STORAGE_KEY_DEEPSEEK) || '';
         const proxyInp = document.getElementById('proxyUrlInput');
-        if (proxyInp) proxyInp.value = localStorage.getItem(STORAGE_KEY_PROXY) || '';
+        if (proxyInp) proxyInp.value = localStorage.getItem(STORAGE_KEY_PROXY) || DEFAULT_PROXY_URL;
         const pStatus = document.getElementById('proxyStatusSpan');
         if (pStatus) {
           pStatus.textContent = 'Connect a free Cloudflare Worker or Vercel API route to give all public visitors live OpenAI access without asking them for keys.';
