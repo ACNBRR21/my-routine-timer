@@ -43,6 +43,7 @@
       gap: 16px;
     }
 
+    /* Top Action Bar */
     header {
       display: flex;
       justify-content: space-between;
@@ -116,6 +117,7 @@
       position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;
     }
 
+    /* Drift & Status Indicator */
     .status-strip {
       display: flex;
       justify-content: space-between;
@@ -146,6 +148,7 @@
       color: var(--success);
     }
 
+    /* Timer Cockpit Card */
     .timer-hero {
       background: var(--bg-surface);
       border: 1px solid var(--border);
@@ -237,6 +240,7 @@
       100% { opacity: 0.4; transform: scale(1.02); text-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
     }
 
+    /* Apple Minimal Pause Control Bar */
     .controls-row {
       display: flex;
       gap: 12px;
@@ -262,6 +266,7 @@
     }
     .btn-minimal-pause:hover { background: var(--accent); color: #090d16; }
 
+    /* Pause Pop-Menu Choices (Minimal Apple Style) */
     .pause-choices {
       display: none;
       gap: 10px;
@@ -294,6 +299,7 @@
     }
     .btn-stop-task:hover { background: var(--accent); color: #090d16; }
 
+    /* Live Schedule List */
     .schedule-card {
       background: var(--bg-surface);
       border: 1px solid var(--border);
@@ -372,6 +378,7 @@
     .time-range { color: var(--text-muted); }
     .duration-pill { background: rgba(9, 13, 22, 0.4); padding: 2px 6px; border-radius: 4px; color: #cbd5e1; }
 
+    /* Plan My Day Full-Screen Overlay Chat */
     .overlay-chat {
       display: none;
       position: fixed;
@@ -496,6 +503,7 @@
 </head>
 <body>
   <div class="app-container">
+    <!-- Top Action Bar -->
     <header>
       <div class="system-clock-badge">
         <span class="sys-time" id="systemClock">00:00:00</span>
@@ -512,6 +520,7 @@
       </div>
     </header>
 
+    <!-- Drift & Real-Time Reflow Status Strip -->
     <div class="status-strip">
       <div id="radarNotice">
         <span>⏱ <strong>Anchor Radar:</strong> Day schedule ready</span>
@@ -521,6 +530,7 @@
       </div>
     </div>
 
+    <!-- Active Timer Cockpit -->
     <main class="timer-hero">
       <div class="overall-progress-bar-container">
         <div class="overall-progress-bar" id="overallProgressBar"></div>
@@ -537,18 +547,21 @@
 
       <div class="clock-display" id="clockDisplay">00:00</div>
 
+      <!-- Apple Minimal Pause Control -->
       <div class="controls-row">
         <button type="button" class="btn-minimal-pause" id="minimalPauseBtn" title="Pause / Actions">
           ❚❚
         </button>
       </div>
 
+      <!-- Minimal Two Choices on Pause -->
       <div class="pause-choices" id="pauseChoices">
         <button type="button" class="btn btn-slide-over" id="slideOverBtn">Slide Over (+5m)</button>
         <button type="button" class="btn btn-stop-task" id="stopTaskBtn">Stop Task (Pull Forward)</button>
       </div>
     </main>
 
+    <!-- Live Reflowed Schedule List -->
     <section class="schedule-card">
       <div class="schedule-header">
         <h2>Today's Live Schedule</h2>
@@ -565,13 +578,16 @@
     </section>
   </div>
 
+  <!-- Plan My Day Full-Screen Overlay Chat -->
   <div class="overlay-chat" id="planChatOverlay">
     <div class="chat-box">
       <div class="chat-header">
         <h3>Harvard Timebox Planner</h3>
         <button type="button" class="btn-close-chat" id="closePlanChatBtn">&times;</button>
       </div>
-      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-messages" id="chatMessages">
+        <!-- Messages appended dynamically -->
+      </div>
       <div class="chat-input-row">
         <input type="text" class="chat-input" id="chatInput" placeholder="Type your response..." />
         <button type="button" class="btn btn-plan" id="chatSendBtn">Send</button>
@@ -583,19 +599,25 @@
     (function () {
       const STORAGE_KEY_PLANNED = 'anchor_flow_planned_v3';
       const STORAGE_KEY_ACTUAL = 'anchor_flow_results_v3';
+      const STORAGE_KEY_ROUTINES = 'anchor_flow_routines_v3';
 
-      let scheduleItems = [];
-      let plannedSnapshot = [];
+      // State
+      let scheduleItems = []; // Live reflowed tasks
+      let plannedSnapshot = []; // Committed morning plan
       let activeIndex = 0;
       let isTimerRunning = false;
       let currentTaskSecondsElapsed = 0;
       let currentTaskRemainingSeconds = 0;
       let totalDriftMinutes = 0;
 
+      // Audio Chime
       let audioCtx = null;
+      let alertInterval = null;
 
+      // Elements
       const systemClock = document.getElementById('systemClock');
       const systemDate = document.getElementById('systemDate');
+      const radarNotice = document.getElementById('radarNotice');
       const driftChip = document.getElementById('driftChip');
       const stepProgressBadge = document.getElementById('stepProgressBadge');
       const itemTypeBadge = document.getElementById('itemTypeBadge');
@@ -621,6 +643,7 @@
       const exportPlannedQuickBtn = document.getElementById('exportPlannedQuickBtn');
       const exportActualQuickBtn = document.getElementById('exportActualQuickBtn');
 
+      // Clock
       function updateSystemClock() {
         const now = new Date();
         systemClock.textContent = now.toLocaleTimeString([], { hour12: false });
@@ -642,7 +665,9 @@
             if (AudioContextClass) audioCtx = new AudioContextClass();
           }
           if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        } catch (e) {}
+        } catch (e) {
+          console.warn(e);
+        }
         return audioCtx;
       }
 
@@ -664,9 +689,12 @@
             osc.start(now);
             osc.stop(now + 0.85);
           });
-        } catch (e) {}
+        } catch (e) {
+          console.warn(e);
+        }
       }
 
+      // DETERMINISTIC REFLOW ENGINE
       function parseTimeToMinutes(hhmm) {
         if (!hhmm) return 0;
         const [h, m] = hhmm.split(':').map(Number);
@@ -679,6 +707,7 @@
         return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
       }
 
+      // Recomputes live timeline boundaries and auto-splits if an Anchor is threatened
       function reflowSchedule() {
         if (scheduleItems.length === 0) return;
 
@@ -688,26 +717,32 @@
           const item = scheduleItems[i];
 
           if (item.isAnchor) {
+            // Anchors NEVER move. Anchors ALWAYS win.
             const anchorStart = parseTimeToMinutes(item.scheduledStart);
             item.expectedStart = item.scheduledStart;
             item.expectedEnd = minutesToHHMM(anchorStart + item.durationMins);
             cursorMins = anchorStart + item.durationMins;
           } else {
+            // Flow task: starts at current cursor
             item.expectedStart = minutesToHHMM(cursorMins);
             const plannedEndMins = cursorMins + item.durationMins;
 
+            // Check if next anchor is endangered
             const nextAnchor = scheduleItems.slice(i + 1).find(t => t.isAnchor);
             if (nextAnchor) {
               const nextAnchorStart = parseTimeToMinutes(nextAnchor.scheduledStart);
               if (plannedEndMins > nextAnchorStart && cursorMins < nextAnchorStart) {
+                // COLLISION: Auto-split into Part 1 and continued!
                 const part1Duration = nextAnchorStart - cursorMins;
                 const continuedDuration = item.durationMins - part1Duration;
 
+                // Adjust current item as Part 1
                 const baseName = item.name.replace(/ — Part 1| — continued/g, '');
                 item.name = `${baseName} — Part 1`;
                 item.durationMins = part1Duration;
                 item.expectedEnd = minutesToHHMM(nextAnchorStart);
 
+                // Insert continued item immediately following the anchor
                 const continuedItem = {
                   routine: item.routine,
                   name: `${baseName} — continued`,
@@ -732,6 +767,7 @@
           }
         }
 
+        // Calculate total drift relative to initial planned start
         if (plannedSnapshot.length > 0 && activeIndex < scheduleItems.length) {
           const plannedCur = plannedSnapshot[Math.min(activeIndex, plannedSnapshot.length - 1)];
           const liveCur = scheduleItems[activeIndex];
@@ -812,6 +848,7 @@
         });
       }
 
+      // Minimal Pause Choices
       minimalPauseBtn.addEventListener('click', () => {
         getAudioContext();
         if (isTimerRunning) {
@@ -826,6 +863,7 @@
       });
 
       slideOverBtn.addEventListener('click', () => {
+        // Extend task by 5 mins and slide downstream flow
         if (activeIndex < scheduleItems.length) {
           scheduleItems[activeIndex].durationMins += 5;
           currentTaskRemainingSeconds += 300;
@@ -837,6 +875,7 @@
       });
 
       stopTaskBtn.addEventListener('click', () => {
+        // End task now (pull downstream forward)
         finishCurrentTask();
         pauseChoices.classList.remove('show');
       });
@@ -847,6 +886,7 @@
         scheduleItems[activeIndex].status = 'done';
         const finished = scheduleItems[activeIndex];
 
+        // Save actual performance
         const actualRecord = {
           routine: finished.routine,
           taskName: finished.name,
@@ -878,6 +918,7 @@
         }
       }
 
+      // Tick Loop
       setInterval(() => {
         if (!isTimerRunning || activeIndex >= scheduleItems.length) return;
 
@@ -888,10 +929,12 @@
           clockDisplay.textContent = formatMMSS(currentTaskRemainingSeconds);
           clockDisplay.classList.remove('alert');
         } else {
+          // Overtime count-up
           clockDisplay.textContent = `+${formatMMSS(currentTaskSecondsElapsed - (scheduleItems[activeIndex].durationMins * 60))}`;
           clockDisplay.classList.add('alert');
           if (currentTaskSecondsElapsed % 3 === 0) playHarmonicChime();
 
+          // Continuous self-healing reflow: slide subsequent flow as task expands
           if (currentTaskSecondsElapsed % 60 === 0) {
             scheduleItems[activeIndex].durationMins++;
             reflowSchedule();
@@ -899,15 +942,25 @@
         }
       }, 1000);
 
+      // INTAKE CHAT: "Plan My Day"
       let chatStep = 1;
-      let intakeData = { startTime: '', brainDump: '', top3: '', anchors: [] };
+      let intakeData = {
+        startTime: '',
+        brainDump: '',
+        top3: '',
+        anchors: []
+      };
 
       openPlanChatBtn.addEventListener('click', () => {
         planChatOverlay.classList.add('active');
-        if (chatMessages.children.length === 0) initChatIntake();
+        if (chatMessages.children.length === 0) {
+          initChatIntake();
+        }
       });
 
-      closePlanChatBtn.addEventListener('click', () => planChatOverlay.classList.remove('active'));
+      closePlanChatBtn.addEventListener('click', () => {
+        planChatOverlay.classList.remove('active');
+      });
 
       function addBotMsg(html) {
         const d = document.createElement('div');
@@ -933,7 +986,9 @@
       }
 
       chatSendBtn.addEventListener('click', handleChatSubmit);
-      chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleChatSubmit(); });
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleChatSubmit();
+      });
 
       function handleChatSubmit() {
         const val = chatInput.value.trim();
@@ -965,6 +1020,7 @@
         }
       }
 
+      // RFC-5545 Client-side ICS text parser
       function parseIcsText(icsString) {
         const events = [];
         const lines = icsString.split(/\r?\n/);
@@ -984,6 +1040,7 @@
               curEvent.summary = line.replace('SUMMARY:', '').trim();
             } else if (line.startsWith('DTSTART')) {
               const val = line.split(':').pop();
+              // Extract HHMM (assume browser local time in v1)
               const timeMatch = val.match(/T(\d{2})(\d{2})/);
               if (timeMatch) curEvent.startHHMM = `${timeMatch[1]}:${timeMatch[2]}`;
             } else if (line.startsWith('DTEND')) {
@@ -1022,6 +1079,7 @@
         });
       }
 
+      // Harvard Timebox Schedule Synthesizer
       function generateSchedulePlan() {
         addBotMsg(`<em>Synthesizing Harvard Timebox schedule with ergonomic resets and anchor protection...</em>`);
 
@@ -1029,6 +1087,7 @@
           const tasks = [];
           const startMins = parseTimeToMinutes(intakeData.startTime) || (9 * 60);
 
+          // 1. Insert Anchors
           intakeData.anchors.forEach(a => {
             tasks.push({
               routine: 'Work Day',
@@ -1041,11 +1100,13 @@
             });
           });
 
+          // 2. Parse top priorities and brain dump
           const priorityLines = intakeData.top3.split(/,|\n|\./).map(s => s.trim()).filter(Boolean);
           const dumpLines = intakeData.brainDump.split(/,|\n|\./).map(s => s.trim()).filter(Boolean);
 
           const flowItems = [...priorityLines.map(p => `Priority: ${p}`), ...dumpLines];
 
+          // 3. Weave flow tasks and ergonomic resets
           let currentM = startMins;
           flowItems.forEach((item, idx) => {
             if (idx > 0 && idx % 2 === 0) {
@@ -1073,12 +1134,14 @@
             currentM += 30;
           });
 
+          // Sort chronologically
           tasks.sort((a, b) => parseTimeToMinutes(a.scheduledStart) - parseTimeToMinutes(b.scheduledStart));
 
           scheduleItems = tasks;
           plannedSnapshot = JSON.parse(JSON.stringify(tasks));
           localStorage.setItem(STORAGE_KEY_PLANNED, JSON.stringify(plannedSnapshot));
 
+          // Render confirmation
           let tableHtml = `<table class="schedule-confirm-table"><tr><th>Start</th><th>Task</th><th>Duration</th></tr>`;
           tasks.forEach(t => {
             tableHtml += `<tr><td>${t.scheduledStart}</td><td>${t.isAnchor ? '📅 ' : ''}${t.name}</td><td>${t.durationMins}m</td></tr>`;
@@ -1099,6 +1162,7 @@
         }, 600);
       }
 
+      // Quick CSV Exports
       function exportScheduleCSV(isPlanned) {
         const items = isPlanned ? plannedSnapshot : scheduleItems;
         if (items.length === 0) return;
@@ -1127,6 +1191,7 @@
       exportPlannedQuickBtn.addEventListener('click', () => exportScheduleCSV(true));
       exportActualQuickBtn.addEventListener('click', () => exportScheduleCSV(false));
 
+      // CSV File Upload Importer
       csvFileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -1162,6 +1227,7 @@
         reader.readAsText(file);
       });
 
+      // Init on load
       try {
         const savedPlanned = localStorage.getItem(STORAGE_KEY_PLANNED);
         if (savedPlanned) {
@@ -1174,5 +1240,3 @@
   </script>
 </body>
 </html>
-EOF
-}
