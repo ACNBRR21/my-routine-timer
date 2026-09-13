@@ -1524,6 +1524,16 @@ Work Day,Executive Sync (Outlook),45,,14:30</pre>
             <button type="button" class="btn btn-outline btn-sm" id="testDeepseekBtn">Test Key</button>
           </div>
           <span id="deepseekStatusSpan" style="font-size: 0.76rem; color: var(--text-muted); display: block; margin-top: 4px;">Automatic fallback engine (deepseek-chat).</span>
+                <div>
+          <label style="font-weight: 600; color: var(--text-main); display: block; margin-bottom: 6px;">
+            <span style="color: var(--purple);">Shared Serverless Proxy (For Public Visitors):</span>
+          </label>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" id="proxyUrlInput" class="chat-input" style="flex: 1;" placeholder="https://your-worker.workers.dev or /api/ai" />
+            <button type="button" class="btn btn-outline btn-sm" id="testProxyBtn">Test Proxy</button>
+          </div>
+          <span id="proxyStatusSpan" style="font-size: 0.76rem; color: var(--text-muted); display: block; margin-top: 4px;">Connect a free Cloudflare Worker or Vercel API route to give all public visitors live OpenAI access without asking them for keys.</span>
+        </div>
         </div>
         <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
           <button type="button" class="btn btn-outline" id="cancelSettingsBtn">Cancel</button>
@@ -1645,6 +1655,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
       const STORAGE_KEY_OPENAI = 'anchor_flow_openai_key';
       const STORAGE_KEY_DEEPSEEK = 'anchor_flow_deepseek_key';
+      const STORAGE_KEY_PROXY = 'anchor_flow_proxy_url';
       const openaiKeyInput = document.getElementById('openaiKeyInput');
 
 
@@ -3457,6 +3468,93 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         updateZenBar();
       }
 
+      
+      async function executeMultiTierAi(systemPrompt, userPrompt) {
+        const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
+        const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
+        const proxyUrl = localStorage.getItem(STORAGE_KEY_PROXY) || '';
+
+        // 1. Direct OpenAI Key
+        if (openaiKey) {
+          try {
+            const res = await fetch('https://api.openai.com/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${openaiKey}`
+              },
+              body: JSON.stringify({
+                model: 'gpt-4o-mini',
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt }
+                ],
+                temperature: 0.2
+              })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.choices && data.choices[0]) {
+                return { engine: 'OpenAI (gpt-4o-mini)', content: data.choices[0].message.content };
+              }
+            }
+          } catch (e) {
+            console.warn('Direct OpenAI fetch error:', e);
+          }
+        }
+
+        // 2. Direct DeepSeek Key
+        if (deepseekKey) {
+          try {
+            const res = await fetch('https://api.deepseek.com/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${deepseekKey}`
+              },
+              body: JSON.stringify({
+                model: 'deepseek-chat',
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt }
+                ],
+                temperature: 0.2
+              })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.choices && data.choices[0]) {
+                return { engine: 'DeepSeek (deepseek-chat)', content: data.choices[0].message.content };
+              }
+            }
+          } catch (e) {
+            console.warn('Direct DeepSeek fetch error:', e);
+          }
+        }
+
+        // 3. Shared Serverless Proxy (Cloudflare Worker or Vercel /api/ai)
+        const targetProxy = proxyUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('vercel.app') ? '/api/ai' : '');
+        if (targetProxy) {
+          try {
+            const res = await fetch(targetProxy, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ systemPrompt, userPrompt })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.content) {
+                return { engine: data.engine || 'Serverless Proxy', content: data.content };
+              }
+            }
+          } catch (e) {
+            console.warn('Proxy fetch error:', e);
+          }
+        }
+
+        return null;
+      }
+
       // --- FLOW GURU PRODUCTIVITY AUDIT DRAWER & HISTORICAL ANECDOTES ---
       const GURU_ANECDOTES = [
         {
@@ -3557,13 +3655,17 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
         const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
 
+        const proxyUrlGuru = localStorage.getItem(STORAGE_KEY_PROXY) || '';
         if (guruEngineBadge) {
           if (openaiKey) {
             guruEngineBadge.className = 'engine-tag openai';
-            guruEngineBadge.textContent = '⚡ OpenAI (gpt-4o-mini)';
+            guruEngineBadge.textContent = '⚡ OpenAI (Direct Key)';
           } else if (deepseekKey) {
             guruEngineBadge.className = 'engine-tag deepseek';
-            guruEngineBadge.textContent = '⚡ DeepSeek (deepseek-chat)';
+            guruEngineBadge.textContent = '⚡ DeepSeek (Direct Key)';
+          } else if (proxyUrlGuru || window.location.origin.includes('vercel.app')) {
+            guruEngineBadge.className = 'engine-tag openai';
+            guruEngineBadge.textContent = '⚡ Serverless Proxy';
           } else {
             guruEngineBadge.className = 'engine-tag local';
             guruEngineBadge.textContent = '🔵 Local Wisdom Engine';
@@ -3615,14 +3717,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
       }
 
-      function callMultiTierFlowGuru(results, ratio) {
-        const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
-        const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
-        if (!openaiKey && !deepseekKey) return;
-
-        const guruHighlightsText = document.getElementById('guruHighlightsText');
-        const guruAnecdoteText = document.getElementById('guruAnecdoteText');
-
+      async function callMultiTierFlowGuru(results, ratio) {
         const promptSystem = `You are Flow Guru, an executive Harvard Timeboxing coach.
 Your response MUST be formatted in 3 sections:
 1. ANECDOTE: A fascinating, punchy 1-2 sentence true anecdote about timeboxing or ruthless focus from an iconic figure (such as Elon Musk's 5-minute timeboxing at SpaceX/Tesla, Bill Gates' Think Weeks, Dwight Eisenhower's Urgent vs Important decision matrix, Benjamin Franklin's 24-hour daily scheme, Maya Angelou's focused hotel room ritual, Steve Jobs' radical focus, or Cal Newport's Deep Work).
@@ -3633,70 +3728,19 @@ Format as JSON:
 {
   "anecdoteFigure": "Elon Musk (5-Minute Blocks)",
   "anecdote": "Elon Musk breaks his entire day at SpaceX and Tesla into 5-minute blocks...",
-  "highlight": "Your execution velocity was 1.10x...",
+  "highlight": "Your execution velocity was ${ratio.toFixed(2)}x...",
   "tips": ["Tip 1", "Tip 2"]
 }`;
         const promptUser = `Today's audit data: Velocity Ratio: ${ratio.toFixed(2)}x. Tasks: ${JSON.stringify(results.map(r => ({ name: r.taskName, plannedSecs: r.finalTargetSecs, actualSecs: r.actualSecs, status: r.status })))}`;
 
-        if (openaiKey) {
-          fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${openaiKey}`
-            },
-            body: JSON.stringify({
-              model: 'gpt-4o-mini',
-              messages: [
-                { role: 'system', content: promptSystem },
-                { role: 'user', content: promptUser }
-              ],
-              temperature: 0.3
-            })
-          })
-          .then(res => {
-            if (!res.ok) throw new Error('OpenAI HTTP error ' + res.status);
-            return res.json();
-          })
-          .then(data => {
-            if (data && data.choices && data.choices[0]) {
-              applyFlowGuruAiResponse(data.choices[0].message.content, 'OpenAI (gpt-4o-mini)');
-            }
-          })
-          .catch(err => {
-            console.warn('OpenAI Guru failed, falling back to DeepSeek:', err);
-            if (deepseekKey) tryDeepSeekGuru(deepseekKey, promptSystem, promptUser);
-          });
-        } else if (deepseekKey) {
-          tryDeepSeekGuru(deepseekKey, promptSystem, promptUser);
-        }
-      }
-
-      function tryDeepSeekGuru(deepseekKey, promptSystem, promptUser) {
-        fetch('https://api.deepseek.com/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${deepseekKey}`
-          },
-          body: JSON.stringify({
-            model: 'deepseek-chat',
-            messages: [
-              { role: 'system', content: promptSystem },
-              { role: 'user', content: promptUser }
-            ],
-            temperature: 0.3
-          })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.choices && data.choices[0]) {
-            applyFlowGuruAiResponse(data.choices[0].message.content, 'DeepSeek (deepseek-chat)');
+        try {
+          const aiResult = await executeMultiTierAi(promptSystem, promptUser);
+          if (aiResult && aiResult.content) {
+            applyFlowGuruAiResponse(aiResult.content, aiResult.engine);
           }
-        })
-        .catch(err => {
-          console.warn('DeepSeek Guru error:', err);
-        });
+        } catch (e) {
+          console.warn('Flow guru AI error:', e);
+        }
       }
 
       function applyFlowGuruAiResponse(rawContent, engineName) {
@@ -3762,16 +3806,20 @@ Format as JSON:
         const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
         const chatEngineBadge = document.getElementById('chatEngineBadge');
 
+        const proxyUrl = localStorage.getItem(STORAGE_KEY_PROXY) || '';
         if (chatEngineBadge) {
           if (openaiKey) {
             chatEngineBadge.className = 'engine-tag openai';
-            chatEngineBadge.textContent = '🟢 OpenAI (gpt-4o-mini)';
+            chatEngineBadge.textContent = '🟢 OpenAI (Direct Key)';
           } else if (deepseekKey) {
             chatEngineBadge.className = 'engine-tag deepseek';
-            chatEngineBadge.textContent = '🟢 DeepSeek (deepseek-chat)';
+            chatEngineBadge.textContent = '🟢 DeepSeek (Direct Key)';
+          } else if (proxyUrl || window.location.origin.includes('vercel.app')) {
+            chatEngineBadge.className = 'engine-tag openai';
+            chatEngineBadge.textContent = '🟢 Shared Serverless Proxy';
           } else {
             chatEngineBadge.className = 'engine-tag local';
-            chatEngineBadge.textContent = '🔵 Local Engine (No Key)';
+            chatEngineBadge.textContent = '🔵 Local Engine (Zero-Setup)';
           }
         }
 
@@ -3827,9 +3875,7 @@ Please paste or type your tasks, meetings, and habits below. You can paste multi
         }
       });
 
-      function callMultiTierAiIntake(userInput) {
-        const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
-        const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
+      async function callMultiTierAiIntake(userInput) {
         const now = new Date();
         const timeStr = formatClockHM(now);
 
@@ -3869,84 +3915,19 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
   ]
 }`;
 
-        // 1. Try OpenAI (Option 1)
-        if (openaiKey) {
-          fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${openaiKey}`
-            },
-            body: JSON.stringify({
-              model: 'gpt-4o-mini',
-              messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userInput }
-              ],
-              temperature: 0.2
-            })
-          })
-          .then(res => {
-            if (!res.ok) throw new Error('OpenAI HTTP error ' + res.status);
-            return res.json();
-          })
-          .then(data => {
-            if (data && data.choices && data.choices[0]) {
-              const parsed = extractJsonFromText(data.choices[0].message.content);
-              processParsedSchedule(parsed, 'OpenAI (gpt-4o-mini)');
-            } else {
-              throw new Error('Invalid OpenAI response payload');
-            }
-          })
-          .catch(err => {
-            console.warn('OpenAI intake failed, falling back to DeepSeek:', err);
-            if (deepseekKey) {
-              tryDeepSeekIntake(deepseekKey, systemPrompt, userInput);
-            } else {
-              clientSideTimeboxerExtraction(userInput, 'OpenAI call failed (' + err.message + '). Used Smart Local NLP Engine.');
-            }
-          });
-        } else if (deepseekKey) {
-          tryDeepSeekIntake(deepseekKey, systemPrompt, userInput);
-        } else {
-          setTimeout(() => {
-            clientSideTimeboxerExtraction(userInput, null);
-          }, 300);
-        }
-      }
-
-      function tryDeepSeekIntake(deepseekKey, systemPrompt, userInput) {
-        fetch('https://api.deepseek.com/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${deepseekKey}`
-          },
-          body: JSON.stringify({
-            model: 'deepseek-chat',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userInput }
-            ],
-            temperature: 0.2
-          })
-        })
-        .then(res => {
-          if (!res.ok) throw new Error('DeepSeek HTTP error ' + res.status);
-          return res.json();
-        })
-        .then(data => {
-          if (data && data.choices && data.choices[0]) {
-            const parsed = extractJsonFromText(data.choices[0].message.content);
-            processParsedSchedule(parsed, 'DeepSeek (deepseek-chat)');
-          } else {
-            throw new Error('Invalid DeepSeek payload');
+        try {
+          const aiResult = await executeMultiTierAi(systemPrompt, userInput);
+          if (aiResult && aiResult.content) {
+            const parsed = extractJsonFromText(aiResult.content);
+            processParsedSchedule(parsed, aiResult.engine);
+            return;
           }
-        })
-        .catch(err => {
-          console.warn('DeepSeek fallback failed, using local timeboxer:', err);
-          clientSideTimeboxerExtraction(userInput, 'DeepSeek call failed (' + err.message + '). Used Smart Local NLP Engine.');
-        });
+        } catch (err) {
+          console.warn('AI execution error, falling back to local NLP engine:', err);
+        }
+
+        // Local fallback
+        clientSideTimeboxerExtraction(userInput, null);
       }
 
       function extractJsonFromText(rawText) {
@@ -4174,17 +4155,12 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
         }
       }
 
-      function handleScheduleFeedback(feedbackText) {
+      async function handleScheduleFeedback(feedbackText) {
         const lower = feedbackText.toLowerCase();
-
-        // Check if user simply said "load", "confirm", "looks good", "yes"
         if (/^(?:load|confirm|looks good|yes|proceed|start|go|done)$/i.test(lower.trim())) {
           loadReviewedItemsIntoCockpit();
           return;
         }
-
-        const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
-        const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
 
         const promptSystem = `You are updating an existing Harvard Timeboxing schedule based on user feedback.
 Current items:
@@ -4201,65 +4177,18 @@ Return ONLY a JSON object:
   "items": [...]
 }`;
 
-        if (openaiKey) {
-          fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${openaiKey}`
-            },
-            body: JSON.stringify({
-              model: 'gpt-4o-mini',
-              messages: [
-                { role: 'system', content: promptSystem },
-                { role: 'user', content: feedbackText }
-              ],
-              temperature: 0.2
-            })
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data && data.choices && data.choices[0]) {
-              const parsed = extractJsonFromText(data.choices[0].message.content);
-              processParsedSchedule(parsed, 'OpenAI (gpt-4o-mini)');
-            } else {
-              throw new Error('Invalid feedback response');
-            }
-          })
-          .catch(err => {
-            applyLocalFeedback(feedbackText);
-          });
-        } else if (deepseekKey) {
-          fetch('https://api.deepseek.com/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${deepseekKey}`
-            },
-            body: JSON.stringify({
-              model: 'deepseek-chat',
-              messages: [
-                { role: 'system', content: promptSystem },
-                { role: 'user', content: feedbackText }
-              ],
-              temperature: 0.2
-            })
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data && data.choices && data.choices[0]) {
-              const parsed = extractJsonFromText(data.choices[0].message.content);
-              processParsedSchedule(parsed, 'DeepSeek (deepseek-chat)');
-            } else {
-              throw new Error('Invalid deepseek feedback response');
-            }
-          })
-          .catch(err => {
-            applyLocalFeedback(feedbackText);
-          });
-        } else {
-          applyLocalFeedback(feedbackText);
+        try {
+          const aiResult = await executeMultiTierAi(promptSystem, feedbackText);
+          if (aiResult && aiResult.content) {
+            const parsed = extractJsonFromText(aiResult.content);
+            processParsedSchedule(parsed, aiResult.engine);
+            return;
+          }
+        } catch (e) {
+          console.warn('Feedback AI error:', e);
         }
+
+        applyLocalFeedback(feedbackText);
       }
 
       function applyLocalFeedback(feedback) {
@@ -4465,6 +4394,13 @@ Return ONLY a JSON object:
       openSettingsBtn.addEventListener('click', () => {
         if (openaiKeyInput) openaiKeyInput.value = localStorage.getItem(STORAGE_KEY_OPENAI) || '';
         if (deepseekKeyInput) deepseekKeyInput.value = localStorage.getItem(STORAGE_KEY_DEEPSEEK) || '';
+        const proxyInp = document.getElementById('proxyUrlInput');
+        if (proxyInp) proxyInp.value = localStorage.getItem(STORAGE_KEY_PROXY) || '';
+        const pStatus = document.getElementById('proxyStatusSpan');
+        if (pStatus) {
+          pStatus.textContent = 'Connect a free Cloudflare Worker or Vercel API route to give all public visitors live OpenAI access without asking them for keys.';
+          pStatus.style.color = 'var(--text-muted)';
+        }
         document.getElementById('openaiStatusSpan').textContent = 'Primary engine (GPT-4o-mini). Stored locally in your browser.';
         document.getElementById('openaiStatusSpan').style.color = 'var(--text-muted)';
         document.getElementById('deepseekStatusSpan').textContent = 'Automatic fallback engine (deepseek-chat).';
@@ -4480,6 +4416,10 @@ Return ONLY a JSON object:
         else localStorage.removeItem(STORAGE_KEY_OPENAI);
         if (dKey) localStorage.setItem(STORAGE_KEY_DEEPSEEK, dKey);
         else localStorage.removeItem(STORAGE_KEY_DEEPSEEK);
+        const proxyInp = document.getElementById('proxyUrlInput');
+        const pUrl = proxyInp ? proxyInp.value.trim() : '';
+        if (pUrl) localStorage.setItem(STORAGE_KEY_PROXY, pUrl);
+        else localStorage.removeItem(STORAGE_KEY_PROXY);
         settingsModal.style.display = 'none';
       });
 
@@ -4543,6 +4483,46 @@ Return ONLY a JSON object:
           })
           .catch(err => {
             statusSpan.textContent = `❌ Network/CORS Error: ${err.message}`;
+            statusSpan.style.color = 'var(--danger)';
+          });
+        });
+      }
+
+      
+      // Test Proxy Button
+      const testProxyBtn = document.getElementById('testProxyBtn');
+      if (testProxyBtn) {
+        testProxyBtn.addEventListener('click', () => {
+          const proxyInp = document.getElementById('proxyUrlInput');
+          const pUrl = proxyInp ? proxyInp.value.trim() : '';
+          const statusSpan = document.getElementById('proxyStatusSpan');
+          if (!pUrl) {
+            statusSpan.textContent = '⚠️ Please enter a Proxy URL (e.g. https://your-worker.workers.dev) to test.';
+            statusSpan.style.color = 'var(--warning)';
+            return;
+          }
+          statusSpan.textContent = 'Testing proxy connection...';
+          statusSpan.style.color = 'var(--accent)';
+
+          fetch(pUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              systemPrompt: 'You are a test agent.',
+              userPrompt: 'Reply with JSON {"content": "OK"}'
+            })
+          })
+          .then(res => {
+            if (res.ok) {
+              statusSpan.textContent = '✅ Serverless Proxy Connected! Public visitors can now use OpenAI/DeepSeek automatically without keys.';
+              statusSpan.style.color = 'var(--success)';
+            } else {
+              statusSpan.textContent = `❌ Proxy Connection Failed (HTTP ${res.status}). Ensure Worker has OPENAI_API_KEY environment variable.`;
+              statusSpan.style.color = 'var(--danger)';
+            }
+          })
+          .catch(err => {
+            statusSpan.textContent = `❌ Network Error: ${err.message}. Check CORS headers in worker.`;
             statusSpan.style.color = 'var(--danger)';
           });
         });
