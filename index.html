@@ -2296,44 +2296,40 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         let lastTimestamp = Date.now();
 
         globalMasterInterval = setInterval(() => {
-          const now = Date.now();
-          const elapsedSecs = Math.floor((now - lastTimestamp) / 1000);
+          try {
+            const now = Date.now();
+            const elapsedSecs = Math.floor((now - lastTimestamp) / 1000);
 
-          if (elapsedSecs >= 1) {
-            lastTimestamp = now;
+            if (elapsedSecs >= 1) {
+              lastTimestamp = now;
 
-            // Tick active routine
-            const targetRoutineName = activeRunningRoutine || currentViewedRoutine;
-            const rState = routineStates.get(targetRoutineName);
+              // Tick active routine
+              const targetRoutineName = activeRunningRoutine || currentViewedRoutine;
+              const rState = routineStates.get(targetRoutineName);
 
-            if (rState) {
-              rState.lastTickTime = now;
+              if (rState) {
+                rState.lastTickTime = now;
 
-              if (rState.timerState === 'free_time') {
-                if (rState.freeTimeData) {
-                  const remaining = Math.max(0, Math.round((rState.freeTimeData.targetTime - now) / 1000));
-                  rState.remainingSeconds = remaining;
+                if (rState.timerState === 'free_time') {
+                  if (rState.freeTimeData) {
+                    const remaining = Math.max(0, Math.round((rState.freeTimeData.targetTime - now) / 1000));
+                    rState.remainingSeconds = remaining;
 
-                  if (remaining <= 0) {
-                    // Free time expired! Auto-convene Anchor!
-                    conveneAnchorFromFreeTime(rState);
+                    if (remaining <= 0) {
+                      // Free time expired! Auto-convene Anchor!
+                      conveneAnchorFromFreeTime(rState);
+                    }
                   }
-                }
-              } else if (rState.timerState === 'calming_pause') {
-                if (rState.calmingPauseData) {
-                  if (!rState.calmingPauseData.targetTime) {
-                    rState.calmingPauseData.targetTime = now + (rState.remainingSeconds || 60) * 1000;
-                  }
-                  const remaining = Math.max(0, Math.round((rState.calmingPauseData.targetTime - now) / 1000));
-                  rState.remainingSeconds = remaining;
-
-                  if (remaining <= 0) {
-                    // Mindful Calming Pause completed! Play Apple chime and automatically begin next task
+                } else if (rState.timerState === 'calming_pause') {
+                  // Direct, reliable second-by-second countdown
+                  if (rState.remainingSeconds > elapsedSecs) {
+                    rState.remainingSeconds -= elapsedSecs;
+                  } else {
+                    rState.remainingSeconds = 0;
                     playAppleChime('convene');
                     beginNextTaskFromPause(rState);
                   }
-                }
-              } else if (rState.timerState === 'running') {
+                } else if (rState.timerState === 'running') {
                 rState.elapsedSeconds += elapsedSecs;
                 if (rState.remainingSeconds > elapsedSecs) {
                   rState.remainingSeconds -= elapsedSecs;
@@ -2359,6 +2355,9 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
             }
 
             checkUpcomingAnchorsAndPreemption();
+            }
+          } catch (err) {
+            console.error('Timer tick error:', err);
           }
         }, 500);
       }
@@ -2367,11 +2366,18 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         if (document.visibilityState === 'visible') {
           const targetRoutineName = activeRunningRoutine || currentViewedRoutine;
           const rState = routineStates.get(targetRoutineName);
-          if (rState && rState.timerState === 'calming_pause' && rState.calmingPauseData) {
+          if (rState && rState.timerState === 'calming_pause') {
             const now = Date.now();
-            if (rState.calmingPauseData.targetTime && rState.calmingPauseData.targetTime <= now) {
-              playAppleChime('convene');
-              beginNextTaskFromPause(rState);
+            const diffSecs = Math.max(0, Math.floor((now - (rState.lastTickTime || now)) / 1000));
+            if (diffSecs > 0) {
+              if (rState.remainingSeconds > diffSecs) {
+                rState.remainingSeconds -= diffSecs;
+                rState.lastTickTime = now;
+              } else {
+                rState.remainingSeconds = 0;
+                playAppleChime('convene');
+                beginNextTaskFromPause(rState);
+              }
             }
           }
           updateDisplayForViewed();
@@ -2642,8 +2648,11 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         if (gapFillBox) gapFillBox.style.display = 'none';
 
         // 1. Calming Pause State (60s mindful breather)
-        if (state.timerState === 'calming_pause' && state.calmingPauseData) {
-          const nextTask = state.tasks[state.calmingPauseData.nextActiveIdx];
+        if (state.timerState === 'calming_pause') {
+          const nextIdx = (state.calmingPauseData && state.calmingPauseData.nextActiveIdx !== undefined)
+            ? state.calmingPauseData.nextActiveIdx
+            : (state.actionableTaskIndices[state.currentActionableStep] || 0);
+          const nextTask = state.tasks[nextIdx];
           currentTaskTitle.textContent = '🧘 Calming Pause';
           stepProgressBadge.textContent = 'Mindful Reset';
           anchorTypeBadge.textContent = 'Breather • Transition';
@@ -3070,12 +3079,18 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         const targetRoutine = activeRunningRoutine || currentViewedRoutine;
         const state = routineStates.get(targetRoutine);
         if (!state) return;
-        // If in Calming Pause, add time to the mindful pause!
+        // If in Calming Pause, adjust pause time!
         if (state.timerState === 'calming_pause') {
-          state.remainingSeconds = Math.max(5, state.remainingSeconds + secondsToAdd);
-          if (state.calmingPauseData) {
-            state.calmingPauseData.targetTime = Date.now() + state.remainingSeconds * 1000;
+          const newRemaining = state.remainingSeconds + secondsToAdd;
+          if (newRemaining <= 0) {
+            // User trimmed out the entire pause: immediately start next task!
+            state.remainingSeconds = 0;
+            playAppleChime('convene');
+            beginNextTaskFromPause(state);
+            return;
           }
+          state.remainingSeconds = newRemaining;
+          state.lastTickTime = Date.now();
           saveStateToStorage();
           updateDisplayForViewed();
           updateZenBar();
