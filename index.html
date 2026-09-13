@@ -833,7 +833,7 @@
             </div>
             <div class="preemption-actions">
               <button type="button" class="btn btn-primary btn-sm" id="resumeCutoffBtn">Resume After Meeting</button>
-              <button type="button" class="btn btn-outline btn-sm" id="dismissCutoffBtn">Dismiss</button>
+              <button type="button" class="btn btn-outline btn-sm" id="dismissCutoffBtn">No, Task is Finished</button>
             </div>
           </div>
         </div>
@@ -1171,6 +1171,9 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       }
 
       function formatVariance(targetSecs, actualSecs, status) {
+        if (status === 'Past Event (Skipped)') {
+          return `<span style="color: var(--text-muted); font-weight: 600;">0m (Past Event)</span>`;
+        }
         if (status === 'Cutoff by Anchor') {
           return `<span style="color: var(--warning); font-weight: 600;">Cutoff by Anchor</span>`;
         }
@@ -1471,13 +1474,42 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
 
         tempRoutines.forEach((tasksList, rName) => {
+          const now = new Date();
+          const currentHM = now.getHours() * 60 + now.getMinutes();
+
           const actionableIndices = [];
           let totalMins = 0;
+
           tasksList.forEach((t, idx) => {
-            if (!t.isHeader && t.durationSecs > 0) {
-              actionableIndices.push(idx);
-              totalMins += t.durationMins;
+            if (t.isHeader || t.durationSecs === 0) return;
+
+            // Check if anchor event was scheduled in the past
+            if (t.isAnchor && t.scheduledStart) {
+              const parts = t.scheduledStart.split(':');
+              if (parts.length >= 2) {
+                const anchorHM = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+                if (anchorHM < currentHM) {
+                  // Past anchor: assume completed and skip over with 0 time consumed
+                  t.status = 'done';
+                  recordCompletedTask(
+                    rName,
+                    t,
+                    t.durationSecs,
+                    0,
+                    0, // 0 time consumed
+                    0,
+                    false,
+                    null,
+                    null,
+                    'Past Event (Skipped)'
+                  );
+                  return;
+                }
+              }
             }
+
+            actionableIndices.push(idx);
+            totalMins += t.durationMins;
           });
 
           let initialRemaining = 0;
@@ -1711,7 +1743,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
       function showPreemptionToast(taskName, remainingMins, anchorName) {
         if (!preemptionToast || !preemptionText) return;
-        preemptionText.innerHTML = `📅 <strong>Anchor Started:</strong> "${escapeHtml(anchorName)}". Previous task "<em>${escapeHtml(taskName)}</em>" was stopped (${remainingMins}m remaining).`;
+        preemptionText.innerHTML = `📅 <strong>Meeting Anchor Started:</strong> "${escapeHtml(anchorName)}"<br/><span style="font-size: 0.85rem; color: #f1f5f9; display: inline-block; margin-top: 3px;">Previous task "<em>${escapeHtml(taskName)}</em>" was stopped with ${remainingMins}m remaining. Would you like to resume it after the meeting?</span>`;
         preemptionToast.style.display = 'block';
       }
 
@@ -1799,8 +1831,12 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
               if (currentActiveIdx >= 0 && currentActiveIdx < idx) {
                 const activeTask = state.tasks[currentActiveIdx];
                 if (activeTask && !activeTask.isAnchor && activeTask.status === 'active') {
-                  if (currentSecsOfDay >= anchorSecs && (state.timerState === 'running' || state.timerState === 'alarm_overtime' || state.timerState === 'paused')) {
-                    triggerAnchorPreemption(state, activeTask, currentActiveIdx, t, idx);
+                  // Must be in arrival window: diff === 0, wall-clock reached anchorSecs, within 15s, and not previously triggered
+                  if (diff === 0 && currentSecsOfDay >= anchorSecs && (currentSecsOfDay - anchorSecs) < 15) {
+                    if (!t._preemptedOnce) {
+                      t._preemptedOnce = true;
+                      triggerAnchorPreemption(state, activeTask, currentActiveIdx, t, idx);
+                    }
                   }
                 }
               }
