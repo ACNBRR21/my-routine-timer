@@ -1206,6 +1206,43 @@
       font-style: italic;
     }
 
+  
+    .review-move-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.72rem;
+      padding: 2px 5px;
+      border-radius: 4px;
+      line-height: 1.2;
+      margin-right: 2px;
+      transition: all 0.15s ease;
+    }
+    .review-move-btn:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .btn-icon-settings {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .btn-icon-settings:hover {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: var(--accent);
+      color: var(--text-main);
+    }
+
   </style>
 </head>
 <body>
@@ -2074,8 +2111,16 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           let durationMins = 0;
           let parentTask = '';
           let scheduledStart = '';
+          let notes = '';
 
-          if (cols.length >= 5) {
+          if (cols.length >= 6) {
+            routine = cols[0].replace(/^["']|["']$/g, '').trim() || 'Work Day';
+            taskName = cols[1].replace(/^["']|["']$/g, '').trim();
+            durationMins = parseFloat(cols[2]) || 0;
+            parentTask = cols[3] ? cols[3].replace(/^["']|["']$/g, '').trim() : '';
+            scheduledStart = cols[4] ? cols[4].replace(/^["']|["']$/g, '').trim() : '';
+            notes = cols[5] ? cols[5].replace(/^["']|["']$/g, '').trim() : '';
+          } else if (cols.length === 5) {
             routine = cols[0].replace(/^["']|["']$/g, '').trim() || 'Work Day';
             taskName = cols[1].replace(/^["']|["']$/g, '').trim();
             durationMins = parseFloat(cols[2]) || 0;
@@ -4031,7 +4076,9 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
               <td style="min-width: 160px;">
                 <input type="text" class="review-input-notes" data-index="${idx}" value="${escapeHtml(item.notes)}" placeholder="Explanation / Instructions (word-wrapped)" />
               </td>
-              <td style="text-align: center; width: 40px;">
+              <td style="text-align: center; width: 84px; white-space: nowrap;">
+                <button type="button" class="review-move-btn review-move-up" data-index="${idx}" title="Move Up" ${idx === 0 ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''}>▲</button>
+                <button type="button" class="review-move-btn review-move-down" data-index="${idx}" title="Move Down" ${idx === pendingScheduleItems.length - 1 ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''}>▼</button>
                 <button type="button" class="review-del-btn" data-index="${idx}" title="Remove Task">✕</button>
               </td>
             </tr>
@@ -4058,7 +4105,7 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
                   <th style="width: 65px; text-align: center;">Mins</th>
                   <th style="width: 75px; text-align: center;">Time</th>
                   <th style="min-width: 160px;">Notes / Context</th>
-                  <th style="width: 40px; text-align: center;">Del</th>
+                  <th style="width: 84px; text-align: center;">Order / Del</th>
                 </tr>
               </thead>
               <tbody>
@@ -4070,8 +4117,8 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
             <button type="button" class="btn btn-outline btn-sm" id="addReviewTaskBtn">+ Add Task</button>
             <button type="button" class="btn btn-emerald" id="confirmLoadScheduleBtn">Load Schedule into Cockpit ⏩</button>
           </div>
-          <div style="margin-top: 10px; font-size: 0.82rem; color: var(--text-muted);">
-            💬 <em>Does this look right? You can edit any title or duration in the table above, or type adjustments below (e.g. <strong>"make review 20 mins"</strong>, <strong>"add stretch for 5m"</strong>), or click <strong>Load Schedule into Cockpit</strong>!</em>
+          <div style="margin-top: 10px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.45;">
+            💡 <strong>Reorder & Edit:</strong> You can interchange or move tasks using the <strong>▲ / ▼</strong> buttons, edit titles and durations directly in the table, or instruct ChatGPT below (e.g. <em>"move review to the top"</em>, <em>"swap task 1 and 3"</em>, <em>"add 10m stretch"</em>). When satisfied, click <strong>Load Schedule into Cockpit ⏩</strong>!
           </div>
         `;
 
@@ -4122,12 +4169,63 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
           });
         });
 
+        function syncReviewInputsFromDOM() {
+          document.querySelectorAll('.review-input-name').forEach(inp => {
+            const idx = parseInt(inp.dataset.index, 10);
+            if (pendingScheduleItems[idx] && inp.value) pendingScheduleItems[idx].shortName = inp.value.trim();
+          });
+          document.querySelectorAll('.review-input-dur').forEach(inp => {
+            const idx = parseInt(inp.dataset.index, 10);
+            if (pendingScheduleItems[idx] && inp.value) pendingScheduleItems[idx].duration = parseInt(inp.value, 10) || 5;
+          });
+          document.querySelectorAll('.review-input-time').forEach(inp => {
+            const idx = parseInt(inp.dataset.index, 10);
+            if (pendingScheduleItems[idx]) {
+              pendingScheduleItems[idx].scheduledTime = inp.value.trim();
+              pendingScheduleItems[idx].type = inp.value.trim() ? 'meeting' : 'task';
+            }
+          });
+          document.querySelectorAll('.review-input-notes').forEach(inp => {
+            const idx = parseInt(inp.dataset.index, 10);
+            if (pendingScheduleItems[idx]) pendingScheduleItems[idx].notes = inp.value.trim();
+          });
+        }
+
+        document.querySelectorAll('.review-move-up').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const idx = parseInt(e.target.dataset.index, 10);
+            if (idx > 0) {
+              syncReviewInputsFromDOM();
+              const temp = pendingScheduleItems[idx];
+              pendingScheduleItems[idx] = pendingScheduleItems[idx - 1];
+              pendingScheduleItems[idx - 1] = temp;
+              if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
+              renderInteractiveReview('Order Updated', null);
+            }
+          });
+        });
+
+        document.querySelectorAll('.review-move-down').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const idx = parseInt(e.target.dataset.index, 10);
+            if (idx < pendingScheduleItems.length - 1) {
+              syncReviewInputsFromDOM();
+              const temp = pendingScheduleItems[idx];
+              pendingScheduleItems[idx] = pendingScheduleItems[idx + 1];
+              pendingScheduleItems[idx + 1] = temp;
+              if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
+              renderInteractiveReview('Order Updated', null);
+            }
+          });
+        });
+
         document.querySelectorAll('.review-del-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
+            syncReviewInputsFromDOM();
             const idx = parseInt(e.target.dataset.index, 10);
             pendingScheduleItems.splice(idx, 1);
             if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
-            renderInteractiveReview('Table Updated', null);
+            renderInteractiveReview('Task Removed', null);
           });
         });
 
@@ -4163,13 +4261,16 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
           return;
         }
 
-        const promptSystem = `You are updating an existing Harvard Timeboxing schedule based on user feedback.
+        const promptSystem = `You are an executive Harvard Timeboxing assistant updating a daily schedule based on user instructions.
 Current items:
 ${JSON.stringify(pendingScheduleItems)}
 
-Modify, add, delete, reorder, or adjust task names/durations as requested.
-Keep task names short and concise (2-5 words).
-Preserve or update notes.
+STRICT REORDERING & EDITING INSTRUCTIONS:
+1. If the user asks to interchange, swap, move, or reorder tasks (e.g. "move review to the top", "swap task 1 and 3", "put vitamin D first"):
+   Update the array order of "items" exactly as requested!
+2. If the user asks to modify durations, titles, or delete/add tasks, apply those changes.
+3. Keep task names short (2–5 words).
+4. Preserve notes and start times.
 
 Return ONLY a JSON object:
 {
@@ -4340,55 +4441,66 @@ Return ONLY a JSON object:
           return;
         }
 
-        // Synchronize DOM inputs directly in case user clicked without blurring
-        document.querySelectorAll('.review-input-name').forEach(inp => {
-          const idx = parseInt(inp.dataset.index, 10);
-          if (pendingScheduleItems[idx] && inp.value) pendingScheduleItems[idx].shortName = inp.value.trim();
-        });
-        document.querySelectorAll('.review-input-dur').forEach(inp => {
-          const idx = parseInt(inp.dataset.index, 10);
-          if (pendingScheduleItems[idx] && inp.value) pendingScheduleItems[idx].duration = parseInt(inp.value, 10) || 5;
-        });
-        document.querySelectorAll('.review-input-time').forEach(inp => {
-          const idx = parseInt(inp.dataset.index, 10);
-          if (pendingScheduleItems[idx]) {
-            pendingScheduleItems[idx].scheduledTime = inp.value.trim();
-            pendingScheduleItems[idx].type = inp.value.trim() ? 'meeting' : 'task';
+        try {
+          // Synchronize DOM inputs directly in case user clicked without blurring
+          document.querySelectorAll('.review-input-name').forEach(inp => {
+            const idx = parseInt(inp.dataset.index, 10);
+            if (pendingScheduleItems[idx] && inp.value) pendingScheduleItems[idx].shortName = inp.value.trim();
+          });
+          document.querySelectorAll('.review-input-dur').forEach(inp => {
+            const idx = parseInt(inp.dataset.index, 10);
+            if (pendingScheduleItems[idx] && inp.value) pendingScheduleItems[idx].duration = parseInt(inp.value, 10) || 5;
+          });
+          document.querySelectorAll('.review-input-time').forEach(inp => {
+            const idx = parseInt(inp.dataset.index, 10);
+            if (pendingScheduleItems[idx]) {
+              pendingScheduleItems[idx].scheduledTime = inp.value.trim();
+              pendingScheduleItems[idx].type = inp.value.trim() ? 'meeting' : 'task';
+            }
+          });
+          document.querySelectorAll('.review-input-notes').forEach(inp => {
+            const idx = parseInt(inp.dataset.index, 10);
+            if (pendingScheduleItems[idx]) pendingScheduleItems[idx].notes = inp.value.trim();
+          });
+
+          const now = new Date();
+          const currentHM = now.getHours() * 60 + now.getMinutes();
+          const routineName = currentHM < 720 ? 'Morning Block' : (currentHM < 1020 ? 'Afternoon Flow' : 'Evening Routine');
+
+          const csvLines = ['Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start,Notes'];
+          csvLines.push(`"${routineName}","${routineName} Focus",0,,,`);
+
+          pendingScheduleItems.forEach((item) => {
+            const isAnchor = item.type === 'meeting' || !!(item.scheduledTime && item.scheduledTime.trim());
+            const safeName = (item.shortName || 'Focus Task').replace(/"/g, '""').trim();
+            const safeNotes = (item.notes || '').replace(/"/g, '""').trim();
+            const schedTime = isAnchor ? item.scheduledTime.trim() : '';
+            const prefix = item.priority ? '★ [Top Priority] ' : '';
+
+            csvLines.push(`"${routineName}","${prefix}${safeName}",${item.duration},,"${schedTime}","${safeNotes}"`);
+          });
+
+          const generatedCSV = csvLines.join('\n');
+          parseCSVContent(generatedCSV);
+          closePlannerChat();
+
+          // Smoothly switch view to the loaded routine
+          if (typeof switchViewedRoutine === 'function') {
+            switchViewedRoutine(routineName);
+          } else {
+            currentViewedRoutine = routineName;
+            routineSelect.value = routineName;
+            renderChecklist();
+            updateZenBar();
           }
-        });
-        document.querySelectorAll('.review-input-notes').forEach(inp => {
-          const idx = parseInt(inp.dataset.index, 10);
-          if (pendingScheduleItems[idx]) pendingScheduleItems[idx].notes = inp.value.trim();
-        });
 
-        const now = new Date();
-        const currentHM = now.getHours() * 60 + now.getMinutes();
-        const routineName = currentHM < 720 ? 'Morning Block' : (currentHM < 1020 ? 'Afternoon Flow' : 'Evening Routine');
-
-        const csvLines = ['Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start,Notes'];
-        csvLines.push(`${routineName},${routineName} Focus,0,,,`);
-
-        pendingScheduleItems.forEach((item) => {
-          const isAnchor = item.type === 'meeting' || !!(item.scheduledTime && item.scheduledTime.trim());
-          const safeName = (item.shortName || 'Focus Task').replace(/,/g, ' ').replace(/"/g, '""').trim();
-          const safeNotes = (item.notes || '').replace(/,/g, ' ').replace(/"/g, '""').trim();
-          const schedTime = isAnchor ? item.scheduledTime.trim() : '';
-          const prefix = item.priority ? '★ [Top Priority] ' : '';
-
-          csvLines.push(`"${routineName}","${prefix}${safeName}",${item.duration},,"${schedTime}","${safeNotes}"`);
-        });
-
-        const generatedCSV = csvLines.join('\n');
-        parseCSVContent(generatedCSV);
-        closePlannerChat();
-
-        // Switch to the newly generated routine view
-        currentViewedRoutine = routineName;
-        routineSelect.value = routineName;
-        renderChecklist();
-        updateZenBar();
-
-        appendChatBubble('bot', '🎉 <strong>Loaded into Cockpit!</strong> Your Harvard Timebox schedule is active and ready to execute.');
+          // Visual confirmation banner
+          const zenTitle = document.getElementById('zenCurrentTaskTitle');
+          if (zenTitle) zenTitle.textContent = `${routineName} Loaded`;
+        } catch (err) {
+          console.error('Failed to load schedule into cockpit:', err);
+          alert('Unable to load schedule: ' + err.message);
+        }
       }
 
       // Settings Modal Handlers & Key Testing
