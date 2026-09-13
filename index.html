@@ -89,7 +89,7 @@
       position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;
     }
 
-    /* How It Works Quick Bar */
+    /* Quick Guide / Concept Summary Bar */
     .quick-guide-bar {
       display: flex;
       justify-content: space-between;
@@ -106,13 +106,29 @@
 
     .guide-link-btn {
       color: var(--accent);
-      text-decoration: none;
+      background: transparent;
+      border: none;
       font-weight: 600;
+      font-size: 0.84rem;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      cursor: pointer;
+      padding: 0;
     }
-    .guide-link-btn:hover { text-decoration: underline; }
+    .guide-link-btn:hover { text-decoration: underline; color: #fff; }
+
+    .guide-link-btn-external {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+    }
+    .guide-link-btn-external:hover { color: var(--text-main); border-color: var(--accent); }
 
     /* Routine & Radar Bar */
     .routine-bar {
@@ -565,6 +581,96 @@
       background: transparent;
       border: none;
     }
+
+    /* In-App Guide Modal Overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 860px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    .modal-header h2 { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
+
+    .modal-timer-badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.12);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .btn-close-modal {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-close-modal:hover { color: #fff; border-color: var(--danger); }
+
+    .modal-body {
+      padding: 24px 20px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .modal-body h3 { font-size: 1.05rem; color: var(--accent); margin-bottom: 6px; }
+    .modal-body pre {
+      background: #0b1120;
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+    }
+    .modal-body ul, .modal-body ol { margin-left: 18px; }
+    .modal-body li { margin-bottom: 4px; }
   </style>
 </head>
 <body>
@@ -591,7 +697,10 @@
       <div>
         <strong>The Anchor & Flow Method:</strong> 📅 Hard meetings anchor your wall-clock, while ⏱ fluid tasks flow dynamically between them.
       </div>
-      <a href="guide.html" class="guide-link-btn">Read the Master Guide &rarr;</a>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button type="button" class="guide-link-btn" id="openGuideModalBtn">Read Master Guide &rarr;</button>
+        <a href="guide.html" target="_blank" rel="noopener noreferrer" class="guide-link-btn-external" title="Open guide in new tab">↗</a>
+      </div>
     </div>
 
     <!-- Routine Selection & Calendar Anchor Radar -->
@@ -705,10 +814,52 @@
     </div>
   </div>
 
+  <!-- In-App Master Guide Slide-Over Modal -->
+  <div class="modal-overlay" id="guideModalOverlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Anchor & Flow — Quick Master Guide</h2>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <span class="modal-timer-badge" id="modalLiveTimerBadge">⏳ Timer Active</span>
+          <button type="button" class="btn-close-modal" id="closeGuideModalBtn">&times; Close</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <section>
+          <h3>1. The Core Innovation: Anchors vs. Flow</h3>
+          <p>Traditional timers run in isolation without knowing when you have meetings. <strong>Anchor & Flow</strong> bridges the gap:</p>
+          <ul>
+            <li><strong>Hard Anchors (📅):</strong> Meetings imported from Outlook or Google Calendar with a fixed start time (e.g., <code>14:30</code>). They remain pinned to the real wall-clock.</li>
+            <li><strong>Fluid Flow (⏱):</strong> Deep work sprints, review tasks, and ergonomic habits (squats, hydration) that flow dynamically through the open windows between your meetings.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>2. The AI Prompt Schema (5 Columns)</h3>
+          <pre>Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start
+Work Day,Deep Work Sprint,50,,
+Work Day,Hydrate & 10 Squats,2,,
+Work Day,Executive Sync (Outlook),45,,14:30</pre>
+          <p>Leave <code>Scheduled Start</code> empty for flexible tasks. Populate with <code>HH:MM</code> only for hard calendar meetings.</p>
+        </section>
+
+        <section>
+          <h3>3. Key Controls</h3>
+          <ul>
+            <li><strong>Finish Early (⏩):</strong> Finished ahead of time? Tap to log exact wall-clock seconds saved and instantly advance.</li>
+            <li><strong>Time Extensions (+1m to +1h):</strong> Tap anytime—even when the alarm sounds—to add time, silence the alert, and continue working without penalty.</li>
+            <li><strong>Zen Mode (⊙):</strong> Press <code>Z</code> on your keyboard to eliminate all distractions and display only the countdown and your next meeting anchor.</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function () {
-      const STORAGE_KEY_ROUTINES = 'anchor_flow_routines_v1';
-      const STORAGE_KEY_RESULTS = 'anchor_flow_results_v1';
+      const STORAGE_KEY_ROUTINES = 'anchor_flow_routines_v2';
+      const STORAGE_KEY_RESULTS = 'anchor_flow_results_v2';
+      const STORAGE_KEY_ACTIVE = 'anchor_flow_active_running_v2';
 
       const SAMPLE_CSV = `Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start
 Work Day,Morning Alignment,0,,
@@ -773,7 +924,12 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       const loadSampleBtn = document.getElementById('loadSampleBtn');
       const csvFileInput = document.getElementById('csvFileInput');
 
-      // Update System Clock
+      // Modal Elements
+      const openGuideModalBtn = document.getElementById('openGuideModalBtn');
+      const closeGuideModalBtn = document.getElementById('closeGuideModalBtn');
+      const guideModalOverlay = document.getElementById('guideModalOverlay');
+      const modalLiveTimerBadge = document.getElementById('modalLiveTimerBadge');
+
       function updateSystemClock() {
         const now = new Date();
         systemClock.textContent = now.toLocaleTimeString([], { hour12: false });
@@ -782,7 +938,6 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       setInterval(updateSystemClock, 1000);
       updateSystemClock();
 
-      // Steve Jobs Design Refinement: Harmonic Audio Chime
       function getAudioContext() {
         try {
           if (!audioCtx) {
@@ -802,7 +957,6 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           if (!ctx) return;
 
           const now = ctx.currentTime;
-          // Dual harmonic frequencies (800Hz base + 1200Hz warm overtone)
           [800, 1200].forEach((freq, i) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -860,7 +1014,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           .replace(/"/g, '&quot;');
       }
 
-      // LocalStorage Persistence
+      // Wall-Clock State Persistence: preserves 'running' state and records exact timestamp
       function saveStateToStorage() {
         try {
           const serializable = {};
@@ -874,21 +1028,25 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
               overtimeSeconds: val.overtimeSeconds,
               elapsedSeconds: val.elapsedSeconds,
               extendedSeconds: val.extendedSeconds,
-              timerState: val.timerState === 'running' ? 'paused' : val.timerState,
-              totalMins: val.totalMins
+              timerState: val.timerState, // Preserves running state
+              totalMins: val.totalMins,
+              lastTickTime: Date.now()
             };
           });
           localStorage.setItem(STORAGE_KEY_ROUTINES, JSON.stringify(serializable));
           localStorage.setItem(STORAGE_KEY_RESULTS, JSON.stringify(recordedResults));
+          localStorage.setItem(STORAGE_KEY_ACTIVE, activeRunningRoutine || '');
         } catch (e) {
           console.warn('Could not auto-save state:', e);
         }
       }
 
+      // Restores state and compensates for any elapsed time using wall clock
       function loadStateFromStorage() {
         try {
           const rawRoutines = localStorage.getItem(STORAGE_KEY_ROUTINES);
           const rawResults = localStorage.getItem(STORAGE_KEY_RESULTS);
+          const savedActiveRunning = localStorage.getItem(STORAGE_KEY_ACTIVE);
 
           if (rawResults) {
             recordedResults = JSON.parse(rawResults) || [];
@@ -901,13 +1059,49 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           if (rawRoutines) {
             const parsed = JSON.parse(rawRoutines);
             routineStates.clear();
+            const now = Date.now();
+
             Object.keys(parsed).forEach(rName => {
               const item = parsed[rName];
+              let remaining = item.remainingSeconds;
+              let elapsed = item.elapsedSeconds;
+              let overtime = item.overtimeSeconds;
+              let state = item.timerState;
+
+              // If running, calculate elapsed time since last save
+              if (state === 'running' && item.lastTickTime) {
+                const diffSeconds = Math.max(0, Math.floor((now - item.lastTickTime) / 1000));
+                if (diffSeconds > 0) {
+                  elapsed += diffSeconds;
+                  if (remaining > diffSeconds) {
+                    remaining -= diffSeconds;
+                  } else {
+                    const extra = diffSeconds - remaining;
+                    remaining = 0;
+                    overtime += extra;
+                    state = 'alarm_overtime';
+                  }
+                }
+              }
+
               routineStates.set(rName, {
                 ...item,
-                actualStartTime: null
+                remainingSeconds: remaining,
+                elapsedSeconds: elapsed,
+                overtimeSeconds: overtime,
+                timerState: state,
+                actualStartTime: null,
+                lastTickTime: now
               });
             });
+
+            if (savedActiveRunning && routineStates.has(savedActiveRunning)) {
+              activeRunningRoutine = savedActiveRunning;
+              if (routineStates.get(savedActiveRunning).timerState === 'alarm_overtime') {
+                startAudioAlertLoop();
+              }
+            }
+
             if (routineStates.size > 0) {
               populateRoutineDropdown();
               startGlobalTickLoop();
@@ -1035,7 +1229,8 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
             extendedSeconds: 0,
             timerState: 'idle',
             totalMins: totalMins,
-            actualStartTime: null
+            actualStartTime: null,
+            lastTickTime: Date.now()
           });
         });
 
@@ -1073,40 +1268,62 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         updateBackgroundBanner();
       }
 
+      // Delta-based master tick: calculates real seconds between ticks to eliminate drift
       function startGlobalTickLoop() {
         if (globalMasterInterval) clearInterval(globalMasterInterval);
 
+        let lastTimestamp = Date.now();
+
         globalMasterInterval = setInterval(() => {
-          if (activeRunningRoutine) {
-            const rState = routineStates.get(activeRunningRoutine);
-            if (rState) {
-              if (rState.timerState === 'running') {
-                rState.elapsedSeconds++;
-                if (rState.remainingSeconds > 0) {
-                  rState.remainingSeconds--;
-                  if (rState.remainingSeconds === 0) {
+          const now = Date.now();
+          const elapsedSecs = Math.floor((now - lastTimestamp) / 1000);
+
+          if (elapsedSecs >= 1) {
+            lastTimestamp = now;
+
+            if (activeRunningRoutine) {
+              const rState = routineStates.get(activeRunningRoutine);
+              if (rState) {
+                rState.lastTickTime = now;
+                if (rState.timerState === 'running') {
+                  rState.elapsedSeconds += elapsedSecs;
+                  if (rState.remainingSeconds > elapsedSecs) {
+                    rState.remainingSeconds -= elapsedSecs;
+                  } else {
+                    const extra = elapsedSecs - rState.remainingSeconds;
+                    rState.remainingSeconds = 0;
                     rState.timerState = 'alarm_overtime';
-                    rState.overtimeSeconds = 0;
+                    rState.overtimeSeconds += extra;
                     startAudioAlertLoop();
                   }
+                } else if (rState.timerState === 'alarm_overtime') {
+                  rState.elapsedSeconds += elapsedSecs;
+                  rState.overtimeSeconds += elapsedSecs;
                 }
-              } else if (rState.timerState === 'alarm_overtime') {
-                rState.elapsedSeconds++;
-                rState.overtimeSeconds++;
-              }
 
-              if (currentViewedRoutine === activeRunningRoutine) {
-                updateDisplayForViewed();
-                updateControls();
+                if (currentViewedRoutine === activeRunningRoutine) {
+                  updateDisplayForViewed();
+                  updateControls();
+                }
+                updateBackgroundBanner();
+                saveStateToStorage();
               }
-              updateBackgroundBanner();
-              saveStateToStorage();
             }
-          }
 
-          checkUpcomingAnchors();
-        }, 1000);
+            checkUpcomingAnchors();
+            updateModalLiveBadge();
+          }
+        }, 500);
       }
+
+      // Real-time synchronization when tab regains visibility
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          updateDisplayForViewed();
+          updateControls();
+          updateBackgroundBanner();
+        }
+      });
 
       function checkUpcomingAnchors() {
         const state = routineStates.get(currentViewedRoutine);
@@ -1394,7 +1611,6 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         updatePacingMultiplier();
       }
 
-      // Steve Jobs Innovation: Real-Time Estimation Multiplier
       function updatePacingMultiplier() {
         if (recordedResults.length === 0) {
           pacingBadge.textContent = 'Velocity: 1.0x';
@@ -1499,6 +1715,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
         activeRunningRoutine = currentViewedRoutine;
         state.timerState = (state.overtimeSeconds > 0) ? 'alarm_overtime' : 'running';
+        state.lastTickTime = Date.now();
 
         saveStateToStorage();
         updateDisplayForViewed();
@@ -1608,6 +1825,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           state.remainingSeconds = state.tasks[nextActiveIdx].durationSecs;
           state.actualStartTime = new Date();
           state.timerState = 'running';
+          state.lastTickTime = Date.now();
           activeRunningRoutine = state.name;
 
           saveStateToStorage();
@@ -1652,7 +1870,6 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
       }
 
-      // Zen Focus Mode Toggle
       function toggleZenMode() {
         document.body.classList.toggle('zen-mode');
         const isZen = document.body.classList.contains('zen-mode');
@@ -1668,17 +1885,54 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
       });
 
-      // Clear Session Data
+      // In-App Guide Modal Interactions
+      function openGuideModal() {
+        guideModalOverlay.classList.add('open');
+        updateModalLiveBadge();
+      }
+
+      function closeGuideModal() {
+        guideModalOverlay.classList.remove('open');
+      }
+
+      function updateModalLiveBadge() {
+        if (!guideModalOverlay.classList.contains('open')) return;
+        if (activeRunningRoutine) {
+          const run = routineStates.get(activeRunningRoutine);
+          if (run && run.timerState === 'running') {
+            modalLiveTimerBadge.textContent = `⏳ "${run.name}": ${formatMMSS(run.remainingSeconds)}`;
+            modalLiveTimerBadge.style.color = 'var(--accent)';
+          } else if (run && run.timerState === 'alarm_overtime') {
+            modalLiveTimerBadge.textContent = `🚨 Overtime: +${formatMMSS(run.overtimeSeconds)}`;
+            modalLiveTimerBadge.style.color = 'var(--danger)';
+          } else {
+            modalLiveTimerBadge.textContent = `⏸ Paused`;
+            modalLiveTimerBadge.style.color = 'var(--text-muted)';
+          }
+        } else {
+          modalLiveTimerBadge.textContent = `⏱ Timer Idle`;
+          modalLiveTimerBadge.style.color = 'var(--text-muted)';
+        }
+      }
+
+      openGuideModalBtn.addEventListener('click', openGuideModal);
+      closeGuideModalBtn.addEventListener('click', closeGuideModal);
+      guideModalOverlay.addEventListener('click', (e) => {
+        if (e.target === guideModalOverlay) closeGuideModal();
+      });
+
       clearSessionBtn.addEventListener('click', () => {
         if (confirm('Clear saved schedule and audit history for today?')) {
           localStorage.removeItem(STORAGE_KEY_ROUTINES);
           localStorage.removeItem(STORAGE_KEY_RESULTS);
+          localStorage.removeItem(STORAGE_KEY_ACTIVE);
           location.reload();
         }
       });
 
       function downloadPromptMarkdown() {
-        const blob = new Blob([PROMPT_MARKDOWN_CONTENT], { type: 'text/markdown;charset=utf-8;' });
+        const promptContent = `# Master "Anchor & Flow" CSV Generator Prompt\n\n[Refer to guide.html or GitHub PROMPT.md for full prompt instructions]\n`;
+        const blob = new Blob([promptContent], { type: 'text/markdown;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -1762,7 +2016,6 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         reader.readAsText(file);
       });
 
-      // Restore session on load or populate default sample
       if (!loadStateFromStorage()) {
         parseCSVContent(SAMPLE_CSV);
       }
