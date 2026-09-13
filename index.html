@@ -45,7 +45,6 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      transition: all 0.3s ease;
     }
 
     /* Executive Top Bar */
@@ -89,7 +88,7 @@
       position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;
     }
 
-    /* Quick Guide / Concept Summary Bar */
+    /* Quick Guide Bar */
     .quick-guide-bar {
       display: flex;
       justify-content: space-between;
@@ -118,17 +117,70 @@
     }
     .guide-link-btn:hover { text-decoration: underline; color: #fff; }
 
-    .guide-link-btn-external {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.82rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      display: inline-flex;
+    /* Sticky Zen Mini-Timer Bar (Visible in Guide View) */
+    .zen-sticky-bar {
+      display: none;
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      justify-content: space-between;
       align-items: center;
+      background: rgba(19, 27, 46, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 10px 18px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+      flex-wrap: wrap;
+      gap: 12px;
+      width: 100%;
     }
-    .guide-link-btn-external:hover { color: var(--text-main); border-color: var(--accent); }
+
+    .zen-sticky-bar.alert-mode {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.15);
+      animation: alert-flash 1s infinite alternate ease-in-out;
+    }
+
+    .zen-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-ring 2s infinite;
+      flex-shrink: 0;
+    }
+
+    .zen-task-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 280px;
+    }
+
+    .zen-bar-center {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 1px;
+    }
+
+    .zen-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
     /* Routine & Radar Bar */
     .routine-bar {
@@ -196,7 +248,7 @@
       animation: alert-flash 1s infinite alternate ease-in-out;
     }
 
-    /* Timer Cockpit Card */
+    /* Main Timer Cockpit */
     .timer-hero {
       background: var(--bg-surface);
       border: 1px solid var(--border);
@@ -209,7 +261,6 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-      transition: all 0.3s ease;
     }
 
     .overall-progress-bar-container {
@@ -400,6 +451,8 @@
     .btn-next:hover:not(:disabled) { background-color: var(--danger-hover); }
     .btn-next.pulsing { animation: pulse-ring 1.5s infinite; }
 
+    .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+
     @keyframes pulse-ring {
       0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
       70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
@@ -561,7 +614,33 @@
 
     .empty-state { text-align: center; padding: 24px 16px; color: var(--text-muted); font-size: 0.85rem; }
 
-    /* Zen Focus Mode Styling */
+    /* In-App Guide View Section */
+    .guide-view-section {
+      display: none;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .guide-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    .guide-card h2 { font-size: 1.3rem; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+    .guide-card h3 { font-size: 1.05rem; font-weight: 600; color: var(--text-main); margin: 16px 0 6px; }
+    .guide-card pre {
+      background: #0b1120; color: #e2e8f0; padding: 14px; border-radius: 8px; font-size: 0.82rem;
+      border: 1px solid var(--border); overflow-x: auto; margin: 10px 0;
+    }
+    .guide-card ul, .guide-card ol { margin-left: 20px; margin-bottom: 12px; }
+    .guide-card li { margin-bottom: 4px; }
+
+    /* Zen Mode */
     body.zen-mode header,
     body.zen-mode .quick-guide-bar,
     body.zen-mode .routine-bar,
@@ -570,113 +649,18 @@
     }
 
     body.zen-mode .timer-hero {
-      box-shadow: none;
-      border: none;
-      background: transparent;
-      padding-top: 10vh;
+      box-shadow: none; border: none; background: transparent; padding-top: 10vh;
     }
 
     body.zen-mode .clock-display {
-      font-size: clamp(5.5rem, 16vw, 9rem);
-      background: transparent;
-      border: none;
+      font-size: clamp(5.5rem, 16vw, 9rem); background: transparent; border: none;
     }
-
-    /* In-App Guide Modal Overlay */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(9, 13, 22, 0.85);
-      backdrop-filter: blur(6px);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-overlay.open {
-      display: flex;
-    }
-
-    .modal-content {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      width: 100%;
-      max-width: 860px;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-      overflow: hidden;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.5);
-    }
-
-    .modal-header h2 { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
-
-    .modal-timer-badge {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--accent);
-      background: rgba(56, 189, 248, 0.12);
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    }
-
-    .btn-close-modal {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .btn-close-modal:hover { color: #fff; border-color: var(--danger); }
-
-    .modal-body {
-      padding: 24px 20px;
-      overflow-y: auto;
-      font-size: 0.9rem;
-      line-height: 1.6;
-      color: var(--text-muted);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .modal-body h3 { font-size: 1.05rem; color: var(--accent); margin-bottom: 6px; }
-    .modal-body pre {
-      background: #0b1120;
-      color: #e2e8f0;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      overflow-x: auto;
-      border: 1px solid var(--border);
-    }
-    .modal-body ul, .modal-body ol { margin-left: 18px; }
-    .modal-body li { margin-bottom: 4px; }
   </style>
 </head>
 <body>
   <div class="app-container">
     <!-- Top Bar with Computer Clock -->
-    <header>
+    <header id="mainHeader">
       <div class="system-clock-badge">
         <span class="sys-time" id="systemClock">00:00:00</span>
         <span class="sys-date" id="systemDate">Mon, Sep 12</span>
@@ -692,174 +676,185 @@
       </div>
     </header>
 
-    <!-- Quick Guide / Concept Summary Bar -->
-    <div class="quick-guide-bar">
+    <!-- Persistent Zen Mini-Timer Bar (Visible while reading Guide) -->
+    <div class="zen-sticky-bar" id="zenStickyBar">
+      <div class="zen-bar-left">
+        <span class="pulse-dot"></span>
+        <div>
+          <div class="zen-task-title" id="zenBarTaskTitle">No Task Active</div>
+          <span style="font-size: 0.72rem; color: var(--text-muted);" id="zenBarRoutineName">Routine</span>
+        </div>
+      </div>
+      <div class="zen-bar-center" id="zenBarClock">00:00</div>
+      <div class="zen-bar-right">
+        <button type="button" class="btn btn-nudge add" id="zenBarAdd5Btn">+5m</button>
+        <button type="button" class="btn btn-warning btn-sm" id="zenBarPauseBtn">Pause</button>
+        <button type="button" class="btn btn-next btn-sm" id="zenBarNextBtn">Next</button>
+        <button type="button" class="btn btn-primary btn-sm" id="zenBarReturnBtn">&larr; Return to Dashboard</button>
+      </div>
+    </div>
+
+    <!-- Quick Guide Summary Bar -->
+    <div class="quick-guide-bar" id="quickGuideBar">
       <div>
         <strong>The Anchor & Flow Method:</strong> 📅 Hard meetings anchor your wall-clock, while ⏱ fluid tasks flow dynamically between them.
       </div>
       <div style="display: flex; gap: 8px; align-items: center;">
-        <button type="button" class="guide-link-btn" id="openGuideModalBtn">Read Master Guide &rarr;</button>
-        <a href="guide.html" target="_blank" rel="noopener noreferrer" class="guide-link-btn-external" title="Open guide in new tab">↗</a>
+        <button type="button" class="guide-link-btn" id="openGuideViewBtn">Read Master Guide &rarr;</button>
+        <a href="guide.html" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); font-size: 0.8rem; text-decoration: none; border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px;" title="Open in separate tab">↗</a>
       </div>
     </div>
 
-    <!-- Routine Selection & Calendar Anchor Radar -->
-    <div class="routine-bar">
-      <div class="routine-select-group">
-        <label for="routineSelect">Active Routine:</label>
-        <select id="routineSelect" class="routine-dropdown"></select>
-      </div>
-      <div class="radar-indicator" id="radarIndicator">
-        <span>⏱ Ready</span>
-      </div>
-    </div>
-
-    <!-- Background Notification Banner -->
-    <div class="background-routine-banner" id="backgroundBanner">
-      <span id="backgroundBannerText">⏳ Background routine active</span>
-      <button type="button" class="btn btn-primary" id="jumpToRunningBtn" style="padding: 4px 10px; font-size: 0.78rem;">Switch Back</button>
-    </div>
-
-    <!-- Active Timer Cockpit -->
-    <main class="timer-hero">
-      <div class="overall-progress-bar-container">
-        <div class="overall-progress-bar" id="overallProgressBar"></div>
-      </div>
-
-      <div class="top-actions-row">
-        <div class="badge-row">
-          <span class="badge" id="stepProgressBadge">Step 0 of 0</span>
-          <span class="badge anchor-type" id="anchorTypeBadge">Flow Task</span>
-          <span class="badge parent-context" id="parentContextBadge">Part of: None</span>
-          <span class="badge overtime-badge" id="overtimeBadge">Overtime: +00:00</span>
+    <!-- Main Dashboard View Container -->
+    <div id="dashboardViewContainer" style="display: flex; flex-direction: column; gap: 16px;">
+      <!-- Routine Bar -->
+      <div class="routine-bar">
+        <div class="routine-select-group">
+          <label for="routineSelect">Active Routine:</label>
+          <select id="routineSelect" class="routine-dropdown"></select>
         </div>
-        <button type="button" class="btn-zen-toggle" id="zenToggleBtn" title="Toggle Zen Mode (Press 'Z')">⊙ Zen Mode</button>
-      </div>
-
-      <div class="current-task-title" id="currentTaskTitle">No Schedule Loaded</div>
-      <div class="wall-clock-meta" id="wallClockMeta">Start: --:--:-- &bull; Projected End: --:--:--</div>
-
-      <div class="clock-display" id="clockDisplay">00:00</div>
-
-      <!-- Precision Time Adjustments -->
-      <div class="time-adjust-bar">
-        <span class="adjust-label">Add Time:</span>
-        <button type="button" class="btn-nudge add" data-seconds="60">+1m</button>
-        <button type="button" class="btn-nudge add" data-seconds="300">+5m</button>
-        <button type="button" class="btn-nudge add" data-seconds="600">+10m</button>
-        <button type="button" class="btn-nudge add" data-seconds="1800">+30m</button>
-        <button type="button" class="btn-nudge add" data-seconds="3600">+1h</button>
-        <span class="adjust-divider">|</span>
-        <span class="adjust-label">Trim:</span>
-        <button type="button" class="btn-nudge subtract" data-seconds="-60">-1m</button>
-        <button type="button" class="btn-nudge subtract" data-seconds="-300">-5m</button>
-        <button type="button" class="btn-nudge subtract" data-seconds="-600">-10m</button>
-      </div>
-
-      <!-- Controls -->
-      <div class="controls-row">
-        <button type="button" class="btn btn-success" id="startBtn" disabled>Start</button>
-        <button type="button" class="btn btn-warning" id="pauseBtn" disabled>Pause</button>
-        <button type="button" class="btn btn-early" id="finishEarlyBtn" title="Finish step now and log real-world completion timestamp" disabled>Finish Early ⏩</button>
-        <button type="button" class="btn btn-outline" id="resetBtn" disabled>Reset</button>
-        <button type="button" class="btn btn-next" id="nextBtn" disabled>Next Task</button>
-      </div>
-
-      <!-- Routine Completion Banner -->
-      <div class="routine-completed-banner" id="routineCompletedBanner">
-        <h3 id="completedRoutineTitle">Routine Completed!</h3>
-        <p id="completedRoutineMessage">All scheduled milestones and meetings have been logged.</p>
-        <button type="button" class="btn btn-primary" id="switchNextRoutineBtn">Advance to Next Routine</button>
-      </div>
-    </main>
-
-    <!-- Checklist & Execution Log Grid -->
-    <div class="dashboard-grid">
-      <section class="panel-card">
-        <div class="panel-header">
-          <h2>Timeline & Anchors</h2>
-          <span style="font-size: 0.8rem; color: var(--text-muted);" id="checklistDurationBadge">Total: 0m</span>
+        <div class="radar-indicator" id="radarIndicator">
+          <span>⏱ Ready</span>
         </div>
-        <ul class="task-list" id="taskListContainer">
-          <li class="empty-state">Upload a CSV or load the sample schedule.</li>
+      </div>
+
+      <!-- Background Notification Banner -->
+      <div class="background-routine-banner" id="backgroundBanner">
+        <span id="backgroundBannerText">⏳ Background routine active</span>
+        <button type="button" class="btn btn-primary" id="jumpToRunningBtn" style="padding: 4px 10px; font-size: 0.78rem;">Switch Back</button>
+      </div>
+
+      <!-- Active Timer Cockpit -->
+      <main class="timer-hero">
+        <div class="overall-progress-bar-container">
+          <div class="overall-progress-bar" id="overallProgressBar"></div>
+        </div>
+
+        <div class="top-actions-row">
+          <div class="badge-row">
+            <span class="badge" id="stepProgressBadge">Step 0 of 0</span>
+            <span class="badge anchor-type" id="anchorTypeBadge">Flow Task</span>
+            <span class="badge parent-context" id="parentContextBadge">Part of: None</span>
+            <span class="badge overtime-badge" id="overtimeBadge">Overtime: +00:00</span>
+          </div>
+          <button type="button" class="btn-zen-toggle" id="zenToggleBtn" title="Toggle Zen Mode (Press 'Z')">⊙ Zen Mode</button>
+        </div>
+
+        <div class="current-task-title" id="currentTaskTitle">No Schedule Loaded</div>
+        <div class="wall-clock-meta" id="wallClockMeta">Start: --:--:-- &bull; Projected End: --:--:--</div>
+
+        <div class="clock-display" id="clockDisplay">00:00</div>
+
+        <!-- Precision Time Adjustments -->
+        <div class="time-adjust-bar">
+          <span class="adjust-label">Add Time:</span>
+          <button type="button" class="btn-nudge add" data-seconds="60">+1m</button>
+          <button type="button" class="btn-nudge add" data-seconds="300">+5m</button>
+          <button type="button" class="btn-nudge add" data-seconds="600">+10m</button>
+          <button type="button" class="btn-nudge add" data-seconds="1800">+30m</button>
+          <button type="button" class="btn-nudge add" data-seconds="3600">+1h</button>
+          <span class="adjust-divider">|</span>
+          <span class="adjust-label">Trim:</span>
+          <button type="button" class="btn-nudge subtract" data-seconds="-60">-1m</button>
+          <button type="button" class="btn-nudge subtract" data-seconds="-300">-5m</button>
+          <button type="button" class="btn-nudge subtract" data-seconds="-600">-10m</button>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-row">
+          <button type="button" class="btn btn-success" id="startBtn" disabled>Start</button>
+          <button type="button" class="btn btn-warning" id="pauseBtn" disabled>Pause</button>
+          <button type="button" class="btn btn-early" id="finishEarlyBtn" title="Finish step now and log real-world completion timestamp" disabled>Finish Early ⏩</button>
+          <button type="button" class="btn btn-outline" id="resetBtn" disabled>Reset</button>
+          <button type="button" class="btn btn-next" id="nextBtn" disabled>Next Task</button>
+        </div>
+
+        <!-- Routine Completion Banner -->
+        <div class="routine-completed-banner" id="routineCompletedBanner">
+          <h3 id="completedRoutineTitle">Routine Completed!</h3>
+          <p id="completedRoutineMessage">All scheduled milestones and meetings have been logged.</p>
+          <button type="button" class="btn btn-primary" id="switchNextRoutineBtn">Advance to Next Routine</button>
+        </div>
+      </main>
+
+      <!-- Checklist & Execution Log Grid -->
+      <div class="dashboard-grid">
+        <section class="panel-card">
+          <div class="panel-header">
+            <h2>Timeline & Anchors</h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);" id="checklistDurationBadge">Total: 0m</span>
+          </div>
+          <ul class="task-list" id="taskListContainer">
+            <li class="empty-state">Upload a CSV or load the sample schedule.</li>
+          </ul>
+        </section>
+
+        <section class="panel-card">
+          <div class="panel-header">
+            <h2>Execution Log</h2>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span class="pacing-badge" id="pacingBadge">Velocity: 1.0x</span>
+              <button type="button" class="btn btn-outline" id="exportCsvBtn" style="padding: 4px 10px; font-size: 0.78rem;" disabled>Export CSV</button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Task / Anchor</th>
+                  <th>Time Window</th>
+                  <th>Actual Elapsed</th>
+                  <th>Variance</th>
+                </tr>
+              </thead>
+              <tbody id="resultsTableBody">
+                <tr>
+                  <td colspan="4" class="empty-state">Completed task timestamps will be recorded here.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- In-App Master Guide View (Seamless, Timer Never Pauses) -->
+    <div class="guide-view-section" id="guideViewSection">
+      <section class="guide-card">
+        <h2>1. The Problem with Conventional Timers</h2>
+        <p>Traditional timers create friction because they operate in isolation from your wall-clock commitments. <strong>Anchor & Flow</strong> bridges this disconnect:</p>
+        <ul>
+          <li><strong>Hard Anchors (📅):</strong> Meetings imported from Outlook or Google Calendar with a fixed wall-clock start time (e.g., <code>14:30</code>). They remain pinned to real time.</li>
+          <li><strong>Fluid Flow (⏱):</strong> Deep work sprints, review tasks, and ergonomic habits (squats, hydration) that flow dynamically through the open windows between your meetings.</li>
         </ul>
       </section>
 
-      <section class="panel-card">
-        <div class="panel-header">
-          <h2>Execution Log</h2>
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <span class="pacing-badge" id="pacingBadge">Velocity: 1.0x</span>
-            <button type="button" class="btn btn-outline" id="exportCsvBtn" style="padding: 4px 10px; font-size: 0.78rem;" disabled>Export CSV</button>
-          </div>
-        </div>
-        <div class="table-container">
-          <table class="results-table">
-            <thead>
-              <tr>
-                <th>Task / Anchor</th>
-                <th>Time Window</th>
-                <th>Actual Elapsed</th>
-                <th>Variance</th>
-              </tr>
-            </thead>
-            <tbody id="resultsTableBody">
-              <tr>
-                <td colspan="4" class="empty-state">Completed task timestamps will be recorded here.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <!-- In-App Master Guide Slide-Over Modal -->
-  <div class="modal-overlay" id="guideModalOverlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Anchor & Flow — Quick Master Guide</h2>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <span class="modal-timer-badge" id="modalLiveTimerBadge">⏳ Timer Active</span>
-          <button type="button" class="btn-close-modal" id="closeGuideModalBtn">&times; Close</button>
-        </div>
-      </div>
-      <div class="modal-body">
-        <section>
-          <h3>1. The Core Innovation: Anchors vs. Flow</h3>
-          <p>Traditional timers run in isolation without knowing when you have meetings. <strong>Anchor & Flow</strong> bridges the gap:</p>
-          <ul>
-            <li><strong>Hard Anchors (📅):</strong> Meetings imported from Outlook or Google Calendar with a fixed start time (e.g., <code>14:30</code>). They remain pinned to the real wall-clock.</li>
-            <li><strong>Fluid Flow (⏱):</strong> Deep work sprints, review tasks, and ergonomic habits (squats, hydration) that flow dynamically through the open windows between your meetings.</li>
-          </ul>
-        </section>
-
-        <section>
-          <h3>2. The AI Prompt Schema (5 Columns)</h3>
-          <pre>Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start
-Work Day,Deep Work Sprint,50,,
-Work Day,Hydrate & 10 Squats,2,,
+      <section class="guide-card">
+        <h2>2. Generating Schedules via AI Prompting</h2>
+        <p>Copy today's agenda from Outlook or Google Calendar and paste it into your LLM alongside your unorganized task list using the master prompt.</p>
+        <pre>Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start
+Work Day,Morning Inbox Triage,20,Morning Alignment,
+Work Day,Hydrate & 10 Squats,2,Morning Alignment,
+Work Day,Sprint Standup (Outlook),30,,10:00
+Work Day,Deep Work: API Architecture,50,,
 Work Day,Executive Sync (Outlook),45,,14:30</pre>
-          <p>Leave <code>Scheduled Start</code> empty for flexible tasks. Populate with <code>HH:MM</code> only for hard calendar meetings.</p>
-        </section>
+      </section>
 
-        <section>
-          <h3>3. Key Controls</h3>
-          <ul>
-            <li><strong>Finish Early (⏩):</strong> Finished ahead of time? Tap to log exact wall-clock seconds saved and instantly advance.</li>
-            <li><strong>Time Extensions (+1m to +1h):</strong> Tap anytime—even when the alarm sounds—to add time, silence the alert, and continue working without penalty.</li>
-            <li><strong>Zen Mode (⊙):</strong> Press <code>Z</code> on your keyboard to eliminate all distractions and display only the countdown and your next meeting anchor.</li>
-          </ul>
-        </section>
-      </div>
+      <section class="guide-card">
+        <h2>3. Data-Driven Estimation Calibration</h2>
+        <p>Humans consistently underestimate work duration (the <em>Planning Fallacy</em>). At the end of each day, export your audit CSV:</p>
+        <p>Calculate your <strong>Estimation Multiplier</strong> in Excel or Google Sheets:</p>
+        <pre>=Actual_Elapsed / Target_Duration</pre>
+        <p>If your multiplier is consistently <code>1.25x</code>, increase future task buffers by 25% to achieve predictability.</p>
+      </section>
     </div>
   </div>
 
   <script>
     (function () {
-      const STORAGE_KEY_ROUTINES = 'anchor_flow_routines_v2';
-      const STORAGE_KEY_RESULTS = 'anchor_flow_results_v2';
-      const STORAGE_KEY_ACTIVE = 'anchor_flow_active_running_v2';
+      const STORAGE_KEY_ROUTINES = 'anchor_flow_routines_v3';
+      const STORAGE_KEY_RESULTS = 'anchor_flow_results_v3';
+      const STORAGE_KEY_ACTIVE = 'anchor_flow_active_running_v3';
 
       const SAMPLE_CSV = `Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start
 Work Day,Morning Alignment,0,,
@@ -924,11 +919,19 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       const loadSampleBtn = document.getElementById('loadSampleBtn');
       const csvFileInput = document.getElementById('csvFileInput');
 
-      // Modal Elements
-      const openGuideModalBtn = document.getElementById('openGuideModalBtn');
-      const closeGuideModalBtn = document.getElementById('closeGuideModalBtn');
-      const guideModalOverlay = document.getElementById('guideModalOverlay');
-      const modalLiveTimerBadge = document.getElementById('modalLiveTimerBadge');
+      // View Switcher Elements
+      const openGuideViewBtn = document.getElementById('openGuideViewBtn');
+      const dashboardViewContainer = document.getElementById('dashboardViewContainer');
+      const guideViewSection = document.getElementById('guideViewSection');
+      const quickGuideBar = document.getElementById('quickGuideBar');
+      const zenStickyBar = document.getElementById('zenStickyBar');
+      const zenBarTaskTitle = document.getElementById('zenBarTaskTitle');
+      const zenBarRoutineName = document.getElementById('zenBarRoutineName');
+      const zenBarClock = document.getElementById('zenBarClock');
+      const zenBarAdd5Btn = document.getElementById('zenBarAdd5Btn');
+      const zenBarPauseBtn = document.getElementById('zenBarPauseBtn');
+      const zenBarNextBtn = document.getElementById('zenBarNextBtn');
+      const zenBarReturnBtn = document.getElementById('zenBarReturnBtn');
 
       function updateSystemClock() {
         const now = new Date();
@@ -1014,7 +1017,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           .replace(/"/g, '&quot;');
       }
 
-      // Wall-Clock State Persistence: preserves 'running' state and records exact timestamp
+      // Wall-Clock State Persistence
       function saveStateToStorage() {
         try {
           const serializable = {};
@@ -1028,7 +1031,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
               overtimeSeconds: val.overtimeSeconds,
               elapsedSeconds: val.elapsedSeconds,
               extendedSeconds: val.extendedSeconds,
-              timerState: val.timerState, // Preserves running state
+              timerState: val.timerState,
               totalMins: val.totalMins,
               lastTickTime: Date.now()
             };
@@ -1041,7 +1044,6 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
       }
 
-      // Restores state and compensates for any elapsed time using wall clock
       function loadStateFromStorage() {
         try {
           const rawRoutines = localStorage.getItem(STORAGE_KEY_ROUTINES);
@@ -1068,7 +1070,6 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
               let overtime = item.overtimeSeconds;
               let state = item.timerState;
 
-              // If running, calculate elapsed time since last save
               if (state === 'running' && item.lastTickTime) {
                 const diffSeconds = Math.max(0, Math.floor((now - item.lastTickTime) / 1000));
                 if (diffSeconds > 0) {
@@ -1266,9 +1267,9 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         updateControls();
         renderChecklist();
         updateBackgroundBanner();
+        updateZenBar();
       }
 
-      // Delta-based master tick: calculates real seconds between ticks to eliminate drift
       function startGlobalTickLoop() {
         if (globalMasterInterval) clearInterval(globalMasterInterval);
 
@@ -1306,22 +1307,22 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
                   updateControls();
                 }
                 updateBackgroundBanner();
+                updateZenBar();
                 saveStateToStorage();
               }
             }
 
             checkUpcomingAnchors();
-            updateModalLiveBadge();
           }
         }, 500);
       }
 
-      // Real-time synchronization when tab regains visibility
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
           updateDisplayForViewed();
           updateControls();
           updateBackgroundBanner();
+          updateZenBar();
         }
       });
 
@@ -1456,6 +1457,32 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
         const percent = (state.currentActionableStep / state.actionableTaskIndices.length) * 100;
         overallProgressBar.style.width = `${percent}%`;
+      }
+
+      // Updates the sticky Zen mini-bar displayed at top of Guide View
+      function updateZenBar() {
+        const state = routineStates.get(activeRunningRoutine || currentViewedRoutine);
+        if (!state || state.actionableTaskIndices.length === 0 || state.currentActionableStep >= state.actionableTaskIndices.length) {
+          zenBarTaskTitle.textContent = 'No Active Task';
+          zenBarRoutineName.textContent = 'Idle';
+          zenBarClock.textContent = '00:00';
+          zenStickyBar.classList.remove('alert-mode');
+          return;
+        }
+
+        const task = state.tasks[state.actionableTaskIndices[state.currentActionableStep]];
+        zenBarTaskTitle.textContent = task.name;
+        zenBarRoutineName.textContent = state.name;
+
+        if (state.timerState === 'alarm_overtime') {
+          zenBarClock.textContent = `+${formatMMSS(state.overtimeSeconds)}`;
+          zenStickyBar.classList.add('alert-mode');
+        } else {
+          zenBarClock.textContent = formatMMSS(state.remainingSeconds);
+          zenStickyBar.classList.remove('alert-mode');
+        }
+
+        zenBarPauseBtn.textContent = (state.timerState === 'running' || state.timerState === 'alarm_overtime') ? 'Pause' : 'Start';
       }
 
       function updateControls() {
@@ -1659,7 +1686,8 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       }
 
       function addTimeToCurrentTask(secondsToAdd) {
-        const state = routineStates.get(currentViewedRoutine);
+        const targetRoutine = activeRunningRoutine || currentViewedRoutine;
+        const state = routineStates.get(targetRoutine);
         if (!state) return;
         if (state.actionableTaskIndices.length === 0 || state.currentActionableStep >= state.actionableTaskIndices.length) return;
 
@@ -1690,6 +1718,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         updateDisplayForViewed();
         updateControls();
         updateBackgroundBanner();
+        updateZenBar();
       }
 
       document.querySelectorAll('.btn-nudge').forEach(btn => {
@@ -1721,6 +1750,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         updateDisplayForViewed();
         updateControls();
         updateBackgroundBanner();
+        updateZenBar();
       }
 
       function pauseTimer() {
@@ -1733,6 +1763,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         updateDisplayForViewed();
         updateControls();
         updateBackgroundBanner();
+        updateZenBar();
       }
 
       function resetCurrentStep() {
@@ -1757,6 +1788,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         updateDisplayForViewed();
         updateControls();
         updateBackgroundBanner();
+        updateZenBar();
       }
 
       function finishEarly() {
@@ -1787,7 +1819,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       }
 
       function advanceToNextTask() {
-        const state = routineStates.get(currentViewedRoutine);
+        const state = routineStates.get(activeRunningRoutine || currentViewedRoutine);
         if (!state || state.currentActionableStep >= state.actionableTaskIndices.length) return;
 
         stopAudioAlertLoop();
@@ -1833,6 +1865,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           updateDisplayForViewed();
           updateControls();
           updateBackgroundBanner();
+          updateZenBar();
         } else {
           for (let i = previousActiveIdx + 1; i < state.tasks.length; i++) {
             state.tasks[i].status = 'done';
@@ -1845,6 +1878,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           renderChecklist();
           updateControls();
           updateBackgroundBanner();
+          updateZenBar();
         }
       }
 
@@ -1885,40 +1919,39 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
       });
 
-      // In-App Guide Modal Interactions
-      function openGuideModal() {
-        guideModalOverlay.classList.add('open');
-        updateModalLiveBadge();
+      // View Switcher (Zero-Reload Transition between Dashboard and Guide)
+      function showGuideView() {
+        dashboardViewContainer.style.display = 'none';
+        quickGuideBar.style.display = 'none';
+        guideViewSection.style.display = 'flex';
+        zenStickyBar.style.display = 'flex';
+        updateZenBar();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
-      function closeGuideModal() {
-        guideModalOverlay.classList.remove('open');
+      function showDashboardView() {
+        guideViewSection.style.display = 'none';
+        zenStickyBar.style.display = 'none';
+        dashboardViewContainer.style.display = 'flex';
+        quickGuideBar.style.display = 'flex';
+        updateDisplayForViewed();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
-      function updateModalLiveBadge() {
-        if (!guideModalOverlay.classList.contains('open')) return;
-        if (activeRunningRoutine) {
-          const run = routineStates.get(activeRunningRoutine);
-          if (run && run.timerState === 'running') {
-            modalLiveTimerBadge.textContent = `⏳ "${run.name}": ${formatMMSS(run.remainingSeconds)}`;
-            modalLiveTimerBadge.style.color = 'var(--accent)';
-          } else if (run && run.timerState === 'alarm_overtime') {
-            modalLiveTimerBadge.textContent = `🚨 Overtime: +${formatMMSS(run.overtimeSeconds)}`;
-            modalLiveTimerBadge.style.color = 'var(--danger)';
-          } else {
-            modalLiveTimerBadge.textContent = `⏸ Paused`;
-            modalLiveTimerBadge.style.color = 'var(--text-muted)';
-          }
+      openGuideViewBtn.addEventListener('click', showGuideView);
+      zenBarReturnBtn.addEventListener('click', showDashboardView);
+
+      // Sticky Zen Bar Controls
+      zenBarAdd5Btn.addEventListener('click', () => addTimeToCurrentTask(300));
+      zenBarNextBtn.addEventListener('click', advanceToNextTask);
+      zenBarPauseBtn.addEventListener('click', () => {
+        const state = routineStates.get(activeRunningRoutine || currentViewedRoutine);
+        if (!state) return;
+        if (state.timerState === 'running' || state.timerState === 'alarm_overtime') {
+          pauseTimer();
         } else {
-          modalLiveTimerBadge.textContent = `⏱ Timer Idle`;
-          modalLiveTimerBadge.style.color = 'var(--text-muted)';
+          startTimer();
         }
-      }
-
-      openGuideModalBtn.addEventListener('click', openGuideModal);
-      closeGuideModalBtn.addEventListener('click', closeGuideModal);
-      guideModalOverlay.addEventListener('click', (e) => {
-        if (e.target === guideModalOverlay) closeGuideModal();
       });
 
       clearSessionBtn.addEventListener('click', () => {
@@ -1931,7 +1964,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       });
 
       function downloadPromptMarkdown() {
-        const promptContent = `# Master "Anchor & Flow" CSV Generator Prompt\n\n[Refer to guide.html or GitHub PROMPT.md for full prompt instructions]\n`;
+        const promptContent = `# Master "Anchor & Flow" CSV Generator Prompt\n\n[Refer to the in-app guide or GitHub PROMPT.md for full instructions]\n`;
         const blob = new Blob([promptContent], { type: 'text/markdown;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -1947,31 +1980,15 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         if (recordedResults.length === 0) return;
 
         const headers = [
-          "Routine",
-          "Task Name",
-          "Type",
-          "Scheduled Anchor",
-          "Actual Start Time",
-          "Actual End Time",
-          "Target Duration (Secs)",
-          "Time Added (Secs)",
-          "Actual Elapsed (Secs)",
-          "Variance (Secs)",
-          "Status"
+          "Routine", "Task Name", "Type", "Scheduled Anchor", "Actual Start Time",
+          "Actual End Time", "Target Duration (Secs)", "Time Added (Secs)",
+          "Actual Elapsed (Secs)", "Variance (Secs)", "Status"
         ];
 
         const rows = recordedResults.map(r => [
-          `"${r.routine}"`,
-          `"${r.taskName}"`,
-          r.isAnchor ? '"Calendar Meeting"' : '"Fluid Flow"',
-          `"${r.scheduledStart}"`,
-          `"${r.startTimeStr}"`,
-          `"${r.endTimeStr}"`,
-          r.plannedSecs,
-          r.extendedSecs,
-          r.actualSecs,
-          r.varianceSecs,
-          `"${r.status}"`
+          `"${r.routine}"`, `"${r.taskName}"`, r.isAnchor ? '"Calendar Meeting"' : '"Fluid Flow"',
+          `"${r.scheduledStart}"`, `"${r.startTimeStr}"`, `"${r.endTimeStr}"`,
+          r.plannedSecs, r.extendedSecs, r.actualSecs, r.varianceSecs, `"${r.status}"`
         ]);
 
         const csvString = [headers.join(','), ...rows.map(row => row.join(','))].join('\r\n');
