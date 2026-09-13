@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Anchor & Flow Guide — Harvard Timeboxing Method</title>
+  <title>Master Guide — The Anchor & Flow System</title>
   <style>
     :root {
       --bg-primary: #090d16;
@@ -16,6 +16,7 @@
       --success: #22c55e;
       --warning: #f59e0b;
       --danger: #ef4444;
+      --purple: #a855f7;
       --border: #24324f;
     }
 
@@ -26,17 +27,17 @@
       background-color: var(--bg-primary);
       color: var(--text-main);
       line-height: 1.65;
-      padding: 32px 16px;
+      padding: 30px 16px;
       display: flex;
       justify-content: center;
     }
 
     .guide-container {
       width: 100%;
-      max-width: 840px;
+      max-width: 860px;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 32px;
     }
 
     header {
@@ -50,7 +51,7 @@
     }
 
     h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; }
-    h2 { font-size: 1.3rem; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+    h2 { font-size: 1.35rem; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
     h3 { font-size: 1.05rem; font-weight: 600; color: var(--text-main); margin: 16px 0 6px; }
     p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 12px; }
 
@@ -109,7 +110,7 @@
     }
     li { margin-bottom: 6px; }
 
-    .highlight-box {
+    .formula-box {
       background: rgba(56, 189, 248, 0.08);
       border-left: 4px solid var(--accent);
       padding: 14px 18px;
@@ -118,132 +119,103 @@
       color: var(--text-main);
     }
 
-    .badge {
+    .badge-example {
       display: inline-block;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       font-weight: 700;
       padding: 2px 8px;
-      border-radius: 4px;
+      border-radius: 6px;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
     .badge-anchor { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
     .badge-flow { background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid var(--accent); }
-    
-    a.external-link {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
-    }
-    a.external-link:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
   <div class="guide-container">
     <header>
       <div>
-        <h1>The Anchor & Flow Guide</h1>
-        <p>Harvard Timeboxing, Dynamic Reflow Engine, and ICS Calendar Synchronization</p>
+        <h1>The Anchor & Flow Method</h1>
+        <p>A First-Principles Guide to Dynamic Scheduling, Outlook Ingestion, and Execution Auditing</p>
       </div>
       <a href="index.html" class="nav-btn">&larr; Return to Timer</a>
     </header>
 
-    <!-- Section 1: Concept & Harvard Method -->
+    <!-- Section 1: Philosophy -->
     <section class="card">
-      <h2>1. The Harvard Timeboxing Method</h2>
-      <p>
-        According to extensive research synthesized by the 
-        <a class="external-link" href="https://hbr.org/2018/12/how-timeboxing-works-and-why-it-will-make-you-more-productive" target="_blank" rel="noopener noreferrer">
-          Harvard Business Review ("How Timeboxing Works and Why It Will Make You More Productive")
-        </a>, timeboxing consistently ranks as the #1 most effective productivity technique. 
-      </p>
-      <p>The method consists of three sequential steps executed every morning:</p>
+      <h2>1. The Problem with Conventional Timers</h2>
+      <p>Traditional productivity tools enforce one of two broken models:</p>
+      <ul>
+        <li><strong>Rigid Calendar Blocks:</strong> You schedule your day down to 15-minute slots. A single phone call or delayed meeting pushes every task off schedule, inducing guilt and anxiety.</li>
+        <li><strong>Abstract Stopwatches (Floating Timers):</strong> A simple Pomodoro timer measures duration (e.g., 25 mins) in a vacuum. It has no awareness that you have an immovable client call at 2:00 PM, leading to collisions.</li>
+      </ul>
+      <p><strong>The Solution: "Anchor & Flow"</strong> divides your workday into two entities:</p>
       <ol>
-        <li><strong>Step 1 — Brain Dump:</strong> Empty everything in your mind onto paper or screen. No filtering, no sequencing.</li>
-        <li><strong>Step 2 — Top 3 Priorities:</strong> Select the absolute 3 items that must move forward today, giving them prime mental slots.</li>
-        <li><strong>Step 3 — Timebox:</strong> Assign a definitive start time and end time to every task. Open-ended "to-do lists" invite Parkinson's Law; timeboxing imposes deliberate scarcity.</li>
+        <li><span class="badge-example badge-anchor">Hard Anchors</span>: Non-negotiable wall-clock commitments (client syncs, webinars, standups).</li>
+        <li><span class="badge-example badge-flow">Fluid Flow</span>: Flexible tasks, deep work sessions, and health habits (squats, hydration) that dynamically flow through the open time windows between your anchors.</li>
       </ol>
     </section>
 
-    <!-- Section 2: Anchors vs Flow -->
+    <!-- Section 2: Prompting with Outlook -->
     <section class="card">
-      <h2>2. Two Kinds of Items: Anchors vs. Flow</h2>
-      <p>A fatal flaw in standard timeboxing is treating all blocks identically. In real business life, commitments belong to two distinct classes:</p>
+      <h2>2. Generating Schedules via AI Prompting</h2>
+      <p>You can paste your raw Outlook or Google Calendar day view directly alongside your daily to-do list into an LLM (such as Gemini, Claude, or ChatGPT) using the master prompt.</p>
+
+      <h3>How to Export / Copy from Outlook:</h3>
+      <ol>
+        <li>In Outlook (or Outlook Web), switch to <strong>Day View</strong> or open your <strong>Agenda</strong>.</li>
+        <li>Copy the text of your day's meetings (e.g., <code>10:00 AM - 10:45 AM: Product Sprint</code>, <code>2:30 PM - 3:00 PM: 1:1 with Anil</code>).</li>
+        <li>Open your LLM, paste the provided <code>PROMPT.md</code>, and append your meeting text and unorganized tasks.</li>
+      </ol>
+
+      <h3>The Required 5-Column Schema:</h3>
+      <pre>Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start
+Work Day,Morning Inbox Triage,20,Morning Alignment,
+Work Day,Hydrate & 10 Squats,2,Morning Alignment,
+Work Day,Sprint Standup (Outlook),30,,10:00
+Work Day,Deep Work: API Architecture,50,,
+Work Day,Executive Sync (Outlook),45,,14:30</pre>
+      <p>Notice how <code>Scheduled Start</code> is populated with 24-hour wall-clock times (e.g., <code>10:00</code>, <code>14:30</code>) for calendar meetings, but left completely blank for flexible tasks. The timer automatically treats non-empty start times as <strong>Hard Anchors</strong>.</p>
+    </section>
+
+    <!-- Section 3: Timer Mechanics -->
+    <section class="card">
+      <h2>3. The Execution Engine in Practice</h2>
       <ul>
-        <li>
-          <span class="badge badge-anchor">Anchors</span> = <strong>Calendar Meetings.</strong> 
-          They are hard wall-clock commitments involving other people. Anchors are <strong>immovable</strong>: they are never shifted, never delayed, and never split. Anchors always win.
-        </li>
-        <li>
-          <span class="badge badge-flow">Flow</span> = <strong>Personal Execution Tasks.</strong> 
-          Deep work blocks, writing, triaging, and habits. Flow tasks are elastic: they slide forward, pull forward, or split into parts to weave around Anchors.
-        </li>
+        <li><strong>Calendar Anchor Radar:</strong> The application continuously monitors your computer's clock. When an anchor approaches, the radar bar displays: <code>📅 Next Anchor: Executive Sync at 14:30 (in 12m)</code>.</li>
+        <li><strong>Overtime Count-Up:</strong> When a task reaches <code>00:00</code>, the timer does not abruptly reset. It flashes red, sounds a gentle harmonic alert, and counts <em>upwards</em> (<code>+00:01</code>, <code>+00:02</code>) to measure actual task overrun.</li>
+        <li><strong>Mid-Task Time Extension:</strong> If you realize a task needs more time—even while the alarm is ringing—tap <code>+5m</code>, <code>+10m</code>, or <code>+30m</code>. The alarm silences immediately, and the countdown resumes with the extended budget.</li>
+        <li><strong>Finish Early (⏩):</strong> Completed a 30-minute block in 18 minutes? Tap <strong>Finish Early ⏩</strong>. The timer records the exact elapsed wall-clock seconds and immediately fires up the next step.</li>
+        <li><strong>Zen Focus Mode (⊙):</strong> Tap the Zen button or press <code>Z</code> to strip away all peripheral checklists, tables, and settings, leaving only the task at hand and the timer clock.</li>
       </ul>
     </section>
 
-    <!-- Section 3: Real-Time Reflow Engine -->
+    <!-- Section 4: Data-Driven Continuous Improvement -->
     <section class="card">
-      <h2>3. Real-Time Deterministic Reflow</h2>
-      <p>
-        Plans break the moment real work begins. The Anchor & Flow engine is current-time aware and self-healing.
-        Every few seconds, the engine compares your actual progress against the computer clock:
-      </p>
+      <h2>4. Auditing Your Estimation Velocity (The Secret to Productivity)</h2>
+      <p>Most productivity systems fail because they do not track the <em>Planning Fallacy</em>—the cognitive bias where humans consistently underestimate the time required to complete work.</p>
 
-      <h3>A. Task Overruns & The Drift Chip</h3>
-      <p>
-        If a flow task takes longer than planned and the next anchor is safe, subsequent flow tasks slide forward automatically. 
-        A small, non-intrusive drift chip appears (e.g. <code>+7 min</code>) showing your day's schedule adjustment.
-      </p>
+      <p>At the end of your day, click <strong>Export CSV</strong>. You receive an audit file formatted as:</p>
+      <pre>Routine,Task Name,Type,Scheduled Anchor,Actual Start Time,Actual End Time,Target Duration,Time Added,Actual Elapsed,Variance,Status
+Work Day,Deep Work,Fluid Flow,,11:04:12,11:58:30,3000,600,3258,+258,Overtime
+Work Day,Client Review,Calendar Meeting,14:30,14:30:05,14:58:12,1800,0,1687,-113,Finished Early</pre>
 
-      <h3>B. Automatic Mid-Day Task Splitting</h3>
-      <p>
-        If a running flow task overruns and threatens an immovable meeting, the engine automatically splits it:
-      </p>
-      <div class="highlight-box">
-        <strong>Automatic Split Rule:</strong><br />
-        &bull; <code>Strategic Deck — Part 1</code> ends at the meeting's exact Scheduled Start.<br />
-        &bull; <code>Client Status Review (Outlook)</code> executes untouched.<br />
-        &bull; <code>Strategic Deck — continued</code> resumes the minute the meeting finishes.
+      <div class="formula-box">
+        <strong>The Key Calibration Metric: The Estimation Multiplier</strong><br />
+        $$\text{Estimation Multiplier} = \frac{\text{Actual Elapsed (Secs)}}{\text{Initial Target Duration (Secs)}}$$
       </div>
 
-      <h3>C. Early Finish Pull-Forward</h3>
-      <p>
-        If you finish a task early, tapping <strong>Stop Task</strong> immediately pulls all subsequent flow tasks forward. 
-        Your afternoon ends earlier, eliminating procrastination in artificial gaps.
-      </p>
-    </section>
-
-    <!-- Section 4: Calendar Export Instructions -->
-    <section class="card">
-      <h2>4. Exporting Your Daily Meetings (.ICS)</h2>
-      <p>The "Plan My Day" chat accepts <code>.ics</code> calendar files to instantly import your anchors.</p>
-
-      <h3>Outlook Calendar (Web & Desktop):</h3>
+      <h3>How to Use This in Excel or Google Sheets:</h3>
       <ol>
-        <li>In <strong>Outlook Web</strong>, click <strong>Settings (gear) &rarr; Calendar &rarr; Shared Calendars</strong>, choose your calendar under <em>Publish a calendar</em>, and click <strong>ICS &rarr; Download</strong>.</li>
-        <li>In <strong>Outlook Desktop</strong>, open Calendar, go to <strong>File &rarr; Save Calendar</strong>, choose <em>Today</em>, and save as an <code>.ics</code> file.</li>
+        <li><strong>Calculate Your Personal Task Multiplier:</strong> In your spreadsheet, add a column: <code>=Actual_Elapsed / Target_Duration</code>.
+          <ul>
+            <li>If your multiplier is <code>1.35</code>, you routinely take 35% longer than you think. In future schedules, automatically multiply your initial estimates by <code>1.35</code>.</li>
+          </ul>
+        </li>
+        <li><strong>Analyze Category Variance:</strong> Group by <code>Parent Task</code> or <code>Routine</code> using a Pivot Table. You will often find that technical writing has a <code>1.4x</code> multiplier while administrative tasks sit at <code>0.9x</code>.</li>
+        <li><strong>Identify Transition Friction:</strong> Compare the <code>Actual End Time</code> of Task $N$ with the <code>Actual Start Time</code> of Task $N+1$. Gaps greater than 5 minutes reveal hidden leakage (context switching, tab-surfing, or distraction).</li>
       </ol>
-
-      <h3>Google Calendar:</h3>
-      <ol>
-        <li>Click <strong>Settings (gear) &rarr; Settings &rarr; Import & Export &rarr; Export</strong> to download a zip file containing your calendars.</li>
-        <li>Extract the <code>.ics</code> file for your primary calendar and drag it into the Plan My Day chat.</li>
-      </ol>
-
-      <div class="highlight-box">
-        <strong>Timezone Assumption (v1):</strong><br />
-        All ICS event timestamps are assumed to match your browser's current local timezone. Timed single events are supported; recurring and all-day events are ignored in v1.
-      </div>
-    </section>
-
-    <!-- Section 5: Minimal Apple-Style Control -->
-    <section class="card">
-      <h2>5. Minimal Control: Two Choices on Pause</h2>
-      <p>In adherence to Steve Jobs' minimalist philosophy, there are no confusing panels or dialogue boxes. When paused, you have only two choices:</p>
-      <ul>
-        <li><strong>(a) Slide Over:</strong> Need more time? Extend the current task; the engine slides downstream flow forward.</li>
-        <li><strong>(b) Stop Task:</strong> Done ahead of time? Finish now; the engine pulls downstream flow forward immediately.</li>
-      </ul>
     </section>
   </div>
 </body>
