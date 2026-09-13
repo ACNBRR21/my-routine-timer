@@ -655,6 +655,90 @@
     body.zen-mode .clock-display {
       font-size: clamp(5.5rem, 16vw, 9rem); background: transparent; border: none;
     }
+
+    /* Sleek Monospace Projected Start Time Badges */
+    .task-time-badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    .task-item.active .task-time-badge {
+      color: var(--accent);
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(56, 189, 248, 0.12);
+    }
+    .task-item.anchor-row .task-time-badge {
+      color: var(--warning);
+      border-color: rgba(245, 158, 11, 0.4);
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    /* Free Time Serene Clock */
+    .clock-display.free-time-mode {
+      color: #34d399;
+      border-color: rgba(52, 211, 153, 0.4);
+      background: rgba(6, 78, 59, 0.25);
+      animation: subtle-pulse 3s infinite ease-in-out;
+    }
+    @keyframes subtle-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.008); opacity: 0.92; }
+    }
+
+    /* Apple-Minimal Preemption / Cutoff Notification */
+    .preemption-toast {
+      display: none;
+      width: 100%;
+      max-width: 680px;
+      background: rgba(26, 36, 56, 0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      animation: slide-down 0.25s ease-out;
+    }
+    @keyframes slide-down {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .preemption-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .preemption-text {
+      font-size: 0.86rem;
+      color: var(--text-main);
+      text-align: left;
+    }
+    .preemption-text strong {
+      color: var(--warning);
+    }
+    .preemption-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-early-anchor {
+      background-color: var(--accent);
+      color: #090d16;
+      font-weight: 700;
+    }
+    .btn-early-anchor:hover:not(:disabled) {
+      background-color: var(--accent-hover);
+    }
+
   </style>
 </head>
 <body>
@@ -718,7 +802,7 @@
         </div>
       </div>
 
-      <!-- Background Notification Banner -->
+      <!-- Background Routine Notification Banner -->
       <div class="background-routine-banner" id="backgroundBanner">
         <span id="backgroundBannerText">⏳ Background routine active</span>
         <button type="button" class="btn btn-primary" id="jumpToRunningBtn" style="padding: 4px 10px; font-size: 0.78rem;">Switch Back</button>
@@ -738,6 +822,20 @@
             <span class="badge overtime-badge" id="overtimeBadge">Overtime: +00:00</span>
           </div>
           <button type="button" class="btn-zen-toggle" id="zenToggleBtn" title="Toggle Zen Mode (Press 'Z')">⊙ Zen Mode</button>
+        </div>
+
+        
+        <!-- Apple-Minimalist Preemption Toast -->
+        <div class="preemption-toast" id="preemptionToast">
+          <div class="preemption-content">
+            <div class="preemption-text" id="preemptionText">
+              📅 <strong>Calendar Anchor Convened:</strong> Previous task was stopped.
+            </div>
+            <div class="preemption-actions">
+              <button type="button" class="btn btn-primary btn-sm" id="resumeCutoffBtn">Resume After Meeting</button>
+              <button type="button" class="btn btn-outline btn-sm" id="dismissCutoffBtn">Dismiss</button>
+            </div>
+          </div>
         </div>
 
         <div class="current-task-title" id="currentTaskTitle">No Schedule Loaded</div>
@@ -762,6 +860,7 @@
 
         <!-- Controls -->
         <div class="controls-row">
+          <button type="button" class="btn btn-early-anchor" id="startAnchorEarlyBtn" style="display: none;">Start Meeting Early ⏩</button>
           <button type="button" class="btn btn-success" id="startBtn" disabled>Start</button>
           <button type="button" class="btn btn-warning" id="pauseBtn" disabled>Pause</button>
           <button type="button" class="btn btn-early" id="finishEarlyBtn" title="Finish step now and log real-world completion timestamp" disabled>Finish Early ⏩</button>
@@ -875,6 +974,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
       let globalMasterInterval = null;
       let recordedResults = [];
+      let lastCutoffData = null;
 
       let audioCtx = null;
       let alertInterval = null;
@@ -902,6 +1002,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       const backgroundBannerText = document.getElementById('backgroundBannerText');
       const jumpToRunningBtn = document.getElementById('jumpToRunningBtn');
 
+      const startAnchorEarlyBtn = document.getElementById('startAnchorEarlyBtn');
       const startBtn = document.getElementById('startBtn');
       const pauseBtn = document.getElementById('pauseBtn');
       const resetBtn = document.getElementById('resetBtn');
@@ -918,6 +1019,12 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       const downloadPromptBtn = document.getElementById('downloadPromptBtn');
       const loadSampleBtn = document.getElementById('loadSampleBtn');
       const csvFileInput = document.getElementById('csvFileInput');
+
+      // Preemption Toast Elements
+      const preemptionToast = document.getElementById('preemptionToast');
+      const preemptionText = document.getElementById('preemptionText');
+      const resumeCutoffBtn = document.getElementById('resumeCutoffBtn');
+      const dismissCutoffBtn = document.getElementById('dismissCutoffBtn');
 
       // View Switcher Elements
       const openGuideViewBtn = document.getElementById('openGuideViewBtn');
@@ -952,6 +1059,56 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           console.warn('Audio init error:', err);
         }
         return audioCtx;
+      }
+
+      function playAppleChime(soundType) {
+        try {
+          const ctx = getAudioContext();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+
+          if (soundType === 'anchor' || soundType === 'preemption') {
+            // Elegant Apple-style 2-tone bell chime (F#5 -> C#6)
+            const freqs = [739.99, 1108.73];
+            freqs.forEach((freq, idx) => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+
+              gain.gain.setValueAtTime(0.0001, now + idx * 0.12);
+              gain.gain.exponentialRampToValueAtTime(0.22, now + idx * 0.12 + 0.02);
+              gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.12 + 1.2);
+
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start(now + idx * 0.12);
+              osc.stop(now + idx * 0.12 + 1.25);
+            });
+          } else if (soundType === 'freetime') {
+            // Calming, gentle major-third bell (E5 -> G#5) for breathing buffer
+            const freqs = [659.25, 830.61];
+            freqs.forEach((freq, idx) => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(freq, now + idx * 0.14);
+
+              gain.gain.setValueAtTime(0.0001, now + idx * 0.14);
+              gain.gain.exponentialRampToValueAtTime(0.12, now + idx * 0.14 + 0.03);
+              gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.14 + 1.0);
+
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start(now + idx * 0.14);
+              osc.stop(now + idx * 0.14 + 1.05);
+            });
+          } else {
+            playHarmonicChime();
+          }
+        } catch (e) {
+          console.warn('Apple chime error:', e);
+        }
       }
 
       function playHarmonicChime() {
@@ -996,12 +1153,27 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       }
 
       function formatMMSS(totalSecs) {
-        const mins = Math.floor(Math.abs(totalSecs) / 60);
-        const secs = Math.abs(totalSecs) % 60;
+        const total = Math.abs(totalSecs);
+        const hours = Math.floor(total / 3600);
+        const mins = Math.floor((total % 3600) / 60);
+        const secs = total % 60;
+        if (hours > 0) {
+          return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
         return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
       }
 
-      function formatVariance(targetSecs, actualSecs) {
+      function formatClockHM(dateObj) {
+        if (!dateObj || isNaN(dateObj.getTime())) return '';
+        const h = String(dateObj.getHours()).padStart(2, '0');
+        const m = String(dateObj.getMinutes()).padStart(2, '0');
+        return `${h}:${m}`;
+      }
+
+      function formatVariance(targetSecs, actualSecs, status) {
+        if (status === 'Cutoff by Anchor') {
+          return `<span style="color: var(--warning); font-weight: 600;">Cutoff by Anchor</span>`;
+        }
         const diff = actualSecs - targetSecs;
         if (diff === 0) return `<span class="overrun-exact">On Time (Exact)</span>`;
         if (diff > 0) return `<span class="overrun-pos">+${formatMMSS(diff)} Over</span>`;
@@ -1015,6 +1187,101 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;')
           .replace(/"/g, '&quot;');
+      }
+
+      // Dynamic Real-Time Projected Schedule Computation
+      function computeProjectedTimes(state) {
+        if (!state || !state.tasks || state.tasks.length === 0) return [];
+
+        const now = new Date();
+        let cursor;
+        if (state.actualStartTime && (state.timerState === 'running' || state.timerState === 'paused' || state.timerState === 'alarm_overtime')) {
+          cursor = new Date(now.getTime() + (state.remainingSeconds * 1000));
+        } else {
+          cursor = new Date(now.getTime());
+        }
+
+        const times = [];
+
+        state.tasks.forEach((task, idx) => {
+          if (task.isHeader || task.durationSecs === 0) {
+            times.push({ startStr: '', endStr: '', isAnchor: false });
+            return;
+          }
+
+          if (task.status === 'done') {
+            const recorded = recordedResults.find(r => r.routine === state.name && r.taskName === task.name);
+            if (recorded && recorded.startTimeStr && recorded.startTimeStr !== '--:--:--') {
+              times.push({
+                startStr: recorded.startTimeStr.slice(0, 5),
+                endStr: recorded.endTimeStr ? recorded.endTimeStr.slice(0, 5) : '',
+                isAnchor: task.isAnchor
+              });
+            } else if (task.isAnchor && task.scheduledStart) {
+              times.push({ startStr: task.scheduledStart, endStr: '', isAnchor: true });
+            } else {
+              times.push({ startStr: 'Done', endStr: '', isAnchor: false });
+            }
+            return;
+          }
+
+          const activeIdx = (state.actionableTaskIndices && state.actionableTaskIndices[state.currentActionableStep] !== undefined)
+            ? state.actionableTaskIndices[state.currentActionableStep]
+            : -1;
+
+          if (idx === activeIdx) {
+            let taskStart;
+            if (state.actualStartTime) {
+              taskStart = new Date(state.actualStartTime);
+            } else if (task.isAnchor && task.scheduledStart) {
+              const parts = task.scheduledStart.split(':');
+              taskStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0], 10), parseInt(parts[1], 10), 0);
+            } else {
+              taskStart = new Date(now);
+            }
+
+            const taskEnd = new Date(now.getTime() + (state.remainingSeconds * 1000));
+            times.push({
+              startStr: formatClockHM(taskStart),
+              endStr: formatClockHM(taskEnd),
+              isAnchor: task.isAnchor
+            });
+
+            if (task.isAnchor && task.scheduledStart) {
+              const parts = task.scheduledStart.split(':');
+              const anchorStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0], 10), parseInt(parts[1], 10), 0);
+              const anchorEnd = new Date(anchorStart.getTime() + (task.durationSecs * 1000));
+              cursor = new Date(Math.max(taskEnd.getTime(), anchorEnd.getTime()));
+            } else {
+              cursor = new Date(taskEnd.getTime());
+            }
+            return;
+          }
+
+          // Pending Tasks
+          if (task.isAnchor && task.scheduledStart) {
+            const parts = task.scheduledStart.split(':');
+            const anchorStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0], 10), parseInt(parts[1], 10), 0);
+            const anchorEnd = new Date(anchorStart.getTime() + (task.durationSecs * 1000));
+            times.push({
+              startStr: task.scheduledStart,
+              endStr: formatClockHM(anchorEnd),
+              isAnchor: true
+            });
+            cursor = new Date(Math.max(cursor.getTime(), anchorEnd.getTime()));
+          } else {
+            const flowStart = new Date(cursor.getTime());
+            const flowEnd = new Date(flowStart.getTime() + (task.durationSecs * 1000));
+            times.push({
+              startStr: formatClockHM(flowStart),
+              endStr: formatClockHM(flowEnd),
+              isAnchor: false
+            });
+            cursor = flowEnd;
+          }
+        });
+
+        return times;
       }
 
       // Wall-Clock State Persistence
@@ -1033,6 +1300,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
               extendedSeconds: val.extendedSeconds,
               timerState: val.timerState,
               totalMins: val.totalMins,
+              freeTimeData: val.freeTimeData,
               lastTickTime: Date.now()
             };
           });
@@ -1091,6 +1359,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
                 elapsedSeconds: elapsed,
                 overtimeSeconds: overtime,
                 timerState: state,
+                freeTimeData: item.freeTimeData || null,
                 actualStartTime: null,
                 lastTickTime: now
               });
@@ -1212,11 +1481,37 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           });
 
           let initialRemaining = 0;
+          let initialTimerState = 'idle';
+          let initialFreeTime = null;
+
           if (actionableIndices.length > 0) {
             const firstIdx = actionableIndices[0];
+            const firstTask = tasksList[firstIdx];
             for (let i = 0; i < firstIdx; i++) tasksList[i].status = 'done';
-            tasksList[firstIdx].status = 'active';
-            initialRemaining = tasksList[firstIdx].durationSecs;
+            firstTask.status = 'active';
+
+            // Check if first task is an anchor with a future scheduled start time
+            if (firstTask.isAnchor && firstTask.scheduledStart) {
+              const parts = firstTask.scheduledStart.split(':');
+              if (parts.length >= 2) {
+                const now = new Date();
+                const anchorDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0], 10), parseInt(parts[1], 10), 0);
+                const diffSecs = Math.round((anchorDate.getTime() - now.getTime()) / 1000);
+                if (diffSecs > 10) {
+                  initialTimerState = 'free_time';
+                  initialRemaining = diffSecs;
+                  initialFreeTime = {
+                    anchorIdx: firstIdx,
+                    anchorTask: firstTask,
+                    targetTime: anchorDate.getTime()
+                  };
+                } else {
+                  initialRemaining = firstTask.durationSecs;
+                }
+              }
+            } else {
+              initialRemaining = firstTask.durationSecs;
+            }
           }
 
           routineStates.set(rName, {
@@ -1228,7 +1523,8 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
             overtimeSeconds: 0,
             elapsedSeconds: 0,
             extendedSeconds: 0,
-            timerState: 'idle',
+            timerState: initialTimerState,
+            freeTimeData: initialFreeTime,
             totalMins: totalMins,
             actualStartTime: null,
             lastTickTime: Date.now()
@@ -1282,37 +1578,49 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           if (elapsedSecs >= 1) {
             lastTimestamp = now;
 
-            if (activeRunningRoutine) {
-              const rState = routineStates.get(activeRunningRoutine);
-              if (rState) {
-                rState.lastTickTime = now;
-                if (rState.timerState === 'running') {
-                  rState.elapsedSeconds += elapsedSecs;
-                  if (rState.remainingSeconds > elapsedSecs) {
-                    rState.remainingSeconds -= elapsedSecs;
-                  } else {
-                    const extra = elapsedSecs - rState.remainingSeconds;
-                    rState.remainingSeconds = 0;
-                    rState.timerState = 'alarm_overtime';
-                    rState.overtimeSeconds += extra;
-                    startAudioAlertLoop();
-                  }
-                } else if (rState.timerState === 'alarm_overtime') {
-                  rState.elapsedSeconds += elapsedSecs;
-                  rState.overtimeSeconds += elapsedSecs;
-                }
+            // Tick active routine
+            const targetRoutineName = activeRunningRoutine || currentViewedRoutine;
+            const rState = routineStates.get(targetRoutineName);
 
-                if (currentViewedRoutine === activeRunningRoutine) {
-                  updateDisplayForViewed();
-                  updateControls();
+            if (rState) {
+              rState.lastTickTime = now;
+
+              if (rState.timerState === 'free_time') {
+                if (rState.freeTimeData) {
+                  const remaining = Math.max(0, Math.round((rState.freeTimeData.targetTime - now) / 1000));
+                  rState.remainingSeconds = remaining;
+
+                  if (remaining <= 0) {
+                    // Free time expired! Auto-convene Anchor!
+                    conveneAnchorFromFreeTime(rState);
+                  }
                 }
-                updateBackgroundBanner();
-                updateZenBar();
-                saveStateToStorage();
+              } else if (rState.timerState === 'running') {
+                rState.elapsedSeconds += elapsedSecs;
+                if (rState.remainingSeconds > elapsedSecs) {
+                  rState.remainingSeconds -= elapsedSecs;
+                } else {
+                  const extra = elapsedSecs - rState.remainingSeconds;
+                  rState.remainingSeconds = 0;
+                  rState.timerState = 'alarm_overtime';
+                  rState.overtimeSeconds += extra;
+                  startAudioAlertLoop();
+                }
+              } else if (rState.timerState === 'alarm_overtime') {
+                rState.elapsedSeconds += elapsedSecs;
+                rState.overtimeSeconds += elapsedSecs;
               }
+
+              if (currentViewedRoutine === targetRoutineName) {
+                updateDisplayForViewed();
+                updateControls();
+              }
+              updateBackgroundBanner();
+              updateZenBar();
+              saveStateToStorage();
             }
 
-            checkUpcomingAnchors();
+            checkUpcomingAnchorsAndPreemption();
           }
         }, 500);
       }
@@ -1323,28 +1631,178 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           updateControls();
           updateBackgroundBanner();
           updateZenBar();
+          renderChecklist();
         }
       });
 
-      function checkUpcomingAnchors() {
+      function conveneAnchorFromFreeTime(state) {
+        if (!state || !state.freeTimeData) return;
+        const anchorIdx = state.freeTimeData.anchorIdx;
+        const anchorTask = state.tasks[anchorIdx];
+        state.freeTimeData = null;
+
+        state.currentActionableStep = state.actionableTaskIndices.indexOf(anchorIdx);
+        anchorTask.status = 'active';
+        state.remainingSeconds = anchorTask.durationSecs;
+        state.elapsedSeconds = 0;
+        state.overtimeSeconds = 0;
+        state.extendedSeconds = 0;
+        state.actualStartTime = new Date();
+        state.timerState = 'running';
+        state.lastTickTime = Date.now();
+        activeRunningRoutine = state.name;
+
+        playAppleChime('anchor');
+        saveStateToStorage();
+        renderChecklist();
+        updateDisplayForViewed();
+        updateControls();
+        updateBackgroundBanner();
+        updateZenBar();
+      }
+
+      function triggerAnchorPreemption(state, cutoffTask, cutoffIdx, anchorTask, anchorIdx) {
+        stopAudioAlertLoop();
+        playAppleChime('anchor');
+
+        cutoffTask.status = 'done';
+        const endTime = new Date();
+        const startTime = state.actualStartTime || new Date(endTime.getTime() - (state.elapsedSeconds * 1000));
+        const planned = cutoffTask.durationSecs;
+        const actual = Math.max(1, state.elapsedSeconds);
+        const remainingMins = Math.max(1, Math.round(state.remainingSeconds / 60));
+
+        recordCompletedTask(state.name, cutoffTask, planned, state.extendedSeconds, actual, state.overtimeSeconds, false, startTime, endTime, 'Cutoff by Anchor');
+
+        // Save cutoff info for Resume After Meeting (Option B)
+        lastCutoffData = {
+          task: cutoffTask,
+          remainingMins: remainingMins,
+          routineName: state.name,
+          anchorName: anchorTask.name,
+          anchorIdx: anchorIdx
+        };
+
+        showPreemptionToast(cutoffTask.name, remainingMins, anchorTask.name);
+
+        for (let i = cutoffIdx + 1; i < anchorIdx; i++) {
+          state.tasks[i].status = 'done';
+        }
+
+        const anchorActionableStep = state.actionableTaskIndices.indexOf(anchorIdx);
+        state.currentActionableStep = anchorActionableStep >= 0 ? anchorActionableStep : state.currentActionableStep;
+        anchorTask.status = 'active';
+        state.remainingSeconds = anchorTask.durationSecs;
+        state.overtimeSeconds = 0;
+        state.elapsedSeconds = 0;
+        state.extendedSeconds = 0;
+        state.actualStartTime = new Date();
+        state.timerState = 'running';
+        state.lastTickTime = Date.now();
+        activeRunningRoutine = state.name;
+
+        saveStateToStorage();
+        renderChecklist();
+        updateDisplayForViewed();
+        updateControls();
+        updateBackgroundBanner();
+        updateZenBar();
+      }
+
+      function showPreemptionToast(taskName, remainingMins, anchorName) {
+        if (!preemptionToast || !preemptionText) return;
+        preemptionText.innerHTML = `📅 <strong>Anchor Started:</strong> "${escapeHtml(anchorName)}". Previous task "<em>${escapeHtml(taskName)}</em>" was stopped (${remainingMins}m remaining).`;
+        preemptionToast.style.display = 'block';
+      }
+
+      resumeCutoffBtn.addEventListener('click', () => {
+        if (!lastCutoffData) return;
+        const state = routineStates.get(lastCutoffData.routineName);
+        if (state) {
+          const anchorIdx = state.tasks.findIndex(t => t.name === lastCutoffData.anchorName && t.isAnchor);
+          const insertIdx = (anchorIdx >= 0) ? anchorIdx + 1 : state.tasks.length;
+
+          const resumedTask = {
+            routine: state.name,
+            name: `${lastCutoffData.task.name} (Resumed)`,
+            durationMins: lastCutoffData.remainingMins,
+            durationSecs: lastCutoffData.remainingMins * 60,
+            parentTask: lastCutoffData.task.parentTask || '',
+            scheduledStart: '',
+            isHeader: false,
+            isAnchor: false,
+            status: 'pending'
+          };
+
+          state.tasks.splice(insertIdx, 0, resumedTask);
+
+          const actionable = [];
+          let total = 0;
+          state.tasks.forEach((t, i) => {
+            if (!t.isHeader && t.durationSecs > 0) {
+              actionable.push(i);
+              total += t.durationMins;
+            }
+          });
+          state.actionableTaskIndices = actionable;
+          state.totalMins = total;
+
+          const currentActiveIdx = state.tasks.findIndex(t => t.status === 'active');
+          state.currentActionableStep = state.actionableTaskIndices.indexOf(currentActiveIdx);
+
+          saveStateToStorage();
+          renderChecklist();
+
+          preemptionText.innerHTML = `✓ <strong>"${escapeHtml(lastCutoffData.task.name)}"</strong> queued to resume after ${escapeHtml(lastCutoffData.anchorName)}.`;
+          setTimeout(() => {
+            preemptionToast.style.display = 'none';
+          }, 3000);
+        }
+        lastCutoffData = null;
+      });
+
+      dismissCutoffBtn.addEventListener('click', () => {
+        preemptionToast.style.display = 'none';
+        lastCutoffData = null;
+      });
+
+      function checkUpcomingAnchorsAndPreemption() {
         const state = routineStates.get(currentViewedRoutine);
         if (!state) return;
 
         const now = new Date();
         const currentHM = now.getHours() * 60 + now.getMinutes();
+        const currentSecsOfDay = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
         let nextAnchor = null;
         let minDiff = Infinity;
 
-        state.tasks.forEach(t => {
+        state.tasks.forEach((t, idx) => {
           if (t.isAnchor && t.scheduledStart && t.status !== 'done') {
             const parts = t.scheduledStart.split(':');
             if (parts.length >= 2) {
               const anchorHM = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+              const anchorSecs = anchorHM * 60;
               const diff = anchorHM - currentHM;
               if (diff >= 0 && diff < minDiff) {
                 minDiff = diff;
-                nextAnchor = { task: t, diffMinutes: diff };
+                nextAnchor = { task: t, taskIdx: idx, diffMinutes: diff };
+              }
+
+              // Automatic Anchor Preemption Check:
+              // If current wall-clock seconds has reached anchor start time
+              // AND current task is an earlier flow task that is still active
+              const currentActiveIdx = (state.actionableTaskIndices && state.actionableTaskIndices[state.currentActionableStep] !== undefined)
+                ? state.actionableTaskIndices[state.currentActionableStep]
+                : -1;
+
+              if (currentActiveIdx >= 0 && currentActiveIdx < idx) {
+                const activeTask = state.tasks[currentActiveIdx];
+                if (activeTask && !activeTask.isAnchor && activeTask.status === 'active') {
+                  if (currentSecsOfDay >= anchorSecs && (state.timerState === 'running' || state.timerState === 'alarm_overtime' || state.timerState === 'paused')) {
+                    triggerAnchorPreemption(state, activeTask, currentActiveIdx, t, idx);
+                  }
+                }
               }
             }
           }
@@ -1379,7 +1837,10 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         backgroundBanner.style.display = 'flex';
         const taskName = runState.tasks[runState.actionableTaskIndices[runState.currentActionableStep]]?.name || 'Task';
 
-        if (runState.timerState === 'alarm_overtime') {
+        if (runState.timerState === 'free_time') {
+          backgroundBanner.classList.remove('alert-mode');
+          backgroundBannerText.innerHTML = `🌿 <strong>"${escapeHtml(runState.name)}"</strong> in Free Time Buffer (${formatMMSS(runState.remainingSeconds)})`;
+        } else if (runState.timerState === 'alarm_overtime') {
           backgroundBanner.classList.add('alert-mode');
           backgroundBannerText.innerHTML = `🚨 <strong>"${escapeHtml(runState.name)}" finished!</strong> Overtime: +${formatMMSS(runState.overtimeSeconds)} (${escapeHtml(taskName)})`;
         } else {
@@ -1397,6 +1858,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         if (!state) return;
 
         clockDisplay.classList.remove('alert');
+        clockDisplay.classList.remove('free-time-mode');
         overtimeBadge.style.display = 'none';
         routineCompletedBanner.style.display = 'none';
 
@@ -1409,6 +1871,21 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           clockDisplay.textContent = '00:00';
           overallProgressBar.style.width = '100%';
           showRoutineCompletionBanner(state);
+          return;
+        }
+
+        // Handle Open Buffer / Free Time State
+        if (state.timerState === 'free_time' && state.freeTimeData) {
+          const anchorTask = state.freeTimeData.anchorTask;
+          currentTaskTitle.textContent = '🌿 Open Buffer • Free Time';
+          stepProgressBadge.textContent = `Buffer before Step ${state.currentActionableStep + 1}`;
+          anchorTypeBadge.textContent = `Upcoming: ${anchorTask.name} (${anchorTask.scheduledStart})`;
+          anchorTypeBadge.className = 'badge anchor-type';
+          parentContextBadge.textContent = 'Free Time Gap';
+          wallClockMeta.textContent = `Calendar meeting convenes automatically at ${anchorTask.scheduledStart}`;
+          clockDisplay.textContent = formatMMSS(state.remainingSeconds);
+          clockDisplay.classList.add('free-time-mode');
+          overallProgressBar.style.width = `${(state.currentActionableStep / state.actionableTaskIndices.length) * 100}%`;
           return;
         }
 
@@ -1439,11 +1916,13 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
         if (state.actualStartTime) {
           const projectedEnd = new Date(state.actualStartTime.getTime() + (state.remainingSeconds * 1000));
-          wallClockMeta.textContent = `Started: ${state.actualStartTime.toLocaleTimeString()}  •  Projected End: ${projectedEnd.toLocaleTimeString()}`;
+          wallClockMeta.textContent = `Started: ${state.actualStartTime.toLocaleTimeString()}  •  Est. Finish: ${projectedEnd.toLocaleTimeString()}`;
         } else {
+          const now = new Date();
+          const estEnd = new Date(now.getTime() + (task.durationSecs * 1000));
           wallClockMeta.textContent = task.isAnchor 
             ? `Hard-Coded Start: ${task.scheduledStart}` 
-            : 'Press Start to initiate wall-clock logging';
+            : `Projected Start: ${formatClockHM(now)}  •  Est. End: ${formatClockHM(estEnd)}`;
         }
 
         if (state.timerState === 'alarm_overtime') {
@@ -1459,7 +1938,6 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         overallProgressBar.style.width = `${percent}%`;
       }
 
-      // Updates the sticky Zen mini-bar displayed at top of Guide View
       function updateZenBar() {
         const state = routineStates.get(activeRunningRoutine || currentViewedRoutine);
         if (!state || state.actionableTaskIndices.length === 0 || state.currentActionableStep >= state.actionableTaskIndices.length) {
@@ -1467,6 +1945,15 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           zenBarRoutineName.textContent = 'Idle';
           zenBarClock.textContent = '00:00';
           zenStickyBar.classList.remove('alert-mode');
+          return;
+        }
+
+        if (state.timerState === 'free_time' && state.freeTimeData) {
+          zenBarTaskTitle.textContent = '🌿 Free Time Buffer';
+          zenBarRoutineName.textContent = state.name;
+          zenBarClock.textContent = formatMMSS(state.remainingSeconds);
+          zenStickyBar.classList.remove('alert-mode');
+          zenBarPauseBtn.textContent = 'Pause';
           return;
         }
 
@@ -1490,7 +1977,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         if (!state) return;
 
         const hasTasks = state.actionableTaskIndices.length > 0 && state.currentActionableStep < state.actionableTaskIndices.length;
-        const canAdjust = hasTasks && state.timerState !== 'completed';
+        const canAdjust = hasTasks && state.timerState !== 'completed' && state.timerState !== 'free_time';
 
         document.querySelectorAll('.btn-nudge.add').forEach(btn => {
           btn.disabled = !canAdjust;
@@ -1498,6 +1985,22 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         document.querySelectorAll('.btn-nudge.subtract').forEach(btn => {
           btn.disabled = !canAdjust || state.timerState === 'alarm_overtime';
         });
+
+        // Handle Free Time controls
+        if (state.timerState === 'free_time') {
+          startAnchorEarlyBtn.style.display = 'inline-flex';
+          startAnchorEarlyBtn.disabled = false;
+          startBtn.style.display = 'none';
+          pauseBtn.disabled = false;
+          finishEarlyBtn.disabled = true;
+          resetBtn.disabled = false;
+          nextBtn.disabled = true;
+          nextBtn.classList.remove('pulsing');
+          return;
+        }
+
+        startAnchorEarlyBtn.style.display = 'none';
+        startBtn.style.display = 'inline-flex';
 
         if (!hasTasks) {
           startBtn.disabled = true;
@@ -1547,6 +2050,35 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
       }
 
+      // Manual Override: Start Anchor Early during Free Time
+      startAnchorEarlyBtn.addEventListener('click', () => {
+        const state = routineStates.get(activeRunningRoutine || currentViewedRoutine);
+        if (!state || state.timerState !== 'free_time' || !state.freeTimeData) return;
+        getAudioContext();
+        playAppleChime('anchor');
+
+        const anchorIdx = state.freeTimeData.anchorIdx;
+        const anchorTask = state.tasks[anchorIdx];
+        state.freeTimeData = null;
+        state.currentActionableStep = state.actionableTaskIndices.indexOf(anchorIdx);
+        anchorTask.status = 'active';
+        state.remainingSeconds = anchorTask.durationSecs;
+        state.elapsedSeconds = 0;
+        state.overtimeSeconds = 0;
+        state.extendedSeconds = 0;
+        state.actualStartTime = new Date();
+        state.timerState = 'running';
+        state.lastTickTime = Date.now();
+        activeRunningRoutine = state.name;
+
+        saveStateToStorage();
+        renderChecklist();
+        updateDisplayForViewed();
+        updateControls();
+        updateBackgroundBanner();
+        updateZenBar();
+      });
+
       function renderChecklist() {
         const state = routineStates.get(currentViewedRoutine);
         taskListContainer.innerHTML = '';
@@ -1555,7 +2087,9 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           return;
         }
 
-        state.tasks.forEach((task) => {
+        const projectedTimes = computeProjectedTimes(state);
+
+        state.tasks.forEach((task, idx) => {
           const li = document.createElement('li');
           li.className = 'task-item';
 
@@ -1586,6 +2120,16 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           const metaRight = document.createElement('div');
           metaRight.className = 'task-meta-right';
 
+          // Sleek Monospace Projected Start Time Chip
+          const proj = projectedTimes[idx];
+          if (proj && proj.startStr) {
+            const timeBadge = document.createElement('span');
+            timeBadge.className = 'task-time-badge';
+            timeBadge.textContent = proj.startStr;
+            timeBadge.title = `Projected Start: ${proj.startStr}${proj.endStr ? ' - ' + proj.endStr : ''}`;
+            metaRight.appendChild(timeBadge);
+          }
+
           if (task.isAnchor && task.scheduledStart) {
             const aBadge = document.createElement('span');
             aBadge.className = 'anchor-badge';
@@ -1607,13 +2151,15 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         if (activeElem) activeElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
-      function recordCompletedTask(routineName, task, plannedSecs, extendedSecs, actualSecs, overtimeSecs, wasEarly, startTime, endTime) {
+      function recordCompletedTask(routineName, task, plannedSecs, extendedSecs, actualSecs, overtimeSecs, wasEarly, startTime, endTime, customStatus) {
         const finalTargetSecs = plannedSecs + extendedSecs;
-        let statusText = 'On Time';
+        let statusText = customStatus || 'On Time';
 
-        if (overtimeSecs > 0) statusText = 'Overtime';
-        else if (wasEarly) statusText = 'Finished Early';
-        else if (extendedSecs > 0) statusText = 'Extended';
+        if (!customStatus) {
+          if (overtimeSecs > 0) statusText = 'Overtime';
+          else if (wasEarly) statusText = 'Finished Early';
+          else if (extendedSecs > 0) statusText = 'Extended';
+        }
 
         recordedResults.push({
           routine: routineName,
@@ -1679,7 +2225,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
               <span style="font-size: 0.7rem; color: var(--text-muted);">Target: ${formatMMSS(res.plannedSecs)}${extBadge}</span>
             </td>
             <td><strong>${formatMMSS(res.actualSecs)}</strong></td>
-            <td>${formatVariance(res.finalTargetSecs, res.actualSecs)}</td>
+            <td>${formatVariance(res.finalTargetSecs, res.actualSecs, res.status)}</td>
           `;
           resultsTableBody.appendChild(tr);
         });
@@ -1715,6 +2261,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
 
         saveStateToStorage();
+        renderChecklist();
         updateDisplayForViewed();
         updateControls();
         updateBackgroundBanner();
@@ -1747,6 +2294,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         state.lastTickTime = Date.now();
 
         saveStateToStorage();
+        renderChecklist();
         updateDisplayForViewed();
         updateControls();
         updateBackgroundBanner();
@@ -1756,7 +2304,14 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       function pauseTimer() {
         const state = routineStates.get(currentViewedRoutine);
         if (!state) return;
-        state.timerState = 'paused';
+
+        if (state.timerState === 'free_time') {
+          // Pause free time countdown
+          state.timerState = 'paused';
+        } else {
+          state.timerState = 'paused';
+        }
+
         if (activeRunningRoutine === currentViewedRoutine) activeRunningRoutine = null;
 
         saveStateToStorage();
@@ -1774,6 +2329,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         if (activeRunningRoutine === currentViewedRoutine) activeRunningRoutine = null;
 
         state.timerState = 'idle';
+        state.freeTimeData = null;
         state.overtimeSeconds = 0;
         state.elapsedSeconds = 0;
         state.extendedSeconds = 0;
@@ -1785,6 +2341,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
 
         saveStateToStorage();
+        renderChecklist();
         updateDisplayForViewed();
         updateControls();
         updateBackgroundBanner();
@@ -1849,16 +2406,63 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       function transitionStep(state, previousActiveIdx) {
         if (state.currentActionableStep < state.actionableTaskIndices.length) {
           const nextActiveIdx = state.actionableTaskIndices[state.currentActionableStep];
+          const nextTask = state.tasks[nextActiveIdx];
+
+          // Check if upcoming task is an Anchor with a gap in the future
+          if (nextTask.isAnchor && nextTask.scheduledStart) {
+            const parts = nextTask.scheduledStart.split(':');
+            if (parts.length >= 2) {
+              const now = new Date();
+              const anchorDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0], 10), parseInt(parts[1], 10), 0);
+              const diffSecs = Math.round((anchorDate.getTime() - now.getTime()) / 1000);
+
+              if (diffSecs > 10) {
+                // Smoothly enter Apple-Minimal Open Buffer / Free Time State!
+                for (let i = previousActiveIdx + 1; i < nextActiveIdx; i++) {
+                  state.tasks[i].status = 'done';
+                }
+                state.freeTimeData = {
+                  anchorIdx: nextActiveIdx,
+                  anchorTask: nextTask,
+                  targetTime: anchorDate.getTime()
+                };
+                state.remainingSeconds = diffSecs;
+                state.elapsedSeconds = 0;
+                state.overtimeSeconds = 0;
+                state.extendedSeconds = 0;
+                state.actualStartTime = null;
+                state.timerState = 'free_time';
+                state.lastTickTime = Date.now();
+                activeRunningRoutine = state.name;
+
+                playAppleChime('freetime');
+                saveStateToStorage();
+                renderChecklist();
+                updateDisplayForViewed();
+                updateControls();
+                updateBackgroundBanner();
+                updateZenBar();
+                return;
+              }
+            }
+          }
+
+          // Otherwise, proceed directly to the next task
           for (let i = previousActiveIdx + 1; i < nextActiveIdx; i++) {
             state.tasks[i].status = 'done';
           }
 
+          state.freeTimeData = null;
           state.tasks[nextActiveIdx].status = 'active';
           state.remainingSeconds = state.tasks[nextActiveIdx].durationSecs;
           state.actualStartTime = new Date();
           state.timerState = 'running';
           state.lastTickTime = Date.now();
           activeRunningRoutine = state.name;
+
+          if (state.tasks[nextActiveIdx].isAnchor) {
+            playAppleChime('anchor');
+          }
 
           saveStateToStorage();
           renderChecklist();
@@ -1871,11 +2475,12 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
             state.tasks[i].status = 'done';
           }
           state.timerState = 'completed';
+          state.freeTimeData = null;
           if (activeRunningRoutine === state.name) activeRunningRoutine = null;
 
           saveStateToStorage();
-          updateDisplayForViewed();
           renderChecklist();
+          updateDisplayForViewed();
           updateControls();
           updateBackgroundBanner();
           updateZenBar();
