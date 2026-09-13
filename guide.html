@@ -157,32 +157,27 @@
       </ol>
     </section>
 
-    <!-- Section 2: Prompting with Outlook -->
+    <!-- Section 2: Conversational Timeboxing via DeepSeek -->
     <section class="card">
-      <h2>2. Generating Schedules via AI Prompting</h2>
-      <p>You can paste your raw Outlook or Google Calendar day view directly alongside your daily to-do list into an LLM (such as Gemini, Claude, or ChatGPT) using the master prompt.</p>
+      <h2>2. Conversational Timeboxing with Multi-Tier AI (OpenAI & DeepSeek)</h2>
+      <p>Instead of manual scheduling or cumbersome CSV spreadsheets, <strong>Anchor & Flow</strong> features a conversational AI assistant powered by OpenAI (Option 1) with an automatic DeepSeek fallback (Option 2).</p>
 
-      <h3>How to Export / Copy from Outlook:</h3>
+      <h3>The 3-Step Harvard Timeboxing Flow:</h3>
       <ol>
-        <li>In Outlook (or Outlook Web), switch to <strong>Day View</strong> or open your <strong>Agenda</strong>.</li>
-        <li>Copy the text of your day's meetings (e.g., <code>10:00 AM - 10:45 AM: Product Sprint</code>, <code>2:30 PM - 3:00 PM: 1:1 with Anil</code>).</li>
-        <li>Open your LLM, paste the provided <code>PROMPT.md</code>, and append your meeting text and unorganized tasks.</li>
+        <li><strong>Step 1 — Brain Dump:</strong> Tap <em>"✨ Plan My Day"</em> and paste all your meetings and tasks. Whether planning a full day, an afternoon sprint, or an evening ritual, the AI anchors to your current wall-clock time.</li>
+        <li><strong>Step 2 — Set Top 3 Priorities:</strong> The assistant parses your meetings as Hard Anchors and organizes your personal work into labeled tasks (<code>[A]</code>, <code>[B]</code>, <code>[C]</code>). Simply reply with your top 3 needle-moving priorities.</li>
+        <li><strong>Step 3 — Timebox in Calendar Gaps:</strong> DeepSeek slots your Top 3 priorities into prime focus windows between immutable meetings, interleaving smaller tasks and ergonomic habits into remaining gaps.</li>
       </ol>
-
-      <h3>The Required 5-Column Schema:</h3>
-      <pre>Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start
-Work Day,Morning Inbox Triage,20,Morning Alignment,
-Work Day,Hydrate & 10 Squats,2,Morning Alignment,
-Work Day,Sprint Standup (Outlook),30,,10:00
-Work Day,Deep Work: API Architecture,50,,
-Work Day,Executive Sync (Outlook),45,,14:30</pre>
-      <p>Notice how <code>Scheduled Start</code> is populated with 24-hour wall-clock times (e.g., <code>10:00</code>, <code>14:30</code>) for calendar meetings, but left completely blank for flexible tasks. The timer automatically treats non-empty start times as <strong>Hard Anchors</strong>.</p>
     </section>
-
-    <!-- Section 3: Timer Mechanics -->
+<!-- Section 3: Timer Mechanics -->
     <section class="card">
       <h2>3. The Execution Engine in Practice</h2>
       <ul>
+        <li><strong>60-Second Calming Pause (🧘):</strong> Rather than jolting from one task into the next, the timer introduces a mindful 60-second transition breather between flow tasks. You can extend it with <code>+1m</code> / <code>+5m</code> or begin your next task immediately when ready.</li>
+        <li><strong>Open Buffer & Gap Filling (⚡):</strong> Finished early before a meeting? The cockpit enters a serene free time countdown and highlights upcoming smaller tasks from your routine that fit comfortably within the remaining minutes. Tapping any chip pulls it forward to execute immediately.</li>
+        <li><strong>Anchor Auto-Convene & Preemption:</strong> Hard calendar meetings start punctually on their scheduled wall-clock minute with an Apple harmonic chime. Any running task is paused with an option to <strong>Resume After Meeting</strong> or mark <strong>No, Task is Finished</strong>.</li>
+        <li><strong>Flow Guru Productivity Audit (✦):</strong> Open the slide-over dashboard to review your velocity ratio, anchor shield discipline, and personalized pacing tips for tomorrow.</li>
+
         <li><strong>Dynamic Wall-Clock Start Times:</strong> Upon loading, every milestone immediately displays its projected start time in sleek monospace typography (e.g., <code>10:15</code>). Flow tasks slide forward if earlier tasks overrun or pull forward when finished early, while Calendar Anchors remain anchored to their exact wall-clock time.</li>
         <li><strong>Open Buffer / Free Time:</strong> When preceding tasks finish ahead of an upcoming meeting, the cockpit smoothly transitions into a serene, calming buffer countdown. If a meeting convenes early, tap <strong>Start Meeting Early ⏩</strong> to override manually.</li>
         <li><strong>Anchor Auto-Convene & Preemption:</strong> When the computer clock hits an upcoming anchor's scheduled start, the meeting starts automatically with an Apple harmonic chime. Any overrunning flow task is stopped immediately (logged as <code>Cutoff by Anchor</code>), and a prompt asks: <em>"Previous task was stopped. Would you like to resume it after the meeting?"</em> with options to <strong>Resume After Meeting</strong> or <strong>No, Task is Finished</strong>. Any anchor tasks scheduled earlier in the day (in the past) are automatically marked complete and skipped with <code>0m</code> consumed in the current working block.</li>

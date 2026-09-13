@@ -739,6 +739,268 @@
       background-color: var(--accent-hover);
     }
 
+
+    /* Calming Pause Clock */
+    .clock-display.pause-mindful-mode {
+      color: #a78bfa;
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(88, 28, 135, 0.2);
+      animation: breathing-glow 4s infinite ease-in-out;
+    }
+    @keyframes breathing-glow {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.012); opacity: 0.88; }
+    }
+
+    /* Gap Filling Suggestions in Buffer State */
+    .gap-fill-box {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 680px;
+      margin-bottom: 18px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px dashed rgba(52, 211, 153, 0.4);
+      border-radius: 12px;
+      padding: 12px 16px;
+      gap: 8px;
+    }
+
+    .gap-fill-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #34d399;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .gap-fill-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .gap-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .gap-chip:hover {
+      border-color: #34d399;
+      background: rgba(52, 211, 153, 0.15);
+      color: #fff;
+    }
+
+    /* Flow Guru Slide-Over Panel (Apple-Style) */
+    .slide-panel-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      transition: opacity 0.3s ease;
+    }
+    .slide-panel {
+      position: fixed;
+      top: 0;
+      right: -520px;
+      width: 100%;
+      max-width: 500px;
+      height: 100vh;
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border);
+      box-shadow: -15px 0 35px rgba(0, 0, 0, 0.7);
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .slide-panel.open { right: 0; }
+
+    .panel-top-bar {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(19, 27, 46, 0.95);
+    }
+    .panel-top-bar h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-icon-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+    .btn-icon-close:hover { color: #fff; }
+
+    .panel-body-content {
+      padding: 22px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .metric-tiles-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .metric-tile {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .metric-tile-val {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .metric-tile-lbl {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+    }
+
+    .insight-card {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .insight-card h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Modal (DeepSeek Chatbot Intake & Settings) */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-dialog {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      animation: modal-pop 0.25s ease-out;
+    }
+    @keyframes modal-pop {
+      from { transform: scale(0.96); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+
+    .chat-body {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 320px;
+      max-height: 500px;
+    }
+
+    .chat-bubble {
+      max-width: 88%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .chat-bubble.bot {
+      align-self: flex-start;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-bottom-left-radius: 4px;
+    }
+    .chat-bubble.user {
+      align-self: flex-end;
+      background: var(--accent);
+      color: #090d16;
+      font-weight: 600;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-input-row {
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      background: rgba(19, 27, 46, 0.95);
+    }
+    .chat-input {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .chat-input:focus { border-color: var(--accent); }
+
   </style>
 </head>
 <body>
@@ -749,14 +1011,10 @@
         <span class="sys-time" id="systemClock">00:00:00</span>
         <span class="sys-date" id="systemDate">Mon, Sep 12</span>
       </div>
-      <div class="upload-controls">
-        <button type="button" class="btn btn-outline" id="downloadPromptBtn" title="Download Master LLM Prompt">Prompt (.md)</button>
-        <button type="button" class="btn btn-outline" id="loadSampleBtn">Load Sample</button>
+      <div class="header-controls">
+        <button type="button" class="btn btn-primary" id="openPlannerChatBtn">✨ Plan My Day</button>
+        <button type="button" class="btn btn-outline" id="openSettingsBtn" title="DeepSeek API Configuration">⚙️ Settings</button>
         <button type="button" class="btn btn-outline" id="clearSessionBtn" title="Clear saved session data">Reset All</button>
-        <div class="file-input-wrapper">
-          <button type="button" class="btn btn-primary">Upload CSV</button>
-          <input type="file" id="csvFileInput" accept=".csv,text/csv,text/plain" />
-        </div>
       </div>
     </header>
 
@@ -844,6 +1102,11 @@
         <div class="clock-display" id="clockDisplay">00:00</div>
 
         <!-- Precision Time Adjustments -->
+                <!-- Suggestion Chips to Fill Gap Before Anchor -->
+        <div class="gap-fill-box" id="gapFillBox" style="display: none;">
+          <div class="gap-fill-title" id="gapFillTitle">⚡ Quick Tasks That Fit In This Gap:</div>
+          <div class="gap-fill-chips" id="gapFillChips"></div>
+        </div>
         <div class="time-adjust-bar">
           <span class="adjust-label">Add Time:</span>
           <button type="button" class="btn-nudge add" data-seconds="60">+1m</button>
@@ -860,6 +1123,7 @@
 
         <!-- Controls -->
         <div class="controls-row">
+          <button type="button" class="btn btn-primary" id="beginNextTaskBtn" style="display: none;">Begin Next Task ▶</button>
           <button type="button" class="btn btn-early-anchor" id="startAnchorEarlyBtn" style="display: none;">Start Meeting Early ⏩</button>
           <button type="button" class="btn btn-success" id="startBtn" disabled>Start</button>
           <button type="button" class="btn btn-warning" id="pauseBtn" disabled>Pause</button>
@@ -893,6 +1157,7 @@
             <h2>Execution Log</h2>
             <div style="display: flex; gap: 8px; align-items: center;">
               <span class="pacing-badge" id="pacingBadge">Velocity: 1.0x</span>
+              <button type="button" class="btn btn-primary btn-sm" id="openFlowGuruBtn">✦ Flow Guru</button>
               <button type="button" class="btn btn-outline" id="exportCsvBtn" style="padding: 4px 10px; font-size: 0.78rem;" disabled>Export CSV</button>
             </div>
           </div>
@@ -946,6 +1211,100 @@ Work Day,Executive Sync (Outlook),45,,14:30</pre>
         <pre>=Actual_Elapsed / Target_Duration</pre>
         <p>If your multiplier is consistently <code>1.25x</code>, increase future task buffers by 25% to achieve predictability.</p>
       </section>
+    </div>
+  </div>
+
+
+  <!-- Slide-Over Drawer: Flow Guru Productivity Analysis -->
+  <div class="slide-panel-backdrop" id="slidePanelBackdrop"></div>
+  <aside class="slide-panel" id="flowGuruPanel">
+    <div class="panel-top-bar">
+      <h3>✦ Flow Guru — Productivity Audit</h3>
+      <button type="button" class="btn-icon-close" id="closeFlowGuruBtn">✕</button>
+    </div>
+    <div class="panel-body-content">
+      <div class="metric-tiles-row">
+        <div class="metric-tile">
+          <div class="metric-tile-val" id="guruVelocityVal">1.0x</div>
+          <div class="metric-tile-lbl">Velocity</div>
+        </div>
+        <div class="metric-tile">
+          <div class="metric-tile-val" id="guruAnchorsVal">100%</div>
+          <div class="metric-tile-lbl">Anchors Met</div>
+        </div>
+        <div class="metric-tile">
+          <div class="metric-tile-val" id="guruTasksDoneVal">0</div>
+          <div class="metric-tile-lbl">Tasks Done</div>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <h4>⚡ Executive Highlights</h4>
+        <p id="guruHighlightsText">Loading productivity evaluation...</p>
+      </div>
+
+      <div class="insight-card">
+        <h4>🎯 Estimation & Drift Audit</h4>
+        <p id="guruDriftText">Evaluating your execution logs against initial targets...</p>
+      </div>
+
+      <div class="insight-card">
+        <h4>💡 Tomorrow's Calibration Tips</h4>
+        <ul id="guruTipsList" style="margin-left: 18px; color: var(--text-muted);">
+          <li>Complete more milestones to unlock personalized pacing tips.</li>
+        </ul>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: auto;">
+        <button type="button" class="btn btn-outline" id="refreshGuruBtn" style="flex: 1;">Re-Analyze</button>
+        <button type="button" class="btn btn-primary" id="copyGuruBtn" style="flex: 1;">Copy Feedback</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- DeepSeek Conversational Intake Chatbot Modal -->
+  <div class="modal-overlay" id="plannerChatModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>✨ Harvard Timeboxing Assistant</h3>
+        <button type="button" class="btn-icon-close" id="closeChatModalBtn">✕</button>
+      </div>
+      <div class="chat-body" id="chatBody"></div>
+      <div class="chat-input-row">
+        <input type="text" class="chat-input" id="chatInputField" placeholder="Type tasks, paste meetings, or reply..." />
+        <button type="button" class="btn btn-primary" id="sendChatBtn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal (DeepSeek Configuration) -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3>⚙️ DeepSeek & AI Settings</h3>
+        <button type="button" class="btn-icon-close" id="closeSettingsBtn">✕</button>
+      </div>
+      <div style="padding: 20px; display: flex; flex-direction: column; gap: 16px; font-size: 0.9rem; color: var(--text-muted);">
+        <p>Configure your AI engines for Harvard Timeboxing and Flow Guru. Stored securely in private browser <code>localStorage</code>.</p>
+        <div>
+          <label style="font-weight: 600; color: var(--text-main); display: block; margin-bottom: 6px;">
+            <span style="color: var(--accent);">Option 1 (Primary):</span> OpenAI API Key:
+          </label>
+          <input type="password" id="openaiKeyInput" class="chat-input" style="width: 100%;" placeholder="sk-proj-..." />
+          <span style="font-size: 0.76rem; color: var(--text-muted); display: block; margin-top: 4px;">Primary engine (uses GPT-4o-mini). If unavailable, falls back automatically to DeepSeek.</span>
+        </div>
+        <div>
+          <label style="font-weight: 600; color: var(--text-main); display: block; margin-bottom: 6px;">
+            <span style="color: var(--warning);">Option 2 (Fallback):</span> DeepSeek API Key:
+          </label>
+          <input type="password" id="deepseekKeyInput" class="chat-input" style="width: 100%;" placeholder="sk-..." />
+          <span style="font-size: 0.76rem; color: var(--text-muted); display: block; margin-top: 4px;">Secondary resilience engine. If both keys are blank, the local Harvard Timeboxer engine runs for visitors.</span>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
+          <button type="button" class="btn btn-outline" id="cancelSettingsBtn">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1026,6 +1385,45 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       const resumeCutoffBtn = document.getElementById('resumeCutoffBtn');
       const dismissCutoffBtn = document.getElementById('dismissCutoffBtn');
 
+      const gapFillBox = document.getElementById('gapFillBox');
+      const gapFillChips = document.getElementById('gapFillChips');
+      const gapFillTitle = document.getElementById('gapFillTitle');
+      const beginNextTaskBtn = document.getElementById('beginNextTaskBtn');
+
+      // Modals & Drawers
+      const openPlannerChatBtn = document.getElementById('openPlannerChatBtn');
+      const plannerChatModal = document.getElementById('plannerChatModal');
+      const closeChatModalBtn = document.getElementById('closeChatModalBtn');
+      const chatBody = document.getElementById('chatBody');
+      const chatInputField = document.getElementById('chatInputField');
+      const sendChatBtn = document.getElementById('sendChatBtn');
+
+      const openSettingsBtn = document.getElementById('openSettingsBtn');
+      const settingsModal = document.getElementById('settingsModal');
+      const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+      const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+      const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+      const deepseekKeyInput = document.getElementById('deepseekKeyInput');
+
+      const openFlowGuruBtn = document.getElementById('openFlowGuruBtn');
+      const flowGuruPanel = document.getElementById('flowGuruPanel');
+      const slidePanelBackdrop = document.getElementById('slidePanelBackdrop');
+      const closeFlowGuruBtn = document.getElementById('closeFlowGuruBtn');
+      const guruVelocityVal = document.getElementById('guruVelocityVal');
+      const guruAnchorsVal = document.getElementById('guruAnchorsVal');
+      const guruTasksDoneVal = document.getElementById('guruTasksDoneVal');
+      const guruHighlightsText = document.getElementById('guruHighlightsText');
+      const guruDriftText = document.getElementById('guruDriftText');
+      const guruTipsList = document.getElementById('guruTipsList');
+      const refreshGuruBtn = document.getElementById('refreshGuruBtn');
+      const copyGuruBtn = document.getElementById('copyGuruBtn');
+
+      const STORAGE_KEY_OPENAI = 'anchor_flow_openai_key';
+      const STORAGE_KEY_DEEPSEEK = 'anchor_flow_deepseek_key';
+      const openaiKeyInput = document.getElementById('openaiKeyInput');
+      let chatStep = 0;
+      let pendingIntakeData = { rawText: '', meetings: [], tasks: [], top3: [] };
+
       // View Switcher Elements
       const openGuideViewBtn = document.getElementById('openGuideViewBtn');
       const dashboardViewContainer = document.getElementById('dashboardViewContainer');
@@ -1085,7 +1483,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
               osc.start(now + idx * 0.12);
               osc.stop(now + idx * 0.12 + 1.25);
             });
-          } else if (soundType === 'freetime') {
+          } else if (soundType === 'freetime' || soundType === 'mindful') {
             // Calming, gentle major-third bell (E5 -> G#5) for breathing buffer
             const freqs = [659.25, 830.61];
             freqs.forEach((freq, idx) => {
@@ -1667,6 +2065,32 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
       });
 
+            function beginNextTaskFromPause(state) {
+        if (!state || !state.calmingPauseData) return;
+        const nextIdx = state.calmingPauseData.nextActiveIdx;
+        const nextTask = state.tasks[nextIdx];
+        state.calmingPauseData = null;
+
+        state.currentActionableStep = state.actionableTaskIndices.indexOf(nextIdx);
+        nextTask.status = 'active';
+        state.remainingSeconds = nextTask.durationSecs;
+        state.elapsedSeconds = 0;
+        state.overtimeSeconds = 0;
+        state.extendedSeconds = 0;
+        state.actualStartTime = new Date();
+        state.timerState = 'running';
+        state.lastTickTime = Date.now();
+        activeRunningRoutine = state.name;
+
+        playAppleChime('mindful');
+        saveStateToStorage();
+        renderChecklist();
+        updateDisplayForViewed();
+        updateControls();
+        updateBackgroundBanner();
+        updateZenBar();
+      }
+
       function conveneAnchorFromFreeTime(state) {
         if (!state || !state.freeTimeData) return;
         const anchorIdx = state.freeTimeData.anchorIdx;
@@ -1895,8 +2319,24 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
         clockDisplay.classList.remove('alert');
         clockDisplay.classList.remove('free-time-mode');
+        clockDisplay.classList.remove('pause-mindful-mode');
         overtimeBadge.style.display = 'none';
         routineCompletedBanner.style.display = 'none';
+        if (gapFillBox) gapFillBox.style.display = 'none';
+
+        // 1. Calming Pause State (60s mindful breather)
+        if (state.timerState === 'calming_pause' && state.calmingPauseData) {
+          const nextTask = state.tasks[state.calmingPauseData.nextActiveIdx];
+          currentTaskTitle.textContent = '🧘 Calming Pause';
+          stepProgressBadge.textContent = 'Mindful Reset';
+          anchorTypeBadge.textContent = 'Breather • 60s';
+          anchorTypeBadge.className = 'badge';
+          parentContextBadge.textContent = `Up Next: ${nextTask.name} (${nextTask.durationMins}m)`;
+          wallClockMeta.textContent = `Take a breath. Automatically resumes in ${formatMMSS(state.remainingSeconds)}, or tap "Begin Next Task"`;
+          clockDisplay.textContent = formatMMSS(state.remainingSeconds);
+          clockDisplay.classList.add('pause-mindful-mode');
+          return;
+        }
 
         if (state.timerState === 'completed') {
           currentTaskTitle.textContent = `${state.name} Completed!`;
@@ -1918,10 +2358,12 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           anchorTypeBadge.textContent = `Upcoming: ${anchorTask.name} (${anchorTask.scheduledStart})`;
           anchorTypeBadge.className = 'badge anchor-type';
           parentContextBadge.textContent = 'Free Time Gap';
-          wallClockMeta.textContent = `Calendar meeting convenes automatically at ${anchorTask.scheduledStart}`;
+          wallClockMeta.textContent = `Meeting starts at ${anchorTask.scheduledStart}. Take a break, or pull forward a smaller task below:`;
           clockDisplay.textContent = formatMMSS(state.remainingSeconds);
           clockDisplay.classList.add('free-time-mode');
           overallProgressBar.style.width = `${(state.currentActionableStep / state.actionableTaskIndices.length) * 100}%`;
+
+          renderGapFillSuggestions(state);
           return;
         }
 
@@ -2022,7 +2464,21 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           btn.disabled = !canAdjust || state.timerState === 'alarm_overtime';
         });
 
-        // Handle Free Time controls
+        // 1. Calming Pause Controls
+        if (state.timerState === 'calming_pause') {
+          startAnchorEarlyBtn.style.display = 'none';
+          beginNextTaskBtn.style.display = 'inline-flex';
+          beginNextTaskBtn.disabled = false;
+          startBtn.style.display = 'none';
+          pauseBtn.disabled = false;
+          finishEarlyBtn.disabled = true;
+          resetBtn.disabled = false;
+          nextBtn.disabled = true;
+          nextBtn.classList.remove('pulsing');
+          return;
+        }
+
+        // 2. Handle Free Time controls
         if (state.timerState === 'free_time') {
           startAnchorEarlyBtn.style.display = 'inline-flex';
           startAnchorEarlyBtn.disabled = false;
@@ -2036,6 +2492,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
 
         startAnchorEarlyBtn.style.display = 'none';
+        beginNextTaskBtn.style.display = 'none';
         startBtn.style.display = 'inline-flex';
 
         if (!hasTasks) {
@@ -2271,6 +2728,14 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         const targetRoutine = activeRunningRoutine || currentViewedRoutine;
         const state = routineStates.get(targetRoutine);
         if (!state) return;
+        // If in Calming Pause, add time to the mindful pause!
+        if (state.timerState === 'calming_pause') {
+          state.remainingSeconds += secondsToAdd;
+          saveStateToStorage();
+          updateDisplayForViewed();
+          return;
+        }
+
         if (state.actionableTaskIndices.length === 0 || state.currentActionableStep >= state.actionableTaskIndices.length) return;
 
         getAudioContext();
@@ -2483,23 +2948,25 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
             }
           }
 
-          // Otherwise, proceed directly to the next task
+          // Regular flow task transition -> Enter 60-Second Mindful Calming Pause!
           for (let i = previousActiveIdx + 1; i < nextActiveIdx; i++) {
             state.tasks[i].status = 'done';
           }
 
           state.freeTimeData = null;
-          state.tasks[nextActiveIdx].status = 'active';
-          state.remainingSeconds = state.tasks[nextActiveIdx].durationSecs;
-          state.actualStartTime = new Date();
-          state.timerState = 'running';
+          state.calmingPauseData = {
+            nextActiveIdx: nextActiveIdx
+          };
+          state.remainingSeconds = 60; // 60s mindful breather
+          state.elapsedSeconds = 0;
+          state.overtimeSeconds = 0;
+          state.extendedSeconds = 0;
+          state.actualStartTime = null;
+          state.timerState = 'calming_pause';
           state.lastTickTime = Date.now();
           activeRunningRoutine = state.name;
 
-          if (state.tasks[nextActiveIdx].isAnchor) {
-            playAppleChime('anchor');
-          }
-
+          playAppleChime('mindful');
           saveStateToStorage();
           renderChecklist();
           updateDisplayForViewed();
@@ -2616,6 +3083,649 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
       }
+
+
+      // --- GAP FILLING LOGIC DURING FREE TIME ---
+      function renderGapFillSuggestions(state) {
+        if (!state || !state.freeTimeData) {
+          if (gapFillBox) gapFillBox.style.display = 'none';
+          return;
+        }
+
+        const gapMinutes = Math.floor(state.remainingSeconds / 60);
+        gapFillChips.innerHTML = '';
+
+        const candidates = [];
+        state.tasks.forEach((t, idx) => {
+          if (t.status === 'pending' && !t.isAnchor && !t.isHeader && t.durationMins > 0) {
+            if (t.durationMins <= gapMinutes) {
+              candidates.push({ task: t, taskIdx: idx });
+            }
+          }
+        });
+
+        if (candidates.length > 0) {
+          gapFillBox.style.display = 'flex';
+          gapFillTitle.textContent = `⚡ ${gapMinutes}m Free Gap: Quick tasks that fit:`;
+
+          candidates.slice(0, 4).forEach(cand => {
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'gap-chip';
+            chip.innerHTML = `+ ${escapeHtml(cand.task.name)} <strong>(${cand.task.durationMins}m)</strong>`;
+            chip.onclick = () => pullTaskIntoGap(state, cand.taskIdx);
+            gapFillChips.appendChild(chip);
+          });
+        } else {
+          gapFillBox.style.display = 'flex';
+          gapFillTitle.textContent = `⚡ ${gapMinutes}m Buffer: Relax or do a micro-habit:`;
+          const microChip = document.createElement('button');
+          microChip.type = 'button';
+          microChip.className = 'gap-chip';
+          microChip.innerHTML = `+ Posture Reset & Hydrate <strong>(2m)</strong>`;
+          microChip.onclick = () => {
+            insertAdHocMicroHabit(state, 'Posture Reset & Hydrate', 2);
+          };
+          gapFillChips.appendChild(microChip);
+        }
+      }
+
+      function pullTaskIntoGap(state, targetTaskIdx) {
+        if (!state || !state.freeTimeData) return;
+        getAudioContext();
+        playAppleChime('mindful');
+
+        const pulledTask = state.tasks.splice(targetTaskIdx, 1)[0];
+        const currentAnchorIdx = state.freeTimeData.anchorIdx;
+
+        state.tasks.splice(currentAnchorIdx, 0, pulledTask);
+
+        const actionable = [];
+        let total = 0;
+        state.tasks.forEach((t, i) => {
+          if (!t.isHeader && t.durationSecs > 0) {
+            actionable.push(i);
+            total += t.durationMins;
+          }
+        });
+        state.actionableTaskIndices = actionable;
+        state.totalMins = total;
+
+        state.freeTimeData = null;
+        state.currentActionableStep = state.actionableTaskIndices.indexOf(currentAnchorIdx);
+        pulledTask.status = 'active';
+        state.remainingSeconds = pulledTask.durationSecs;
+        state.elapsedSeconds = 0;
+        state.overtimeSeconds = 0;
+        state.extendedSeconds = 0;
+        state.actualStartTime = new Date();
+        state.timerState = 'running';
+        state.lastTickTime = Date.now();
+        activeRunningRoutine = state.name;
+
+        saveStateToStorage();
+        renderChecklist();
+        updateDisplayForViewed();
+        updateControls();
+        updateBackgroundBanner();
+        updateZenBar();
+      }
+
+      function insertAdHocMicroHabit(state, habitName, durationMins) {
+        if (!state || !state.freeTimeData) return;
+        getAudioContext();
+        playAppleChime('mindful');
+
+        const currentAnchorIdx = state.freeTimeData.anchorIdx;
+        const habitTask = {
+          routine: state.name,
+          name: habitName,
+          durationMins: durationMins,
+          durationSecs: durationMins * 60,
+          parentTask: 'Micro Habit',
+          scheduledStart: '',
+          isHeader: false,
+          isAnchor: false,
+          status: 'active'
+        };
+
+        state.tasks.splice(currentAnchorIdx, 0, habitTask);
+
+        const actionable = [];
+        let total = 0;
+        state.tasks.forEach((t, i) => {
+          if (!t.isHeader && t.durationSecs > 0) {
+            actionable.push(i);
+            total += t.durationMins;
+          }
+        });
+        state.actionableTaskIndices = actionable;
+        state.totalMins = total;
+
+        state.freeTimeData = null;
+        state.currentActionableStep = state.actionableTaskIndices.indexOf(currentAnchorIdx);
+        state.remainingSeconds = habitTask.durationSecs;
+        state.elapsedSeconds = 0;
+        state.overtimeSeconds = 0;
+        state.extendedSeconds = 0;
+        state.actualStartTime = new Date();
+        state.timerState = 'running';
+        state.lastTickTime = Date.now();
+        activeRunningRoutine = state.name;
+
+        saveStateToStorage();
+        renderChecklist();
+        updateDisplayForViewed();
+        updateControls();
+        updateBackgroundBanner();
+        updateZenBar();
+      }
+
+      // --- FLOW GURU PRODUCTIVITY AUDIT DRAWER ---
+      function openFlowGuru() {
+        slidePanelBackdrop.style.display = 'block';
+        setTimeout(() => flowGuruPanel.classList.add('open'), 10);
+        analyzeProductivityWithFlowGuru();
+      }
+
+      function closeFlowGuru() {
+        flowGuruPanel.classList.remove('open');
+        setTimeout(() => slidePanelBackdrop.style.display = 'none', 350);
+      }
+
+      openFlowGuruBtn.addEventListener('click', openFlowGuru);
+      closeFlowGuruBtn.addEventListener('click', closeFlowGuru);
+      slidePanelBackdrop.addEventListener('click', closeFlowGuru);
+      refreshGuruBtn.addEventListener('click', analyzeProductivityWithFlowGuru);
+
+      function analyzeProductivityWithFlowGuru() {
+        let totalTarget = 0;
+        let totalActual = 0;
+        let completedCount = 0;
+        let anchorTotal = 0;
+        let anchorHit = 0;
+        let biggestDrift = null;
+        let maxDriftSecs = 0;
+
+        recordedResults.forEach(r => {
+          if (r.status !== 'Past Event (Skipped)') {
+            totalTarget += r.finalTargetSecs;
+            totalActual += r.actualSecs;
+            completedCount++;
+
+            if (r.isAnchor) {
+              anchorTotal++;
+              if (r.status !== 'Cutoff by Anchor') anchorHit++;
+            }
+
+            const drift = r.actualSecs - r.finalTargetSecs;
+            if (drift > maxDriftSecs) {
+              maxDriftSecs = drift;
+              biggestDrift = r;
+            }
+          }
+        });
+
+        const ratio = totalTarget > 0 ? (totalActual / totalTarget) : 1.0;
+        guruVelocityVal.textContent = `${ratio.toFixed(2)}x`;
+        guruVelocityVal.style.color = ratio > 1.15 ? 'var(--danger)' : (ratio < 0.95 ? 'var(--success)' : 'var(--accent)');
+
+        const anchorPct = anchorTotal > 0 ? Math.round((anchorHit / anchorTotal) * 100) : 100;
+        guruAnchorsVal.textContent = `${anchorPct}%`;
+        guruTasksDoneVal.textContent = completedCount;
+
+        if (completedCount === 0) {
+          guruHighlightsText.textContent = 'No tasks completed yet today. Begin your first flow block to unlock velocity analysis!';
+          guruDriftText.textContent = 'Pacing calibration will calculate after your first completed task.';
+          guruTipsList.innerHTML = '<li>Plan your day with the Harvard Timeboxer.</li><li>Protect your calendar anchors.</li>';
+          return;
+        }
+
+        guruHighlightsText.textContent = `Completed ${completedCount} milestones today with an overall execution velocity of ${ratio.toFixed(2)}x (${ratio > 1 ? '+' : ''}${Math.round((ratio - 1) * 100)}% variance from target). Calendar anchor protection rate stood at ${anchorPct}%.`;
+
+        if (biggestDrift) {
+          guruDriftText.textContent = `Largest pacing divergence occurred during "${biggestDrift.taskName}" (+${formatMMSS(maxDriftSecs)} over planned budget).`;
+        } else {
+          guruDriftText.textContent = 'Execution pacing remained exceptionally stable with minimal estimation overrun.';
+        }
+
+        guruTipsList.innerHTML = '';
+        if (ratio > 1.15) {
+          const tip1 = document.createElement('li');
+          tip1.textContent = `Apply a ${Math.round((ratio - 1) * 100)}% buffer multiplier when timeboxing technical and deep-work blocks tomorrow.`;
+          const tip2 = document.createElement('li');
+          tip2.textContent = 'Utilize the 60s Calming Pause between tasks to reset mental context and avoid mid-task fatigue.';
+          guruTipsList.appendChild(tip1);
+          guruTipsList.appendChild(tip2);
+        } else if (ratio < 0.95) {
+          const tip1 = document.createElement('li');
+          tip1.textContent = 'Strong execution velocity! You finished tasks ahead of target. Pull forward smaller tasks during open gaps.';
+          const tip2 = document.createElement('li');
+          tip2.textContent = 'Schedule larger blocks for deep strategic initiatives tomorrow.';
+          guruTipsList.appendChild(tip1);
+          guruTipsList.appendChild(tip2);
+        } else {
+          const tip1 = document.createElement('li');
+          tip1.textContent = 'Your velocity is calibrated near 1.0x. Your planned durations reflect realistic cognitive pacing.';
+          const tip2 = document.createElement('li');
+          tip2.textContent = 'Keep protecting calendar meetings with the Anchor & Flow reflow engine.';
+          guruTipsList.appendChild(tip1);
+          guruTipsList.appendChild(tip2);
+        }
+
+        const userKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
+        if (userKey) {
+          callDeepSeekFlowGuru(userKey, recordedResults, ratio);
+        }
+      }
+
+      function callMultiTierFlowGuru(results, ratio) {
+        const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
+        const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
+        if (!openaiKey && !deepseekKey) return;
+
+        guruHighlightsText.innerHTML = '<em>Consulting Flow Guru AI...</em>';
+        const promptSystem = 'You are Flow Guru, an expert Harvard Timeboxing and productivity coach. Provide a concise, empathetic 2-sentence executive highlight, 1 sentence on drift, and 2 bullet tips.';
+        const promptUser = `Today's audit data: Velocity Ratio: ${ratio.toFixed(2)}x. Tasks: ${JSON.stringify(results.map(r => ({ name: r.taskName, plannedSecs: r.finalTargetSecs, actualSecs: r.actualSecs, status: r.status })))}`;
+
+        if (openaiKey) {
+          fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${openaiKey}`
+            },
+            body: JSON.stringify({
+              model: 'gpt-4o-mini',
+              messages: [
+                { role: 'system', content: promptSystem },
+                { role: 'user', content: promptUser }
+              ],
+              temperature: 0.3
+            })
+          })
+          .then(res => {
+            if (!res.ok) throw new Error('OpenAI HTTP error: ' + res.status);
+            return res.json();
+          })
+          .then(data => {
+            if (data && data.choices && data.choices[0]) {
+              guruHighlightsText.textContent = data.choices[0].message.content;
+            }
+          })
+          .catch(err => {
+            console.warn('OpenAI guru failed, falling back to DeepSeek:', err);
+            if (deepseekKey) tryDeepSeekGuru(deepseekKey, promptSystem, promptUser);
+          });
+        } else if (deepseekKey) {
+          tryDeepSeekGuru(deepseekKey, promptSystem, promptUser);
+        }
+      }
+
+      function tryDeepSeekGuru(deepseekKey, promptSystem, promptUser) {
+        fetch('https://api.deepseek.com/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${deepseekKey}`
+          },
+          body: JSON.stringify({
+            model: 'deepseek-chat',
+            messages: [
+              { role: 'system', content: promptSystem },
+              { role: 'user', content: promptUser }
+            ],
+            temperature: 0.3
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.choices && data.choices[0]) {
+            guruHighlightsText.textContent = data.choices[0].message.content;
+          }
+        })
+        .catch(err => {
+          console.warn('DeepSeek guru error:', err);
+        });
+      }
+
+      copyGuruBtn.addEventListener('click', () => {
+        const text = `Anchor & Flow — Productivity Audit\nVelocity: ${guruVelocityVal.textContent}\nAnchors Met: ${guruAnchorsVal.textContent}\nTasks Done: ${guruTasksDoneVal.textContent}\n\nHighlights:\n${guruHighlightsText.textContent}\n\nDrift:\n${guruDriftText.textContent}`;
+        navigator.clipboard.writeText(text).then(() => {
+          copyGuruBtn.textContent = '✓ Copied!';
+          setTimeout(() => copyGuruBtn.textContent = 'Copy Feedback', 2000);
+        });
+      });
+
+      // --- DEEPSEEK HARVARD TIMEBOXING CHATBOT INTAKE ---
+      function openPlannerChat() {
+        plannerChatModal.style.display = 'flex';
+        chatBody.innerHTML = '';
+        chatStep = 0;
+        pendingIntakeData = { rawText: '', meetings: [], tasks: [], top3: [] };
+
+        const now = new Date();
+        const timeStr = formatClockHM(now);
+
+        appendChatBubble('bot', `Hello! I am your <strong>Harvard Timeboxing AI Assistant</strong>. Current local time is <strong>${timeStr}</strong>.<br/><br/>You can plan for the whole day, just the afternoon, or your evening.<br/><br/>Please paste or type:
+<ol style="margin-top: 6px; margin-left: 18px;">
+  <li>Your <strong>calendar meetings</strong> with start times (e.g. <em>Client sync at 14:30</em>, <em>Team standup 10:00 - 10:30</em>).</li>
+  <li>Your <strong>to-dos, focus projects, or habits</strong> for this block.</li>
+</ol>`);
+        chatInputField.focus();
+      }
+
+      function closePlannerChat() {
+        plannerChatModal.style.display = 'none';
+      }
+
+      openPlannerChatBtn.addEventListener('click', openPlannerChat);
+      closeChatModalBtn.addEventListener('click', closePlannerChat);
+
+      function appendChatBubble(role, htmlText) {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${role}`;
+        bubble.innerHTML = htmlText;
+        chatBody.appendChild(bubble);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+
+      function handleChatSend() {
+        const text = chatInputField.value.trim();
+        if (!text) return;
+
+        appendChatBubble('user', escapeHtml(text));
+        chatInputField.value = '';
+
+        if (chatStep === 0) {
+          pendingIntakeData.rawText = text;
+          processBrainDump(text);
+        } else if (chatStep === 1) {
+          processPrioritySelection(text);
+        }
+      }
+
+      sendChatBtn.addEventListener('click', handleChatSend);
+      chatInputField.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleChatSend();
+      });
+
+      function processBrainDump(userInput) {
+        appendChatBubble('bot', '<em>Analyzing meetings and extracting tasks with AI...</em>');
+        callMultiTierAiIntake(userInput);
+      }
+
+      function callMultiTierAiIntake(userInput) {
+        const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
+        const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
+        const now = new Date();
+        const timeStr = formatClockHM(now);
+
+        const systemPrompt = `You are an executive Harvard Timeboxing architect. Current time is ${timeStr}. Extract meetings with 24-hr times and flow tasks. Format tasks with letters A, B, C... and durations.`;
+
+        // 1. Try OpenAI (Option 1)
+        if (openaiKey) {
+          fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${openaiKey}`
+            },
+            body: JSON.stringify({
+              model: 'gpt-4o-mini',
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userInput }
+              ],
+              temperature: 0.3
+            })
+          })
+          .then(res => {
+            if (!res.ok) throw new Error('OpenAI HTTP error: ' + res.status);
+            return res.json();
+          })
+          .then(data => {
+            if (data && data.choices && data.choices[0]) {
+              chatBody.lastElementChild.remove();
+              chatStep = 1;
+              appendChatBubble('bot', data.choices[0].message.content + '<br/><br/><em>Reply with the letters of your Top 3 priorities to timebox them into your schedule.</em>');
+            } else {
+              throw new Error('Invalid OpenAI response');
+            }
+          })
+          .catch(err => {
+            console.warn('OpenAI error, falling back to DeepSeek:', err);
+            tryDeepSeekIntake(deepseekKey, systemPrompt, userInput);
+          });
+        } else if (deepseekKey) {
+          tryDeepSeekIntake(deepseekKey, systemPrompt, userInput);
+        } else {
+          setTimeout(() => {
+            clientSideTimeboxerExtraction(userInput);
+          }, 500);
+        }
+      }
+
+      function tryDeepSeekIntake(deepseekKey, systemPrompt, userInput) {
+        if (!deepseekKey) {
+          setTimeout(() => clientSideTimeboxerExtraction(userInput), 400);
+          return;
+        }
+
+        fetch('https://api.deepseek.com/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${deepseekKey}`
+          },
+          body: JSON.stringify({
+            model: 'deepseek-chat',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userInput }
+            ],
+            temperature: 0.3
+          })
+        })
+        .then(res => {
+          if (!res.ok) throw new Error('DeepSeek HTTP error: ' + res.status);
+          return res.json();
+        })
+        .then(data => {
+          if (data && data.choices && data.choices[0]) {
+            chatBody.lastElementChild.remove();
+            chatStep = 1;
+            appendChatBubble('bot', data.choices[0].message.content + '<br/><br/><em>Reply with the letters of your Top 3 priorities to timebox them into your schedule.</em>');
+          } else {
+            clientSideTimeboxerExtraction(userInput);
+          }
+        })
+        .catch(err => {
+          console.warn('DeepSeek fallback failed, using local timeboxer:', err);
+          clientSideTimeboxerExtraction(userInput);
+        });
+      }
+
+      function clientSideTimeboxerExtraction(input) {
+        const lines = input.split(/\r?\n|,|;/).map(l => l.trim()).filter(l => l.length > 0);
+        const meetings = [];
+        const tasks = [];
+
+        const timeRegex = /\b(\d{1,2})[:.](\d{2})\b|\b(\d{1,2})\s*(am|pm)\b/i;
+
+        lines.forEach(line => {
+          const match = line.match(timeRegex);
+          if (match) {
+            let hour = 0;
+            let min = 0;
+            if (match[1] && match[2]) {
+              hour = parseInt(match[1], 10);
+              min = parseInt(match[2], 10);
+            } else if (match[3] && match[4]) {
+              hour = parseInt(match[3], 10);
+              if (match[4].toLowerCase() === 'pm' && hour < 12) hour += 12;
+              if (match[4].toLowerCase() === 'am' && hour === 12) hour = 0;
+            }
+            const timeFormatted = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+            meetings.push({ name: line.replace(timeRegex, '').trim() || 'Calendar Meeting', time: timeFormatted, duration: 30 });
+          } else {
+            let dur = 30;
+            if (/squat|hydrate|stretch|water/i.test(line)) dur = 2;
+            else if (/email|inbox|slack|scan/i.test(line)) dur = 20;
+            else if (/deep|roadmap|architecture|write|report|code/i.test(line)) dur = 50;
+            else if (/debrief|log|wrap/i.test(line)) dur = 15;
+            tasks.push({ name: line, duration: dur });
+          }
+        });
+
+        if (tasks.length === 0) {
+          tasks.push({ name: 'Focused Deep Work', duration: 45 });
+          tasks.push({ name: 'Inbox Zero & Communications', duration: 20 });
+          tasks.push({ name: 'Hydrate & Posture Reset', duration: 2 });
+        }
+
+        pendingIntakeData.meetings = meetings;
+        pendingIntakeData.tasks = tasks;
+
+        chatBody.lastElementChild.remove();
+        chatStep = 1;
+
+        let meetingNotice = meetings.length > 0
+          ? `📅 Detected <strong>${meetings.length} Hard Anchors</strong>: ${meetings.map(m => `${escapeHtml(m.name)} at ${m.time}`).join(', ')}.<br/><br/>`
+          : '📅 No calendar meetings detected (all flow tasks).<br/><br/>';
+
+        let taskListHtml = tasks.map((t, idx) => {
+          const letter = String.fromCharCode(65 + idx);
+          return `<strong>[${letter}]</strong> ${escapeHtml(t.name)} (${t.duration}m)`;
+        }).join('<br/>');
+
+        appendChatBubble('bot', `${meetingNotice}🎯 <strong>Step 2 — Harvard Priorities:</strong><br/>Which of these are your <strong>Top 3 most important tasks</strong> for this block? Reply with their letters (e.g. <em>A, B, C</em>):<br/><br/>${taskListHtml}`);
+      }
+
+      function processPrioritySelection(userSelection) {
+        const letters = userSelection.toUpperCase().replace(/[^A-Z]/g, '').split('');
+        const tasks = pendingIntakeData.tasks;
+        const meetings = pendingIntakeData.meetings;
+
+        const top3Indices = [];
+        letters.forEach(l => {
+          const idx = l.charCodeAt(0) - 65;
+          if (idx >= 0 && idx < tasks.length && !top3Indices.includes(idx)) {
+            top3Indices.push(idx);
+          }
+        });
+
+        tasks.forEach((_, idx) => {
+          if (top3Indices.length < 3 && !top3Indices.includes(idx)) {
+            top3Indices.push(idx);
+          }
+        });
+
+        top3Indices.forEach((idx, rank) => {
+          tasks[idx].priority = rank + 1;
+        });
+
+        const now = new Date();
+        const currentHM = now.getHours() * 60 + now.getMinutes();
+
+        const validMeetings = meetings.filter(m => {
+          const parts = m.time.split(':');
+          const mHM = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+          return mHM >= currentHM;
+        });
+
+        const routineName = currentHM < 720 ? 'Morning Block' : (currentHM < 1020 ? 'Afternoon Flow' : 'Evening Routine');
+
+        const csvLines = ['Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start'];
+        csvLines.push(`${routineName},Harvard Priority Focus,0,,`);
+
+        const sortedTasks = [...tasks].sort((a, b) => (a.priority || 99) - (b.priority || 99));
+
+        validMeetings.forEach(m => {
+          csvLines.push(`${routineName},${m.name.replace(/,/g, ' ')},${m.duration},,${m.time}`);
+        });
+
+        sortedTasks.forEach(t => {
+          const prefix = t.priority ? `★ [Top ${t.priority}] ` : '';
+          csvLines.push(`${routineName},${prefix}${t.name.replace(/,/g, ' ')},${t.duration},,`);
+        });
+
+        const generatedCSV = csvLines.join('\n');
+
+        chatStep = 2;
+        appendChatBubble('bot', `🎉 <strong>Harvard Timeboxed Schedule Generated!</strong><br/><br/>Your top priorities have been slated into prime focus blocks around your calendar anchors.<br/><br/><button type="button" class="btn btn-emerald" id="confirmLoadScheduleBtn">Load Schedule into Cockpit ⏩</button>`);
+
+        document.getElementById('confirmLoadScheduleBtn').onclick = () => {
+          parseCSVContent(generatedCSV);
+          closePlannerChat();
+        };
+      }
+
+      function callDeepSeekIntake(apiKey, userInput) {
+        const now = new Date();
+        const timeStr = formatClockHM(now);
+
+        fetch('https://api.deepseek.com/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'deepseek-chat',
+            messages: [
+              {
+                role: 'system',
+                content: `You are an executive Harvard Timeboxing architect. Current time is ${timeStr}. Extract meetings with 24-hr times and flow tasks. Format tasks with letters A, B, C... and durations.`
+              },
+              {
+                role: 'user',
+                content: userInput
+              }
+            ],
+            temperature: 0.3
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.choices && data.choices[0]) {
+            chatBody.lastElementChild.remove();
+            chatStep = 1;
+            appendChatBubble('bot', data.choices[0].message.content + '<br/><br/><em>Reply with the letters of your Top 3 priorities to timebox them into your schedule.</em>');
+          } else {
+            clientSideTimeboxerExtraction(userInput);
+          }
+        })
+        .catch(err => {
+          console.warn('DeepSeek intake error, using local timeboxer:', err);
+          clientSideTimeboxerExtraction(userInput);
+        });
+      }
+
+      // Settings Modal Handlers
+      openSettingsBtn.addEventListener('click', () => {
+        if (openaiKeyInput) openaiKeyInput.value = localStorage.getItem(STORAGE_KEY_OPENAI) || '';
+        if (deepseekKeyInput) deepseekKeyInput.value = localStorage.getItem(STORAGE_KEY_DEEPSEEK) || '';
+        settingsModal.style.display = 'flex';
+      });
+      closeSettingsBtn.addEventListener('click', () => settingsModal.style.display = 'none');
+      cancelSettingsBtn.addEventListener('click', () => settingsModal.style.display = 'none');
+      saveSettingsBtn.addEventListener('click', () => {
+        const oKey = openaiKeyInput ? openaiKeyInput.value.trim() : '';
+        const dKey = deepseekKeyInput ? deepseekKeyInput.value.trim() : '';
+        if (oKey) localStorage.setItem(STORAGE_KEY_OPENAI, oKey);
+        else localStorage.removeItem(STORAGE_KEY_OPENAI);
+        if (dKey) localStorage.setItem(STORAGE_KEY_DEEPSEEK, dKey);
+        else localStorage.removeItem(STORAGE_KEY_DEEPSEEK);
+        settingsModal.style.display = 'none';
+      });
+
+      beginNextTaskBtn.addEventListener('click', () => {
+        const state = routineStates.get(activeRunningRoutine || currentViewedRoutine);
+        if (!state || state.timerState !== 'calming_pause' || !state.calmingPauseData) return;
+        getAudioContext();
+        beginNextTaskFromPause(state);
+      });
 
       function exportResultsCSV() {
         if (recordedResults.length === 0) return;
