@@ -8,17 +8,20 @@ Hosted live on GitHub Pages: [https://acnbrr21.github.io/my-routine-timer/](http
 
 ## 1. Core Architecture & Philosophy
 
-- **Harvard Timeboxing Engine:** Structured around the proven 3-step methodology:
-  1. **Step 1 — Brain Dump:** Capture all tasks, meetings, and ideas.
-  2. **Step 2 — Set Priorities:** Identify the Top 3 highest-leverage goals (labeled A, B, C).
-  3. **Step 3 — Timebox:** Schedule tasks into calendar gaps as concrete appointments with yourself.
+- **Harvard Timeboxing Engine & Intelligent NLP:**
+  1. **Step 1 — Multiline Brain Dump:** Paste your full unstructured agenda, meetings, habits, and tasks into a spacious, scrollable multiline editor (`Shift+Enter` for newlines).
+  2. **Step 2 — Smart Task Decomposition & Title Shortening:** Natural language sentences (e.g., *"Drink water for 5 minutes, do a review for 15 minutes, drink vitamin D for 5 minutes"*) are broken down into discrete tasks with punchy 2–4 word action titles (*"Hydrate (Water)"*, *"Session Review"*, *"Take Vitamin D"*), with full context preserved in the word-wrapped Notes field.
+  3. **Step 3 — Time-of-Day & Duration Awareness:**
+     - **Full-Day Morning Mode (< 2:00 PM):** Engages Harvard Top-3 priority triage.
+     - **Afternoon/Evening or Short Sprints (≥ 2:00 PM or ≤ 4 tasks):** Automatically bypasses the redundant Top-3 prompt, immediately organizing your tasks into direct sequential flow blocks.
+  4. **Step 4 — Interactive Table Review & Natural Language Feedback:** Inspect, edit titles/durations, remove tasks, or type conversational revisions (*"make review 20 mins"*, *"add 5m stretch"*) before committing to the Cockpit.
 - **Anchors vs. Flow:**
   - **Anchors (📅):** Hard wall-clock commitments. They never shift, never delay, and never split. Anchors auto-convene on time.
   - **Flow (⏱):** Flexible execution blocks that dynamically adjust, slide on overrun, or pull forward on early completion.
 - **60-Second Calming Pause (🧘):** A mindful transition pause between regular tasks to prevent context-switching whiplash and reset cognitive focus. Extendable with `+1m` / `+5m` or startable on demand.
 - **Open Buffer & Gap Filling (⚡):** When a task finishes early before a meeting, the cockpit smoothly enters a serene buffer countdown and suggests upcoming smaller tasks that fit inside the open gap.
 - **Anchor Auto-Convene & Preemption:** When an anchor's start time arrives, the meeting auto-starts with an Apple harmonic chime. Any overrunning task is paused, with options to **Resume After Meeting** or mark **No, Task is Finished**.
-- **Flow Guru Productivity Audit (✦):** An Apple-style slide-over inspection drawer powered by DeepSeek AI to evaluate execution velocity, anchor shield discipline, and pacing tips.
+- **Flow Guru Productivity Audit & Historical Anecdotes (✦):** An Apple-style slide-over inspection drawer powered primarily by OpenAI (GPT-4o-mini, fallback to DeepSeek) featuring iconic productivity anecdotes (Elon Musk's 5-minute timeboxing, Bill Gates' Think Weeks, Eisenhower's Matrix, Benjamin Franklin's 24-hour scheme) alongside live execution velocity and calibration tips.
 
 ---
 
