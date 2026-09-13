@@ -1975,6 +1975,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
               timerState: val.timerState,
               totalMins: val.totalMins,
               freeTimeData: val.freeTimeData,
+              calmingPauseData: val.calmingPauseData || null,
               lastTickTime: Date.now()
             };
           });
@@ -2027,6 +2028,16 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
                 }
               }
 
+              let calmingPause = item.calmingPauseData || null;
+              if (state === 'calming_pause' && calmingPause) {
+                if (calmingPause.targetTime) {
+                  remaining = Math.max(0, Math.round((calmingPause.targetTime - now) / 1000));
+                } else if (item.lastTickTime) {
+                  const diffSeconds = Math.max(0, Math.floor((now - item.lastTickTime) / 1000));
+                  remaining = Math.max(0, remaining - diffSeconds);
+                }
+              }
+
               routineStates.set(rName, {
                 ...item,
                 remainingSeconds: remaining,
@@ -2034,6 +2045,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
                 overtimeSeconds: overtime,
                 timerState: state,
                 freeTimeData: item.freeTimeData || null,
+                calmingPauseData: calmingPause,
                 actualStartTime: null,
                 lastTickTime: now
               });
@@ -2307,6 +2319,20 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
                     conveneAnchorFromFreeTime(rState);
                   }
                 }
+              } else if (rState.timerState === 'calming_pause') {
+                if (rState.calmingPauseData) {
+                  if (!rState.calmingPauseData.targetTime) {
+                    rState.calmingPauseData.targetTime = now + (rState.remainingSeconds || 60) * 1000;
+                  }
+                  const remaining = Math.max(0, Math.round((rState.calmingPauseData.targetTime - now) / 1000));
+                  rState.remainingSeconds = remaining;
+
+                  if (remaining <= 0) {
+                    // Mindful Calming Pause completed! Play Apple chime and automatically begin next task
+                    playAppleChime('convene');
+                    beginNextTaskFromPause(rState);
+                  }
+                }
               } else if (rState.timerState === 'running') {
                 rState.elapsedSeconds += elapsedSecs;
                 if (rState.remainingSeconds > elapsedSecs) {
@@ -2339,6 +2365,15 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
+          const targetRoutineName = activeRunningRoutine || currentViewedRoutine;
+          const rState = routineStates.get(targetRoutineName);
+          if (rState && rState.timerState === 'calming_pause' && rState.calmingPauseData) {
+            const now = Date.now();
+            if (rState.calmingPauseData.targetTime && rState.calmingPauseData.targetTime <= now) {
+              playAppleChime('convene');
+              beginNextTaskFromPause(rState);
+            }
+          }
           updateDisplayForViewed();
           updateControls();
           updateBackgroundBanner();
@@ -2611,12 +2646,17 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           const nextTask = state.tasks[state.calmingPauseData.nextActiveIdx];
           currentTaskTitle.textContent = '🧘 Calming Pause';
           stepProgressBadge.textContent = 'Mindful Reset';
-          anchorTypeBadge.textContent = 'Breather • 60s';
+          anchorTypeBadge.textContent = 'Breather • Transition';
           anchorTypeBadge.className = 'badge';
-          parentContextBadge.textContent = `Up Next: ${nextTask.name} (${nextTask.durationMins}m)`;
-          wallClockMeta.textContent = `Take a breath. Automatically resumes in ${formatMMSS(state.remainingSeconds)}, or tap "Begin Next Task"`;
+          parentContextBadge.textContent = nextTask ? `Up Next: ${nextTask.name} (${nextTask.durationMins}m)` : 'Next Task';
+          wallClockMeta.textContent = `Take a breath. Next task begins in ${formatMMSS(state.remainingSeconds)}, or tap "Begin Next Task ⏩"`;
           clockDisplay.textContent = formatMMSS(state.remainingSeconds);
           clockDisplay.classList.add('pause-mindful-mode');
+
+          const completedSteps = state.currentActionableStep;
+          const totalSteps = state.actionableTaskIndices.length;
+          const pct = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+          overallProgressBar.style.width = `${pct}%`;
           return;
         }
 
@@ -2705,6 +2745,15 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           zenBarRoutineName.textContent = 'Idle';
           zenBarClock.textContent = '00:00';
           zenStickyBar.classList.remove('alert-mode');
+          return;
+        }
+
+        if (state.timerState === 'calming_pause') {
+          zenBarTaskTitle.textContent = '🧘 Calming Pause';
+          zenBarRoutineName.textContent = state.name;
+          zenBarClock.textContent = formatMMSS(state.remainingSeconds);
+          zenStickyBar.classList.remove('alert-mode');
+          zenBarPauseBtn.textContent = 'Skip Pause';
           return;
         }
 
@@ -3023,9 +3072,13 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         if (!state) return;
         // If in Calming Pause, add time to the mindful pause!
         if (state.timerState === 'calming_pause') {
-          state.remainingSeconds += secondsToAdd;
+          state.remainingSeconds = Math.max(5, state.remainingSeconds + secondsToAdd);
+          if (state.calmingPauseData) {
+            state.calmingPauseData.targetTime = Date.now() + state.remainingSeconds * 1000;
+          }
           saveStateToStorage();
           updateDisplayForViewed();
+          updateZenBar();
           return;
         }
 
@@ -3248,7 +3301,8 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
           state.freeTimeData = null;
           state.calmingPauseData = {
-            nextActiveIdx: nextActiveIdx
+            nextActiveIdx: nextActiveIdx,
+            targetTime: Date.now() + 60 * 1000
           };
           state.remainingSeconds = 60; // 60s mindful breather
           state.elapsedSeconds = 0;
@@ -3348,6 +3402,10 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       zenBarPauseBtn.addEventListener('click', () => {
         const state = routineStates.get(activeRunningRoutine || currentViewedRoutine);
         if (!state) return;
+        if (state.timerState === 'calming_pause') {
+          beginNextTaskFromPause(state);
+          return;
+        }
         if (state.timerState === 'running' || state.timerState === 'alarm_overtime') {
           pauseTimer();
         } else {
