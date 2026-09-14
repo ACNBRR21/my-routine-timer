@@ -1282,6 +1282,119 @@
       }
     }
 
+  
+    /* Premium Mobile-First Layout (iOS & Android) */
+    @media (max-width: 640px) {
+      body {
+        padding: 10px 6px !important;
+      }
+      .app-container {
+        gap: 12px !important;
+      }
+      header {
+        padding: 10px 12px !important;
+        gap: 8px !important;
+      }
+      .sys-time {
+        font-size: 1.15rem !important;
+      }
+      .sys-date {
+        font-size: 0.74rem !important;
+      }
+      .header-actions {
+        gap: 6px !important;
+      }
+      .header-actions .btn {
+        padding: 8px 12px !important;
+        font-size: 0.84rem !important;
+      }
+      .btn-icon-settings {
+        padding: 7px 9px !important;
+      }
+      .quick-guide-bar {
+        padding: 8px 12px !important;
+        font-size: 0.78rem !important;
+      }
+      .clock-display {
+        font-size: clamp(3.2rem, 15vw, 4.4rem) !important;
+        padding: 14px 6px !important;
+      }
+      .current-task-title {
+        font-size: 1.05rem !important;
+      }
+      .adjust-time-row {
+        gap: 5px !important;
+        padding: 6px 8px !important;
+        justify-content: center !important;
+      }
+      .btn-nudge {
+        padding: 6px 10px !important;
+        font-size: 0.78rem !important;
+      }
+      .btn-nudge-desktop {
+        display: none !important; /* Hide long duration nudges on mobile for single-line fit */
+      }
+      .controls-row {
+        gap: 8px !important;
+      }
+      .controls-row .btn {
+        flex: 1 1 45% !important;
+        padding: 12px 10px !important;
+        font-size: 0.88rem !important;
+        min-height: 44px !important; /* Apple touch target guideline */
+      }
+      .task-item {
+        padding: 10px 10px !important;
+        gap: 8px !important;
+      }
+      .task-title {
+        font-size: 0.84rem !important;
+      }
+      .task-notes-caption {
+        font-size: 0.74rem !important;
+      }
+      .modal-dialog {
+        width: 96% !important;
+        max-height: 94dvh !important;
+        margin: auto !important;
+      }
+      .chat-body {
+        max-height: 52dvh !important;
+        padding: 12px 10px !important;
+      }
+      .chat-textarea {
+        font-size: 16px !important; /* Prevents iOS Safari auto-zoom */
+        min-height: 68px !important;
+      }
+      .chat-input {
+        font-size: 16px !important;
+      }
+      .review-table th, .review-table td {
+        padding: 6px 4px !important;
+        font-size: 0.76rem !important;
+      }
+      .review-table input {
+        font-size: 14px !important;
+        padding: 4px 4px !important;
+      }
+      .review-move-btn {
+        padding: 2px 4px !important;
+        font-size: 0.68rem !important;
+      }
+    }
+
+  
+    /* Visual Simplicity: Time Adjust Bar smooth transitions */
+    .time-adjust-bar {
+      transition: all 0.25s ease-in-out;
+    }
+    .time-adjust-bar.paused-mode {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px dashed var(--accent);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
   </style>
 </head>
 <body>
@@ -1292,10 +1405,12 @@
         <span class="sys-time" id="systemClock">00:00:00</span>
         <span class="sys-date" id="systemDate">Mon, Sep 12</span>
       </div>
-      <div class="header-controls">
-        <button type="button" class="btn btn-primary" id="openPlannerChatBtn">✨ Plan My Day</button>
-        <button type="button" class="btn btn-outline" id="openSettingsBtn" title="DeepSeek API Configuration">⚙️ Settings</button>
-        <button type="button" class="btn btn-outline" id="clearSessionBtn" title="Clear saved session data">Reset All</button>
+      <div class="header-controls" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-primary" id="openPlannerChatBtn">✦ Plan My Day</button>
+        <button type="button" class="btn btn-primary btn-sm" id="openFlowGuruBtn">✦ Flow Guru</button>
+        <a href="csv-tools.html" class="btn btn-outline btn-sm" style="text-decoration: none;" id="uploadCsvNavBtn">Upload CSV of tasks</a>
+        <a href="guide.html" class="btn btn-outline btn-sm" style="text-decoration: none;" id="navGuideBtn">📖 Guide</a>
+        <button type="button" class="btn-icon-settings" id="openSettingsBtn" title="Settings & AI Proxy Configuration">⚙️</button>
       </div>
     </header>
 
@@ -1322,9 +1437,9 @@
       <div>
         <strong>The Anchor & Flow Method:</strong> 📅 Hard meetings anchor your wall-clock, while ⏱ fluid tasks flow dynamically between them.
       </div>
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <button type="button" class="guide-link-btn" id="openGuideViewBtn">Read Master Guide &rarr;</button>
-        <a href="guide.html" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); font-size: 0.8rem; text-decoration: none; border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px;" title="Open in separate tab">↗</a>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <a href="guide.html" class="guide-link-btn" style="text-decoration: none;">📖 Master Guide &rarr;</a>
+        <a href="csv-tools.html" class="guide-link-btn" style="text-decoration: none; color: var(--text-muted); border-color: var(--border);">📥 CSV Tools & Template &rarr;</a>
       </div>
     </div>
 
@@ -1388,18 +1503,18 @@
           <div class="gap-fill-title" id="gapFillTitle">⚡ Quick Tasks That Fit In This Gap:</div>
           <div class="gap-fill-chips" id="gapFillChips"></div>
         </div>
-        <div class="time-adjust-bar">
+        <div class="time-adjust-bar" id="timeAdjustBar">
           <span class="adjust-label">Add Time:</span>
           <button type="button" class="btn-nudge add" data-seconds="60">+1m</button>
           <button type="button" class="btn-nudge add" data-seconds="300">+5m</button>
-          <button type="button" class="btn-nudge add" data-seconds="600">+10m</button>
-          <button type="button" class="btn-nudge add" data-seconds="1800">+30m</button>
-          <button type="button" class="btn-nudge add" data-seconds="3600">+1h</button>
+          <button type="button" class="btn-nudge add btn-nudge-desktop" data-seconds="600">+10m</button>
+          <button type="button" class="btn-nudge add btn-nudge-desktop" data-seconds="1800">+30m</button>
+          <button type="button" class="btn-nudge add btn-nudge-desktop" data-seconds="3600">+1h</button>
           <span class="adjust-divider">|</span>
           <span class="adjust-label">Trim:</span>
           <button type="button" class="btn-nudge subtract" data-seconds="-60">-1m</button>
           <button type="button" class="btn-nudge subtract" data-seconds="-300">-5m</button>
-          <button type="button" class="btn-nudge subtract" data-seconds="-600">-10m</button>
+          <button type="button" class="btn-nudge subtract btn-nudge-desktop" data-seconds="-600">-10m</button>
         </div>
 
         <!-- Controls -->
@@ -1465,6 +1580,16 @@
 
     <!-- In-App Master Guide View (Seamless, Timer Never Pauses) -->
     <div class="guide-view-section" id="guideViewSection">
+      <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); border-radius: 10px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+        <div>
+          <strong style="color: #fff;">Need the CSV Schedule Template or Import tool?</strong>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Download the sample CSV or upload custom routines on the dedicated CSV tools page.</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <a href="sample_schedule_template.csv" download="sample_schedule_template.csv" class="btn btn-primary btn-sm" style="text-decoration: none;">📥 Download Template</a>
+          <a href="csv-tools.html" class="btn btn-outline btn-sm" style="text-decoration: none;">Open CSV Tools &rarr;</a>
+        </div>
+      </div>
       <section class="guide-card">
         <h2>1. The Problem with Conventional Timers</h2>
         <p>Traditional timers create friction because they operate in isolation from your wall-clock commitments. <strong>Anchor & Flow</strong> bridges this disconnect:</p>
@@ -1615,7 +1740,9 @@ Work Day,Executive Sync (Outlook),45,,14:30</pre>
           <span>Questions or feedback?</span>
           <a href="mailto:rishi.roy@insead.edu?subject=Anchor%20%26%20Flow%20Support" style="color: var(--accent); text-decoration: none; font-weight: 600;">rishi.roy@insead.edu</a>
         </div>
-        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-outline btn-sm" id="clearSessionBtn" style="color: var(--danger); border-color: rgba(239, 68, 68, 0.4);" title="Clear saved schedule and audit history">Reset All Data</button>
+          <div style="display: flex; gap: 8px;">
           <button type="button" class="btn btn-outline" id="cancelSettingsBtn">Cancel</button>
           <button type="button" class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
         </div>
@@ -2537,7 +2664,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         preemptionToast.style.display = 'block';
       }
 
-      resumeCutoffBtn.addEventListener('click', () => {
+      if (resumeCutoffBtn) resumeCutoffBtn.addEventListener('click', () => {
         if (!lastCutoffData) return;
         const state = routineStates.get(lastCutoffData.routineName);
         if (state) {
@@ -2583,7 +2710,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         lastCutoffData = null;
       });
 
-      dismissCutoffBtn.addEventListener('click', () => {
+      if (dismissCutoffBtn) dismissCutoffBtn.addEventListener('click', () => {
         preemptionToast.style.display = 'none';
         lastCutoffData = null;
       });
@@ -2675,7 +2802,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
       }
 
-      jumpToRunningBtn.addEventListener('click', () => {
+      if (jumpToRunningBtn) jumpToRunningBtn.addEventListener('click', () => {
         if (activeRunningRoutine) switchViewedRoutine(activeRunningRoutine);
       });
 
@@ -2840,6 +2967,23 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         const hasTasks = state.actionableTaskIndices.length > 0 && state.currentActionableStep < state.actionableTaskIndices.length;
         const canAdjust = hasTasks && state.timerState !== 'completed' && state.timerState !== 'free_time';
 
+        // VISUAL SIMPLICITY: Timer adjustment options are hidden while running, visible on Pause!
+        const timeAdjustBar = document.getElementById('timeAdjustBar') || document.querySelector('.time-adjust-bar');
+        if (timeAdjustBar) {
+          if (state.timerState === 'running' || state.timerState === 'alarm_overtime') {
+            timeAdjustBar.style.display = 'none'; // Distraction-free deep work mode!
+            timeAdjustBar.classList.remove('paused-mode');
+          } else if (state.timerState === 'paused') {
+            timeAdjustBar.style.display = 'flex'; // Visible on pause to calibrate!
+            timeAdjustBar.classList.add('paused-mode');
+          } else if (state.timerState === 'idle' || state.timerState === 'calming_pause') {
+            timeAdjustBar.style.display = 'flex'; // Visible before starting or during breather
+            timeAdjustBar.classList.remove('paused-mode');
+          } else {
+            timeAdjustBar.style.display = 'none';
+          }
+        }
+
         document.querySelectorAll('.btn-nudge.add').forEach(btn => {
           btn.disabled = !canAdjust;
         });
@@ -2890,20 +3034,25 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
 
         if (state.timerState === 'idle') {
           startBtn.disabled = false;
+          startBtn.textContent = '▶ Start';
           pauseBtn.disabled = true;
+          pauseBtn.textContent = '⏸ Pause';
           finishEarlyBtn.disabled = false;
           resetBtn.disabled = false;
           nextBtn.disabled = true;
           nextBtn.classList.remove('pulsing');
         } else if (state.timerState === 'running') {
           startBtn.disabled = true;
+          startBtn.textContent = '▶ Start';
           pauseBtn.disabled = false;
+          pauseBtn.textContent = '⏸ Pause';
           finishEarlyBtn.disabled = false;
           resetBtn.disabled = false;
           nextBtn.disabled = true;
           nextBtn.classList.remove('pulsing');
         } else if (state.timerState === 'paused') {
           startBtn.disabled = false;
+          startBtn.textContent = '▶ Resume';
           pauseBtn.disabled = true;
           finishEarlyBtn.disabled = false;
           resetBtn.disabled = false;
@@ -2927,7 +3076,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       }
 
       // Manual Override: Start Anchor Early during Free Time
-      startAnchorEarlyBtn.addEventListener('click', () => {
+      if (startAnchorEarlyBtn) startAnchorEarlyBtn.addEventListener('click', () => {
         const state = routineStates.get(activeRunningRoutine || currentViewedRoutine);
         if (!state || state.timerState !== 'free_time' || !state.freeTimeData) return;
         getAudioContext();
@@ -3422,7 +3571,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         const isZen = document.body.classList.contains('zen-mode');
         zenToggleBtn.textContent = isZen ? '✕ Exit Zen' : '⊙ Zen Mode';
       }
-      zenToggleBtn.addEventListener('click', toggleZenMode);
+      if (zenToggleBtn) zenToggleBtn.addEventListener('click', toggleZenMode);
 
       window.addEventListener('keydown', (e) => {
         if (e.key === 'z' || e.key === 'Z') {
@@ -3451,8 +3600,8 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
-      openGuideViewBtn.addEventListener('click', showGuideView);
-      zenBarReturnBtn.addEventListener('click', showDashboardView);
+      if (openGuideViewBtn) openGuideViewBtn.addEventListener('click', showGuideView);
+      if (zenBarReturnBtn) zenBarReturnBtn.addEventListener('click', showDashboardView);
 
       // Sticky Zen Bar Controls
       zenBarAdd5Btn.addEventListener('click', () => addTimeToCurrentTask(300));
@@ -3471,7 +3620,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         }
       });
 
-      clearSessionBtn.addEventListener('click', () => {
+      if (clearSessionBtn) clearSessionBtn.addEventListener('click', () => {
         if (confirm('Clear saved schedule and audit history for today?')) {
           localStorage.removeItem(STORAGE_KEY_ROUTINES);
           localStorage.removeItem(STORAGE_KEY_RESULTS);
@@ -4851,8 +5000,8 @@ Return ONLY a JSON object:
       resetBtn.addEventListener('click', resetCurrentStep);
       finishEarlyBtn.addEventListener('click', finishEarly);
       nextBtn.addEventListener('click', advanceToNextTask);
-      exportCsvBtn.addEventListener('click', exportResultsCSV);
-      downloadPromptBtn.addEventListener('click', downloadPromptMarkdown);
+      if (exportCsvBtn) exportCsvBtn.addEventListener('click', exportResultsCSV);
+      if (downloadPromptBtn) downloadPromptBtn.addEventListener('click', downloadPromptMarkdown);
 
       routineSelect.addEventListener('change', (e) => {
         switchViewedRoutine(e.target.value);
@@ -4864,23 +5013,27 @@ Return ONLY a JSON object:
       const footerDownloadTemplateBtn = document.getElementById('footerDownloadTemplateBtn');
       if (footerDownloadTemplateBtn) footerDownloadTemplateBtn.addEventListener('click', downloadCsvTemplateFile);
 
-      loadSampleBtn.addEventListener('click', () => {
-        getAudioContext();
-        parseCSVContent(SAMPLE_CSV);
-      });
+      if (loadSampleBtn) {
+        loadSampleBtn.addEventListener('click', () => {
+          getAudioContext();
+          parseCSVContent(SAMPLE_CSV);
+        });
+      }
 
-      csvFileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+      if (csvFileInput) {
+        csvFileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
 
-        getAudioContext();
-        const reader = new FileReader();
-        reader.onload = function (event) {
-          parseCSVContent(event.target.result);
-          csvFileInput.value = '';
-        };
-        reader.readAsText(file);
-      });
+          getAudioContext();
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            parseCSVContent(event.target.result);
+            csvFileInput.value = '';
+          };
+          reader.readAsText(file);
+        });
+      }
 
       if (!loadStateFromStorage()) {
         parseCSVContent(SAMPLE_CSV);
