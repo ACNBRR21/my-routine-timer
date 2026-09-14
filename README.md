@@ -51,10 +51,14 @@ The "Plan My Day" Harvard Timeboxer and "Flow Guru" productivity auditor utilize
 ├── .github/
 │   └── workflows/
 │       └── ai-proxy.yml
-├── README.md
-├── guide.html
+├── api/
+│   └── ai.js
+├── cloudflare-worker.js
 ├── index.html
-└── report.html
+├── guide.html
+├── README.md
+├── report.html
+└── sample_schedule_template.csv
 ```
 
 ---
@@ -64,3 +68,12 @@ The "Plan My Day" Harvard Timeboxer and "Flow Guru" productivity auditor utilize
 - [Harvard Business Review: How Timeboxing Works](https://hbr.org/2018/12/how-timeboxing-works-and-why-it-will-make-you-more-productive)
 - Detailed operational walkthrough available in `guide.html`.
 - Post-day reflection and velocity calibration report available in `report.html`.
+
+
+## 5. Support, Inquiries & Feedback
+
+For technical support, feedback, bug reports, or feature requests:
+* **Contact:** [rishi.roy@insead.edu](mailto:rishi.roy@insead.edu?subject=Anchor%20%26%20Flow%20Feedback)
+* **GitHub Issues:** [https://github.com/acnbrr21/my-routine-timer/issues](https://github.com/acnbrr21/my-routine-timer/issues)
+
+---

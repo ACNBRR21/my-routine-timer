@@ -1,0 +1,11 @@
+Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start,Notes
+Morning Block,Morning Setup & Intentions,0,,,Kick off the morning with clear intentions
+Morning Block,★ [Top Priority] Deep Strategic Focus,50,Deep Work,,"Ruthless focus on highest-leverage initiative"
+Morning Block,Team Standup Sync,30,Operations,10:00,"Team alignment and blockers"
+Morning Block,Inbox Zero & Slack Triage,20,Comms,,"Batch communication processing"
+Morning Block,Hydrate & Posture Reset,5,Wellness,,"Drink water and stretch"
+Afternoon Flow,Afternoon Deep Sprint,45,Focus,,"Core development or document synthesis"
+Afternoon Flow,Client Strategy Call,30,Client Anchor,14:30,"Quarterly roadmap presentation"
+Afternoon Flow,Review Proposal Draft,25,Review,,"Detailed quality check"
+Evening Routine,Daily Debrief & Log,15,Wrap Up,,"Log completion metrics into Flow Guru"
+Evening Routine,Disconnect & Reading,30,Rest,,"Digital detox and book reading"
