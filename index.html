@@ -1993,8 +1993,8 @@ Evening Routine,Daily Debrief & Log,15,Wrap Up,,"Log completion metrics into Flo
         <div class="chat-controls-row">
           <div class="chat-hint" id="chatVoiceHint">Shift+Enter for newline • Enter or click Send to submit</div>
           <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <button type="button" class="btn btn-outline" id="voiceChatBtn" title="Dictate tasks using voice recognition" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; padding: 7px 14px;">🎙️ Voice Input</button>
-            <button type="button" class="btn btn-primary" id="sendChatBtn">Send ➔</button>
+            <button type="button" class="btn btn-outline" id="voiceChatBtn" onclick="toggleVoiceRecognition()" title="Dictate tasks using voice recognition" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; padding: 7px 14px; cursor: pointer;">🎙️ Voice Input</button>
+            <button type="button" class="btn btn-primary" id="sendChatBtn" onclick="handleChatSend()" style="cursor: pointer;">Send ➔</button>
           </div>
         </div>
       </div>
@@ -4259,11 +4259,13 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
       async function executeMultiTierAi(systemPrompt, userPrompt) {
         const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
         const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
-        const proxyUrl = localStorage.getItem(STORAGE_KEY_PROXY) || DEFAULT_PROXY_URL;
+        const proxyUrl = localStorage.getItem(STORAGE_KEY_PROXY);
 
         // 1. Direct OpenAI Key
         if (openaiKey) {
           try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
             const res = await fetch('https://api.openai.com/v1/chat/completions', {
               method: 'POST',
               headers: {
@@ -4277,8 +4279,10 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
                   { role: 'user', content: userPrompt }
                 ],
                 temperature: 0.2
-              })
+              }),
+              signal: controller.signal
             });
+            clearTimeout(timeoutId);
             if (res.ok) {
               const data = await res.json();
               if (data.choices && data.choices[0]) {
@@ -4293,6 +4297,8 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         // 2. Direct DeepSeek Key
         if (deepseekKey) {
           try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
             const res = await fetch('https://api.deepseek.com/chat/completions', {
               method: 'POST',
               headers: {
@@ -4306,8 +4312,10 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
                   { role: 'user', content: userPrompt }
                 ],
                 temperature: 0.2
-              })
+              }),
+              signal: controller.signal
             });
+            clearTimeout(timeoutId);
             if (res.ok) {
               const data = await res.json();
               if (data.choices && data.choices[0]) {
@@ -4319,15 +4327,19 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           }
         }
 
-        // 3. Shared Serverless Proxy (Cloudflare Worker or Vercel /api/ai)
-        const targetProxy = proxyUrl || DEFAULT_PROXY_URL || (window.location.origin.includes('localhost') || window.location.origin.includes('vercel.app') ? '/api/ai' : '');
+        // 3. Shared Serverless Proxy (If explicitly configured or running on Vercel)
+        const targetProxy = proxyUrl || (window.location.origin.includes('vercel.app') ? '/api/ai' : '');
         if (targetProxy) {
           try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
             const res = await fetch(targetProxy, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ systemPrompt, userPrompt })
+              body: JSON.stringify({ systemPrompt, userPrompt }),
+              signal: controller.signal
             });
+            clearTimeout(timeoutId);
             if (res.ok) {
               const data = await res.json();
               if (data && data.content) {
@@ -4953,26 +4965,39 @@ Format as JSON:
       openPlannerChatBtn.addEventListener('click', openPlannerChat);
       closeChatModalBtn.addEventListener('click', closePlannerChat);
 
+      function appendChatBubble(role, htmlText) {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${role}`;
+        bubble.innerHTML = htmlText;
+        chatBody.appendChild(bubble);
+        chatBody.scrollTop = chatBody.scrollHeight;
+        return bubble;
+      }
+
+      window.appendChatBubble = appendChatBubble;
+
       function handleChatSend() {
         const text = chatInputField.value.trim();
         if (!text) return;
 
-        // Check if user is typing mode choice
+        // If in step 0, if user types mode keywords or directly types tasks:
         if (chatStep === 0 && !plannerMode) {
           const lower = text.toLowerCase();
-          if (/day|morning|afternoon|rest of/i.test(lower)) {
+          if (/^(?:day|morning|afternoon|rest of|plan my day)$/i.test(lower)) {
             selectPlannerMode('day');
             chatInputField.value = '';
             return;
-          } else if (/few|next|sprint/i.test(lower)) {
+          } else if (/^(?:few|next|sprint)$/i.test(lower)) {
             selectPlannerMode('few');
             chatInputField.value = '';
             return;
-          } else if (/single|one/i.test(lower)) {
+          } else if (/^(?:single|one)$/i.test(lower)) {
             selectPlannerMode('single');
             chatInputField.value = '';
             return;
           }
+          // User directly entered tasks without picking a card -> default to 'day' mode
+          plannerMode = 'day';
         }
 
         appendChatBubble('user', escapeHtml(text));
@@ -4991,6 +5016,7 @@ Format as JSON:
         }
       }
 
+      window.handleChatSend = handleChatSend;
       sendChatBtn.addEventListener('click', handleChatSend);
       chatInputField.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -5868,60 +5894,84 @@ Return ONLY a JSON object:
         });
       }
 
-      // Voice Input / Speech Recognition with LLM Entry
+      // Voice Input / Speech Recognition with LLM Entry (Robust Multi-Platform)
       const voiceChatBtn = document.getElementById('voiceChatBtn');
       const chatVoiceHint = document.getElementById('chatVoiceHint');
       let speechRecognizer = null;
       let isRecordingVoice = false;
+      let voiceBaseText = '';
+
+      function isMobileOrSafari() {
+        const ua = navigator.userAgent;
+        return /iPhone|iPad|iPod|Android/i.test(ua) || (/Safari/i.test(ua) && !/Chrome/i.test(ua));
+      }
 
       function initVoiceRecognition() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) return null;
 
         const recognizer = new SpeechRecognition();
-        recognizer.continuous = true;
+        recognizer.continuous = !isMobileOrSafari();
         recognizer.interimResults = true;
-        recognizer.lang = 'en-US';
+        recognizer.maxAlternatives = 1;
+        recognizer.lang = navigator.language || 'en-US';
 
-        let finalTranscriptSoFar = '';
+        let interimTranscript = '';
+        let finalTranscript = '';
 
         recognizer.onstart = function() {
           isRecordingVoice = true;
+          voiceBaseText = chatInputField.value ? chatInputField.value.trim() + '\n' : '';
           if (voiceChatBtn) {
             voiceChatBtn.classList.add('voice-active');
             voiceChatBtn.innerHTML = '🔴 Listening... (Tap to Stop)';
           }
           if (chatVoiceHint) {
-            chatVoiceHint.innerHTML = '🎙️ <em>Listening to your speech... Say your tasks and durations (e.g. "Deep work 90 mins, Client call 30 mins").</em>';
+            chatVoiceHint.innerHTML = '🎙️ <em>Listening... Speak your tasks (e.g. "Deep Work 90m, Team Sync at 11:30, Review 45m").</em>';
           }
         };
 
         recognizer.onresult = function(event) {
-          let interimTranscript = '';
+          interimTranscript = '';
           for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
-              finalTranscriptSoFar += event.results[i][0].transcript + ' ';
+              finalTranscript += event.results[i][0].transcript + ' ';
             } else {
               interimTranscript += event.results[i][0].transcript;
             }
           }
-          const currentText = (finalTranscriptSoFar + interimTranscript).trim();
+          const spoken = (finalTranscript + interimTranscript).trim();
           if (chatInputField) {
-            chatInputField.value = currentText;
+            chatInputField.value = voiceBaseText + spoken;
             chatInputField.style.height = 'auto';
             chatInputField.style.height = Math.min(chatInputField.scrollHeight, 350) + 'px';
           }
         };
 
         recognizer.onerror = function(event) {
-          console.warn('Speech recognition error:', event.error);
-          stopVoiceRecognition();
-          if (event.error === 'not-allowed') {
-            alert('Microphone access was denied. Please allow microphone permissions in your browser to dictate tasks.');
+          console.warn('Speech recognition notice:', event.error);
+          if (event.error === 'no-speech') {
+            // User paused speaking; do not abort prematurely
+            return;
           }
+          if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+            stopVoiceRecognition();
+            alert('Microphone access was denied. Please allow microphone permissions in your browser address bar to dictate tasks.');
+            return;
+          }
+          if (event.error === 'aborted' && isRecordingVoice) {
+            return;
+          }
+          stopVoiceRecognition();
         };
 
         recognizer.onend = function() {
+          if (isRecordingVoice && isMobileOrSafari()) {
+            try {
+              recognizer.start();
+              return;
+            } catch (e) {}
+          }
           stopVoiceRecognition();
         };
 
@@ -5942,16 +5992,30 @@ Return ONLY a JSON object:
         }
       }
 
-      function toggleVoiceRecognition() {
+      async function toggleVoiceRecognition() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-          alert('Voice input is not supported in this browser. Chrome, Safari, Edge, and iOS/Android support native speech recognition.');
+          alert('Voice input is not supported in this browser. Chrome, Safari (macOS & iOS), Edge, and Android support native voice dictation.');
           return;
         }
 
         if (isRecordingVoice) {
           stopVoiceRecognition();
         } else {
+          // Pre-request microphone permission on first click to prevent premature timeout
+          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            try {
+              const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+              stream.getTracks().forEach(t => t.stop());
+            } catch (permErr) {
+              console.warn('Mic permission error:', permErr);
+              if (permErr.name === 'NotAllowedError' || permErr.name === 'PermissionDeniedError') {
+                alert('Microphone access was denied. Please allow microphone permissions in your browser to dictate tasks.');
+                return;
+              }
+            }
+          }
+
           try {
             speechRecognizer = initVoiceRecognition();
             if (speechRecognizer) {
@@ -5964,6 +6028,7 @@ Return ONLY a JSON object:
         }
       }
 
+      window.toggleVoiceRecognition = toggleVoiceRecognition;
       if (voiceChatBtn) {
         voiceChatBtn.addEventListener('click', toggleVoiceRecognition);
       }
