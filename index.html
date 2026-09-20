@@ -1084,20 +1084,26 @@
     }
     .chat-textarea {
       width: 100%;
-      min-height: 85px;
-      max-height: 180px;
+      min-height: 150px;
+      max-height: 350px;
       resize: vertical;
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 10px 14px;
+      padding: 14px 16px;
       color: var(--text-main);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-family: inherit;
-      line-height: 1.45;
+      line-height: 1.5;
       outline: none;
       box-sizing: border-box;
-      transition: border-color 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn.voice-active {
+      background: rgba(239, 68, 68, 0.25) !important;
+      border-color: var(--danger) !important;
+      color: #fca5a5 !important;
+      animation: alert-flash 1s infinite alternate ease-in-out;
     }
     .chat-textarea:focus { border-color: var(--accent); }
     .chat-controls-row {
@@ -1395,6 +1401,226 @@
       padding: 10px 14px;
     }
 
+  
+    /* AI Overhaul: Mode Selection, Break Opt-in & Widened Duration Box */
+    .planner-welcome-header {
+      padding: 12px 16px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    .planner-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin: 10px 0 14px 0;
+    }
+    .planner-choice-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+    }
+    .planner-choice-card:hover {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.4);
+    }
+    .planner-choice-card.active {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.12);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+    }
+    .choice-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .choice-title {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    .choice-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin: 0;
+    }
+    .guru-break-box {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin: 10px 0;
+    }
+    .guru-quote-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .guru-quote-icon {
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+    .guru-quote-text {
+      font-size: 0.82rem;
+      font-style: italic;
+      color: #e2e8f0;
+      line-height: 1.4;
+    }
+    .guru-quote-author {
+      font-size: 0.74rem;
+      color: var(--accent);
+      font-style: normal;
+      margin-top: 3px;
+      font-weight: 600;
+    }
+    .break-optin-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.15s ease;
+    }
+    .break-optin-label:hover {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.05);
+    }
+    .break-optin-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .optin-text {
+      font-size: 0.85rem;
+      color: #fff;
+    }
+    .break-control-notice {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      margin-left: 28px;
+    }
+    .single-task-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 8px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .single-task-pill-grid {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .dur-pill-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .dur-pill-btn:hover, .dur-pill-btn.active {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.15);
+      color: #fff;
+    }
+    /* Widened Duration Input Box in Table */
+    .dur-input-container {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 6px;
+      width: 96px;
+      min-width: 90px;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .dur-input-container:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+    .review-input-dur {
+      background: transparent !important;
+      border: none !important;
+      color: #fff !important;
+      font-size: 0.92rem !important;
+      font-weight: 700 !important;
+      width: 52px !important;
+      text-align: right !important;
+      padding: 2px 2px !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
+      -moz-appearance: textfield;
+    }
+    .review-input-dur::-webkit-outer-spin-button,
+    .review-input-dur::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .dur-unit-label {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      margin-left: 4px;
+      user-select: none;
+      font-weight: 600;
+    }
+
+  
+    /* Completion Verification Modal & Rollover Memory */
+    .rollover-memory-banner {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+    .btn-clear-rollover {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0 4px;
+      line-height: 1;
+    }
+    .btn-clear-rollover:hover {
+      color: var(--danger);
+    }
+
   </style>
 </head>
 <body>
@@ -1407,9 +1633,10 @@
       </div>
       <div class="header-controls" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" class="btn btn-primary" id="openPlannerChatBtn">✦ Plan My Day</button>
-        <button type="button" class="btn btn-primary btn-sm" id="openFlowGuruBtn">✦ Flow Guru</button>
+        <button type="button" class="btn btn-primary btn-sm btn-flow-guru" id="openFlowGuruBtn">✦ Flow Guru</button>
         <a href="csv-tools.html" class="btn btn-outline btn-sm" style="text-decoration: none;" id="uploadCsvNavBtn">Upload CSV of tasks</a>
-        <a href="guide.html" class="btn btn-outline btn-sm" style="text-decoration: none;" id="navGuideBtn">📖 Guide</a>
+        <button type="button" class="btn btn-outline btn-sm" id="navGuideBtn">📖 Guide</button>
+        <button type="button" class="btn-icon-settings" id="refreshAppBtn" title="Refresh & Reload Latest Version">🔄</button>
         <button type="button" class="btn-icon-settings" id="openSettingsBtn" title="Settings & AI Proxy Configuration">⚙️</button>
       </div>
     </header>
@@ -1438,7 +1665,7 @@
         <strong>The Anchor & Flow Method:</strong> 📅 Hard meetings anchor your wall-clock, while ⏱ fluid tasks flow dynamically between them.
       </div>
       <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-        <a href="guide.html" class="guide-link-btn" style="text-decoration: none;">📖 Master Guide &rarr;</a>
+        <button type="button" class="guide-link-btn" id="openGuideLinkBtn" style="cursor: pointer;">📖 Master Guide &rarr;</button>
         <a href="csv-tools.html" class="guide-link-btn" style="text-decoration: none; color: var(--text-muted); border-color: var(--border);">📥 CSV Tools & Template &rarr;</a>
       </div>
     </div>
@@ -1553,8 +1780,8 @@
             <h2>Execution Log</h2>
             <div style="display: flex; gap: 8px; align-items: center;">
               <span class="pacing-badge" id="pacingBadge">Velocity: 1.0x</span>
-              <button type="button" class="btn btn-primary btn-sm" id="openFlowGuruBtn">✦ Flow Guru</button>
-              <button type="button" class="btn btn-outline" id="exportCsvBtn" style="padding: 4px 10px; font-size: 0.78rem;" disabled>Export CSV</button>
+              <button type="button" class="btn btn-outline" id="exportCsvBtn" style="padding: 6px 12px; font-size: 0.8rem; min-height: 36px;" disabled>Export CSV</button>
+              <button type="button" class="btn btn-primary btn-sm btn-flow-guru" id="lowerFlowGuruBtn" style="padding: 6px 12px; font-size: 0.8rem; min-height: 36px;">✦ Flow Guru</button>
             </div>
           </div>
           <div class="table-container">
@@ -1578,44 +1805,118 @@
       </div>
     </div>
 
-    <!-- In-App Master Guide View (Seamless, Timer Never Pauses) -->
+        <!-- In-App Master Guide View (Seamless, Timer Never Pauses) -->
     <div class="guide-view-section" id="guideViewSection">
-      <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); border-radius: 10px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px 18px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.4rem;">📖</span>
+          <h1 style="font-size: 1.25rem; font-weight: 800; margin: 0; color: #fff;">Master Guide — The Anchor & Flow System</h1>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-primary btn-sm" id="guideReturnToCockpitBtn">&larr; Return to Cockpit</button>
+          <a href="guide.html" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="text-decoration: none;">Standalone Guide Page ↗</a>
+          <a href="csv-tools.html" class="btn btn-outline btn-sm" style="text-decoration: none;">CSV Tools Page &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Quick Jump Banner -->
+      <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); border-radius: 10px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
         <div>
           <strong style="color: #fff;">Need the CSV Schedule Template or Import tool?</strong>
           <div style="font-size: 0.8rem; color: var(--text-muted);">Download the sample CSV or upload custom routines on the dedicated CSV tools page.</div>
         </div>
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
           <a href="sample_schedule_template.csv" download="sample_schedule_template.csv" class="btn btn-primary btn-sm" style="text-decoration: none;">📥 Download Template</a>
           <a href="csv-tools.html" class="btn btn-outline btn-sm" style="text-decoration: none;">Open CSV Tools &rarr;</a>
         </div>
       </div>
+
+      <!-- Section 1 -->
       <section class="guide-card">
         <h2>1. The Problem with Conventional Timers</h2>
-        <p>Traditional timers create friction because they operate in isolation from your wall-clock commitments. <strong>Anchor & Flow</strong> bridges this disconnect:</p>
+        <p>Traditional productivity tools enforce one of two broken models:</p>
         <ul>
-          <li><strong>Hard Anchors (📅):</strong> Meetings imported from Outlook or Google Calendar with a fixed wall-clock start time (e.g., <code>14:30</code>). They remain pinned to real time.</li>
-          <li><strong>Fluid Flow (⏱):</strong> Deep work sprints, review tasks, and ergonomic habits (squats, hydration) that flow dynamically through the open windows between your meetings.</li>
+          <li><strong>Rigid Calendar Blocks:</strong> You schedule your day down to 15-minute slots. A single phone call or delayed meeting pushes every task off schedule, inducing guilt and anxiety.</li>
+          <li><strong>Abstract Stopwatches (Floating Timers):</strong> A simple Pomodoro timer measures duration (e.g., 25 mins) in a vacuum. It has no awareness that you have an immovable client call at 2:00 PM, leading to collisions.</li>
+        </ul>
+        <p><strong>The Solution: "Anchor & Flow"</strong> divides your workday into two entities:</p>
+        <ol>
+          <li><span class="badge-example badge-anchor">Hard Anchors</span>: Non-negotiable wall-clock commitments (client syncs, webinars, standups).</li>
+          <li><span class="badge-example badge-flow">Fluid Flow</span>: Flexible tasks, deep work sessions, and health habits (squats, hydration) that dynamically flow through the open time windows between your anchors.</li>
+        </ol>
+      </section>
+
+      <!-- Section 2 -->
+      <section class="guide-card">
+        <h2>2. Conversational Timeboxing with Multi-Tier AI (OpenAI & DeepSeek)</h2>
+        <p>Instead of manual scheduling or cumbersome CSV spreadsheets, <strong>Anchor & Flow</strong> features a conversational AI assistant powered by OpenAI (Option 1) with an automatic DeepSeek fallback (Option 2).</p>
+        <h3>Simple, Time-Aware AI Onboarding:</h3>
+        <ol>
+          <li><strong>Time-Aware Day Planning:</strong> If it's before 12:00 PM, the assistant asks if you want to <em>"Plan the Day"</em>. If it's after 12:00 PM, it asks if you want to <em>"Plan the Rest of the Day"</em>. You are prompted: <em>"Please fill in all the tasks that you want to do, and with their analysis of what time they want."</em></li>
+          <li><strong>Productivity Guru Break Opt-In (Full User Control):</strong> The assistant asks <em>"Would you like me to fill in small breaks to enhance productivity?"</em> backed by science-based recovery quotes. By default, <strong>no breaks are inserted</strong> unless you explicitly choose to opt in.</li>
+          <li><strong>Next Few Tasks & Single Task Modes:</strong> Need a fast sprint or a single timer? Choose <em>"Simple Timer for Next Few Tasks"</em> (2–4 tasks) or <em>"Single Timer for a Single Task"</em> with one-tap duration pills and instant launch.</li>
+          <li><strong>Clear, Widened Duration Box:</strong> The review table features expanded duration boxes cleanly displaying durations of 100+ minutes (e.g. 120m, 180m, 240m) with full editing and reordering.</li>
+        </ol>
+      </section>
+
+      <!-- Section 3 -->
+      <section class="guide-card">
+        <h2>3. The Execution Engine in Practice</h2>
+        <ul>
+          <li><strong>The "One-Second Reality Check" (🎯):</strong> Most timers assume that when 00:00 is reached, the task is finished. Anchor & Flow introduces a frictionless confirmation prompt: <em>"Did you finish this task?"</em> (<code>[✓ Completed]</code> vs <code>[↺ Incomplete]</code>).</li>
+        <li><strong>Rollover Memory & Queue (↺):</strong> If a task is marked incomplete, you can extend by <code>+5m</code>/<code>+10m</code> or park it. Parked tasks are saved into your private browser storage with remaining time calculated, and automatically offered as priority carryover in your next AI planning session.</li>
+        <li><strong>60-Second Calming Pause (🧘):</strong> Rather than jolting from one task into the next, the timer introduces a mindful 60-second transition breather between flow tasks. You can extend it with <code>+1m</code> / <code>+5m</code> or begin your next task immediately when ready.</li>
+          <li><strong>Open Buffer & Gap Filling (⚡):</strong> Finished early before a meeting? The cockpit enters a serene free time countdown and highlights upcoming smaller tasks from your routine that fit comfortably within the remaining minutes. Tapping any chip pulls it forward to execute immediately.</li>
+          <li><strong>Anchor Auto-Convene & Preemption:</strong> Hard calendar meetings start punctually on their scheduled wall-clock minute with an Apple harmonic chime. Any running task is paused with an option to <strong>Resume After Meeting</strong> or mark <strong>No, Task is Finished</strong>.</li>
+          <li><strong>Flow Guru Productivity Audit (✦):</strong> Open the slide-over dashboard to review your velocity ratio, anchor shield discipline, and personalized pacing tips for tomorrow.</li>
+          <li><strong>Overtime Count-Up:</strong> When a task reaches <code>00:00</code>, the timer flashes red, sounds a gentle harmonic alert, and counts <em>upwards</em> (<code>+00:01</code>, <code>+00:02</code>) to measure actual task overrun.</li>
+          <li><strong>Mid-Task Time Extension:</strong> If a task needs more time—even while ringing—tap <code>+5m</code>, <code>+10m</code>, or <code>+30m</code> to silence the alarm and extend the countdown budget.</li>
+          <li><strong>Finish Early (⏩):</strong> Tap <strong>Finish Early ⏩</strong> when done ahead of schedule to log exact elapsed seconds and immediately start the next step.</li>
+          <li><strong>Zen Focus Mode (⊙):</strong> Tap the Zen button or press <code>Z</code> to strip away all peripheral checklists and settings, leaving only the active task and clock.</li>
         </ul>
       </section>
 
+      <!-- Section 4 -->
       <section class="guide-card">
-        <h2>2. Generating Schedules via AI Prompting</h2>
-        <p>Copy today's agenda from Outlook or Google Calendar and paste it into your LLM alongside your unorganized task list using the master prompt.</p>
-        <pre>Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start
-Work Day,Morning Inbox Triage,20,Morning Alignment,
-Work Day,Hydrate & 10 Squats,2,Morning Alignment,
-Work Day,Sprint Standup (Outlook),30,,10:00
-Work Day,Deep Work: API Architecture,50,,
-Work Day,Executive Sync (Outlook),45,,14:30</pre>
+        <h2>4. Auditing Your Estimation Velocity (The Secret to Productivity)</h2>
+        <p>Most productivity systems fail because they do not track the <em>Planning Fallacy</em>—the cognitive bias where humans consistently underestimate the time required to complete work.</p>
+        <p>At the end of your day, click <strong>Export CSV</strong> to inspect your estimation multipliers and variance:</p>
+        <pre>=Actual_Elapsed / Target_Duration</pre>
+        <p>If your multiplier is consistently <code>1.25x</code>, increase future task buffers by 25% to achieve predictable cognitive pacing.</p>
       </section>
 
+      <!-- Section 5 -->
       <section class="guide-card">
-        <h2>3. Data-Driven Estimation Calibration</h2>
-        <p>Humans consistently underestimate work duration (the <em>Planning Fallacy</em>). At the end of each day, export your audit CSV:</p>
-        <p>Calculate your <strong>Estimation Multiplier</strong> in Excel or Google Sheets:</p>
-        <pre>=Actual_Elapsed / Target_Duration</pre>
-        <p>If your multiplier is consistently <code>1.25x</code>, increase future task buffers by 25% to achieve predictability.</p>
+        <h2>5. Downloadable CSV Template & Schema</h2>
+        <p>You can also draft your schedule offline in Microsoft Excel, Apple Numbers, or Google Sheets using our standard format:</p>
+        <div style="margin: 14px 0; display: flex; gap: 10px; flex-wrap: wrap;">
+          <a href="sample_schedule_template.csv" download="sample_schedule_template.csv" class="btn btn-primary btn-sm" style="text-decoration: none;">📥 Download Template (sample_schedule_template.csv)</a>
+          <a href="csv-tools.html" class="btn btn-outline btn-sm" style="text-decoration: none;">Open CSV Tools Page &rarr;</a>
+        </div>
+        <pre>Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start,Notes
+Morning Block,Morning Setup & Intentions,0,,,Kick off the morning with clear intentions
+Morning Block,★ [Top Priority] Deep Strategic Focus,50,Deep Work,,"Ruthless focus on highest-leverage initiative"
+Morning Block,Team Standup Sync,30,Operations,10:00,"Team alignment and blockers"
+Morning Block,Inbox Zero & Slack Triage,20,Comms,,"Batch communication processing"
+Morning Block,Hydrate & Posture Reset,5,Wellness,,"Drink water and stretch"
+Afternoon Flow,Client Strategy Call,30,Client Anchor,14:30,"Quarterly roadmap presentation"
+Evening Routine,Daily Debrief & Log,15,Wrap Up,,"Log completion metrics into Flow Guru"</pre>
+      </section>
+
+      <!-- Section 6 -->
+      <section class="guide-card" style="border-left: 4px solid var(--accent);">
+        <h2>📬 Support, Inquiries & Feedback</h2>
+        <p>Anchor & Flow is designed to bring ruthless clarity, momentum, and mindful calibration to daily execution.</p>
+        <p style="margin-top: 8px;">
+          For feedback, feature requests, or questions:
+        </p>
+        <div style="margin-top: 12px; padding: 12px 16px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-weight: 700; color: #fff;">Creator & Support Contact</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Rishi Roy</div>
+          </div>
+          <a href="mailto:rishi.roy@insead.edu?subject=Anchor%20%26%20Flow%20Feedback" style="background: var(--accent); color: #090d16; font-weight: 700; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.88rem;">✉️ rishi.roy@insead.edu</a>
+        </div>
       </section>
     </div>
   </div>
@@ -1688,10 +1989,48 @@ Work Day,Executive Sync (Outlook),45,,14:30</pre>
       </div>
       <div class="chat-body" id="chatBody"></div>
       <div class="chat-input-row">
-        <textarea class="chat-textarea" id="chatInputField" rows="3" enterkeyhint="send" autocomplete="off" autocapitalize="sentences" spellcheck="true" placeholder="Type or paste your plans, meetings, habits, and tasks here... (e.g. 'drink water for 5 mins, review for 15 mins, vitamin D for 5 mins, client call at 14:30'). You can paste multi-line schedules!"></textarea>
+        <textarea class="chat-textarea" id="chatInputField" rows="6" enterkeyhint="send" autocomplete="off" autocapitalize="sentences" spellcheck="true" placeholder="Type or paste your plans, meetings, habits, and tasks here... (e.g. 'drink water for 5 mins, review for 15 mins, vitamin D for 5 mins, client call at 14:30'). You can paste multi-line schedules!"></textarea>
         <div class="chat-controls-row">
-          <div class="chat-hint">Shift+Enter for newline • Enter or click Send to submit</div>
-          <button type="button" class="btn btn-primary" id="sendChatBtn">Send ➔</button>
+          <div class="chat-hint" id="chatVoiceHint">Shift+Enter for newline • Enter or click Send to submit</div>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline" id="voiceChatBtn" title="Dictate tasks using voice recognition" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; padding: 7px 14px;">🎙️ Voice Input</button>
+            <button type="button" class="btn btn-primary" id="sendChatBtn">Send ➔</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Task Completion Verification Modal (Apple-style Reality Check) -->
+  <div class="modal-overlay" id="completionCheckModal" style="display: none;">
+    <div class="modal-dialog" style="max-width: 440px; text-align: center; padding: 24px; border-radius: 14px;">
+      <div style="font-size: 2.2rem; margin-bottom: 8px;">🎯</div>
+      <h3 style="font-size: 1.25rem; color: #fff; margin-bottom: 6px;">Did you finish this task?</h3>
+      <div style="font-size: 0.95rem; font-weight: 700; color: var(--accent); margin-bottom: 12px;" id="completionModalTaskName">Task Name</div>
+      <div style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 20px;" id="completionModalTimeDetails">Planned: 30m • Actual: 28m</div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button type="button" class="btn btn-emerald" id="btnTaskFinishedYes" style="padding: 12px; font-weight: 700; font-size: 0.95rem;">
+          ✓ Yes, Completed (Press Enter)
+        </button>
+
+        <button type="button" class="btn btn-outline" id="btnTaskFinishedNo" style="padding: 10px; font-weight: 600; color: var(--warning); border-color: rgba(245, 158, 11, 0.4);">
+          ↺ Incomplete / In Progress
+        </button>
+      </div>
+
+      <!-- Secondary Incomplete Options (Toggled if user clicks 'Incomplete') -->
+      <div id="incompleteOptionsBox" style="display: none; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border); text-align: left;">
+        <div style="font-size: 0.84rem; color: #fff; font-weight: 600; margin-bottom: 8px;">What would you like to do?</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-primary btn-sm" id="btnExtend5mNow">+5m More Now</button>
+          <button type="button" class="btn btn-primary btn-sm" id="btnExtend10mNow">+10m More Now</button>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" id="btnParkAndRollover" style="width: 100%; color: var(--warning); border-color: var(--warning); font-weight: 700; padding: 8px 12px;">
+          📦 Park & Save to Rollover Memory &rarr;
+        </button>
+        <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
+          Logs actual time spent, flags the task as unfinished in your Execution Log, and saves the remainder into your Rollover Memory for future AI planning.
         </div>
       </div>
     </div>
@@ -1741,7 +2080,10 @@ Work Day,Executive Sync (Outlook),45,,14:30</pre>
           <a href="mailto:rishi.roy@insead.edu?subject=Anchor%20%26%20Flow%20Support" style="color: var(--accent); text-decoration: none; font-weight: 600;">rishi.roy@insead.edu</a>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
-          <button type="button" class="btn btn-outline btn-sm" id="clearSessionBtn" style="color: var(--danger); border-color: rgba(239, 68, 68, 0.4);" title="Clear saved schedule and audit history">Reset All Data</button>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline btn-sm" id="hardRefreshBtn" style="color: var(--accent); border-color: rgba(56, 189, 248, 0.4);" title="Force browser hard-reload and clear service cache">🔄 Clear Cache & Reload</button>
+            <button type="button" class="btn btn-outline btn-sm" id="clearSessionBtn" style="color: var(--danger); border-color: rgba(239, 68, 68, 0.4);" title="Clear saved schedule and audit history">Reset All Data</button>
+          </div>
           <div style="display: flex; gap: 8px;">
           <button type="button" class="btn btn-outline" id="cancelSettingsBtn">Cancel</button>
           <button type="button" class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
@@ -3187,7 +3529,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         if (activeElem) activeElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
-      function recordCompletedTask(routineName, task, plannedSecs, extendedSecs, actualSecs, overtimeSecs, wasEarly, startTime, endTime, customStatus) {
+      function recordCompletedTask(routineName, task, plannedSecs, extendedSecs, actualSecs, overtimeSecs, wasEarly, startTime, endTime, customStatus, isCompleted) {
         const finalTargetSecs = plannedSecs + extendedSecs;
         let statusText = customStatus || 'On Time';
 
@@ -3211,6 +3553,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           overtimeSecs: overtimeSecs,
           varianceSecs: actualSecs - finalTargetSecs,
           status: statusText,
+          isCompleted: isCompleted !== false,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
 
@@ -3251,9 +3594,17 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
             ? `<span style="font-size: 0.72rem; color: var(--accent); font-weight:600;"> (+${formatMMSS(res.extendedSecs)})</span>` 
             : '';
 
+          const isDone = res.isCompleted !== false && !res.status.includes('Incomplete');
+          const statusBadge = isDone
+            ? `<span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.72rem;">✓ Done</span>`
+            : `<span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.72rem;">↺ Rolled Over</span>`;
+
           tr.innerHTML = `
             <td>
-              <strong style="color: var(--text-main);">${escapeHtml(res.taskName)}</strong><br/>
+              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 2px;">
+                <strong style="color: var(--text-main);">${escapeHtml(res.taskName)}</strong>
+                ${statusBadge}
+              </div>
               <span style="font-size: 0.7rem; color: var(--text-muted);">${escapeHtml(res.routine)} &bull; ${res.isAnchor ? '📅 Meeting' : '⏱ Flow'}</span>
             </td>
             <td>
@@ -3402,22 +3753,127 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         updateZenBar();
       }
 
-      function finishEarly() {
-        const state = routineStates.get(currentViewedRoutine);
+      // Rollover Memory Storage Management
+      const STORAGE_KEY_ROLLOVER = 'anchor_flow_rollover_v1';
+
+      function getRolloverQueue() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_ROLLOVER);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveToRolloverQueue(task, elapsedSecs) {
+        try {
+          const queue = getRolloverQueue();
+          const plannedMins = Math.round(task.durationSecs / 60);
+          const spentMins = Math.max(1, Math.round(elapsedSecs / 60));
+          const remainingMins = Math.max(10, plannedMins - spentMins);
+
+          queue.push({
+            id: 'roll_' + Date.now(),
+            name: task.name,
+            originalPlannedMins: plannedMins,
+            actualSpentMins: spentMins,
+            remainingEstMins: remainingMins,
+            notes: task.notes || '',
+            date: new Date().toLocaleDateString([], { month: 'short', day: 'numeric' })
+          });
+
+          localStorage.setItem(STORAGE_KEY_ROLLOVER, JSON.stringify(queue));
+        } catch (e) {
+          console.warn('Could not save to rollover queue:', e);
+        }
+      }
+
+      function clearRolloverQueue() {
+        try {
+          localStorage.removeItem(STORAGE_KEY_ROLLOVER);
+        } catch (e) {}
+      }
+
+      // Completion Reality Check Verification Modal
+      let pendingVerificationState = null;
+      let pendingVerificationIsEarly = false;
+
+      function showTaskCompletionPrompt(isFinishEarly) {
+        const targetRoutine = activeRunningRoutine || currentViewedRoutine;
+        const state = routineStates.get(targetRoutine);
+        if (!state || state.currentActionableStep >= state.actionableTaskIndices.length) return;
+
+        const currentActiveIdx = state.actionableTaskIndices[state.currentActionableStep];
+        const task = state.tasks[currentActiveIdx];
+        if (!task) return;
+
+        pendingVerificationState = state;
+        pendingVerificationIsEarly = !!isFinishEarly;
+
+        const modal = document.getElementById('completionCheckModal');
+        const taskNameElem = document.getElementById('completionModalTaskName');
+        const timeDetailsElem = document.getElementById('completionModalTimeDetails');
+        const incompleteBox = document.getElementById('incompleteOptionsBox');
+
+        if (taskNameElem) taskNameElem.textContent = task.name;
+        if (incompleteBox) incompleteBox.style.display = 'none';
+
+        const plannedMins = Math.round(task.durationSecs / 60);
+        const actualMins = Math.max(1, Math.round(state.elapsedSeconds / 60));
+        const extMins = Math.round(state.extendedSeconds / 60);
+        const extStr = extMins > 0 ? ` (+${extMins}m extended)` : '';
+
+        if (timeDetailsElem) {
+          timeDetailsElem.textContent = `Planned: ${plannedMins}m${extStr} • Actual elapsed: ${actualMins}m`;
+        }
+
+        modal.style.display = 'flex';
+        isolateInputsForModal(true);
+      }
+
+      function closeTaskCompletionPrompt() {
+        const modal = document.getElementById('completionCheckModal');
+        if (modal) modal.style.display = 'none';
+        isolateInputsForModal(false);
+        pendingVerificationState = null;
+      }
+
+      function finalizeTaskAdvance(state, isCompleted, wasEarly) {
         if (!state || state.currentActionableStep >= state.actionableTaskIndices.length) return;
 
         stopAudioAlertLoop();
         const currentActiveIdx = state.actionableTaskIndices[state.currentActionableStep];
         const task = state.tasks[currentActiveIdx];
         if (!task) return;
-        task.status = 'done';
+
+        task.status = isCompleted ? 'done' : 'incomplete';
 
         const endTime = new Date();
         const startTime = state.actualStartTime || new Date(endTime.getTime() - (state.elapsedSeconds * 1000));
         const planned = task.durationSecs;
         const actual = Math.max(1, state.elapsedSeconds);
 
-        recordCompletedTask(state.name, task, planned, state.extendedSeconds, actual, 0, true, startTime, endTime);
+        let customStatus = isCompleted
+          ? (wasEarly ? 'Finished Early' : (state.overtimeSeconds > 0 ? 'Overtime' : 'Completed'))
+          : 'Incomplete (Rolled Over)';
+
+        recordCompletedTask(
+          state.name,
+          task,
+          planned,
+          state.extendedSeconds,
+          actual,
+          state.overtimeSeconds,
+          wasEarly,
+          startTime,
+          endTime,
+          customStatus,
+          isCompleted
+        );
+
+        if (!isCompleted) {
+          saveToRolloverQueue(task, state.elapsedSeconds);
+        }
 
         state.currentActionableStep++;
         state.overtimeSeconds = 0;
@@ -3429,32 +3885,12 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         transitionStep(state, currentActiveIdx);
       }
 
+      function finishEarly() {
+        showTaskCompletionPrompt(true);
+      }
+
       function advanceToNextTask() {
-        const state = routineStates.get(activeRunningRoutine || currentViewedRoutine);
-        if (!state || state.currentActionableStep >= state.actionableTaskIndices.length) return;
-
-        stopAudioAlertLoop();
-        const currentActiveIdx = state.actionableTaskIndices[state.currentActionableStep];
-        const task = state.tasks[currentActiveIdx];
-        if (!task) return;
-        task.status = 'done';
-
-        const endTime = new Date();
-        const startTime = state.actualStartTime || new Date(endTime.getTime() - (state.elapsedSeconds * 1000));
-        const planned = task.durationSecs;
-        const actual = Math.max(1, state.elapsedSeconds);
-        const wasEarly = state.remainingSeconds > 0 && state.overtimeSeconds === 0;
-
-        recordCompletedTask(state.name, task, planned, state.extendedSeconds, actual, state.overtimeSeconds, wasEarly, startTime, endTime);
-
-        state.currentActionableStep++;
-        state.overtimeSeconds = 0;
-        state.elapsedSeconds = 0;
-        state.extendedSeconds = 0;
-        state.actualStartTime = null;
-
-        saveStateToStorage();
-        transitionStep(state, currentActiveIdx);
+        showTaskCompletionPrompt(false);
       }
 
       function transitionStep(state, previousActiveIdx) {
@@ -3600,8 +4036,14 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
+      const navGuideBtn = document.getElementById('navGuideBtn');
+      const openGuideLinkBtn = document.getElementById('openGuideLinkBtn');
+      const guideReturnToCockpitBtn = document.getElementById('guideReturnToCockpitBtn');
+      if (navGuideBtn) navGuideBtn.addEventListener('click', showGuideView);
+      if (openGuideLinkBtn) openGuideLinkBtn.addEventListener('click', showGuideView);
       if (openGuideViewBtn) openGuideViewBtn.addEventListener('click', showGuideView);
       if (zenBarReturnBtn) zenBarReturnBtn.addEventListener('click', showDashboardView);
+      if (guideReturnToCockpitBtn) guideReturnToCockpitBtn.addEventListener('click', showDashboardView);
 
       // Sticky Zen Bar Controls
       zenBarAdd5Btn.addEventListener('click', () => addTimeToCurrentTask(300));
@@ -3913,7 +4355,10 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         setTimeout(() => slidePanelBackdrop.style.display = 'none', 350);
       }
 
-      openFlowGuruBtn.addEventListener('click', openFlowGuru);
+      // Attach click listener to both header and lower Execution Log Flow Guru buttons
+      document.querySelectorAll('.btn-flow-guru, #openFlowGuruBtn, #lowerFlowGuruBtn').forEach(btn => {
+        btn.addEventListener('click', openFlowGuru);
+      });
       closeFlowGuruBtn.addEventListener('click', closeFlowGuru);
       slidePanelBackdrop.addEventListener('click', closeFlowGuru);
       refreshGuruBtn.addEventListener('click', analyzeProductivityWithFlowGuru);
@@ -4138,18 +4583,34 @@ Format as JSON:
         URL.revokeObjectURL(url);
       }
 
+      let plannerMode = null;
+      let userRequestedBreaks = false;
+
+      const GURU_QUOTES = [
+        { quote: "Ultradian rhythms dictate that cognitive endurance peaks for 60–90 minutes. A brief 3–5 minute hydration break or visual reset restores executive focus and prevents afternoon burnout.", author: "Harvard Business Review & Cognitive Science" },
+        { quote: "Movement resets dopaminergic tone and triggers optic flow, rapidly reducing mental fatigue and refocusing attention.", author: "Dr. Andrew Huberman (Stanford Neuroscience)" },
+        { quote: "Stepping away for a physiological sigh and hydration clears working memory, allowing you to return with higher cognitive velocity.", author: "Performance Physiology Research" },
+        { quote: "Short, intentional micro-pauses prevent cognitive fatigue from compounding into a late-afternoon burnout.", author: "Journal of Applied Psychology" }
+      ];
+
+      function getRandomGuruQuote() {
+        const q = GURU_QUOTES[Math.floor(Math.random() * GURU_QUOTES.length)];
+        return q.quote;
+      }
+
       function openPlannerChat() {
         isolateInputsForModal(true);
         plannerChatModal.style.display = 'flex';
         chatBody.innerHTML = '';
         chatStep = 0;
+        plannerMode = null;
+        userRequestedBreaks = false;
         pendingScheduleItems = [];
         currentRequiresTop3 = false;
 
         const now = new Date();
         const timeStr = formatClockHM(now);
-        const hour = now.getHours();
-        const isAfternoonOrNight = hour >= 14;
+        const isBeforeNoon = now.getHours() < 12;
 
         const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
         const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
@@ -4172,18 +4633,285 @@ Format as JSON:
           }
         }
 
-        appendChatBubble('bot', `Hello! I am your <strong>Harvard Timeboxing Assistant</strong>. Current local time is <strong>${timeStr}</strong>.<br/><br/>
-${isAfternoonOrNight
-  ? `🕒 <strong>Afternoon/Evening Mode:</strong> Since it is after 2:00 PM, I will schedule your activities directly into immediate sequential focus blocks without asking for Top-3 priorities!`
-  : `🌅 <strong>Full-Day Planning Mode:</strong> I'll map your calendar anchors and timebox your vital focus tasks.`
-}<br/><br/>
-Please paste or type your tasks, meetings, and habits below. You can paste multi-line schedules or type sentences like:<br/>
-<em>"Drink water for 5 minutes, do a review for 15 minutes, drink vitamin D for 5 minutes, client call at 14:30"</em>`);
+        const dayTitle = isBeforeNoon ? 'Plan the Day' : 'Plan the Rest of the Day';
+        const dayBadge = isBeforeNoon ? '🌅 Morning Focus' : '🕒 Afternoon Focus';
+        const dayDesc = isBeforeNoon ? 'Map out your full day, calendar anchors, and focus blocks.' : 'Plan the remaining hours of your day, afternoon priorities, and wrap-up.';
 
+        const rolloverItems = getRolloverQueue();
+        let rolloverBannerHtml = '';
+        if (rolloverItems && rolloverItems.length > 0) {
+          rolloverBannerHtml = `
+            <div class="rollover-memory-banner" id="rolloverBanner">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 6px; font-weight: 700; color: #fbbf24; font-size: 0.88rem;">
+                    <span>📦</span> Rollover Memory (${rolloverItems.length} unfinished task${rolloverItems.length > 1 ? 's' : ''})
+                  </div>
+                  <div style="font-size: 0.82rem; color: #e2e8f0; margin-top: 4px; line-height: 1.4;">
+                    ${rolloverItems.map(it => `&bull; <strong>${escapeHtml(it.name)}</strong> (~${it.remainingEstMins}m remaining, ${it.actualSpentMins}m spent)`).join('<br/>')}
+                  </div>
+                </div>
+                <button type="button" class="btn-clear-rollover" id="dismissRolloverBtn" title="Dismiss rollover tasks">✕</button>
+              </div>
+              <div style="margin-top: 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <button type="button" class="btn btn-warning btn-sm" id="btnAdoptRollover" style="font-weight: 700; font-size: 0.82rem;">
+                  + Add Rollover Tasks to Today's Plan
+                </button>
+                <span style="font-size: 0.74rem; color: var(--text-muted);">Pre-populates unfinished work into your schedule.</span>
+              </div>
+            </div>
+          `;
+        }
+
+        const welcomeHtml = `
+          ${rolloverBannerHtml}
+          <div class="planner-welcome-header">
+            <div style="font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 4px;">
+              What would you like to do right now?
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">
+              Current local time is <strong>${timeStr}</strong>. Choose a mode below for simplicity, or type your tasks directly:
+            </div>
+          </div>
+
+          <div class="planner-choice-grid">
+            <div class="planner-choice-card" id="choiceCardDay">
+              <div class="choice-badge">${dayBadge}</div>
+              <h4 class="choice-title">${dayTitle}</h4>
+              <p class="choice-desc">${dayDesc}</p>
+            </div>
+
+            <div class="planner-choice-card" id="choiceCardFew">
+              <div class="choice-badge">⏱️ Sprint Sequence</div>
+              <h4 class="choice-title">Simple Timer for Next Few Tasks</h4>
+              <p class="choice-desc">Set up a quick, clean sequence for your next 2 to 4 upcoming tasks.</p>
+            </div>
+
+            <div class="planner-choice-card" id="choiceCardSingle">
+              <div class="choice-badge">🎯 Single Focus</div>
+              <h4 class="choice-title">Single Timer for a Single Task</h4>
+              <p class="choice-desc">Instant countdown for one focused task. Minimal setup, zero clutter.</p>
+            </div>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+            💡 <em>You can also paste or type your tasks directly below anytime.</em>
+          </div>
+        `;
+
+        appendChatBubble('bot', welcomeHtml);
+
+        const cardDay = document.getElementById('choiceCardDay');
+        const cardFew = document.getElementById('choiceCardFew');
+        const cardSingle = document.getElementById('choiceCardSingle');
+
+        if (cardDay) cardDay.addEventListener('click', () => selectPlannerMode('day'));
+        if (cardFew) cardFew.addEventListener('click', () => selectPlannerMode('few'));
+        if (cardSingle) cardSingle.addEventListener('click', () => selectPlannerMode('single'));
+
+        const adoptBtn = document.getElementById('btnAdoptRollover');
+        if (adoptBtn) {
+          adoptBtn.addEventListener('click', () => {
+            selectPlannerMode('day');
+            const lines = rolloverItems.map(it => `[Rollover] ${it.name} ${it.remainingEstMins}m`);
+            chatInputField.value = lines.join('\n') + '\n' + chatInputField.value;
+            chatInputField.style.height = 'auto';
+            chatInputField.style.height = Math.min(chatInputField.scrollHeight, 350) + 'px';
+            chatInputField.focus();
+          });
+        }
+        const dismissBtn = document.getElementById('dismissRolloverBtn');
+        if (dismissBtn) {
+          dismissBtn.addEventListener('click', () => {
+            clearRolloverQueue();
+            const b = document.getElementById('rolloverBanner');
+            if (b) b.remove();
+          });
+        }
+
+        chatInputField.placeholder = "Type your choice or paste your tasks here... (e.g. 'Plan my day', 'Deep Work 90m, Call 30m')";
+        sendChatBtn.textContent = "Send ➔";
         chatInputField.focus();
       }
 
+      function selectPlannerMode(mode) {
+        plannerMode = mode;
+        const now = new Date();
+        const isBeforeNoon = now.getHours() < 12;
+
+        if (mode === 'day') {
+          const modeTitle = isBeforeNoon ? '🌅 Plan the Day' : '🕒 Plan the Rest of the Day';
+          appendChatBubble('user', modeTitle);
+
+          const quote = getRandomGuruQuote();
+          const promptHtml = `
+            <div style="font-weight: 700; font-size: 1.05rem; color: #fff; margin-bottom: 6px;">
+              ${modeTitle}
+            </div>
+            <p style="margin-bottom: 12px; color: var(--text-main); font-size: 0.92rem; line-height: 1.45;">
+              <strong>Please fill in all the tasks that you want to do, and with their analysis of what time they want.</strong>
+            </p>
+
+            <div class="guru-break-box">
+              <div class="guru-quote-header">
+                <span class="guru-quote-icon">🧘</span>
+                <div>
+                  <div style="font-weight: 700; color: #fff; font-size: 0.88rem;">Productivity Guru Recommendation</div>
+                  <div class="guru-quote-text">“${quote}”</div>
+                  <div class="guru-quote-author">— Performance Science & Ultradian Rhythm Research</div>
+                </div>
+              </div>
+              <div style="font-size: 0.85rem; color: #cbd5e1; margin-top: 6px;">
+                <strong>Would you like me to fill in small breaks to enhance productivity?</strong>
+              </div>
+              <label class="break-optin-label">
+                <input type="checkbox" id="optInBreaksCheckbox" />
+                <span class="optin-text">
+                  <strong>Yes, fill in small breaks to enhance productivity</strong> (hydration, 3-min walk, posture reset)
+                </span>
+              </label>
+              <div class="break-control-notice">
+                🔒 <strong>100% User Control:</strong> Default is <strong>No breaks</strong>. Productivity breaks are only added if you check this box.
+              </div>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 6px;">
+              Enter your tasks with durations in the box below and click <strong>Generate Schedule Table ➔</strong>:
+            </div>
+          `;
+
+          appendChatBubble('bot', promptHtml);
+          chatInputField.placeholder = "e.g.\nDeep Strategic Focus 90m\nTeam Sync at 11:30 (30m)\nClient Proposal 60m\nInbox Triage 20m";
+          chatInputField.focus();
+          sendChatBtn.textContent = "Generate Schedule Table ➔";
+
+        } else if (mode === 'few') {
+          appendChatBubble('user', '⏱️ Simple Timer for Next Few Tasks');
+
+          const promptHtml = `
+            <div style="font-weight: 700; font-size: 1.05rem; color: #fff; margin-bottom: 6px;">
+              ⏱️ Simple Timer for Next Few Tasks
+            </div>
+            <p style="margin-bottom: 12px; color: var(--text-main); font-size: 0.92rem;">
+              <strong>Please fill in the 2 to 4 tasks you want to tackle and how much time each needs:</strong>
+            </p>
+            <div class="guru-break-box" style="padding: 10px 14px;">
+              <label class="break-optin-label" style="margin-top: 0;">
+                <input type="checkbox" id="optInBreaksCheckbox" />
+                <span class="optin-text">
+                  <strong>Fill in brief 3–5 min breaks between tasks</strong> (hydration, eye rest)
+                </span>
+              </label>
+              <div class="break-control-notice">
+                Default is <strong>No breaks</strong>. Only inserted if checked.
+              </div>
+            </div>
+          `;
+
+          appendChatBubble('bot', promptHtml);
+          chatInputField.placeholder = "e.g.\nDraft proposal 30m\nReview deck 20m\nReply to urgent emails 15m";
+          chatInputField.focus();
+          sendChatBtn.textContent = "Generate Tasks Table ➔";
+
+        } else if (mode === 'single') {
+          appendChatBubble('user', '🎯 Single Timer for a Single Task');
+
+          const singleHtml = `
+            <div class="single-task-panel">
+              <div style="font-weight: 800; font-size: 1.1rem; color: #fff;">
+                🎯 Instant Single Task Timer
+              </div>
+              <div style="font-size: 0.84rem; color: var(--text-muted);">
+                Configure a clean, single-task focus timer and begin immediately.
+              </div>
+
+              <div>
+                <label style="font-weight: 700; font-size: 0.85rem; color: var(--text-main); display: block; margin-bottom: 6px;">
+                  Task Name:
+                </label>
+                <input type="text" id="singleTaskNameInput" class="chat-input" value="Deep Strategic Focus" placeholder="e.g. Deep Strategic Focus, Proposal Writing, Code Review" style="width: 100%; box-sizing: border-box;" />
+              </div>
+
+              <div>
+                <label style="font-weight: 700; font-size: 0.85rem; color: var(--text-main); display: block; margin-bottom: 6px;">
+                  Duration:
+                </label>
+                <div class="single-task-pill-grid" id="singlePillGrid">
+                  <button type="button" class="dur-pill-btn" data-mins="15">15m</button>
+                  <button type="button" class="dur-pill-btn active" data-mins="25">25m (Pomodoro)</button>
+                  <button type="button" class="dur-pill-btn" data-mins="30">30m</button>
+                  <button type="button" class="dur-pill-btn" data-mins="45">45m</button>
+                  <button type="button" class="dur-pill-btn" data-mins="60">60m (1 hr)</button>
+                  <button type="button" class="dur-pill-btn" data-mins="90">90m</button>
+                  <button type="button" class="dur-pill-btn" data-mins="120">120m (2 hrs)</button>
+                </div>
+                <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 0.82rem; color: var(--text-muted);">Or custom minutes:</span>
+                  <div class="dur-input-container">
+                    <input type="number" id="singleCustomDurInput" class="review-input-dur" value="25" min="1" max="720" />
+                    <span class="dur-unit-label">mins</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-emerald" id="launchSingleTaskBtn" style="padding: 10px 22px; font-weight: 700; font-size: 0.92rem;">
+                  Start Timer Immediately 🚀
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" id="backToModesBtn">
+                  &larr; Choose Other Mode
+                </button>
+              </div>
+            </div>
+          `;
+
+          appendChatBubble('bot', singleHtml);
+
+          const pills = document.querySelectorAll('#singlePillGrid .dur-pill-btn');
+          const customInp = document.getElementById('singleCustomDurInput');
+          pills.forEach(p => {
+            p.addEventListener('click', () => {
+              pills.forEach(x => x.classList.remove('active'));
+              p.classList.add('active');
+              customInp.value = p.dataset.mins;
+            });
+          });
+          customInp.addEventListener('input', () => {
+            pills.forEach(x => {
+              if (x.dataset.mins === customInp.value) x.classList.add('active');
+              else x.classList.remove('active');
+            });
+          });
+
+          document.getElementById('backToModesBtn').addEventListener('click', openPlannerChat);
+          document.getElementById('launchSingleTaskBtn').addEventListener('click', () => {
+            const nameVal = (document.getElementById('singleTaskNameInput').value || 'Focus Task').trim();
+            const durVal = parseInt(customInp.value, 10) || 25;
+            startSingleTaskImmediately(nameVal, durVal);
+          });
+        }
+      }
+
+      function startSingleTaskImmediately(taskName, durationMins) {
+        const routineName = 'Single Task Focus';
+        const csvContent = `Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start,Notes\n"${routineName}","${taskName.replace(/"/g, '""')}",${durationMins},,,"Single task focus block"`;
+
+        parseCSV(csvContent);
+        closePlannerChat();
+
+        // Start timer immediately
+        const state = routineStates.get(routineName);
+        if (state) {
+          activeRunningRoutine = routineName;
+          state.timerState = 'running';
+          state.lastTickTime = Date.now();
+          saveStateToStorage();
+          updateZenBar();
+          updateDisplayForViewed();
+          if (!masterTickInterval) startGlobalTickLoop();
+        }
+      }
+
       function closePlannerChat() {
+        stopVoiceRecognition();
         isolateInputsForModal(false);
         plannerChatModal.style.display = 'none';
       }
@@ -4191,26 +4919,38 @@ Please paste or type your tasks, meetings, and habits below. You can paste multi
       openPlannerChatBtn.addEventListener('click', openPlannerChat);
       closeChatModalBtn.addEventListener('click', closePlannerChat);
 
-      function appendChatBubble(role, htmlText) {
-        const bubble = document.createElement('div');
-        bubble.className = `chat-bubble ${role}`;
-        bubble.innerHTML = htmlText;
-        chatBody.appendChild(bubble);
-        chatBody.scrollTop = chatBody.scrollHeight;
-        return bubble;
-      }
-
       function handleChatSend() {
         const text = chatInputField.value.trim();
         if (!text) return;
+
+        // Check if user is typing mode choice
+        if (chatStep === 0 && !plannerMode) {
+          const lower = text.toLowerCase();
+          if (/day|morning|afternoon|rest of/i.test(lower)) {
+            selectPlannerMode('day');
+            chatInputField.value = '';
+            return;
+          } else if (/few|next|sprint/i.test(lower)) {
+            selectPlannerMode('few');
+            chatInputField.value = '';
+            return;
+          } else if (/single|one/i.test(lower)) {
+            selectPlannerMode('single');
+            chatInputField.value = '';
+            return;
+          }
+        }
 
         appendChatBubble('user', escapeHtml(text));
         chatInputField.value = '';
         chatInputField.style.height = 'auto';
 
         if (chatStep === 0) {
-          appendChatBubble('bot', '<em>⚡ Parsing schedule, shortening task titles, and building your Harvard review table...</em>');
-          callMultiTierAiIntake(text);
+          const breakChk = document.getElementById('optInBreaksCheckbox');
+          userRequestedBreaks = breakChk ? breakChk.checked : false;
+
+          appendChatBubble('bot', '<em>⚡ Parsing schedule, formatting durations, and building your review table...</em>');
+          callMultiTierAiIntake(text, userRequestedBreaks);
         } else if (chatStep === 1) {
           appendChatBubble('bot', '<em>⚡ Updating schedule based on your feedback...</em>');
           handleScheduleFeedback(text);
@@ -4225,12 +4965,18 @@ Please paste or type your tasks, meetings, and habits below. You can paste multi
         }
       });
 
-      async function callMultiTierAiIntake(userInput) {
+      async function callMultiTierAiIntake(userInput, allowBreaks) {
         const now = new Date();
         const timeStr = formatClockHM(now);
 
+        const breakInstruction = allowBreaks
+          ? "USER REQUESTED BREAKS: TRUE. Insert 3–5 minute restorative micro-breaks (e.g. 'Hydrate & Posture Reset', 'Quick 3-Min Walk', 'Eye & Optic Flow Rest') between major work sessions longer than 45 minutes."
+          : "USER REQUESTED BREAKS: FALSE. STRICT MANDATE: DO NOT insert ANY breaks, rest periods, walks, or hydration habits unless explicitly written in the user's input! The user has chosen NO automatic breaks.";
+
         const systemPrompt = `You are an executive Harvard Timeboxing architect and productivity engine.
 Current local time is ${timeStr} (24-hr format).
+
+${breakInstruction}
 
 STRICT INSTRUCTIONS:
 1. Break down user text into separate, distinct tasks or meetings. NEVER combine distinct activities into one single item!
@@ -4242,16 +4988,16 @@ STRICT INSTRUCTIONS:
    - "drink vitamin D for 5 minutes" -> "Take Vitamin D"
    - "team standup 10:00 - 10:30" -> "Team Standup"
 3. Preserve the full explanation, context, and instructions in the "notes" field.
-4. Extract durations in minutes accurately (e.g. "5 minutes" -> 5, "15 minutes" -> 15). If unspecified, assign a sensible default (habit: 5, review: 15, task: 30, deep work: 45).
+4. Extract durations in minutes accurately (e.g. "5 minutes" -> 5, "15 minutes" -> 15, "120 minutes" -> 120, "2 hours" -> 120). If unspecified, assign a sensible default (habit: 5, review: 15, task: 30, deep work: 45).
 5. If an item is a calendar meeting with a specific scheduled start time (e.g. "at 14:30", "10:00 - 10:30"), mark type="meeting" and set "scheduledTime" to "HH:MM". Fluid tasks must have type="task" and scheduledTime="".
 6. Time-of-day & Planning Scope Rule:
-   - If current time is 14:00 (2:00 PM) or later, OR if planning a short session (<= 4 tasks total or 2-3 hours), set "requiresTop3Priorities": false.
-   - Only set "requiresTop3Priorities": true if planning for a full day before 14:00 with more than 4 tasks.
+   - If current time is 12:00 PM or later, OR if planning a short session (<= 4 tasks total), set "requiresTop3Priorities": false.
+   - Only set "requiresTop3Priorities": true if planning for a full day before 12:00 PM with more than 4 tasks.
 
 RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
 {
   "requiresTop3Priorities": false,
-  "planningSummary": "Planned 3 focused flow tasks for your block.",
+  "planningSummary": "Planned your focused tasks.",
   "items": [
     {
       "id": 1,
@@ -4269,7 +5015,7 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
           const aiResult = await executeMultiTierAi(systemPrompt, userInput);
           if (aiResult && aiResult.content) {
             const parsed = extractJsonFromText(aiResult.content);
-            processParsedSchedule(parsed, aiResult.engine);
+            processParsedSchedule(parsed, aiResult.engine, null, allowBreaks);
             return;
           }
         } catch (err) {
@@ -4277,7 +5023,7 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
         }
 
         // Local fallback
-        clientSideTimeboxerExtraction(userInput, null);
+        clientSideTimeboxerExtraction(userInput, allowBreaks, null);
       }
 
       function extractJsonFromText(rawText) {
@@ -4297,15 +5043,15 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
         }
       }
 
-      function processParsedSchedule(data, engineLabel, warningMsg) {
-        if (chatBody.lastElementChild) chatBody.lastElementChild.remove(); // remove loading indicator
+      function processParsedSchedule(data, engineLabel, warningMsg, allowBreaks) {
+        if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
 
         const now = new Date();
         const currentHour = now.getHours();
 
-        pendingScheduleItems = (data.items || []).map((item, idx) => ({
+        let rawItems = (data.items || []).map((item, idx) => ({
           id: item.id || (idx + 1),
-          type: item.type === 'meeting' ? 'meeting' : 'task',
+          type: item.type === 'meeting' ? 'meeting' : (item.type === 'break' ? 'break' : 'task'),
           shortName: (item.shortName || item.name || `Task ${idx + 1}`).trim(),
           duration: parseInt(item.duration, 10) || 15,
           scheduledTime: (item.scheduledTime || item.time || '').trim(),
@@ -4313,8 +5059,15 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
           priority: item.priority || null
         }));
 
-        // Evaluation of Top 3 requirement
-        if (currentHour >= 14 || pendingScheduleItems.length <= 4) {
+        // Filter out breaks if user did NOT opt in!
+        if (!allowBreaks) {
+          rawItems = rawItems.filter(it => it.type !== 'break' && !/^(?:quick break|hydration break|micro break|rest pause)$/i.test(it.shortName));
+        }
+
+        pendingScheduleItems = rawItems;
+
+        // Evaluation of Top 3 requirement (only if before 12:00 PM and > 4 tasks)
+        if (currentHour >= 12 || pendingScheduleItems.length <= 4) {
           currentRequiresTop3 = false;
         } else {
           currentRequiresTop3 = !!data.requiresTop3Priorities;
@@ -4342,20 +5095,21 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
             🎯 <strong>Harvard Priority Selection:</strong> Select your <strong>Top 3 most critical priorities</strong> using the checkboxes below.
           </div>`;
         } else {
-          const reason = currentHour >= 14
-            ? `Current local time is <strong>${timeStr}</strong> (after 2:00 PM).`
-            : `Planning a focused sprint of <strong>${pendingScheduleItems.length} tasks</strong>.`;
+          const reason = currentHour >= 12
+            ? `Current local time is <strong>${timeStr}</strong> (afternoon mode).`
+            : `Planning a focused block of <strong>${pendingScheduleItems.length} tasks</strong>.`;
           contextNotice = `<div style="margin: 8px 0; font-size: 0.86rem; color: var(--accent);">
-            ⚡ <strong>Direct Flow Schedule:</strong> ${reason} Skipping Top-3 triage and scheduling your tasks in immediate execution order!
+            ⚡ <strong>Direct Flow Schedule:</strong> ${reason} Tasks arranged in immediate execution order!
           </div>`;
         }
 
         let tableRowsHtml = '';
         pendingScheduleItems.forEach((item, idx) => {
           const isAnchor = item.type === 'meeting' || !!item.scheduledTime;
-          const typeBadge = isAnchor
-            ? '<span style="color: var(--warning); font-weight: 600;">📅 Anchor</span>'
-            : '<span style="color: var(--accent); font-weight: 600;">🏷️ Flow</span>';
+          const isBreak = item.type === 'break' || /break|walk|hydrate/i.test(item.shortName);
+          let typeBadge = '<span style="color: var(--accent); font-weight: 600;">🏷️ Flow</span>';
+          if (isAnchor) typeBadge = '<span style="color: var(--warning); font-weight: 600;">📅 Anchor</span>';
+          else if (isBreak) typeBadge = '<span style="color: #38bdf8; font-weight: 600;">☕ Break</span>';
 
           const top3Col = currentRequiresTop3
             ? `<td style="text-align: center; width: 45px;">
@@ -4366,15 +5120,18 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
           tableRowsHtml += `
             <tr data-index="${idx}">
               <td style="text-align: center; font-weight: 700; color: var(--text-muted); width: 28px;">${idx + 1}</td>
-              <td style="width: 75px;">${typeBadge}</td>
+              <td style="width: 80px;">${typeBadge}</td>
               ${top3Col}
-              <td style="min-width: 130px;">
+              <td style="min-width: 140px;">
                 <input type="text" class="review-input-name" data-index="${idx}" value="${escapeHtml(item.shortName)}" placeholder="Short Action Title" />
               </td>
-              <td style="width: 65px;">
-                <input type="number" class="review-input-dur" data-index="${idx}" value="${item.duration}" min="1" max="480" style="text-align: center;" />
+              <td style="width: 110px; min-width: 100px; text-align: center;">
+                <div class="dur-input-container">
+                  <input type="number" class="review-input-dur" data-index="${idx}" value="${item.duration}" min="1" max="720" />
+                  <span class="dur-unit-label">mins</span>
+                </div>
               </td>
-              <td style="width: 75px;">
+              <td style="width: 75px; text-align: center;">
                 <input type="text" class="review-input-time" data-index="${idx}" value="${escapeHtml(item.scheduledTime)}" placeholder="HH:MM" style="text-align: center;" />
               </td>
               <td style="min-width: 160px;">
@@ -4394,7 +5151,7 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
         const reviewHtml = `
           ${headerNotice}
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-            <span style="font-weight: 700; font-size: 0.95rem; color: #fff;">📋 Review Your Harvard Schedule</span>
+            <span style="font-weight: 700; font-size: 0.95rem; color: #fff;">📋 Review Your Schedule Table</span>
             ${badgeHtml}
           </div>
           ${contextNotice}
@@ -4403,10 +5160,10 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
               <thead>
                 <tr>
                   <th style="width: 28px; text-align: center;">#</th>
-                  <th style="width: 75px;">Type</th>
+                  <th style="width: 80px;">Type</th>
                   ${top3Header}
-                  <th style="min-width: 130px;">Short Task Title</th>
-                  <th style="width: 65px; text-align: center;">Mins</th>
+                  <th style="min-width: 140px;">Task Title</th>
+                  <th style="width: 110px; min-width: 100px; text-align: center;">Duration</th>
                   <th style="width: 75px; text-align: center;">Time</th>
                   <th style="min-width: 160px;">Notes / Context</th>
                   <th style="width: 84px; text-align: center;">Order / Del</th>
@@ -4422,7 +5179,7 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
             <button type="button" class="btn btn-emerald" id="confirmLoadScheduleBtn">Load Schedule into Cockpit ⏩</button>
           </div>
           <div style="margin-top: 10px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.45;">
-            💡 <strong>Reorder & Edit:</strong> You can interchange or move tasks using the <strong>▲ / ▼</strong> buttons, edit titles and durations directly in the table, or instruct ChatGPT below (e.g. <em>"move review to the top"</em>, <em>"swap task 1 and 3"</em>, <em>"add 10m stretch"</em>). When satisfied, click <strong>Load Schedule into Cockpit ⏩</strong>!
+            💡 <strong>Complete Flexibility:</strong> You can edit durations (large numbers like 100m+ are clearly displayed), rename tasks, reorder with <strong>▲ / ▼</strong>, or type natural language edits below (e.g. <em>"make task 1 120 mins"</em>, <em>"move review to top"</em>). When ready, click <strong>Load Schedule into Cockpit ⏩</strong>!
           </div>
         `;
 
@@ -4432,7 +5189,6 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
       }
 
       function bindReviewTableEvents() {
-        // Handle input changes
         document.querySelectorAll('.review-input-name').forEach(inp => {
           inp.addEventListener('input', (e) => {
             const idx = parseInt(e.target.dataset.index, 10);
@@ -4540,9 +5296,9 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
               id: pendingScheduleItems.length + 1,
               type: 'task',
               shortName: 'New Focus Task',
-              duration: 25,
+              duration: 30,
               scheduledTime: '',
-              notes: 'Added custom block',
+              notes: 'Added focus block',
               priority: null
             });
             if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
@@ -4572,7 +5328,7 @@ ${JSON.stringify(pendingScheduleItems)}
 STRICT REORDERING & EDITING INSTRUCTIONS:
 1. If the user asks to interchange, swap, move, or reorder tasks (e.g. "move review to the top", "swap task 1 and 3", "put vitamin D first"):
    Update the array order of "items" exactly as requested!
-2. If the user asks to modify durations, titles, or delete/add tasks, apply those changes.
+2. If the user asks to modify durations (including 100+ mins), titles, or delete/add tasks, apply those changes.
 3. Keep task names short (2–5 words).
 4. Preserve notes and start times.
 
@@ -4587,7 +5343,7 @@ Return ONLY a JSON object:
           const aiResult = await executeMultiTierAi(promptSystem, feedbackText);
           if (aiResult && aiResult.content) {
             const parsed = extractJsonFromText(aiResult.content);
-            processParsedSchedule(parsed, aiResult.engine);
+            processParsedSchedule(parsed, aiResult.engine, null, userRequestedBreaks);
             return;
           }
         } catch (e) {
@@ -4601,11 +5357,11 @@ Return ONLY a JSON object:
         if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
 
         const lower = feedback.toLowerCase();
-        // Check for minutes adjustment
-        const durMatch = lower.match(/(\d+)\s*(?:min|m)/i);
+        const durMatch = lower.match(/(\d+)\s*(?:min|m|hours|hour|hrs|hr|h)/i);
         if (durMatch) {
-          const newDur = parseInt(durMatch[1], 10);
-          // find task mentioned
+          let newDur = parseInt(durMatch[1], 10);
+          if (/hour|hr|h/i.test(durMatch[0]) && !/min/i.test(durMatch[0])) newDur *= 60;
+
           let matched = false;
           pendingScheduleItems.forEach(item => {
             const nameLower = item.shortName.toLowerCase();
@@ -4619,11 +5375,10 @@ Return ONLY a JSON object:
           }
         }
 
-        // Check if user wanted to add a task
         if (lower.includes('add')) {
           const addPhrase = feedback.replace(/.*add\s+/i, '').trim();
           if (addPhrase) {
-            let dur = 25;
+            let dur = 30;
             const dM = addPhrase.match(/(\d+)\s*(?:min|m)/i);
             if (dM) dur = parseInt(dM[1], 10);
             const cleanTitle = addPhrase.replace(/\b(?:for\s+)?\d+\s*(?:minutes|minute|mins|min|m)\b/i, '').trim();
@@ -4642,7 +5397,11 @@ Return ONLY a JSON object:
         renderInteractiveReview('Smart Local Engine', 'Schedule modified according to feedback.');
       }
 
-      function clientSideTimeboxerExtraction(input, warningMsg) {
+      function clientSideTimeboxerExtraction(input, allowBreaks, warningMsg) {
+        if (typeof allowBreaks === 'string' && !warningMsg) {
+          warningMsg = allowBreaks;
+          allowBreaks = false;
+        }
         if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
 
         const delimiters = /\n|;|•|\*|\d+\.\s+|(?<=[0-9a-zA-Z\)])\s*,\s*|\s+and\s+then\s+|\s+then\s+|\s+followed\s+by\s+|\s+after\s+that\s+/i;
@@ -4722,6 +5481,19 @@ Return ONLY a JSON object:
               notes: clause,
               priority: null
             });
+
+            // Insert restorative break ONLY if user explicitly opted in
+            if (allowBreaks && dur >= 45) {
+              items.push({
+                id: items.length + 1,
+                type: 'break',
+                shortName: '☕ Hydrate & Posture Reset',
+                duration: 5,
+                scheduledTime: '',
+                notes: 'Productivity recovery break',
+                priority: null
+              });
+            }
           }
         });
 
@@ -4972,15 +5744,16 @@ Return ONLY a JSON object:
         if (recordedResults.length === 0) return;
 
         const headers = [
-          "Routine", "Task Name", "Type", "Scheduled Anchor", "Actual Start Time",
-          "Actual End Time", "Target Duration (Secs)", "Time Added (Secs)",
-          "Actual Elapsed (Secs)", "Variance (Secs)", "Status"
+          "Routine", "Task Name", "Type", "Status", "Completion State", "Scheduled Anchor",
+          "Actual Start Time", "Actual End Time", "Target Duration (Secs)", "Time Added (Secs)",
+          "Actual Elapsed (Secs)", "Variance (Secs)"
         ];
 
         const rows = recordedResults.map(r => [
           `"${r.routine}"`, `"${r.taskName}"`, r.isAnchor ? '"Calendar Meeting"' : '"Fluid Flow"',
+          `"${r.status}"`, r.isCompleted !== false ? '"Completed"' : '"Incomplete / Rolled Over"',
           `"${r.scheduledStart}"`, `"${r.startTimeStr}"`, `"${r.endTimeStr}"`,
-          r.plannedSecs, r.extendedSecs, r.actualSecs, r.varianceSecs, `"${r.status}"`
+          r.plannedSecs, r.extendedSecs, r.actualSecs, r.varianceSecs
         ]);
 
         const csvString = [headers.join(','), ...rows.map(row => row.join(','))].join('\r\n');
@@ -5039,6 +5812,128 @@ Return ONLY a JSON object:
         parseCSVContent(SAMPLE_CSV);
       }
     })();
-  </script>
+  
+      // Refresh App Button Event
+      const refreshAppBtn = document.getElementById('refreshAppBtn');
+      if (refreshAppBtn) {
+        refreshAppBtn.addEventListener('click', () => {
+          if ('caches' in window) {
+            caches.keys().then(names => names.forEach(n => caches.delete(n))).catch(() => {});
+          }
+          window.location.reload(true);
+        });
+      }
+
+      const hardRefreshBtn = document.getElementById('hardRefreshBtn');
+      if (hardRefreshBtn) {
+        hardRefreshBtn.addEventListener('click', () => {
+          if ('caches' in window) {
+            caches.keys().then(names => names.forEach(n => caches.delete(n))).catch(() => {});
+          }
+          window.location.reload(true);
+        });
+      }
+
+      // Voice Input / Speech Recognition with LLM Entry
+      const voiceChatBtn = document.getElementById('voiceChatBtn');
+      const chatVoiceHint = document.getElementById('chatVoiceHint');
+      let speechRecognizer = null;
+      let isRecordingVoice = false;
+
+      function initVoiceRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return null;
+
+        const recognizer = new SpeechRecognition();
+        recognizer.continuous = true;
+        recognizer.interimResults = true;
+        recognizer.lang = 'en-US';
+
+        let finalTranscriptSoFar = '';
+
+        recognizer.onstart = function() {
+          isRecordingVoice = true;
+          if (voiceChatBtn) {
+            voiceChatBtn.classList.add('voice-active');
+            voiceChatBtn.innerHTML = '🔴 Listening... (Tap to Stop)';
+          }
+          if (chatVoiceHint) {
+            chatVoiceHint.innerHTML = '🎙️ <em>Listening to your speech... Say your tasks and durations (e.g. "Deep work 90 mins, Client call 30 mins").</em>';
+          }
+        };
+
+        recognizer.onresult = function(event) {
+          let interimTranscript = '';
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalTranscriptSoFar += event.results[i][0].transcript + ' ';
+            } else {
+              interimTranscript += event.results[i][0].transcript;
+            }
+          }
+          const currentText = (finalTranscriptSoFar + interimTranscript).trim();
+          if (chatInputField) {
+            chatInputField.value = currentText;
+            chatInputField.style.height = 'auto';
+            chatInputField.style.height = Math.min(chatInputField.scrollHeight, 350) + 'px';
+          }
+        };
+
+        recognizer.onerror = function(event) {
+          console.warn('Speech recognition error:', event.error);
+          stopVoiceRecognition();
+          if (event.error === 'not-allowed') {
+            alert('Microphone access was denied. Please allow microphone permissions in your browser to dictate tasks.');
+          }
+        };
+
+        recognizer.onend = function() {
+          stopVoiceRecognition();
+        };
+
+        return recognizer;
+      }
+
+      function stopVoiceRecognition() {
+        isRecordingVoice = false;
+        if (speechRecognizer) {
+          try { speechRecognizer.stop(); } catch (e) {}
+        }
+        if (voiceChatBtn) {
+          voiceChatBtn.classList.remove('voice-active');
+          voiceChatBtn.innerHTML = '🎙️ Voice Input';
+        }
+        if (chatVoiceHint) {
+          chatVoiceHint.innerHTML = 'Shift+Enter for newline • Enter or click Send to submit';
+        }
+      }
+
+      function toggleVoiceRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          alert('Voice input is not supported in this browser. Chrome, Safari, Edge, and iOS/Android support native speech recognition.');
+          return;
+        }
+
+        if (isRecordingVoice) {
+          stopVoiceRecognition();
+        } else {
+          try {
+            speechRecognizer = initVoiceRecognition();
+            if (speechRecognizer) {
+              speechRecognizer.start();
+            }
+          } catch (e) {
+            console.error('Failed to start voice recognition:', e);
+            stopVoiceRecognition();
+          }
+        }
+      }
+
+      if (voiceChatBtn) {
+        voiceChatBtn.addEventListener('click', toggleVoiceRecognition);
+      }
+
+    </script>
 </body>
 </html>

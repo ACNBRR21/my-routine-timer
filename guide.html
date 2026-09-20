@@ -138,10 +138,152 @@
     }
     .badge-anchor { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
     .badge-flow { background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid var(--accent); }
+  
+    /* Persistent Sticky Mini-Timer Bar */
+    .zen-sticky-bar {
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(19, 27, 46, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 10px 18px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+      flex-wrap: wrap;
+      gap: 12px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .zen-sticky-bar.alert-mode {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.15);
+      animation: alert-flash 1s infinite alternate ease-in-out;
+    }
+
+    .zen-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-ring 2s infinite;
+      flex-shrink: 0;
+    }
+
+    .zen-task-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 280px;
+    }
+
+    .zen-bar-center {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 1px;
+    }
+
+    .zen-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-nudge {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .btn-nudge:hover {
+      background: var(--accent);
+      color: #090d16;
+    }
+    .btn-warning { background-color: var(--warning); color: #090d16; font-weight: 700; border: none; }
+    .btn-warning:hover { background-color: #d97706; }
+    .btn-next { background-color: var(--danger); color: #fff; font-weight: 700; border: none; }
+    .btn-next:hover { background-color: #dc2626; }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+    }
+
+    @keyframes alert-flash {
+      0% { opacity: 1; transform: scale(1); text-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+      100% { opacity: 0.35; transform: scale(1.01); text-shadow: 0 0 25px rgba(239, 68, 68, 0.8); }
+    }
+
+    @media (max-width: 640px) {
+      .zen-sticky-bar {
+        padding: 8px 12px;
+        gap: 8px;
+        top: 6px;
+      }
+      .zen-bar-left {
+        max-width: 50%;
+      }
+      .zen-task-title {
+        max-width: 140px;
+        font-size: 0.82rem;
+      }
+      .zen-bar-center {
+        font-size: 1.25rem;
+      }
+      .zen-bar-right {
+        gap: 4px;
+      }
+      .zen-bar-right .btn, .zen-bar-right .nav-btn, .zen-bar-right .back-btn {
+        padding: 4px 8px !important;
+        font-size: 0.74rem !important;
+      }
+    }
+
   </style>
 </head>
 <body>
   <div class="guide-container">
+
+    <!-- Persistent Sticky Mini-Timer Bar (Synced with Live Cockpit Timer) -->
+    <div class="zen-sticky-bar" id="zenStickyBar">
+      <div class="zen-bar-left">
+        <span class="pulse-dot"></span>
+        <div>
+          <div class="zen-task-title" id="zenBarTaskTitle">Loading Active Task...</div>
+          <span style="font-size: 0.72rem; color: var(--text-muted);" id="zenBarRoutineName">Routine</span>
+        </div>
+      </div>
+      <div class="zen-bar-center" id="zenBarClock">00:00</div>
+      <div class="zen-bar-right">
+        <button type="button" class="btn btn-nudge add" id="zenBarAdd5Btn" title="Add 5 minutes to current task">+5m</button>
+        <button type="button" class="btn btn-warning btn-sm" id="zenBarPauseBtn">Start</button>
+        <button type="button" class="btn btn-next btn-sm" id="zenBarNextBtn">Next</button>
+        <a href="index.html" class="nav-btn" style="padding: 6px 12px; font-size: 0.82rem; background: var(--accent); color: #090d16; font-weight: 700; text-decoration: none;">&larr; Return to Cockpit</a>
+      </div>
+    </div>
+
     <header>
       <div>
         <h1>The Anchor & Flow Method</h1>
@@ -170,17 +312,20 @@
       <h2>2. Conversational Timeboxing with Multi-Tier AI (OpenAI & DeepSeek)</h2>
       <p>Instead of manual scheduling or cumbersome CSV spreadsheets, <strong>Anchor & Flow</strong> features a conversational AI assistant powered by OpenAI (Option 1) with an automatic DeepSeek fallback (Option 2).</p>
 
-      <h3>The 3-Step Harvard Timeboxing Flow:</h3>
+      <h3>Simple, Time-Aware AI Onboarding:</h3>
       <ol>
-        <li><strong>Step 1 — Brain Dump:</strong> Tap <em>"✨ Plan My Day"</em> and paste all your meetings and tasks. Whether planning a full day, an afternoon sprint, or an evening ritual, the AI anchors to your current wall-clock time.</li>
-        <li><strong>Step 2 — Set Top 3 Priorities:</strong> The assistant parses your meetings as Hard Anchors and organizes your personal work into labeled tasks (<code>[A]</code>, <code>[B]</code>, <code>[C]</code>). Simply reply with your top 3 needle-moving priorities.</li>
-        <li><strong>Step 3 — Timebox in Calendar Gaps:</strong> DeepSeek slots your Top 3 priorities into prime focus windows between immutable meetings, interleaving smaller tasks and ergonomic habits into remaining gaps.</li>
+        <li><strong>Time-Aware Day Planning:</strong> If it's before 12:00 PM, the assistant asks if you want to <em>"Plan the Day"</em>. If it's after 12:00 PM, it asks if you want to <em>"Plan the Rest of the Day"</em>. You are prompted: <em>"Please fill in all the tasks that you want to do, and with their analysis of what time they want."</em></li>
+        <li><strong>Productivity Guru Break Opt-In (Full User Control):</strong> The assistant asks <em>"Would you like me to fill in small breaks to enhance productivity?"</em> backed by science-based recovery quotes. By default, <strong>no breaks are inserted</strong> unless you explicitly choose to opt in.</li>
+        <li><strong>Next Few Tasks & Single Task Modes:</strong> Need a fast sprint or a single timer? Choose <em>"Simple Timer for Next Few Tasks"</em> (2–4 tasks) or <em>"Single Timer for a Single Task"</em> with one-tap duration pills and instant launch.</li>
+        <li><strong>Clear, Widened Duration Box:</strong> The review table features expanded duration boxes cleanly displaying durations of 100+ minutes (e.g. 120m, 180m, 240m) with full editing and reordering.</li>
       </ol>
     </section>
 <!-- Section 3: Timer Mechanics -->
     <section class="card">
       <h2>3. The Execution Engine in Practice</h2>
       <ul>
+        <li><strong>The "One-Second Reality Check" (🎯):</strong> Most timers assume that when 00:00 is reached, the task is finished. Anchor & Flow introduces a frictionless confirmation prompt: <em>"Did you finish this task?"</em> (<code>[✓ Completed]</code> vs <code>[↺ Incomplete]</code>).</li>
+        <li><strong>Rollover Memory & Queue (↺):</strong> If a task is marked incomplete, you can extend by <code>+5m</code>/<code>+10m</code> or park it. Parked tasks are saved into your private browser storage with remaining time calculated, and automatically offered as priority carryover in your next AI planning session.</li>
         <li><strong>60-Second Calming Pause (🧘):</strong> Rather than jolting from one task into the next, the timer introduces a mindful 60-second transition breather between flow tasks. You can extend it with <code>+1m</code> / <code>+5m</code> or begin your next task immediately when ready.</li>
         <li><strong>Open Buffer & Gap Filling (⚡):</strong> Finished early before a meeting? The cockpit enters a serene free time countdown and highlights upcoming smaller tasks from your routine that fit comfortably within the remaining minutes. Tapping any chip pulls it forward to execute immediately.</li>
         <li><strong>Anchor Auto-Convene & Preemption:</strong> Hard calendar meetings start punctually on their scheduled wall-clock minute with an Apple harmonic chime. Any running task is paused with an option to <strong>Resume After Meeting</strong> or mark <strong>No, Task is Finished</strong>.</li>
@@ -309,5 +454,222 @@ Evening Routine,Daily Debrief & Log,15,Wrap Up,,"Log completion metrics into Flo
     </section>
 
   </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY_ROUTINES = 'anchor_flow_routines_v3';
+      const STORAGE_KEY_ACTIVE = 'anchor_flow_active_running_v3';
+
+      const zenStickyBar = document.getElementById('zenStickyBar');
+      const zenBarTaskTitle = document.getElementById('zenBarTaskTitle');
+      const zenBarRoutineName = document.getElementById('zenBarRoutineName');
+      const zenBarClock = document.getElementById('zenBarClock');
+      const zenBarAdd5Btn = document.getElementById('zenBarAdd5Btn');
+      const zenBarPauseBtn = document.getElementById('zenBarPauseBtn');
+      const zenBarNextBtn = document.getElementById('zenBarNextBtn');
+
+      if (!zenStickyBar) return;
+
+      function formatMMSS(secs) {
+        secs = Math.max(0, Math.floor(secs));
+        const m = Math.floor(secs / 60);
+        const s = secs % 60;
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      }
+
+      function getActiveState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_ROUTINES);
+          if (!raw) return null;
+          const routines = JSON.parse(raw);
+          let activeName = localStorage.getItem(STORAGE_KEY_ACTIVE);
+          if (!activeName || !routines[activeName]) {
+            const keys = Object.keys(routines);
+            if (keys.length > 0) activeName = keys[0];
+            else return null;
+          }
+          return { routines, activeName, state: routines[activeName] };
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function saveState(data) {
+        try {
+          localStorage.setItem(STORAGE_KEY_ROUTINES, JSON.stringify(data.routines));
+          localStorage.setItem(STORAGE_KEY_ACTIVE, data.activeName);
+        } catch (e) {
+          console.warn('Could not save state:', e);
+        }
+      }
+
+      function syncTimerDisplay() {
+        const data = getActiveState();
+        if (!data || !data.state) {
+          zenBarTaskTitle.textContent = '⏱️ Timer Ready';
+          zenBarRoutineName.textContent = 'No Schedule Loaded';
+          zenBarClock.textContent = '00:00';
+          zenStickyBar.classList.remove('alert-mode');
+          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Start';
+          return;
+        }
+
+        const state = data.state;
+        const now = Date.now();
+        const lastTick = state.lastTickTime || now;
+        const elapsedSecs = Math.max(0, Math.floor((now - lastTick) / 1000));
+
+        // Advance live time if running
+        if (elapsedSecs >= 1 && (state.timerState === 'running' || state.timerState === 'calming_pause')) {
+          state.lastTickTime = now;
+          if (state.timerState === 'calming_pause') {
+            if (state.remainingSeconds > elapsedSecs) {
+              state.remainingSeconds -= elapsedSecs;
+            } else {
+              state.remainingSeconds = 0;
+            }
+          } else if (state.timerState === 'running') {
+            state.elapsedSeconds = (state.elapsedSeconds || 0) + elapsedSecs;
+            if (state.remainingSeconds > elapsedSecs) {
+              state.remainingSeconds -= elapsedSecs;
+            } else {
+              const extra = elapsedSecs - state.remainingSeconds;
+              state.remainingSeconds = 0;
+              state.timerState = 'alarm_overtime';
+              state.overtimeSeconds = (state.overtimeSeconds || 0) + extra;
+            }
+          }
+          saveState(data);
+        } else if (elapsedSecs >= 1 && state.timerState === 'alarm_overtime') {
+          state.lastTickTime = now;
+          state.elapsedSeconds = (state.elapsedSeconds || 0) + elapsedSecs;
+          state.overtimeSeconds = (state.overtimeSeconds || 0) + elapsedSecs;
+          saveState(data);
+        }
+
+        const currentTask = (state.tasks && state.actionableTaskIndices && state.actionableTaskIndices.length > 0 && state.currentActionableStep < state.actionableTaskIndices.length)
+          ? state.tasks[state.actionableTaskIndices[state.currentActionableStep]]
+          : null;
+
+        if (!currentTask) {
+          zenBarTaskTitle.textContent = state.timerState === 'completed' ? '🎉 Routine Completed' : 'No Active Task';
+          zenBarRoutineName.textContent = state.name || 'Routine';
+          zenBarClock.textContent = '00:00';
+          zenStickyBar.classList.remove('alert-mode');
+          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Start';
+          return;
+        }
+
+        if (state.timerState === 'calming_pause') {
+          zenBarTaskTitle.textContent = '🧘 Calming Pause';
+          zenBarRoutineName.textContent = state.name || 'Routine';
+          zenBarClock.textContent = formatMMSS(state.remainingSeconds || 0);
+          zenStickyBar.classList.remove('alert-mode');
+          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Skip Pause';
+          return;
+        }
+
+        if (state.timerState === 'free_time') {
+          zenBarTaskTitle.textContent = '🌿 Free Time Buffer';
+          zenBarRoutineName.textContent = state.name || 'Routine';
+          zenBarClock.textContent = formatMMSS(state.remainingSeconds || 0);
+          zenStickyBar.classList.remove('alert-mode');
+          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Pause';
+          return;
+        }
+
+        zenBarTaskTitle.textContent = currentTask.name;
+        zenBarRoutineName.textContent = state.name || 'Routine';
+
+        if (state.timerState === 'alarm_overtime') {
+          zenBarClock.textContent = `+${formatMMSS(state.overtimeSeconds || 0)}`;
+          zenStickyBar.classList.add('alert-mode');
+        } else {
+          zenBarClock.textContent = formatMMSS(state.remainingSeconds || 0);
+          zenStickyBar.classList.remove('alert-mode');
+        }
+
+        if (zenBarPauseBtn) {
+          zenBarPauseBtn.textContent = (state.timerState === 'running' || state.timerState === 'alarm_overtime') ? 'Pause' : 'Start';
+        }
+      }
+
+      if (zenBarAdd5Btn) {
+        zenBarAdd5Btn.addEventListener('click', () => {
+          const data = getActiveState();
+          if (!data || !data.state) return;
+          const state = data.state;
+          state.remainingSeconds = (state.remainingSeconds || 0) + 300;
+          state.extendedSeconds = (state.extendedSeconds || 0) + 300;
+          if (state.timerState === 'alarm_overtime') {
+            state.timerState = 'running';
+            state.overtimeSeconds = 0;
+          }
+          state.lastTickTime = Date.now();
+          saveState(data);
+          syncTimerDisplay();
+        });
+      }
+
+      if (zenBarPauseBtn) {
+        zenBarPauseBtn.addEventListener('click', () => {
+          const data = getActiveState();
+          if (!data || !data.state) return;
+          const state = data.state;
+          if (state.timerState === 'running' || state.timerState === 'alarm_overtime') {
+            state.timerState = 'paused';
+          } else {
+            state.timerState = 'running';
+          }
+          state.lastTickTime = Date.now();
+          saveState(data);
+          syncTimerDisplay();
+        });
+      }
+
+      if (zenBarNextBtn) {
+        zenBarNextBtn.addEventListener('click', () => {
+          const data = getActiveState();
+          if (!data || !data.state) return;
+          const state = data.state;
+          if (!state.actionableTaskIndices || state.actionableTaskIndices.length === 0) return;
+
+          const currTaskIdx = state.actionableTaskIndices[state.currentActionableStep];
+          if (state.tasks[currTaskIdx]) {
+            state.tasks[currTaskIdx].status = 'completed';
+          }
+
+          state.currentActionableStep = (state.currentActionableStep || 0) + 1;
+          if (state.currentActionableStep < state.actionableTaskIndices.length) {
+            const nextTaskIdx = state.actionableTaskIndices[state.currentActionableStep];
+            const nextTask = state.tasks[nextTaskIdx];
+            nextTask.status = 'active';
+            state.remainingSeconds = nextTask.durationSecs || 0;
+            state.overtimeSeconds = 0;
+            state.elapsedSeconds = 0;
+            state.extendedSeconds = 0;
+            state.timerState = 'running';
+          } else {
+            state.timerState = 'completed';
+            state.remainingSeconds = 0;
+            state.overtimeSeconds = 0;
+          }
+          state.lastTickTime = Date.now();
+          saveState(data);
+          syncTimerDisplay();
+        });
+      }
+
+      syncTimerDisplay();
+      setInterval(syncTimerDisplay, 1000);
+
+      window.addEventListener('storage', (e) => {
+        if (e.key === STORAGE_KEY_ROUTINES || e.key === STORAGE_KEY_ACTIVE) {
+          syncTimerDisplay();
+        }
+      });
+    })();
+  </script>
+
 </body>
 </html>
