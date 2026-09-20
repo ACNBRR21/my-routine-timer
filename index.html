@@ -2002,19 +2002,20 @@ Evening Routine,Daily Debrief & Log,15,Wrap Up,,"Log completion metrics into Flo
   </div>
 
     <!-- Task Completion Verification Modal (Apple-style Reality Check) -->
-  <div class="modal-overlay" id="completionCheckModal" style="display: none;">
-    <div class="modal-dialog" style="max-width: 440px; text-align: center; padding: 24px; border-radius: 14px;">
+  <div class="modal-overlay" id="completionCheckModal" style="display: none; z-index: 3000;">
+    <div class="modal-dialog" style="max-width: 440px; text-align: center; padding: 24px; border-radius: 14px; position: relative;">
+      <button type="button" class="btn-icon-close" id="closeCompletionModalBtn" onclick="closeTaskCompletionPrompt()" style="position: absolute; top: 12px; right: 14px; font-size: 1.1rem; cursor: pointer;" title="Close">✕</button>
       <div style="font-size: 2.2rem; margin-bottom: 8px;">🎯</div>
       <h3 style="font-size: 1.25rem; color: #fff; margin-bottom: 6px;">Did you finish this task?</h3>
       <div style="font-size: 0.95rem; font-weight: 700; color: var(--accent); margin-bottom: 12px;" id="completionModalTaskName">Task Name</div>
       <div style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 20px;" id="completionModalTimeDetails">Planned: 30m • Actual: 28m</div>
 
       <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button type="button" class="btn btn-emerald" id="btnTaskFinishedYes" style="padding: 12px; font-weight: 700; font-size: 0.95rem;">
+        <button type="button" class="btn btn-emerald" id="btnTaskFinishedYes" onclick="handleTaskFinishedYes()" style="padding: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer;">
           ✓ Yes, Completed (Press Enter)
         </button>
 
-        <button type="button" class="btn btn-outline" id="btnTaskFinishedNo" style="padding: 10px; font-weight: 600; color: var(--warning); border-color: rgba(245, 158, 11, 0.4);">
+        <button type="button" class="btn btn-outline" id="btnTaskFinishedNo" onclick="handleTaskFinishedNo()" style="padding: 10px; font-weight: 600; color: var(--warning); border-color: rgba(245, 158, 11, 0.4); cursor: pointer;">
           ↺ Incomplete / In Progress
         </button>
       </div>
@@ -2023,10 +2024,10 @@ Evening Routine,Daily Debrief & Log,15,Wrap Up,,"Log completion metrics into Flo
       <div id="incompleteOptionsBox" style="display: none; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border); text-align: left;">
         <div style="font-size: 0.84rem; color: #fff; font-weight: 600; margin-bottom: 8px;">What would you like to do?</div>
         <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
-          <button type="button" class="btn btn-primary btn-sm" id="btnExtend5mNow">+5m More Now</button>
-          <button type="button" class="btn btn-primary btn-sm" id="btnExtend10mNow">+10m More Now</button>
+          <button type="button" class="btn btn-primary btn-sm" id="btnExtend5mNow" onclick="handleExtendTask(300)" style="cursor: pointer;">+5m More Now</button>
+          <button type="button" class="btn btn-primary btn-sm" id="btnExtend10mNow" onclick="handleExtendTask(600)" style="cursor: pointer;">+10m More Now</button>
         </div>
-        <button type="button" class="btn btn-outline btn-sm" id="btnParkAndRollover" style="width: 100%; color: var(--warning); border-color: var(--warning); font-weight: 700; padding: 8px 12px;">
+        <button type="button" class="btn btn-outline btn-sm" id="btnParkAndRollover" onclick="handleParkAndRollover()" style="width: 100%; color: var(--warning); border-color: var(--warning); font-weight: 700; padding: 8px 12px; cursor: pointer;">
           📦 Park & Save to Rollover Memory &rarr;
         </button>
         <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
@@ -3814,6 +3815,7 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         const taskNameElem = document.getElementById('completionModalTaskName');
         const timeDetailsElem = document.getElementById('completionModalTimeDetails');
         const incompleteBox = document.getElementById('incompleteOptionsBox');
+        const btnYes = document.getElementById('btnTaskFinishedYes');
 
         if (taskNameElem) taskNameElem.textContent = task.name;
         if (incompleteBox) incompleteBox.style.display = 'none';
@@ -3827,7 +3829,10 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           timeDetailsElem.textContent = `Planned: ${plannedMins}m${extStr} • Actual elapsed: ${actualMins}m`;
         }
 
-        modal.style.display = 'flex';
+        if (modal) {
+          modal.style.display = 'flex';
+          if (btnYes) setTimeout(() => btnYes.focus(), 50);
+        }
         isolateInputsForModal(true);
       }
 
@@ -3837,6 +3842,35 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         isolateInputsForModal(false);
         pendingVerificationState = null;
       }
+
+      // Handlers exposed to window for inline onclick and bound listeners
+      window.closeTaskCompletionPrompt = closeTaskCompletionPrompt;
+
+      window.handleTaskFinishedYes = function() {
+        const state = pendingVerificationState || routineStates.get(activeRunningRoutine || currentViewedRoutine);
+        if (state) {
+          finalizeTaskAdvance(state, true, pendingVerificationIsEarly);
+        }
+        closeTaskCompletionPrompt();
+      };
+
+      window.handleTaskFinishedNo = function() {
+        const box = document.getElementById('incompleteOptionsBox');
+        if (box) box.style.display = 'block';
+      };
+
+      window.handleExtendTask = function(secs) {
+        addTimeToCurrentTask(secs);
+        closeTaskCompletionPrompt();
+      };
+
+      window.handleParkAndRollover = function() {
+        const state = pendingVerificationState || routineStates.get(activeRunningRoutine || currentViewedRoutine);
+        if (state) {
+          finalizeTaskAdvance(state, false, pendingVerificationIsEarly);
+        }
+        closeTaskCompletionPrompt();
+      };
 
       function finalizeTaskAdvance(state, isCompleted, wasEarly) {
         if (!state || state.currentActionableStep >= state.actionableTaskIndices.length) return;
@@ -5933,6 +5967,44 @@ Return ONLY a JSON object:
       if (voiceChatBtn) {
         voiceChatBtn.addEventListener('click', toggleVoiceRecognition);
       }
+
+    
+      // Task Completion Modal Event Listeners (DOM binding + Keyboard + Backdrop click)
+      const btnFinishedYes = document.getElementById('btnTaskFinishedYes');
+      const btnFinishedNo = document.getElementById('btnTaskFinishedNo');
+      const btnExt5m = document.getElementById('btnExtend5mNow');
+      const btnExt10m = document.getElementById('btnExtend10mNow');
+      const btnParkRoll = document.getElementById('btnParkAndRollover');
+      const btnCloseCompModal = document.getElementById('closeCompletionModalBtn');
+      const compModalOverlay = document.getElementById('completionCheckModal');
+
+      if (btnFinishedYes) btnFinishedYes.addEventListener('click', window.handleTaskFinishedYes);
+      if (btnFinishedNo) btnFinishedNo.addEventListener('click', window.handleTaskFinishedNo);
+      if (btnExt5m) btnExt5m.addEventListener('click', () => window.handleExtendTask(300));
+      if (btnExt10m) btnExt10m.addEventListener('click', () => window.handleExtendTask(600));
+      if (btnParkRoll) btnParkRoll.addEventListener('click', window.handleParkAndRollover);
+      if (btnCloseCompModal) btnCloseCompModal.addEventListener('click', window.closeTaskCompletionPrompt);
+
+      if (compModalOverlay) {
+        compModalOverlay.addEventListener('click', (e) => {
+          if (e.target === compModalOverlay) {
+            window.closeTaskCompletionPrompt();
+          }
+        });
+      }
+
+      window.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('completionCheckModal');
+        if (modal && modal.style.display === 'flex') {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            window.handleTaskFinishedYes();
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            window.closeTaskCompletionPrompt();
+          }
+        }
+      });
 
     </script>
 </body>
