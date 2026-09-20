@@ -1621,6 +1621,58 @@
       color: var(--danger);
     }
 
+  
+    /* Gemini Chat Style Voice Bar & Multi-Colored Waves */
+    .gemini-voice-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 10px 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25);
+      animation: modal-pop 0.2s ease-out;
+    }
+    .gemini-wave-animation {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 22px;
+    }
+    .gemini-bar {
+      width: 4px;
+      border-radius: 4px;
+      animation: gemini-sound-wave 0.9s ease-in-out infinite alternate;
+    }
+    .g-bar-1 { height: 16px; animation-delay: 0.1s; background: #38bdf8; }
+    .g-bar-2 { height: 22px; animation-delay: 0.3s; background: #818cf8; }
+    .g-bar-3 { height: 14px; animation-delay: 0.2s; background: #34d399; }
+    .g-bar-4 { height: 18px; animation-delay: 0.4s; background: #fbbf24; }
+
+    @keyframes gemini-sound-wave {
+      0% { transform: scaleY(0.3); opacity: 0.6; }
+      100% { transform: scaleY(1.4); opacity: 1; }
+    }
+
+    .gemini-voice-status {
+      flex: 1;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 500;
+    }
+    .voice-active-pill {
+      background: rgba(239, 68, 68, 0.25) !important;
+      border-color: var(--danger) !important;
+      color: #fca5a5 !important;
+      animation: alert-flash 1s infinite alternate ease-in-out;
+    }
+
   </style>
 </head>
 <body>
@@ -1633,7 +1685,7 @@
       </div>
       <div class="header-controls" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" class="btn btn-primary" id="openPlannerChatBtn">✦ Plan My Day</button>
-        <button type="button" class="btn btn-primary btn-sm btn-flow-guru" id="openFlowGuruBtn">✦ Flow Guru</button>
+        <button type="button" class="btn btn-primary btn-sm btn-flow-guru" id="openFlowGuruBtn" onclick="openFlowGuru()" style="cursor: pointer;">✦ Flow Guru</button>
         <a href="csv-tools.html" class="btn btn-outline btn-sm" style="text-decoration: none;" id="uploadCsvNavBtn">Upload CSV of tasks</a>
         <button type="button" class="btn btn-outline btn-sm" id="navGuideBtn">📖 Guide</button>
         <button type="button" class="btn-icon-settings" id="refreshAppBtn" title="Refresh & Reload Latest Version">🔄</button>
@@ -1781,7 +1833,7 @@
             <div style="display: flex; gap: 8px; align-items: center;">
               <span class="pacing-badge" id="pacingBadge">Velocity: 1.0x</span>
               <button type="button" class="btn btn-outline" id="exportCsvBtn" style="padding: 6px 12px; font-size: 0.8rem; min-height: 36px;" disabled>Export CSV</button>
-              <button type="button" class="btn btn-primary btn-sm btn-flow-guru" id="lowerFlowGuruBtn" style="padding: 6px 12px; font-size: 0.8rem; min-height: 36px;">✦ Flow Guru</button>
+              <button type="button" class="btn btn-primary btn-sm btn-flow-guru" id="lowerFlowGuruBtn" onclick="openFlowGuru()" style="padding: 6px 12px; font-size: 0.8rem; min-height: 36px; cursor: pointer;">✦ Flow Guru</button>
             </div>
           </div>
           <div class="table-container">
@@ -1988,12 +2040,29 @@ Evening Routine,Daily Debrief & Log,15,Wrap Up,,"Log completion metrics into Flo
         <button type="button" class="btn-icon-close" id="closeChatModalBtn">✕</button>
       </div>
       <div class="chat-body" id="chatBody"></div>
-      <div class="chat-input-row">
+            <div class="chat-input-row">
+        <!-- Gemini-Style Voice Waveform Bar (Visible while listening) -->
+        <div class="gemini-voice-bar" id="geminiVoiceBar" style="display: none;">
+          <div class="gemini-wave-animation">
+            <span class="gemini-bar g-bar-1"></span>
+            <span class="gemini-bar g-bar-2"></span>
+            <span class="gemini-bar g-bar-3"></span>
+            <span class="gemini-bar g-bar-4"></span>
+          </div>
+          <div class="gemini-voice-status" id="geminiVoiceStatus">
+            Listening... Speak your tasks (e.g., "Deep Work 90m, Standup at 11:30")
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button type="button" class="btn btn-warning btn-sm" id="btnGeminiStopVoice" onclick="stopVoiceDictation()" style="padding: 4px 12px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">
+              ⏹️ Stop
+            </button>
+          </div>
+        </div>
         <textarea class="chat-textarea" id="chatInputField" rows="6" enterkeyhint="send" autocomplete="off" autocapitalize="sentences" spellcheck="true" placeholder="Type or paste your plans, meetings, habits, and tasks here... (e.g. 'drink water for 5 mins, review for 15 mins, vitamin D for 5 mins, client call at 14:30'). You can paste multi-line schedules!"></textarea>
         <div class="chat-controls-row">
           <div class="chat-hint" id="chatVoiceHint">Shift+Enter for newline • Enter or click Send to submit</div>
           <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <button type="button" class="btn btn-outline" id="voiceChatBtn" onclick="toggleVoiceRecognition()" title="Dictate tasks using voice recognition" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; padding: 7px 14px; cursor: pointer;">🎙️ Voice Input</button>
+            <button type="button" class="btn btn-outline" id="voiceChatBtn" onclick="toggleVoiceDictation(event)" title="Dictate tasks using voice recognition" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; padding: 7px 14px; cursor: pointer;">🎙️ Voice Input</button>
             <button type="button" class="btn btn-primary" id="sendChatBtn" onclick="handleChatSend()" style="cursor: pointer;">Send ➔</button>
           </div>
         </div>
@@ -4679,9 +4748,28 @@ Format as JSON:
           }
         }
 
-        const dayTitle = isBeforeNoon ? 'Plan the Day' : 'Plan the Rest of the Day';
-        const dayBadge = isBeforeNoon ? '🌅 Morning Focus' : '🕒 Afternoon Focus';
-        const dayDesc = isBeforeNoon ? 'Map out your full day, calendar anchors, and focus blocks.' : 'Plan the remaining hours of your day, afternoon priorities, and wrap-up.';
+        const hour = now.getHours();
+        let dayTitle = 'Plan the Day';
+        let dayBadge = '🌅 Morning Focus';
+        let dayDesc = 'Map out your full day, calendar anchors, and focus blocks.';
+
+        if (hour < 12) {
+          dayTitle = 'Plan the Day';
+          dayBadge = '🌅 Morning Focus';
+          dayDesc = 'Map out your full day, calendar anchors, and focus blocks.';
+        } else if (hour < 17) {
+          dayTitle = 'Plan the Rest of the Day';
+          dayBadge = '☀️ Afternoon Focus';
+          dayDesc = 'Plan your afternoon priorities, meetings, and remaining hours.';
+        } else if (hour < 21) {
+          dayTitle = 'Plan the Rest of the Day';
+          dayBadge = '🌆 Evening Focus';
+          dayDesc = 'Plan your evening focus blocks, wrap-up tasks, and dinner routines.';
+        } else {
+          dayTitle = 'Plan the Rest of the Day';
+          dayBadge = '🌙 Night Focus';
+          dayDesc = 'Plan your late-night focus sprint or end-of-day wrap-up.';
+        }
 
         const rolloverItems = getRolloverQueue();
         let rolloverBannerHtml = '';
@@ -4697,10 +4785,10 @@ Format as JSON:
                     ${rolloverItems.map(it => `&bull; <strong>${escapeHtml(it.name)}</strong> (~${it.remainingEstMins}m remaining, ${it.actualSpentMins}m spent)`).join('<br/>')}
                   </div>
                 </div>
-                <button type="button" class="btn-clear-rollover" id="dismissRolloverBtn" title="Dismiss rollover tasks">✕</button>
+                <button type="button" class="btn-clear-rollover" id="dismissRolloverBtn" onclick="handleDismissRollover()" title="Dismiss rollover tasks" style="cursor: pointer;">✕</button>
               </div>
               <div style="margin-top: 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                <button type="button" class="btn btn-warning btn-sm" id="btnAdoptRollover" style="font-weight: 700; font-size: 0.82rem;">
+                <button type="button" class="btn btn-warning btn-sm" id="btnAdoptRollover" onclick="handleAdoptRollover()" style="font-weight: 700; font-size: 0.82rem; cursor: pointer;">
                   + Add Rollover Tasks to Today's Plan
                 </button>
                 <span style="font-size: 0.74rem; color: var(--text-muted);">Pre-populates unfinished work into your schedule.</span>
@@ -4785,7 +4873,8 @@ Format as JSON:
         const isBeforeNoon = now.getHours() < 12;
 
         if (mode === 'day') {
-          const modeTitle = isBeforeNoon ? '🌅 Plan the Day' : '🕒 Plan the Rest of the Day';
+          const hour = now.getHours();
+          const modeTitle = hour < 12 ? '🌅 Plan the Day' : (hour < 17 ? '☀️ Plan the Rest of the Day' : (hour < 21 ? '🌆 Plan the Rest of the Day' : '🌙 Plan the Rest of the Day'));
           appendChatBubble('user', modeTitle);
 
           const quote = getRandomGuruQuote();
@@ -4957,7 +5046,7 @@ Format as JSON:
       }
 
       function closePlannerChat() {
-        stopVoiceRecognition();
+        stopVoiceDictation();
         isolateInputsForModal(false);
         plannerChatModal.style.display = 'none';
       }
@@ -5155,8 +5244,13 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
             🎯 <strong>Harvard Priority Selection:</strong> Select your <strong>Top 3 most critical priorities</strong> using the checkboxes below.
           </div>`;
         } else {
+          let timePeriodName = 'morning session';
+          if (currentHour >= 12 && currentHour < 17) timePeriodName = 'afternoon session';
+          else if (currentHour >= 17 && currentHour < 21) timePeriodName = 'evening session';
+          else if (currentHour >= 21) timePeriodName = 'night focus session';
+
           const reason = currentHour >= 12
-            ? `Current local time is <strong>${timeStr}</strong> (afternoon mode).`
+            ? `Current local time is <strong>${timeStr}</strong> (${timePeriodName}).`
             : `Planning a focused block of <strong>${pendingScheduleItems.length} tasks</strong>.`;
           contextNotice = `<div style="margin: 8px 0; font-size: 0.86rem; color: var(--accent);">
             ⚡ <strong>Direct Flow Schedule:</strong> ${reason} Tasks arranged in immediate execution order!
@@ -5894,12 +5988,18 @@ Return ONLY a JSON object:
         });
       }
 
-      // Voice Input / Speech Recognition with LLM Entry (Robust Multi-Platform)
+      // Voice Input / Speech Recognition with LLM Entry (Gemini Chat Style)
       const voiceChatBtn = document.getElementById('voiceChatBtn');
+      const geminiVoiceBar = document.getElementById('geminiVoiceBar');
+      const geminiVoiceStatus = document.getElementById('geminiVoiceStatus');
+      const btnGeminiStopVoice = document.getElementById('btnGeminiStopVoice');
       const chatVoiceHint = document.getElementById('chatVoiceHint');
+
       let speechRecognizer = null;
       let isRecordingVoice = false;
       let voiceBaseText = '';
+      let isVoiceToggling = false;
+      let activeMediaStream = null;
 
       function isMobileOrSafari() {
         const ua = navigator.userAgent;
@@ -5923,11 +6023,17 @@ Return ONLY a JSON object:
           isRecordingVoice = true;
           voiceBaseText = chatInputField.value ? chatInputField.value.trim() + '\n' : '';
           if (voiceChatBtn) {
-            voiceChatBtn.classList.add('voice-active');
-            voiceChatBtn.innerHTML = '🔴 Listening... (Tap to Stop)';
+            voiceChatBtn.classList.add('voice-active-pill');
+            voiceChatBtn.innerHTML = '⏹️ Stop Dictation';
+          }
+          if (geminiVoiceBar) {
+            geminiVoiceBar.style.display = 'flex';
+          }
+          if (geminiVoiceStatus) {
+            geminiVoiceStatus.textContent = 'Listening... Speak your agenda and durations';
           }
           if (chatVoiceHint) {
-            chatVoiceHint.innerHTML = '🎙️ <em>Listening... Speak your tasks (e.g. "Deep Work 90m, Team Sync at 11:30, Review 45m").</em>';
+            chatVoiceHint.innerHTML = '🎙️ <em>Listening... Tap ⏹️ Stop or press Enter when done speaking.</em>';
           }
         };
 
@@ -5946,23 +6052,25 @@ Return ONLY a JSON object:
             chatInputField.style.height = 'auto';
             chatInputField.style.height = Math.min(chatInputField.scrollHeight, 350) + 'px';
           }
+          if (geminiVoiceStatus && spoken) {
+            geminiVoiceStatus.textContent = 'Transcribing: ' + spoken;
+          }
         };
 
         recognizer.onerror = function(event) {
           console.warn('Speech recognition notice:', event.error);
           if (event.error === 'no-speech') {
-            // User paused speaking; do not abort prematurely
             return;
           }
           if (event.error === 'not-allowed' || event.error === 'permission-denied') {
-            stopVoiceRecognition();
-            alert('Microphone access was denied. Please allow microphone permissions in your browser address bar to dictate tasks.');
+            stopVoiceDictation();
+            alert('Microphone access was denied. Please allow microphone access in your browser address bar.');
             return;
           }
           if (event.error === 'aborted' && isRecordingVoice) {
             return;
           }
-          stopVoiceRecognition();
+          stopVoiceDictation();
         };
 
         recognizer.onend = function() {
@@ -5972,19 +6080,34 @@ Return ONLY a JSON object:
               return;
             } catch (e) {}
           }
-          stopVoiceRecognition();
+          stopVoiceDictation();
         };
 
         return recognizer;
       }
 
-      function stopVoiceRecognition() {
+      function stopVoiceDictation() {
         isRecordingVoice = false;
         if (speechRecognizer) {
-          try { speechRecognizer.stop(); } catch (e) {}
+          try {
+            speechRecognizer.abort();
+            speechRecognizer.stop();
+          } catch (e) {}
+          speechRecognizer = null;
+        }
+
+        if (activeMediaStream) {
+          try {
+            activeMediaStream.getTracks().forEach(t => t.stop());
+          } catch (e) {}
+          activeMediaStream = null;
+        }
+
+        if (geminiVoiceBar) {
+          geminiVoiceBar.style.display = 'none';
         }
         if (voiceChatBtn) {
-          voiceChatBtn.classList.remove('voice-active');
+          voiceChatBtn.classList.remove('voice-active-pill');
           voiceChatBtn.innerHTML = '🎙️ Voice Input';
         }
         if (chatVoiceHint) {
@@ -5992,46 +6115,58 @@ Return ONLY a JSON object:
         }
       }
 
-      async function toggleVoiceRecognition() {
+      async function startVoiceDictation() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
           alert('Voice input is not supported in this browser. Chrome, Safari (macOS & iOS), Edge, and Android support native voice dictation.');
           return;
         }
 
-        if (isRecordingVoice) {
-          stopVoiceRecognition();
-        } else {
-          // Pre-request microphone permission on first click to prevent premature timeout
-          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            try {
-              const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-              stream.getTracks().forEach(t => t.stop());
-            } catch (permErr) {
-              console.warn('Mic permission error:', permErr);
-              if (permErr.name === 'NotAllowedError' || permErr.name === 'PermissionDeniedError') {
-                alert('Microphone access was denied. Please allow microphone permissions in your browser to dictate tasks.');
-                return;
-              }
-            }
-          }
-
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
           try {
-            speechRecognizer = initVoiceRecognition();
-            if (speechRecognizer) {
-              speechRecognizer.start();
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            activeMediaStream = stream;
+          } catch (permErr) {
+            console.warn('Mic permission error:', permErr);
+            if (permErr.name === 'NotAllowedError' || permErr.name === 'PermissionDeniedError') {
+              alert('Microphone access was denied. Please allow microphone permissions in your browser address bar.');
+              return;
             }
-          } catch (e) {
-            console.error('Failed to start voice recognition:', e);
-            stopVoiceRecognition();
           }
+        }
+
+        try {
+          speechRecognizer = initVoiceRecognition();
+          if (speechRecognizer) {
+            speechRecognizer.start();
+          }
+        } catch (e) {
+          console.error('Failed to start speech recognition:', e);
+          stopVoiceDictation();
         }
       }
 
-      window.toggleVoiceRecognition = toggleVoiceRecognition;
-      if (voiceChatBtn) {
-        voiceChatBtn.addEventListener('click', toggleVoiceRecognition);
+      function toggleVoiceDictation(e) {
+        if (e) {
+          if (e.preventDefault) e.preventDefault();
+          if (e.stopPropagation) e.stopPropagation();
+        }
+        if (isVoiceToggling) return;
+        isVoiceToggling = true;
+        setTimeout(() => { isVoiceToggling = false; }, 350);
+
+        if (isRecordingVoice) {
+          stopVoiceDictation();
+        } else {
+          startVoiceDictation();
+        }
       }
+
+      window.startVoiceDictation = startVoiceDictation;
+      window.stopVoiceDictation = stopVoiceDictation;
+      window.toggleVoiceDictation = toggleVoiceDictation;
+      window.toggleVoiceRecognition = toggleVoiceDictation; // alias
+      window.stopVoiceRecognition = stopVoiceDictation; // alias
 
     
       // Task Completion Modal Event Listeners (DOM binding + Keyboard + Backdrop click)
@@ -6070,6 +6205,25 @@ Return ONLY a JSON object:
           }
         }
       });
+
+    
+      window.openFlowGuru = openFlowGuru;
+      window.handleAdoptRollover = function() {
+        selectPlannerMode('day');
+        const rolloverItems = getRolloverQueue();
+        if (rolloverItems && rolloverItems.length > 0) {
+          const lines = rolloverItems.map(it => `[Rollover] ${it.name} ${it.remainingEstMins}m`);
+          chatInputField.value = lines.join('\n') + '\n' + chatInputField.value;
+          chatInputField.style.height = 'auto';
+          chatInputField.style.height = Math.min(chatInputField.scrollHeight, 350) + 'px';
+          chatInputField.focus();
+        }
+      };
+      window.handleDismissRollover = function() {
+        clearRolloverQueue();
+        const b = document.getElementById('rolloverBanner');
+        if (b) b.remove();
+      };
 
     </script>
 </body>

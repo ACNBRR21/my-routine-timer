@@ -41,7 +41,7 @@ Most time management and Pomodoro timers suffer from two fatal design assumption
   * **Next Few Tasks:** Rapid sprint sequence for 2–4 tasks.
   * **Single Task Timer:** Instant one-tap countdown for a single task with duration pills (`15m`, `25m`, `30m`, `45m`, `60m`, `90m`, `120m`).
 * **Productivity Guru Break Opt-In (100% User Control):** The AI asks *"Would you like me to fill in small breaks to enhance productivity?"* backed by research quotes (Dr. Andrew Huberman, ultradian rhythm science). By default, **no breaks are inserted** unless you explicitly check the box.
-* **🎙️ Voice Chat Dictation:** Tap **🎙️ Voice Input** to speak your schedule directly into the enlarged text box using the browser's native Web Speech API. Free, zero setup, and completely private.
+* **🎙️ Gemini Chat-Style Voice Dictation:** Tap **🎙️ Voice Input** to speak your schedule directly into the enlarged text box using the browser's native Web Speech API. Features an animated multi-colored sound wave bar with clear live transcription and reliable **⏹️ Stop** controls that immediately terminate microphone recording tracks. Free, zero setup, and completely private.
 
 ### C. Clear, Widened Task Review Table
 * **Expanded Duration Inputs:** The duration column accommodates **100+ minute** sessions (e.g. `120 mins`, `180 mins`, `240 mins`) with zero visual cramping, clean monospace formatting, and a clear `mins` label.
