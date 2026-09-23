@@ -47,10 +47,11 @@ Most time management and Pomodoro timers suffer from two fatal design assumption
 * **Expanded Duration Inputs:** The duration column accommodates **100+ minute** sessions (e.g. `120 mins`, `180 mins`, `240 mins`) with zero visual cramping, clean monospace formatting, and a clear `mins` label.
 * **Full Reordering & Editing:** Reorder with `▲` / `▼`, delete, edit titles/durations, or instruct the AI naturally (*"make task 1 90 mins"*, *"move review to top"*).
 
-### D. Multi-Tier AI Architecture (OpenAI, DeepSeek & Zero-Setup Local)
-1. **Option 1 (Primary):** OpenAI (`gpt-4o-mini` / `gpt-4o`).
-2. **Option 2 (Fallback):** DeepSeek (`deepseek-chat`).
-3. **Option 3 (100% Offline Local):** Built-in client-side NLP rule engine that parses natural language and timeboxing without external API keys.
+### D. Multi-Tier AI Architecture & DeepSeek Integration
+1. **DeepSeek (`deepseek-chat`) — Recommended Primary Engine:** Prioritized as the primary model for strict chronological sequence parsing. It enforces a strict **Zero-Clubbing Mandate**, ensuring spoken micro-habits (e.g. *"brushing teeth, drinking water, doing yoga, visualization before sleep"*) are never lumped into a generic umbrella routine, but created as discrete sequential timer milestones with accurate micro-durations.
+2. **OpenAI (`gpt-4o-mini` / `gpt-4o`):** Available as primary or automatic fallback with prompt-level zero-grouping constraints.
+3. **100% Offline Local NLP Engine:** Built-in client-side parser with advanced multi-stage natural language segmentation that isolates spoken action verbs and assigns realistic habit durations with zero internet required.
+4. **Customizable in Settings:** Choose your preferred primary model directly in the **⚙️ Settings** modal.
 
 ### E. Execution Auditing & CSV Export
 * Pacing velocity multiplier (`Actual Elapsed / Target Duration`).

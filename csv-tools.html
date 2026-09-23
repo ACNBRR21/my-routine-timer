@@ -112,7 +112,24 @@
     }
     .btn-primary { background: var(--accent); color: #090d16; }
     .btn-primary:hover { background: var(--accent-hover); }
-    .btn-emerald { background: var(--success); color: #090d16; font-weight: 700; }
+    .btn-emerald {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+      background-color: #047857 !important;
+      color: #ffffff !important;
+      font-weight: 800 !important;
+      border: 1px solid #10b981 !important;
+      border-radius: 8px !important;
+      box-shadow: 0 4px 14px rgba(4, 120, 87, 0.45) !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+      cursor: pointer !important;
+    }
+    .btn-emerald:hover {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      background-color: #059669 !important;
+      color: #ffffff !important;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.55) !important;
+      transform: translateY(-1px);
+    }
     .btn-outline { background: transparent; border-color: var(--border); color: var(--text-main); }
     .btn-outline:hover { background: var(--border); }
 
@@ -381,7 +398,7 @@
 
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
         <span id="importStatus" style="font-size: 0.85rem; color: var(--accent);"></span>
-        <button type="button" class="btn btn-emerald" id="commitToCockpitBtn">
+        <button type="button" class="btn btn-emerald" id="commitToCockpitBtn" style="padding: 12px 24px; font-weight: 800; font-size: 0.95rem; background: linear-gradient(135deg, #059669, #047857) !important; background-color: #047857 !important; color: #ffffff !important; border: 1px solid #10b981 !important; border-radius: 8px !important; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.45) !important; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important; cursor: pointer;">
           Commit to Cockpit & Start ⏩
         </button>
       </div>
@@ -567,6 +584,219 @@ Evening Routine,Daily Debrief & Log,15,Wrap Up,,"Log completion metrics into Flo
       result.push(current);
       return result;
     }
+  
+    // Sticky Zen Mini-Timer Bar Real-Time Synchronization & Controls
+    (function initStickyTimer() {
+      const zenStickyBar = document.getElementById('zenStickyBar');
+      const zenBarTaskTitle = document.getElementById('zenBarTaskTitle');
+      const zenBarRoutineName = document.getElementById('zenBarRoutineName');
+      const zenBarClock = document.getElementById('zenBarClock');
+      const zenBarAdd5Btn = document.getElementById('zenBarAdd5Btn');
+      const zenBarPauseBtn = document.getElementById('zenBarPauseBtn');
+      const zenBarNextBtn = document.getElementById('zenBarNextBtn');
+
+      if (!zenStickyBar) return;
+
+      function formatMMSS(secs) {
+        secs = Math.max(0, Math.floor(secs));
+        const m = Math.floor(secs / 60);
+        const s = secs % 60;
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      }
+
+      function getActiveState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_ROUTINES);
+          if (!raw) return null;
+          const routines = JSON.parse(raw);
+          let activeName = localStorage.getItem(STORAGE_KEY_ACTIVE);
+          if (!activeName || !routines[activeName]) {
+            const keys = Object.keys(routines);
+            if (keys.length > 0) activeName = keys[0];
+            else return null;
+          }
+          return { routines, activeName, state: routines[activeName] };
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function saveState(data) {
+        try {
+          localStorage.setItem(STORAGE_KEY_ROUTINES, JSON.stringify(data.routines));
+          localStorage.setItem(STORAGE_KEY_ACTIVE, data.activeName);
+        } catch (e) {
+          console.warn('Could not save state:', e);
+        }
+      }
+
+      function syncTimerDisplay() {
+        const data = getActiveState();
+        if (!data || !data.state) {
+          zenBarTaskTitle.textContent = '⏱️ Timer Ready';
+          zenBarRoutineName.textContent = 'No Schedule Loaded';
+          zenBarClock.textContent = '00:00';
+          zenStickyBar.classList.remove('alert-mode');
+          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Start';
+          return;
+        }
+
+        const state = data.state;
+        const now = Date.now();
+        const lastTick = state.lastTickTime || now;
+        const elapsedSecs = Math.max(0, Math.floor((now - lastTick) / 1000));
+
+        // Advance live time if running
+        if (elapsedSecs >= 1 && (state.timerState === 'running' || state.timerState === 'calming_pause')) {
+          state.lastTickTime = now;
+          if (state.timerState === 'calming_pause') {
+            if (state.remainingSeconds > elapsedSecs) {
+              state.remainingSeconds -= elapsedSecs;
+            } else {
+              state.remainingSeconds = 0;
+            }
+          } else if (state.timerState === 'running') {
+            state.elapsedSeconds = (state.elapsedSeconds || 0) + elapsedSecs;
+            if (state.remainingSeconds > elapsedSecs) {
+              state.remainingSeconds -= elapsedSecs;
+            } else {
+              const extra = elapsedSecs - state.remainingSeconds;
+              state.remainingSeconds = 0;
+              state.timerState = 'alarm_overtime';
+              state.overtimeSeconds = (state.overtimeSeconds || 0) + extra;
+            }
+          }
+          saveState(data);
+        } else if (elapsedSecs >= 1 && state.timerState === 'alarm_overtime') {
+          state.lastTickTime = now;
+          state.elapsedSeconds = (state.elapsedSeconds || 0) + elapsedSecs;
+          state.overtimeSeconds = (state.overtimeSeconds || 0) + elapsedSecs;
+          saveState(data);
+        }
+
+        const currentTask = (state.tasks && state.actionableTaskIndices && state.actionableTaskIndices.length > 0 && state.currentActionableStep < state.actionableTaskIndices.length)
+          ? state.tasks[state.actionableTaskIndices[state.currentActionableStep]]
+          : null;
+
+        if (!currentTask) {
+          zenBarTaskTitle.textContent = state.timerState === 'completed' ? '🎉 Routine Completed' : 'No Active Task';
+          zenBarRoutineName.textContent = state.name || 'Routine';
+          zenBarClock.textContent = '00:00';
+          zenStickyBar.classList.remove('alert-mode');
+          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Start';
+          return;
+        }
+
+        if (state.timerState === 'calming_pause') {
+          zenBarTaskTitle.textContent = '🧘 Calming Pause';
+          zenBarRoutineName.textContent = state.name || 'Routine';
+          zenBarClock.textContent = formatMMSS(state.remainingSeconds || 0);
+          zenStickyBar.classList.remove('alert-mode');
+          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Skip Pause';
+          return;
+        }
+
+        if (state.timerState === 'free_time') {
+          zenBarTaskTitle.textContent = '🌿 Free Time Buffer';
+          zenBarRoutineName.textContent = state.name || 'Routine';
+          zenBarClock.textContent = formatMMSS(state.remainingSeconds || 0);
+          zenStickyBar.classList.remove('alert-mode');
+          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Pause';
+          return;
+        }
+
+        zenBarTaskTitle.textContent = currentTask.name;
+        zenBarRoutineName.textContent = state.name || 'Routine';
+
+        if (state.timerState === 'alarm_overtime') {
+          zenBarClock.textContent = `+${formatMMSS(state.overtimeSeconds || 0)}`;
+          zenStickyBar.classList.add('alert-mode');
+        } else {
+          zenBarClock.textContent = formatMMSS(state.remainingSeconds || 0);
+          zenStickyBar.classList.remove('alert-mode');
+        }
+
+        if (zenBarPauseBtn) {
+          zenBarPauseBtn.textContent = (state.timerState === 'running' || state.timerState === 'alarm_overtime') ? 'Pause' : 'Start';
+        }
+      }
+
+      if (zenBarAdd5Btn) {
+        zenBarAdd5Btn.addEventListener('click', () => {
+          const data = getActiveState();
+          if (!data || !data.state) return;
+          const state = data.state;
+          state.remainingSeconds = (state.remainingSeconds || 0) + 300;
+          state.extendedSeconds = (state.extendedSeconds || 0) + 300;
+          if (state.timerState === 'alarm_overtime') {
+            state.timerState = 'running';
+            state.overtimeSeconds = 0;
+          }
+          state.lastTickTime = Date.now();
+          saveState(data);
+          syncTimerDisplay();
+        });
+      }
+
+      if (zenBarPauseBtn) {
+        zenBarPauseBtn.addEventListener('click', () => {
+          const data = getActiveState();
+          if (!data || !data.state) return;
+          const state = data.state;
+          if (state.timerState === 'running' || state.timerState === 'alarm_overtime') {
+            state.timerState = 'paused';
+          } else {
+            state.timerState = 'running';
+          }
+          state.lastTickTime = Date.now();
+          saveState(data);
+          syncTimerDisplay();
+        });
+      }
+
+      if (zenBarNextBtn) {
+        zenBarNextBtn.addEventListener('click', () => {
+          const data = getActiveState();
+          if (!data || !data.state) return;
+          const state = data.state;
+          if (!state.actionableTaskIndices || state.actionableTaskIndices.length === 0) return;
+
+          const currTaskIdx = state.actionableTaskIndices[state.currentActionableStep];
+          if (state.tasks[currTaskIdx]) {
+            state.tasks[currTaskIdx].status = 'completed';
+          }
+
+          state.currentActionableStep = (state.currentActionableStep || 0) + 1;
+          if (state.currentActionableStep < state.actionableTaskIndices.length) {
+            const nextTaskIdx = state.actionableTaskIndices[state.currentActionableStep];
+            const nextTask = state.tasks[nextTaskIdx];
+            nextTask.status = 'active';
+            state.remainingSeconds = nextTask.durationSecs || 0;
+            state.overtimeSeconds = 0;
+            state.elapsedSeconds = 0;
+            state.extendedSeconds = 0;
+            state.timerState = 'running';
+          } else {
+            state.timerState = 'completed';
+            state.remainingSeconds = 0;
+            state.overtimeSeconds = 0;
+          }
+          state.lastTickTime = Date.now();
+          saveState(data);
+          syncTimerDisplay();
+        });
+      }
+
+      syncTimerDisplay();
+      setInterval(syncTimerDisplay, 1000);
+
+      window.addEventListener('storage', (e) => {
+        if (e.key === STORAGE_KEY_ROUTINES || e.key === STORAGE_KEY_ACTIVE) {
+          syncTimerDisplay();
+        }
+      });
+    })();
+
   </script>
 </body>
 </html>
