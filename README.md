@@ -6,6 +6,18 @@
 * **Master System Guide:** [https://acnbrr21.github.io/my-routine-timer/guide.html](https://acnbrr21.github.io/my-routine-timer/guide.html)
 * **CSV Import & Schema Manager:** [https://acnbrr21.github.io/my-routine-timer/csv-tools.html](https://acnbrr21.github.io/my-routine-timer/csv-tools.html)
 
+
+---
+
+## 👨‍💻 About the Creator: Rishi Roy — The Productivity Guy
+
+**Rishi Roy** is an entrepreneur, technology leader, and productivity bio-architect. 
+
+* 🔗 **LinkedIn Profile:** [https://www.linkedin.com/in/rishiroy/](https://www.linkedin.com/in/rishiroy/)
+* ⚡ **Core Philosophy:** Treating **productivity as personal bio-architecture**. Productivity is not just churning through work tickets—it is engineering high-leverage workflows that accelerate professional output while keeping daily mental, physiological, and restorative routines sustainably healthy.
+
+Anchor & Flow was born from this exact mission: to replace rigid, broken time management apps with a dynamic executive cockpit that respects both immovable professional anchors and essential health habits (circadian alignment, hydration, mobility, and deep focus).
+
 ---
 
 ## 1. Why Anchor & Flow? (The Problem with Existing Timers)
@@ -43,13 +55,17 @@ Most time management and Pomodoro timers suffer from two fatal design assumption
 * **Productivity Guru Break Opt-In (100% User Control):** The AI asks *"Would you like me to fill in small breaks to enhance productivity?"* backed by research quotes (Dr. Andrew Huberman, ultradian rhythm science). By default, **no breaks are inserted** unless you explicitly check the box.
 * **🎙️ Gemini Chat-Style Voice Dictation:** Tap **🎙️ Voice Input** to speak your schedule directly into the enlarged text box using the browser's native Web Speech API. Features an animated multi-colored sound wave bar with clear live transcription and reliable **⏹️ Stop** controls that immediately terminate microphone recording tracks. Free, zero setup, and completely private.
 
-### C. Clear, Widened Task Review Table
-* **Expanded Duration Inputs:** The duration column accommodates **100+ minute** sessions (e.g. `120 mins`, `180 mins`, `240 mins`) with zero visual cramping, clean monospace formatting, and a clear `mins` label.
-* **Full Reordering & Editing:** Reorder with `▲` / `▼`, delete, edit titles/durations, or instruct the AI naturally (*"make task 1 90 mins"*, *"move review to top"*).
+### C. Clear, Widened Task Review Table & Meaningful Notes
+* **Expanded Duration Inputs:** The duration column accommodates **100+ minute** sessions (e.g. `120 mins`, `180 mins`, `240 mins`) with zero visual cramping, bold monospace formatting, and a clear `mins` label.
+* **Spacious Multi-Line Notes Box:** Replaced narrow single-line text inputs with an expandable multi-line `<textarea>` (`min-width: 240px`), allowing rich context, execution checklists, and detailed notes to remain fully visible.
+* **Intelligent Execution Notes (Never Echoes Title):** The notes field provides practical execution tips, sub-steps, and context rather than simply repeating the task title.
+* **Meta-Instruction Filtering & Clarification:** Conversational preambles (e.g. *"I want a plan for the day..."*) are filtered out so they are never mistakenly converted into 180-minute tasks. If an input is purely conversational without concrete activities, the AI asks clarifying questions instead of hallucinating.
+* **Full Reordering & Editing:** Reorder with `▲` / `▼`, delete, edit titles/durations/notes, or instruct the AI naturally (*"make task 1 90 mins"*, *"move review to top"*).
 
-### D. Multi-Tier AI Architecture & DeepSeek Integration
-1. **DeepSeek (`deepseek-chat`) — Recommended Primary Engine:** Prioritized as the primary model for strict chronological sequence parsing. It enforces a strict **Zero-Clubbing Mandate**, ensuring spoken micro-habits (e.g. *"brushing teeth, drinking water, doing yoga, visualization before sleep"*) are never lumped into a generic umbrella routine, but created as discrete sequential timer milestones with accurate micro-durations.
-2. **OpenAI (`gpt-4o-mini` / `gpt-4o`):** Available as primary or automatic fallback with prompt-level zero-grouping constraints.
+### D. Multi-Tier AI Architecture & Flagship Model Support
+1. **OpenAI (`gpt-4o` Flagship Omni):** Recommended primary model for complex nuance, professional recording demonstrations, and conversational reasoning. Enforces strict zero-clubbing and meta-instruction filtering.
+2. **DeepSeek (`deepseek-chat`):** High-precision engine specialized in strict JSON extraction and task sequencing.
+3. **OpenAI (`gpt-4o-mini`):** Ultra-fast lightweight model for quick sprints.
 3. **100% Offline Local NLP Engine:** Built-in client-side parser with advanced multi-stage natural language segmentation that isolates spoken action verbs and assigns realistic habit durations with zero internet required.
 4. **Customizable in Settings:** Choose your preferred primary model directly in the **⚙️ Settings** modal.
 

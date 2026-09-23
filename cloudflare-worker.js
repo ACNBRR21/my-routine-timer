@@ -72,7 +72,7 @@ export default {
               'Authorization': `Bearer ${openaiKey}`
             },
             body: JSON.stringify({
-              model: model || 'gpt-4o-mini',
+              model: model || 'gpt-4o',
               messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: userPrompt }
@@ -85,7 +85,7 @@ export default {
             const data = await res.json();
             const content = data.choices && data.choices[0] ? data.choices[0].message.content : '';
             return new Response(JSON.stringify({
-              engine: 'OpenAI (gpt-4o-mini)',
+              engine: 'OpenAI (GPT-4o Flagship)',
               content: content
             }), {
               headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }

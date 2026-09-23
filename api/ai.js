@@ -41,7 +41,7 @@ export default async function handler(req, res) {
           'Authorization': `Bearer ${openaiKey}`
         },
         body: JSON.stringify({
-          model: model || 'gpt-4o-mini',
+          model: model || 'gpt-4o',
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt }
@@ -54,7 +54,7 @@ export default async function handler(req, res) {
         const data = await response.json();
         const content = data.choices && data.choices[0] ? data.choices[0].message.content : '';
         return res.status(200).json({
-          engine: 'OpenAI (gpt-4o-mini)',
+          engine: 'OpenAI (GPT-4o Flagship)',
           content: content
         });
       }

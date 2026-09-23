@@ -1569,6 +1569,28 @@
       box-sizing: border-box;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
+        /* Spacious Multi-Line Notes Box */
+    .review-input-notes {
+      width: 100% !important;
+      min-height: 52px !important;
+      max-height: 160px !important;
+      resize: vertical !important;
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 6px !important;
+      color: var(--text-main) !important;
+      font-size: 0.85rem !important;
+      font-family: inherit !important;
+      line-height: 1.45 !important;
+      padding: 8px 10px !important;
+      box-sizing: border-box !important;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    .review-input-notes:focus {
+      border-color: var(--accent) !important;
+      outline: none !important;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2) !important;
+    }
     .dur-input-container:focus-within {
       border-color: var(--accent);
       box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
@@ -1696,6 +1718,217 @@
       transform: translateY(0);
       box-shadow: 0 2px 8px rgba(4, 120, 87, 0.4) !important;
     }
+  
+    /* --- CREATOR HERO & HEADER STYLES (RISHI ROY) --- */
+    .creator-header-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .pulse-indicator {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      display: inline-block;
+    }
+    .creator-name-link {
+      color: #38bdf8 !important;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .creator-name-link:hover {
+      text-decoration: underline;
+    }
+    .creator-tagline {
+      color: #94a3b8;
+    }
+    .creator-showcase-card {
+      margin: 10px 0 16px 0;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .creator-showcase-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, #38bdf8, #818cf8, #a855f7);
+    }
+    .creator-showcase-inner {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .creator-avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .creator-avatar-inner {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #fff;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+    }
+    .creator-status-dot {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 2px solid #0f172a;
+    }
+    .creator-details {
+      flex: 1;
+      min-width: 0;
+    }
+    .creator-headline-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 5px;
+    }
+    .creator-heading {
+      margin: 0;
+      font-size: 0.96rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .creator-profile-link {
+      color: #38bdf8 !important;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .creator-profile-link:hover {
+      text-decoration: underline;
+    }
+    .creator-badge-sub {
+      background: rgba(129, 140, 248, 0.18);
+      border: 1px solid rgba(129, 140, 248, 0.35);
+      color: #c7d2fe;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .btn-linkedin-connect {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #0a66c2;
+      color: #ffffff !important;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+    .btn-linkedin-connect:hover {
+      background: #004182;
+      transform: translateY(-1px);
+    }
+    .creator-manifesto {
+      margin: 0 0 8px 0;
+      font-size: 0.83rem;
+      line-height: 1.5;
+      color: #94a3b8;
+    }
+    .creator-manifesto strong {
+      color: #f1f5f9;
+    }
+    .creator-pillars {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pillar-tag {
+      font-size: 0.72rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: #cbd5e1;
+    }
+
+    /* Active Task Notes Box on Main Timer Card */
+    .active-task-notes-box {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      color: #e2e8f0;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+    .active-task-notes-box .notes-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .active-task-notes-box .notes-text {
+      flex: 1;
+    }
+
+    /* Spacious Multi-Line Notes Box in Review Table */
+    .review-input-notes {
+      width: 100% !important;
+      min-height: 72px !important;
+      max-height: 220px !important;
+      resize: vertical !important;
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 8px !important;
+      color: var(--text-main) !important;
+      font-size: 0.88rem !important;
+      font-family: inherit !important;
+      line-height: 1.5 !important;
+      padding: 10px 12px !important;
+      box-sizing: border-box !important;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    .review-input-notes:focus {
+      border-color: var(--accent) !important;
+      outline: none !important;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
+      background: rgba(15, 23, 42, 0.95) !important;
+    }
+
   </style>
 </head>
 <body>
@@ -1707,6 +1940,14 @@
         <span class="sys-date" id="systemDate">Mon, Sep 12</span>
       </div>
       <div class="header-controls" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <div class="creator-header-pill" title="Created by Rishi Roy — The Productivity Guy">
+        <span class="pulse-indicator"></span>
+        <span class="creator-label">Built by</span>
+        <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" class="creator-name-link">Rishi Roy</a>
+        <span class="creator-sep">•</span>
+        <span class="creator-tagline">The Productivity Guy</span>
+      </div>
+      
         <button type="button" class="btn btn-primary" id="openPlannerChatBtn">✦ Plan My Day</button>
         <button type="button" class="btn btn-primary btn-sm btn-flow-guru" id="openFlowGuruBtn" onclick="openFlowGuru()" style="cursor: pointer;">✦ Flow Guru</button>
         <a href="csv-tools.html" class="btn btn-outline btn-sm" style="text-decoration: none;" id="uploadCsvNavBtn">Upload CSV of tasks</a>
@@ -1715,6 +1956,37 @@
         <button type="button" class="btn-icon-settings" id="openSettingsBtn" title="Settings & AI Proxy Configuration">⚙️</button>
       </div>
     </header>
+    <!-- PROMINENT CREATOR SHOWCASE: RISHI ROY (THE PRODUCTIVITY GUY) -->
+    <div class="creator-showcase-card" id="creatorShowcaseCard">
+      <div class="creator-showcase-inner">
+        <div class="creator-avatar-wrap">
+          <div class="creator-avatar-inner">RR</div>
+          <span class="creator-status-dot" title="Active Innovator"></span>
+        </div>
+        <div class="creator-details">
+          <div class="creator-headline-row">
+            <h4 class="creator-heading">
+              Created by <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" class="creator-profile-link">Rishi Roy</a>
+              <span class="creator-badge-sub">The Productivity Guy</span>
+            </h4>
+            <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" class="btn-linkedin-connect">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+              Connect on LinkedIn
+            </a>
+          </div>
+          <p class="creator-manifesto">
+            I live and breathe productivity — testing tools to enhance high-leverage work output while architecting daily routines to keep mind and body at peak vitality. Anchor & Flow embodies <strong>productivity as bio-architecture</strong>: pairing deep focus blocks with restorative anchors.
+          </p>
+          <div class="creator-pillars">
+            <span class="pillar-tag">⚡ Deep Work Acceleration</span>
+            <span class="pillar-tag">🧘 Bio-Rhythms & Restorative Anchors</span>
+            <span class="pillar-tag">⏱ Harvard Timeboxing</span>
+            <span class="pillar-tag">🤖 Flagship AI Automation (GPT-4o)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <!-- Persistent Zen Mini-Timer Bar (Visible while reading Guide) -->
     <div class="zen-sticky-bar" id="zenStickyBar">
@@ -1796,6 +2068,10 @@
 
         <div class="current-task-title" id="currentTaskTitle">No Schedule Loaded</div>
         <div class="wall-clock-meta" id="wallClockMeta">Start: --:--:-- &bull; Projected End: --:--:--</div>
+        <div class="active-task-notes-box" id="activeTaskNotesBox" style="display: none;">
+          <span class="notes-icon">📝</span>
+          <span class="notes-text" id="activeTaskNotesText"></span>
+        </div>
 
         <div class="clock-display" id="clockDisplay">00:00</div>
 
@@ -2054,7 +2330,7 @@ Evening Routine,Daily Debrief & Log,15,Wrap Up,,"Log completion metrics into Flo
 
   <!-- Harvard Timeboxing Conversational Intake Chatbot Modal -->
   <div class="modal-overlay" id="plannerChatModal">
-    <div class="modal-dialog" style="max-width: 820px; width: 95%;">
+    <div class="modal-dialog" style="max-width: 980px; width: 96%;">
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
           <h3>✨ Harvard Timeboxing Assistant</h3>
@@ -2143,9 +2419,10 @@ Evening Routine,Daily Debrief & Log,15,Wrap Up,,"Log completion metrics into Flo
             🤖 Preferred Primary Engine:
           </label>
           <select id="preferredEngineSelect" class="chat-input" style="width: 100%; box-sizing: border-box; padding: 8px 12px; cursor: pointer; background: var(--bg-card); color: #fff; border: 1px solid var(--border); border-radius: 8px;">
-            <option value="deepseek" selected>DeepSeek (deepseek-chat) — Recommended for Strict Task Sequencing</option>
-            <option value="openai">OpenAI (gpt-4o-mini / gpt-4o)</option>
-            <option value="local">Local NLP Engine (100% Offline, Zero-Clubbing)</option>
+            <option value="gpt-4o" selected>OpenAI (GPT-4o Flagship) — Recommended for Video Recording & Complex Reasoning</option>
+            <option value="deepseek">DeepSeek (deepseek-chat) — Strict Task Sequencing</option>
+            <option value="gpt-4o-mini">OpenAI (GPT-4o-mini) — Fast & Lightweight</option>
+            <option value="local">Local NLP Engine (100% Offline & Private)</option>
           </select>
           <span style="font-size: 0.76rem; color: var(--text-muted); display: block; margin-top: 4px;">
             DeepSeek is recommended for parsing multi-step spoken routines without grouping or bundling.
@@ -3279,6 +3556,8 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           wallClockMeta.textContent = `Take a breath. Next task begins in ${formatMMSS(state.remainingSeconds)}, or tap "Begin Next Task ⏩"`;
           clockDisplay.textContent = formatMMSS(state.remainingSeconds);
           clockDisplay.classList.add('pause-mindful-mode');
+          const anBox1 = document.getElementById('activeTaskNotesBox');
+          if (anBox1) anBox1.style.display = 'none';
 
           const completedSteps = state.currentActionableStep;
           const totalSteps = state.actionableTaskIndices.length;
@@ -3296,6 +3575,8 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           clockDisplay.textContent = '00:00';
           overallProgressBar.style.width = '100%';
           showRoutineCompletionBanner(state);
+          const anBox2 = document.getElementById('activeTaskNotesBox');
+          if (anBox2) anBox2.style.display = 'none';
           return;
         }
 
@@ -3326,6 +3607,18 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         const task = state.tasks[state.actionableTaskIndices[state.currentActionableStep]];
         currentTaskTitle.textContent = task.name;
         stepProgressBadge.textContent = `Step ${state.currentActionableStep + 1} of ${state.actionableTaskIndices.length}`;
+
+        // Prominently update Active Task Notes on Timer Card
+        const activeNotesBox = document.getElementById('activeTaskNotesBox');
+        const activeNotesText = document.getElementById('activeTaskNotesText');
+        if (activeNotesBox && activeNotesText) {
+          if (task && task.notes && task.notes.trim()) {
+            activeNotesText.textContent = task.notes.trim();
+            activeNotesBox.style.display = 'flex';
+          } else {
+            activeNotesBox.style.display = 'none';
+          }
+        }
 
         if (task.isAnchor) {
           anchorTypeBadge.textContent = `📅 Anchor ${task.scheduledStart}`;
@@ -4365,7 +4658,42 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
         const openaiKey = localStorage.getItem(STORAGE_KEY_OPENAI);
         const deepseekKey = localStorage.getItem(STORAGE_KEY_DEEPSEEK);
         const proxyUrl = localStorage.getItem(STORAGE_KEY_PROXY);
-        const preferred = localStorage.getItem(STORAGE_KEY_PREFERRED_ENGINE) || 'deepseek';
+        const preferred = localStorage.getItem(STORAGE_KEY_PREFERRED_ENGINE) || 'gpt-4o';
+
+        async function tryOpenAI(modelName = 'gpt-4o') {
+          if (!openaiKey) return null;
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            const res = await fetch('https://api.openai.com/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${openaiKey}`
+              },
+              body: JSON.stringify({
+                model: modelName,
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt }
+                ],
+                temperature: 0.1
+              }),
+              signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            if (res.ok) {
+              const data = await res.json();
+              if (data.choices && data.choices[0]) {
+                const label = modelName === 'gpt-4o' ? 'OpenAI (GPT-4o Flagship)' : `OpenAI (${modelName})`;
+                return { engine: label, content: data.choices[0].message.content };
+              }
+            }
+          } catch (e) {
+            console.warn('OpenAI fetch error:', e);
+          }
+          return null;
+        }
 
         async function tryDeepSeek() {
           if (!deepseekKey) return null;
@@ -4401,54 +4729,24 @@ Evening Ritual,Reading & Disconnect,20,Wind Down Block,`;
           return null;
         }
 
-        async function tryOpenAI() {
-          if (!openaiKey) return null;
-          try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 6000);
-            const res = await fetch('https://api.openai.com/v1/chat/completions', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${openaiKey}`
-              },
-              body: JSON.stringify({
-                model: 'gpt-4o-mini',
-                messages: [
-                  { role: 'system', content: systemPrompt },
-                  { role: 'user', content: userPrompt }
-                ],
-                temperature: 0.1
-              }),
-              signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-            if (res.ok) {
-              const data = await res.json();
-              if (data.choices && data.choices[0]) {
-                return { engine: 'OpenAI (gpt-4o-mini)', content: data.choices[0].message.content };
-              }
-            }
-          } catch (e) {
-            console.warn('OpenAI fetch error:', e);
-          }
-          return null;
-        }
-
-        // 1. Execute preferred engine first
-        if (preferred === 'deepseek') {
+        // 1. Preferred primary engine execution
+        if (preferred === 'gpt-4o') {
+          const oai = await tryOpenAI('gpt-4o');
+          if (oai) return oai;
           const ds = await tryDeepSeek();
           if (ds) return ds;
-          const oai = await tryOpenAI();
+        } else if (preferred === 'deepseek') {
+          const ds = await tryDeepSeek();
+          if (ds) return ds;
+          const oai = await tryOpenAI('gpt-4o');
           if (oai) return oai;
-        } else if (preferred === 'openai') {
-          const oai = await tryOpenAI();
-          if (oai) return oai;
+        } else if (preferred === 'gpt-4o-mini') {
+          const oaiMini = await tryOpenAI('gpt-4o-mini');
+          if (oaiMini) return oaiMini;
           const ds = await tryDeepSeek();
           if (ds) return ds;
         } else {
-          // Explicit local selection
-          return null;
+          return null; // Local requested
         }
 
         // 2. Shared Serverless Proxy fallback if configured
@@ -4787,8 +5085,15 @@ Format as JSON:
         const chatEngineBadge = document.getElementById('chatEngineBadge');
 
         const proxyUrl = localStorage.getItem(STORAGE_KEY_PROXY) || DEFAULT_PROXY_URL;
+        const preferred = localStorage.getItem(STORAGE_KEY_PREFERRED_ENGINE) || 'gpt-4o';
         if (chatEngineBadge) {
-          if (openaiKey) {
+          if (preferred === 'gpt-4o' && openaiKey) {
+            chatEngineBadge.className = 'engine-tag openai';
+            chatEngineBadge.textContent = '🟢 OpenAI (GPT-4o Flagship)';
+          } else if (preferred === 'deepseek' && deepseekKey) {
+            chatEngineBadge.className = 'engine-tag deepseek';
+            chatEngineBadge.textContent = '🟢 DeepSeek (deepseek-chat)';
+          } else if (openaiKey) {
             chatEngineBadge.className = 'engine-tag openai';
             chatEngineBadge.textContent = '🟢 OpenAI (Direct Key)';
           } else if (deepseekKey) {
@@ -5175,6 +5480,30 @@ Format as JSON:
       });
 
       async function callMultiTierAiIntake(userInput, allowBreaks) {
+        const rawText = (userInput || '').trim();
+
+        // 1. Direct detection of pure conversational preambles
+        const pureMetaRegex = /^(?:i\s+(?:want|would\s+like|need|am\s+going)\s+to\s+plan\s+(?:my|the|for\s+the)\s+day|i\s+want\s+a\s+plan\s+for\s+(?:the|my)\s+day|plan\s+(?:for\s+)?(?:the|my)\s+day|can\s+you\s+help\s+me\s+plan(?:\s+my\s+day)?|here\s+(?:is|are)\s+(?:my|the)\s+(?:tasks|plan|schedule)|schedule\s+for\s+today|today'?s\s+agenda|help\s+me\s+plan|plan\s+today)$/i;
+
+        if (pureMetaRegex.test(rawText)) {
+          if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
+          appendChatBubble('bot', `<strong>🤔 What would you like to accomplish today?</strong><br/>Please list the tasks, habits, or meetings you'd like to timebox (e.g. <em>'Review proposal 45m, Team sync at 11am (30m), Brush teeth, Drink water, 15m yoga, Sleep visualization'</em>), and I'll create your exact sequential timeline!`);
+          chatInputField.placeholder = "e.g. 'Deep focus on proposal 60m, Team sync at 14:00 (30m), Code review 45m'";
+          chatInputField.focus();
+          return;
+        }
+
+        // 2. Strip conversational preamble from composite inputs so AI receives clean task clauses
+        let cleanInput = rawText.replace(/^(?:i\s+(?:want|would\s+like|need|am\s+going)\s+to\s+plan\s+(?:my|the|for\s+the)\s+day|i\s+want\s+a\s+plan\s+for\s+(?:the|my)\s+day|here\s+(?:is|are)\s+(?:my|the)\s+(?:tasks|plan|schedule)|can\s+you\s+help\s+me\s+plan|plan\s+(?:my|the)\s+day)\s*[:,-]?\s*(?:and\s+then\s+|then\s+|after\s+that\s+|followed\s+by\s+|:\s*|\n)?/i, '').trim();
+
+        if (!cleanInput) {
+          if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
+          appendChatBubble('bot', `<strong>🤔 What would you like to accomplish today?</strong><br/>Please list the tasks, habits, or meetings you'd like to timebox (e.g. <em>'Review proposal 45m, Team sync at 11am (30m), Brush teeth, Drink water, 15m yoga, Sleep visualization'</em>), and I'll create your exact sequential timeline!`);
+          chatInputField.placeholder = "e.g. 'Deep focus on proposal 60m, Team sync at 14:00 (30m), Code review 45m'";
+          chatInputField.focus();
+          return;
+        }
+
         const now = new Date();
         const timeStr = formatClockHM(now);
 
@@ -5182,37 +5511,58 @@ Format as JSON:
           ? "USER REQUESTED BREAKS: TRUE. Insert 3–5 minute restorative micro-breaks (e.g. 'Hydrate & Posture Reset', 'Quick 3-Min Walk', 'Eye & Optic Flow Rest') between major work sessions longer than 45 minutes."
           : "USER REQUESTED BREAKS: FALSE. STRICT MANDATE: DO NOT insert ANY breaks, rest periods, walks, or hydration habits unless explicitly written in the user's input! The user has chosen NO automatic breaks.";
 
-        const systemPrompt = `You are an executive Harvard Timeboxing architect and chronological sequence timer engine.
+        const systemPrompt = `You are an executive Harvard Timeboxing architect, productivity strategist, and chronological sequence timer engine.
 Current local time is ${timeStr} (24-hr format).
 
 ${breakInstruction}
 
-CRITICAL MANDATE — ZERO TASK CLUBBING / NEVER GROUP SEPARATE ACTIVITIES:
-1. This application is a sequential countdown timer where each activity has its own dedicated timer step.
-2. NEVER combine, summarize, group, or bundle multiple tasks, habits, or spoken items into a single generic parent item (such as "Evening Routine", "Bedtime Prep", "Night Routine", "Morning Routine", "Wellness Habit", "Wind Down", or "Self-Care Block")!
-3. Even if the user lists habits or spoken items in a continuous sentence (e.g. "brushing teeth, drinking water, doing a simple yoga, then visualization before sleep"), you MUST create a SEPARATE, DISTINCT task for EACH activity:
-   - Item 1: "Brush Teeth"
-   - Item 2: "Drink Water"
-   - Item 3: "Simple Yoga"
-   - Item 4: "Pre-Sleep Visualization"
-4. DURATION RULES:
-   If durations are not explicitly stated, assign realistic micro-durations:
-   - Brushing teeth / hygiene / skincare: 3–5 mins
-   - Drinking water / hydrate / vitamins: 2–5 mins
-   - Yoga / stretching / light movement: 15–20 mins
-   - Visualization / meditation / breathing: 10–15 mins
-   - Reading / journaling: 15–20 mins
-   - Standard task / review / planning: 15–30 mins
-   - Deep focus / strategic work: 45–60 mins
-   NEVER bundle them together into a single 30-minute block!
-5. ACTION TITLES: Shorten each task title into a punchy, clean action title (2–4 words, max 30 chars, e.g. "Brush Teeth", "Drink Water", "Simple Yoga", "Pre-Sleep Visualization"). Put original text in "notes".
+STRICT RULE 1 — IGNORE META-INSTRUCTIONS & CONVERSATIONAL PREAMBLES:
+- Conversational statements, requests, or openers like "I want a plan for the day", "Can you help me plan", "Here is my schedule", "Plan the rest of the day", or "Today I need to do" are USER REQUESTS, NOT tasks!
+- NEVER create a task called "Plan for the day" or allocate minutes to the user's introductory conversational sentence! Only extract the ACTUAL actionable work items, personal habits, and calendar meetings that follow.
+- If the user provided ONLY a conversational sentence (e.g. "I want a plan for the day") without listing any concrete activities or meetings, you MUST set "isClarificationNeeded": true and ask what specific tasks they want to accomplish.
+
+STRICT RULE 2 — ZERO TASK CLUBBING / NEVER GROUP SEPARATE ACTIVITIES:
+- This application is a sequential countdown timer where each activity has its own dedicated timer countdown step.
+- NEVER combine, summarize, group, or bundle multiple tasks, habits, or spoken items into a single generic parent item (such as "Evening Routine", "Bedtime Prep", "Night Routine", "Morning Routine", "Wellness Habit", "Wind Down", or "Self-Care Block")!
+- If the user lists habits or spoken items in a continuous sentence (e.g. "brushing teeth, drinking water, doing a simple yoga, then visualization before sleep"), you MUST create a SEPARATE, DISTINCT task for EACH activity:
+  - Item 1: "Brush Teeth"
+  - Item 2: "Drink Water"
+  - Item 3: "Simple Yoga"
+  - Item 4: "Pre-Sleep Visualization"
+
+STRICT RULE 3 — MEANINGFUL NOTES (NEVER REPEAT THE TASK TITLE):
+- The "notes" field MUST contain genuine, useful execution guidance, context, sub-steps, or tips.
+- DO NOT simply repeat or echo the task title in the notes! (e.g. DO NOT set title="Brush Teeth" and notes="brushing teeth", or title="Drink Water" and notes="drinking water").
+- If the user gave detailed context (e.g. "review slides for the 2pm board meeting"), capture those details in the notes ("Focus on Q3 financial charts and slide deck for 2pm board sync").
+- If the user gave a simple habit or task without details, generate a smart, practical micro-note or execution tip:
+  * Brush Teeth -> "Thorough 2-min brushing; clean dental rinse before sleep"
+  * Drink Water -> "Hydrate with a glass of room-temperature water"
+  * Simple Yoga -> "Gentle floor stretches and restorative poses to down-regulate nervous system"
+  * Pre-Sleep Visualization -> "Slow diaphragmatic breathing; visualize tomorrow's key priorities"
+  * Deep Strategic Focus -> "Silence all notifications; single-task on highest-leverage priority"
+  * Email Triage -> "Inbox zero pass: reply to urgent items, archive, or delegate"
+
+STRICT RULE 4 — DURATION ALLOCATION:
+If durations are not explicitly stated, assign realistic micro-durations:
+- Brushing teeth / hygiene: 3–5 mins
+- Drinking water / hydrate / vitamins: 2–5 mins
+- Yoga / stretching / light movement: 15–20 mins
+- Visualization / meditation / breathing: 10–15 mins
+- Reading / journaling: 15–20 mins
+- Standard task / review / planning: 15–30 mins
+- Deep focus / strategic work: 45–60 mins
+NEVER bundle them together into a single 30-minute block!
+
+5. SHORTEN each task title into a punchy, clean action title (2–4 words, max 30 chars).
 6. If an item is a calendar meeting with a specific time (e.g. "at 14:30", "10:00 - 10:30"), set type="meeting" and "scheduledTime"="HH:MM". All other items are type="task" with scheduledTime="".
 7. Time-of-day & Planning Scope:
    - If current time is 12:00 PM or later, OR if planning <= 4 tasks, set "requiresTop3Priorities": false.
    - Only set "requiresTop3Priorities": true for full-day planning before 12:00 PM with > 4 tasks.
 
-RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
+RETURN ONLY A VALID JSON OBJECT:
 {
+  "isClarificationNeeded": false,
+  "clarificationQuestion": "",
   "requiresTop3Priorities": false,
   "planningSummary": "Discrete sequential tasks planned.",
   "items": [
@@ -5222,7 +5572,7 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
       "shortName": "Brush Teeth",
       "duration": 3,
       "scheduledTime": "",
-      "notes": "brushing teeth",
+      "notes": "Thorough 2-min brushing; clean dental rinse before sleep",
       "priority": null
     },
     {
@@ -5231,16 +5581,23 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
       "shortName": "Drink Water",
       "duration": 2,
       "scheduledTime": "",
-      "notes": "drinking water",
+      "notes": "Drink 250-500ml water for metabolic recovery",
       "priority": null
     }
   ]
 };`
 
         try {
-          const aiResult = await executeMultiTierAi(systemPrompt, userInput);
+          const aiResult = await executeMultiTierAi(systemPrompt, cleanInput);
           if (aiResult && aiResult.content) {
             const parsed = extractJsonFromText(aiResult.content);
+            if (parsed.isClarificationNeeded && parsed.clarificationQuestion) {
+              if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
+              appendChatBubble('bot', `<strong>🤔 Clarifying Question:</strong><br/>${escapeHtml(parsed.clarificationQuestion)}`);
+              chatInputField.placeholder = "e.g. 'Deep focus on proposal 60m, Team sync at 14:00 (30m), Code review 45m'";
+              chatInputField.focus();
+              return;
+            }
             processParsedSchedule(parsed, aiResult.engine, null, allowBreaks);
             return;
           }
@@ -5272,6 +5629,24 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
       function processParsedSchedule(data, engineLabel, warningMsg, allowBreaks) {
         if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
 
+        // Filter out any meta-planning hallucination tasks (e.g. "Plan for the day" with 180m)
+        if (data && Array.isArray(data.items)) {
+          data.items = data.items.filter(item => {
+            const sName = (item.shortName || item.name || '').toLowerCase().trim();
+            if (sName === 'plan for the day' || sName === 'i want a plan for the day' || sName === 'plan my day' || sName === 'daily plan' || sName === 'planning the day' || (sName.includes('plan') && (parseInt(item.duration, 10) >= 120) && !sName.includes('business') && !sName.includes('project') && !sName.includes('review'))) {
+              console.warn('Filtered out meta-instruction task hallucination:', item);
+              return false;
+            }
+            return true;
+          });
+
+          if (data.items.length === 0) {
+            appendChatBubble('bot', `<strong>🤔 What specific tasks would you like to timebox?</strong><br/>Please list the activities, habits, or meetings you want to execute (e.g. <em>'Brush teeth, Drink water, 15m yoga, Sleep visualization'</em>), and I'll create your exact timeline!`);
+            chatInputField.focus();
+            return;
+          }
+        }
+
         const now = new Date();
         const currentHour = now.getHours();
 
@@ -5365,8 +5740,8 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
               <td style="width: 75px; text-align: center;">
                 <input type="text" class="review-input-time" data-index="${idx}" value="${escapeHtml(item.scheduledTime)}" placeholder="HH:MM" style="text-align: center;" />
               </td>
-              <td style="min-width: 160px;">
-                <input type="text" class="review-input-notes" data-index="${idx}" value="${escapeHtml(item.notes)}" placeholder="Explanation / Instructions (word-wrapped)" />
+              <td style="min-width: 320px; width: 42%;">
+                <textarea class="review-input-notes" data-index="${idx}" rows="3" placeholder="Execution notes, sub-steps, or guidelines (distinct from task title)...">${escapeHtml(item.notes)}</textarea>
               </td>
               <td style="text-align: center; width: 84px; white-space: nowrap;">
                 <button type="button" class="review-move-btn review-move-up" data-index="${idx}" title="Move Up" ${idx === 0 ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''}>▲</button>
@@ -5396,7 +5771,7 @@ RETURN ONLY A VALID JSON OBJECT (no markdown outside the json):
                   <th style="min-width: 140px;">Task Title</th>
                   <th style="width: 110px; min-width: 100px; text-align: center;">Duration</th>
                   <th style="width: 75px; text-align: center;">Time</th>
-                  <th style="min-width: 160px;">Notes / Context</th>
+                  <th style="min-width: 320px; width: 42%;">📝 Notes &amp; Execution Details</th>
                   <th style="width: 84px; text-align: center;">Order / Del</th>
                 </tr>
               </thead>
@@ -5635,28 +6010,61 @@ Return ONLY a JSON object:
         }
         if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
 
-        // Enhanced Natural Language Task Splitter for Spoken Sequences & Continuous Dictation
+        // 1. Strip leading conversational preambles
         let preprocessed = input.trim();
-        // 1. Split on sequence connectors
+        preprocessed = preprocessed.replace(/^(?:i\s+(?:want|would\s+like|need|am\s+going)\s+to\s+plan\s+(?:my|the|for\s+the)\s+day|i\s+want\s+a\s+plan\s+for\s+(?:the|my)\s+day|here\s+(?:is|are)\s+(?:my|the)\s+(?:tasks|plan|schedule)|can\s+you\s+help\s+me\s+plan|plan\s+(?:my|the)\s+day)\s*[:,-]?\s*/i, '');
+
+        // 2. Split on sequence connectors
         preprocessed = preprocessed.replace(/\b(?:and\s+then|then|after\s+that|followed\s+by|afterwards|next)\b/gi, '\n');
-        // 2. Split on punctuation, bullets, numbered lists
+        // 3. Split on punctuation, bullets, numbered lists
         preprocessed = preprocessed.replace(/[,;•*]|\b\d+\.\s+/g, '\n');
-        // 3. Split on ' and ' or ' then ' when preceding an action verb or task phrase
+        // 4. Split on ' and ' when preceding an action verb or task phrase
         preprocessed = preprocessed.replace(/\s+and\s+(?=(?:brushing|drinking|doing|taking|reading|stretching|meditating|visualiz|going|washing|practicing|writing|checking|eating|preparing|making|reviewing|cleaning|walk|run|exercise|hydrate|stretch|read|meditate|sleep|teeth|water|yoga)\b)/gi, '\n');
-        // 4. Split on gerund action verbs when spoken continuously without punctuation
+        // 5. Split on gerund action verbs when spoken continuously without punctuation
         preprocessed = preprocessed.replace(/(?<=[a-zA-Z0-9])\s+(?=(?:drinking|doing|brushing|taking|reading|stretching|meditating|visualiz|washing|practicing|writing|checking|eating|preparing|making|reviewing|cleaning)\b)/gi, '\n');
-        // 5. Split on visualization / meditation / reading before bed
+        // 6. Split on visualization / meditation
         preprocessed = preprocessed.replace(/(?<=[a-zA-Z0-9])\s+(?=(?:visualization|meditation|reading|journaling|breathing)\b)/gi, '\n');
 
         const rawClauses = preprocessed.split('\n').map(c => c.trim()).filter(c => c.length > 0);
+
+        // Filter out conversational meta-instructions
+        const metaRegex = /^(?:i\s+(?:want|would\s+like|need|am\s+going)\s+to\s+plan\s+(?:my|the|for\s+the)\s+day|i\s+want\s+a\s+plan\s+for\s+(?:the|my)\s+day|plan\s+(?:for\s+)?(?:the|my)\s+day|here\s+(?:is|are)\s+(?:my|the)\s+(?:tasks|plan|schedule)|can\s+you\s+help\s+me\s+plan|schedule\s+for\s+today|today'?s\s+agenda|plan\s+my\s+day|etc\.?)$/i;
+
+        const filteredClauses = rawClauses.filter(c => !metaRegex.test(c));
+
+        // If the user ONLY gave conversational text with no tasks, ask for clarification!
+        if (filteredClauses.length === 0) {
+          appendChatBubble('bot', '<strong>🤔 What would you like to accomplish?</strong><br/>Please list the specific tasks, meetings, or habits you want to do (e.g. <em>"Deep work on proposal 60m, Team sync at 11:30, Code review 45m"</em>).');
+          chatInputField.placeholder = "e.g. 'Deep work on proposal 60m, Team sync at 11:30, Code review 45m'";
+          chatInputField.focus();
+          return;
+        }
 
         const items = [];
         const timeRegex = /\b(?:at\s+)?(\d{1,2})[:.](\d{2})\b|\b(?:at\s+)?(\d{1,2})\s*(am|pm)\b/i;
         const durRegex = /(\d+(?:\.\d+)?)\s*(?:minutes|minute|mins|min|m|hours|hour|hrs|hr|h)\b/i;
 
-        rawClauses.forEach((clause, idx) => {
-          if (/^etc\.?$/i.test(clause)) return;
+        function getSmartExecutionNote(taskName, rawClause) {
+          const cleanRaw = rawClause.replace(timeRegex, '').replace(durRegex, '').trim();
+          const stripped = cleanRaw.replace(/^(?:brushing|drinking|doing|taking|reading|stretching|meditating|visualiz|going|washing|practicing|writing|checking|eating|preparing|making|reviewing|cleaning)\s+/i, '').trim();
+          if (stripped.length > taskName.length + 6 && !stripped.toLowerCase().startsWith(taskName.toLowerCase())) {
+            return cleanRaw;
+          }
+          if (/brush(?:ing)?\s+teeth/i.test(taskName)) return 'Thorough 2-min brushing; clean dental rinse before bed';
+          if (/water|hydrate|drink/i.test(taskName)) return 'Hydrate with a glass of room-temperature water for metabolic recovery';
+          if (/yoga|stretch/i.test(taskName)) return 'Gentle floor stretches and restorative poses to down-regulate nervous system';
+          if (/visualiz/i.test(taskName)) return 'Slow diaphragmatic breathing; visualize tomorrow\'s key priorities';
+          if (/meditat|mindful|breath/i.test(taskName)) return 'Box breathing (4s in, 4s hold, 4s out, 4s hold) to quiet mental chatter';
+          if (/vitamin/i.test(taskName)) return 'Take daily supplements with water';
+          if (/read|book/i.test(taskName)) return 'Read physical book or Kindle under warm light; avoid blue light';
+          if (/deep|strategy|focus/i.test(taskName)) return 'Silence all notifications; single-task on highest-leverage priority';
+          if (/email|slack|inbox/i.test(taskName)) return 'Batch triage: reply to urgent items, archive, or delegate';
+          if (/review/i.test(taskName)) return 'Review progress against milestones and document blockers';
+          if (/meeting|standup|sync|call/i.test(taskName)) return 'Meeting agenda: key updates, alignment, and unblocking team';
+          return 'Dedicated focus block; execute with single-task momentum';
+        }
 
+        filteredClauses.forEach((clause, idx) => {
           let dur = null;
           const dMatch = clause.match(durRegex);
           if (dMatch) {
@@ -5681,13 +6089,16 @@ Return ONLY a JSON object:
             let cleanName = clause.replace(timeRegex, '').replace(durRegex, '');
             cleanName = cleanName.replace(/\b(?:at|for|from|to|-)\b/gi, ' ').trim();
 
+            const shortTitle = cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1)) : 'Calendar Anchor';
+            const smartNotes = getSmartExecutionNote(shortTitle, clause);
+
             items.push({
               id: items.length + 1,
               type: 'meeting',
-              shortName: cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1)) : 'Calendar Anchor',
+              shortName: shortTitle,
               duration: dur || 30,
               scheduledTime: timeFormatted,
-              notes: clause,
+              notes: smartNotes,
               priority: null
             });
           } else {
@@ -5704,7 +6115,6 @@ Return ONLY a JSON object:
               else dur = 15;
             }
 
-            // Intelligent title shortening for individual actions
             let shortName = clause.replace(durRegex, '');
             shortName = shortName.replace(/^(?:i\s+(?:said\s+)?(?:want|wanted|need|would\s+like|plan)\s+to|going\s+to|let'?s|please|also|and|then|next)\s+/i, '');
             shortName = shortName.replace(/\b(?:for|during)\s*$/i, '').trim();
@@ -5722,17 +6132,18 @@ Return ONLY a JSON object:
               if (shortName.length > 35) shortName = shortName.slice(0, 32) + '...';
             }
 
+            const smartNotes = getSmartExecutionNote(shortName, clause);
+
             items.push({
               id: items.length + 1,
               type: 'task',
               shortName: shortName || `Focus Task ${items.length + 1}`,
               duration: dur,
               scheduledTime: '',
-              notes: clause,
+              notes: smartNotes,
               priority: null
             });
 
-            // Insert restorative break ONLY if user explicitly opted in
             if (allowBreaks && dur >= 45) {
               items.push({
                 id: items.length + 1,
@@ -5740,24 +6151,12 @@ Return ONLY a JSON object:
                 shortName: '☕ Hydrate & Posture Reset',
                 duration: 5,
                 scheduledTime: '',
-                notes: 'Productivity recovery break',
+                notes: 'Productivity recovery pause to restore cognitive stamina',
                 priority: null
               });
             }
           }
         });
-
-        if (items.length === 0) {
-          items.push({
-            id: 1,
-            type: 'task',
-            shortName: 'Focused Work Session',
-            duration: 25,
-            scheduledTime: '',
-            notes: input,
-            priority: null
-          });
-        }
 
         const now = new Date();
         const currentHour = now.getHours();
@@ -5767,495 +6166,7 @@ Return ONLY a JSON object:
         renderInteractiveReview('Smart Client-Side NLP Engine', warningMsg || 'Extracted via intelligent sequential task parser.');
       }
 
-      function extractJsonFromText(rawText) {
-        let cleaned = (rawText || '').trim();
-        const fenceMatch = cleaned.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-        if (fenceMatch) cleaned = fenceMatch[1].trim();
-
-        try {
-          return JSON.parse(cleaned);
-        } catch (e) {
-          const firstBrace = cleaned.indexOf('{');
-          const lastBrace = cleaned.lastIndexOf('}');
-          if (firstBrace !== -1 && lastBrace !== -1) {
-            return JSON.parse(cleaned.substring(firstBrace, lastBrace + 1));
-          }
-          throw e;
-        }
-      }
-
-      function processParsedSchedule(data, engineLabel, warningMsg, allowBreaks) {
-        if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
-
-        const now = new Date();
-        const currentHour = now.getHours();
-
-        let rawItems = (data.items || []).map((item, idx) => ({
-          id: item.id || (idx + 1),
-          type: item.type === 'meeting' ? 'meeting' : (item.type === 'break' ? 'break' : 'task'),
-          shortName: (item.shortName || item.name || `Task ${idx + 1}`).trim(),
-          duration: parseInt(item.duration, 10) || 15,
-          scheduledTime: (item.scheduledTime || item.time || '').trim(),
-          notes: (item.notes || '').trim(),
-          priority: item.priority || null
-        }));
-
-        // Filter out breaks if user did NOT opt in!
-        if (!allowBreaks) {
-          rawItems = rawItems.filter(it => it.type !== 'break' && !/^(?:quick break|hydration break|micro break|rest pause)$/i.test(it.shortName));
-        }
-
-        pendingScheduleItems = rawItems;
-
-        // Evaluation of Top 3 requirement (only if before 12:00 PM and > 4 tasks)
-        if (currentHour >= 12 || pendingScheduleItems.length <= 4) {
-          currentRequiresTop3 = false;
-        } else {
-          currentRequiresTop3 = !!data.requiresTop3Priorities;
-        }
-
-        renderInteractiveReview(engineLabel, warningMsg);
-      }
-
-      function renderInteractiveReview(engineLabel, warningMsg) {
-        const now = new Date();
-        const timeStr = formatClockHM(now);
-        const currentHour = now.getHours();
-
-        let headerNotice = '';
-        if (warningMsg) {
-          headerNotice = `<div style="padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); border-radius: 8px; margin-bottom: 10px; font-size: 0.8rem; color: #fca5a5;">⚠️ ${escapeHtml(warningMsg)}</div>`;
-        }
-
-        const engineTagClass = engineLabel.includes('OpenAI') ? 'openai' : (engineLabel.includes('DeepSeek') ? 'deepseek' : 'local');
-        const badgeHtml = `<span class="engine-tag ${engineTagClass}">⚡ Powered by ${escapeHtml(engineLabel)}</span>`;
-
-        let contextNotice = '';
-        if (currentRequiresTop3) {
-          contextNotice = `<div style="margin: 8px 0; font-size: 0.86rem; color: var(--text-main);">
-            🎯 <strong>Harvard Priority Selection:</strong> Select your <strong>Top 3 most critical priorities</strong> using the checkboxes below.
-          </div>`;
-        } else {
-          let timePeriodName = 'morning session';
-          if (currentHour >= 12 && currentHour < 17) timePeriodName = 'afternoon session';
-          else if (currentHour >= 17 && currentHour < 21) timePeriodName = 'evening session';
-          else if (currentHour >= 21) timePeriodName = 'night focus session';
-
-          const reason = currentHour >= 12
-            ? `Current local time is <strong>${timeStr}</strong> (${timePeriodName}).`
-            : `Planning a focused block of <strong>${pendingScheduleItems.length} tasks</strong>.`;
-          contextNotice = `<div style="margin: 8px 0; font-size: 0.86rem; color: var(--accent);">
-            ⚡ <strong>Direct Flow Schedule:</strong> ${reason} Tasks arranged in immediate execution order!
-          </div>`;
-        }
-
-        let tableRowsHtml = '';
-        pendingScheduleItems.forEach((item, idx) => {
-          const isAnchor = item.type === 'meeting' || !!item.scheduledTime;
-          const isBreak = item.type === 'break' || /break|walk|hydrate/i.test(item.shortName);
-          let typeBadge = '<span style="color: var(--accent); font-weight: 600;">🏷️ Flow</span>';
-          if (isAnchor) typeBadge = '<span style="color: var(--warning); font-weight: 600;">📅 Anchor</span>';
-          else if (isBreak) typeBadge = '<span style="color: #38bdf8; font-weight: 600;">☕ Break</span>';
-
-          const top3Col = currentRequiresTop3
-            ? `<td style="text-align: center; width: 45px;">
-                <input type="checkbox" class="review-priority-chk" data-index="${idx}" ${item.priority ? 'checked' : ''} style="cursor: pointer;" />
-               </td>`
-            : '';
-
-          tableRowsHtml += `
-            <tr data-index="${idx}">
-              <td style="text-align: center; font-weight: 700; color: var(--text-muted); width: 28px;">${idx + 1}</td>
-              <td style="width: 80px;">${typeBadge}</td>
-              ${top3Col}
-              <td style="min-width: 140px;">
-                <input type="text" class="review-input-name" data-index="${idx}" value="${escapeHtml(item.shortName)}" placeholder="Short Action Title" />
-              </td>
-              <td style="width: 110px; min-width: 100px; text-align: center;">
-                <div class="dur-input-container">
-                  <input type="number" class="review-input-dur" data-index="${idx}" value="${item.duration}" min="1" max="720" />
-                  <span class="dur-unit-label">mins</span>
-                </div>
-              </td>
-              <td style="width: 75px; text-align: center;">
-                <input type="text" class="review-input-time" data-index="${idx}" value="${escapeHtml(item.scheduledTime)}" placeholder="HH:MM" style="text-align: center;" />
-              </td>
-              <td style="min-width: 160px;">
-                <input type="text" class="review-input-notes" data-index="${idx}" value="${escapeHtml(item.notes)}" placeholder="Explanation / Instructions (word-wrapped)" />
-              </td>
-              <td style="text-align: center; width: 84px; white-space: nowrap;">
-                <button type="button" class="review-move-btn review-move-up" data-index="${idx}" title="Move Up" ${idx === 0 ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''}>▲</button>
-                <button type="button" class="review-move-btn review-move-down" data-index="${idx}" title="Move Down" ${idx === pendingScheduleItems.length - 1 ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''}>▼</button>
-                <button type="button" class="review-del-btn" data-index="${idx}" title="Remove Task">✕</button>
-              </td>
-            </tr>
-          `;
-        });
-
-        const top3Header = currentRequiresTop3 ? '<th style="width: 45px; text-align: center;">Top 3</th>' : '';
-
-        const reviewHtml = `
-          ${headerNotice}
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-            <span style="font-weight: 700; font-size: 0.95rem; color: #fff;">📋 Review Your Schedule Table</span>
-            ${badgeHtml}
-          </div>
-          ${contextNotice}
-          <div class="review-table-wrap">
-            <table class="review-table">
-              <thead>
-                <tr>
-                  <th style="width: 28px; text-align: center;">#</th>
-                  <th style="width: 80px;">Type</th>
-                  ${top3Header}
-                  <th style="min-width: 140px;">Task Title</th>
-                  <th style="width: 110px; min-width: 100px; text-align: center;">Duration</th>
-                  <th style="width: 75px; text-align: center;">Time</th>
-                  <th style="min-width: 160px;">Notes / Context</th>
-                  <th style="width: 84px; text-align: center;">Order / Del</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${tableRowsHtml}
-              </tbody>
-            </table>
-          </div>
-          <div class="review-actions-bar">
-            <button type="button" class="btn btn-outline btn-sm" id="addReviewTaskBtn">+ Add Task</button>
-            <button type="button" class="btn btn-emerald" id="confirmLoadScheduleBtn" style="padding: 12px 24px; font-weight: 800; font-size: 0.95rem; background: linear-gradient(135deg, #059669, #047857) !important; background-color: #047857 !important; color: #ffffff !important; border: 1px solid #10b981 !important; border-radius: 8px !important; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.45) !important; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important; cursor: pointer;">Load Schedule into Cockpit ⏩</button>
-          </div>
-          <div style="margin-top: 10px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.45;">
-            💡 <strong>Complete Flexibility:</strong> You can edit durations (large numbers like 100m+ are clearly displayed), rename tasks, reorder with <strong>▲ / ▼</strong>, or type natural language edits below (e.g. <em>"make task 1 120 mins"</em>, <em>"move review to top"</em>). When ready, click <strong>Load Schedule into Cockpit ⏩</strong>!
-          </div>
-        `;
-
-        appendChatBubble('bot', reviewHtml);
-        bindReviewTableEvents();
-        chatStep = 1;
-      }
-
-      function bindReviewTableEvents() {
-        document.querySelectorAll('.review-input-name').forEach(inp => {
-          inp.addEventListener('input', (e) => {
-            const idx = parseInt(e.target.dataset.index, 10);
-            if (pendingScheduleItems[idx]) pendingScheduleItems[idx].shortName = e.target.value;
-          });
-        });
-
-        document.querySelectorAll('.review-input-dur').forEach(inp => {
-          inp.addEventListener('input', (e) => {
-            const idx = parseInt(e.target.dataset.index, 10);
-            if (pendingScheduleItems[idx]) pendingScheduleItems[idx].duration = parseInt(e.target.value, 10) || 5;
-          });
-        });
-
-        document.querySelectorAll('.review-input-time').forEach(inp => {
-          inp.addEventListener('input', (e) => {
-            const idx = parseInt(e.target.dataset.index, 10);
-            if (pendingScheduleItems[idx]) {
-              pendingScheduleItems[idx].scheduledTime = e.target.value.trim();
-              pendingScheduleItems[idx].type = e.target.value.trim() ? 'meeting' : 'task';
-            }
-          });
-        });
-
-        document.querySelectorAll('.review-input-notes').forEach(inp => {
-          inp.addEventListener('input', (e) => {
-            const idx = parseInt(e.target.dataset.index, 10);
-            if (pendingScheduleItems[idx]) pendingScheduleItems[idx].notes = e.target.value;
-          });
-        });
-
-        document.querySelectorAll('.review-priority-chk').forEach(chk => {
-          chk.addEventListener('change', (e) => {
-            const idx = parseInt(e.target.dataset.index, 10);
-            if (pendingScheduleItems[idx]) {
-              pendingScheduleItems[idx].priority = e.target.checked ? 1 : null;
-            }
-          });
-        });
-
-        function syncReviewInputsFromDOM() {
-          document.querySelectorAll('.review-input-name').forEach(inp => {
-            const idx = parseInt(inp.dataset.index, 10);
-            if (pendingScheduleItems[idx] && inp.value) pendingScheduleItems[idx].shortName = inp.value.trim();
-          });
-          document.querySelectorAll('.review-input-dur').forEach(inp => {
-            const idx = parseInt(inp.dataset.index, 10);
-            if (pendingScheduleItems[idx] && inp.value) pendingScheduleItems[idx].duration = parseInt(inp.value, 10) || 5;
-          });
-          document.querySelectorAll('.review-input-time').forEach(inp => {
-            const idx = parseInt(inp.dataset.index, 10);
-            if (pendingScheduleItems[idx]) {
-              pendingScheduleItems[idx].scheduledTime = inp.value.trim();
-              pendingScheduleItems[idx].type = inp.value.trim() ? 'meeting' : 'task';
-            }
-          });
-          document.querySelectorAll('.review-input-notes').forEach(inp => {
-            const idx = parseInt(inp.dataset.index, 10);
-            if (pendingScheduleItems[idx]) pendingScheduleItems[idx].notes = inp.value.trim();
-          });
-        }
-
-        document.querySelectorAll('.review-move-up').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const idx = parseInt(e.target.dataset.index, 10);
-            if (idx > 0) {
-              syncReviewInputsFromDOM();
-              const temp = pendingScheduleItems[idx];
-              pendingScheduleItems[idx] = pendingScheduleItems[idx - 1];
-              pendingScheduleItems[idx - 1] = temp;
-              if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
-              renderInteractiveReview('Order Updated', null);
-            }
-          });
-        });
-
-        document.querySelectorAll('.review-move-down').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const idx = parseInt(e.target.dataset.index, 10);
-            if (idx < pendingScheduleItems.length - 1) {
-              syncReviewInputsFromDOM();
-              const temp = pendingScheduleItems[idx];
-              pendingScheduleItems[idx] = pendingScheduleItems[idx + 1];
-              pendingScheduleItems[idx + 1] = temp;
-              if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
-              renderInteractiveReview('Order Updated', null);
-            }
-          });
-        });
-
-        document.querySelectorAll('.review-del-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            syncReviewInputsFromDOM();
-            const idx = parseInt(e.target.dataset.index, 10);
-            pendingScheduleItems.splice(idx, 1);
-            if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
-            renderInteractiveReview('Task Removed', null);
-          });
-        });
-
-        const addBtn = document.getElementById('addReviewTaskBtn');
-        if (addBtn) {
-          addBtn.addEventListener('click', () => {
-            pendingScheduleItems.push({
-              id: pendingScheduleItems.length + 1,
-              type: 'task',
-              shortName: 'New Focus Task',
-              duration: 30,
-              scheduledTime: '',
-              notes: 'Added focus block',
-              priority: null
-            });
-            if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
-            renderInteractiveReview('Table Updated', null);
-          });
-        }
-
-        const confirmBtn = document.getElementById('confirmLoadScheduleBtn');
-        if (confirmBtn) {
-          confirmBtn.addEventListener('click', () => {
-            loadReviewedItemsIntoCockpit();
-          });
-        }
-      }
-
-      async function handleScheduleFeedback(feedbackText) {
-        const lower = feedbackText.toLowerCase();
-        if (/^(?:load|confirm|looks good|yes|proceed|start|go|done)$/i.test(lower.trim())) {
-          loadReviewedItemsIntoCockpit();
-          return;
-        }
-
-        const promptSystem = `You are an executive Harvard Timeboxing assistant updating a daily schedule based on user instructions.
-Current items:
-${JSON.stringify(pendingScheduleItems)}
-
-STRICT REORDERING & EDITING INSTRUCTIONS:
-1. If the user asks to interchange, swap, move, or reorder tasks (e.g. "move review to the top", "swap task 1 and 3", "put vitamin D first"):
-   Update the array order of "items" exactly as requested!
-2. If the user asks to modify durations (including 100+ mins), titles, or delete/add tasks, apply those changes.
-3. Keep task names short (2–5 words).
-4. Preserve notes and start times.
-
-Return ONLY a JSON object:
-{
-  "requiresTop3Priorities": ${currentRequiresTop3},
-  "planningSummary": "Updated schedule based on feedback",
-  "items": [...]
-}`;
-
-        try {
-          const aiResult = await executeMultiTierAi(promptSystem, feedbackText);
-          if (aiResult && aiResult.content) {
-            const parsed = extractJsonFromText(aiResult.content);
-            processParsedSchedule(parsed, aiResult.engine, null, userRequestedBreaks);
-            return;
-          }
-        } catch (e) {
-          console.warn('Feedback AI error:', e);
-        }
-
-        applyLocalFeedback(feedbackText);
-      }
-
-      function applyLocalFeedback(feedback) {
-        if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
-
-        const lower = feedback.toLowerCase();
-        const durMatch = lower.match(/(\d+)\s*(?:min|m|hours|hour|hrs|hr|h)/i);
-        if (durMatch) {
-          let newDur = parseInt(durMatch[1], 10);
-          if (/hour|hr|h/i.test(durMatch[0]) && !/min/i.test(durMatch[0])) newDur *= 60;
-
-          let matched = false;
-          pendingScheduleItems.forEach(item => {
-            const nameLower = item.shortName.toLowerCase();
-            if (lower.includes(nameLower) || (nameLower.includes('review') && lower.includes('review'))) {
-              item.duration = newDur;
-              matched = true;
-            }
-          });
-          if (!matched && pendingScheduleItems.length > 0) {
-            pendingScheduleItems[0].duration = newDur;
-          }
-        }
-
-        if (lower.includes('add')) {
-          const addPhrase = feedback.replace(/.*add\s+/i, '').trim();
-          if (addPhrase) {
-            let dur = 30;
-            const dM = addPhrase.match(/(\d+)\s*(?:min|m)/i);
-            if (dM) dur = parseInt(dM[1], 10);
-            const cleanTitle = addPhrase.replace(/\b(?:for\s+)?\d+\s*(?:minutes|minute|mins|min|m)\b/i, '').trim();
-            pendingScheduleItems.push({
-              id: pendingScheduleItems.length + 1,
-              type: 'task',
-              shortName: cleanTitle ? (cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1)) : 'Extra Focus Task',
-              duration: dur,
-              scheduledTime: '',
-              notes: addPhrase,
-              priority: null
-            });
-          }
-        }
-
-        renderInteractiveReview('Smart Local Engine', 'Schedule modified according to feedback.');
-      }
-
-      function clientSideTimeboxerExtraction(input, allowBreaks, warningMsg) {
-        if (typeof allowBreaks === 'string' && !warningMsg) {
-          warningMsg = allowBreaks;
-          allowBreaks = false;
-        }
-        if (chatBody.lastElementChild) chatBody.lastElementChild.remove();
-
-        const delimiters = /\n|;|•|\*|\d+\.\s+|(?<=[0-9a-zA-Z\)])\s*,\s*|\s+and\s+then\s+|\s+then\s+|\s+followed\s+by\s+|\s+after\s+that\s+/i;
-        const rawClauses = input.split(delimiters).map(c => c.trim()).filter(c => c.length > 0);
-
-        const items = [];
-        const timeRegex = /\b(?:at\s+)?(\d{1,2})[:.](\d{2})\b|\b(?:at\s+)?(\d{1,2})\s*(am|pm)\b/i;
-        const durRegex = /(\d+(?:\.\d+)?)\s*(?:minutes|minute|mins|min|m|hours|hour|hrs|hr|h)\b/i;
-
-        rawClauses.forEach((clause, idx) => {
-          if (/^etc\.?$/i.test(clause)) return;
-
-          let dur = null;
-          const dMatch = clause.match(durRegex);
-          if (dMatch) {
-            const val = parseFloat(dMatch[1]);
-            const unit = dMatch[0].toLowerCase();
-            dur = unit.includes('h') ? Math.round(val * 60) : Math.round(val);
-          }
-
-          const tMatch = clause.match(timeRegex);
-          if (tMatch) {
-            let hour = 0;
-            let min = 0;
-            if (tMatch[1] && tMatch[2]) {
-              hour = parseInt(tMatch[1], 10);
-              min = parseInt(tMatch[2], 10);
-            } else if (tMatch[3] && tMatch[4]) {
-              hour = parseInt(tMatch[3], 10);
-              if (tMatch[4].toLowerCase() === 'pm' && hour < 12) hour += 12;
-              if (tMatch[4].toLowerCase() === 'am' && hour === 12) hour = 0;
-            }
-            const timeFormatted = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
-            let cleanName = clause.replace(timeRegex, '').replace(durRegex, '');
-            cleanName = cleanName.replace(/\b(?:at|for|from|to|-)\b/gi, ' ').trim();
-
-            items.push({
-              id: items.length + 1,
-              type: 'meeting',
-              shortName: cleanName ? (cleanName.charAt(0).toUpperCase() + cleanName.slice(1)) : 'Calendar Anchor',
-              duration: dur || 30,
-              scheduledTime: timeFormatted,
-              notes: clause,
-              priority: null
-            });
-          } else {
-            if (!dur) {
-              if (/water|hydrate|stretch|breathe|vitamin/i.test(clause)) dur = 5;
-              else if (/email|inbox|slack|scan/i.test(clause)) dur = 20;
-              else if (/review|debrief|wrap|plan/i.test(clause)) dur = 15;
-              else if (/deep|write|code|report|deck/i.test(clause)) dur = 45;
-              else dur = 25;
-            }
-
-            // Intelligent title shortening
-            let shortName = clause.replace(durRegex, '');
-            shortName = shortName.replace(/^(?:i\s+(?:said\s+)?(?:want|wanted|need|would\s+like|plan)\s+to|going\s+to|let'?s|please|also|and|next)\s+/i, '');
-            shortName = shortName.replace(/\b(?:for|during)\s*$/i, '').trim();
-
-            // Check if habits or common tasks
-            if (/drink\s+water|hydrate/i.test(clause)) shortName = 'Hydrate (Water)';
-            else if (/vitamin\s+d/i.test(clause)) shortName = 'Take Vitamin D';
-            else if (/review/i.test(clause)) shortName = 'Session Review';
-            else {
-              const words = shortName.split(/\s+/);
-              if (words.length > 5) shortName = words.slice(0, 4).join(' ');
-              if (shortName.length > 35) shortName = shortName.substring(0, 32) + '...';
-              shortName = shortName.charAt(0).toUpperCase() + shortName.slice(1);
-            }
-
-            items.push({
-              id: items.length + 1,
-              type: 'task',
-              shortName: shortName || `Focus Task ${items.length + 1}`,
-              duration: dur,
-              scheduledTime: '',
-              notes: clause,
-              priority: null
-            });
-
-            // Insert restorative break ONLY if user explicitly opted in
-            if (allowBreaks && dur >= 45) {
-              items.push({
-                id: items.length + 1,
-                type: 'break',
-                shortName: '☕ Hydrate & Posture Reset',
-                duration: 5,
-                scheduledTime: '',
-                notes: 'Productivity recovery break',
-                priority: null
-              });
-            }
-          }
-        });
-
-        if (items.length === 0) {
-          items.push({ id: 1, type: 'task', shortName: 'Deep Work Focus', duration: 45, scheduledTime: '', notes: 'Core execution block', priority: null });
-          items.push({ id: 2, type: 'task', shortName: 'Inbox & Alignment', duration: 20, scheduledTime: '', notes: 'Comms wrap-up', priority: null });
-          items.push({ id: 3, type: 'task', shortName: 'Hydrate & Reset', duration: 5, scheduledTime: '', notes: 'Physical reset', priority: null });
-        }
-
-        const now = new Date();
-        const currentHour = now.getHours();
-        pendingScheduleItems = items;
-        currentRequiresTop3 = (currentHour < 14 && items.length > 4);
-
-        renderInteractiveReview('Smart Local NLP Engine', warningMsg);
-      }
+      
 
       function loadReviewedItemsIntoCockpit() {
         if (pendingScheduleItems.length === 0) {
