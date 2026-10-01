@@ -289,7 +289,10 @@
         <h1>The Anchor & Flow Method</h1>
         <p>A First-Principles Guide to Dynamic Scheduling, Outlook Ingestion, and Execution Auditing</p>
       </div>
-      <a href="index.html" class="nav-btn">&larr; Return to Timer</a>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <a href="index.html" class="nav-btn">&larr; 🧠 AI Daily Planner</a>
+        <a href="timer.html" class="nav-btn" style="border-color: var(--accent); color: var(--accent);">⏱️ All Timers</a>
+      </div>
     </header>
 
     <!-- Section 0: Meet the Creator -->
@@ -315,6 +318,76 @@
         <span style="font-size: 0.75rem; background: rgba(129, 140, 248, 0.15); border: 1px solid rgba(129, 140, 248, 0.3); color: #c7d2fe; padding: 3px 8px; border-radius: 4px;">⏱ Harvard Timeboxing Architecture</span>
       </div>
     </section>
+
+    
+    <!-- Section: Step-by-Step Calendar Export Guide -->
+    <section class="card" id="calendar-export" style="border-left: 4px solid var(--accent); scroll-margin-top: 24px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+        <h2>📅 How to Export Your Calendar (.ics)</h2>
+        <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 0.8rem; font-weight: 600; padding: 4px 10px; border-radius: 9999px; border: 1px solid rgba(56, 189, 248, 0.3);">
+          Zero-Manual Entry
+        </span>
+      </div>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">
+        The Anchor &amp; Flow AI agent accepts standard iCalendar (<code>.ics</code>) files or text agenda exports from any major calendar client. Once uploaded, your fixed meetings, doctor appointments, and meal breaks are automatically locked as immutable <strong>Anchor Events</strong>, allowing the AI to safely timebox your flexible deep-work sprints around them.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <!-- Outlook Web / Microsoft 365 -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+            <span style="font-size: 1.3rem;">🌐</span>
+            <h3 style="font-size: 1.05rem; color: #fff;">Outlook Web (Office 365)</h3>
+          </div>
+          <ol style="padding-left: 18px; color: #cbd5e1; font-size: 0.9rem; line-height: 1.6;">
+            <li>Open <a href="https://outlook.office.com/calendar" target="_blank" style="color: var(--accent);">Outlook on the Web</a>.</li>
+            <li>Click the <strong>⚙️ Settings</strong> icon (top-right).</li>
+            <li>Navigate to <strong>Calendar</strong> &rarr; <strong>Shared calendars</strong>.</li>
+            <li>Under <em>Publish a calendar</em>, choose your primary calendar and select <em>"Can view all details"</em>.</li>
+            <li>Click <strong>Publish</strong>, then click the <strong>ICS link</strong> and download the <code>.ics</code> file.</li>
+            <li>Drag &amp; drop the file directly into the <strong>Anchor &amp; Flow AI Planner</strong>!</li>
+          </ol>
+        </div>
+
+        <!-- Outlook Desktop -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+            <span style="font-size: 1.3rem;">💻</span>
+            <h3 style="font-size: 1.05rem; color: #fff;">Outlook Desktop (Windows &amp; Mac)</h3>
+          </div>
+          <ol style="padding-left: 18px; color: #cbd5e1; font-size: 0.9rem; line-height: 1.6;">
+            <li>In the Outlook desktop app, switch to the <strong>Calendar view</strong>.</li>
+            <li>Go to <strong>File</strong> (top menu) &rarr; <strong>Save Calendar</strong>.</li>
+            <li>Under <em>Date Range</em>, select <strong>Today</strong> or <strong>Tomorrow</strong>.</li>
+            <li>Save as an <strong>iCalendar Format (*.ics)</strong> file on your computer.</li>
+            <li>Click the <strong>📎 Upload Calendar</strong> button in Anchor &amp; Flow to import your meetings instantly.</li>
+          </ol>
+        </div>
+
+        <!-- Google Calendar -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+            <span style="font-size: 1.3rem;">📅</span>
+            <h3 style="font-size: 1.05rem; color: #fff;">Google Calendar</h3>
+          </div>
+          <ol style="padding-left: 18px; color: #cbd5e1; font-size: 0.9rem; line-height: 1.6;">
+            <li>Open <a href="https://calendar.google.com" target="_blank" style="color: var(--accent);">Google Calendar</a> on your computer.</li>
+            <li>Click the <strong>⚙️ Settings menu</strong> &rarr; <strong>Settings</strong>.</li>
+            <li>On the left panel, click <strong>Import &amp; export</strong> &rarr; <strong>Export</strong>.</li>
+            <li>Extract the downloaded <code>.zip</code> archive to get your <code>.ics</code> file.</li>
+            <li>Drop the <code>.ics</code> file right into Anchor &amp; Flow.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 12px;">
+        <span style="font-size: 1.2rem; flex-shrink: 0;">💡</span>
+        <div style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.5;">
+          <strong style="color: #6ee7b7;">No .ics file available?</strong> No problem! You can simply type or paste your meetings directly into the chat (e.g. <em>"10:00 Team Sync 30m, 13:00 Lunch 45m"</em>), or tell the Flow Agent your anchor times during your daily onboarding chat.
+        </div>
+      </div>
+    </section>
+
 
     <!-- Section 1: Philosophy -->
     <section class="card">

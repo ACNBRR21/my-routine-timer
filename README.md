@@ -11,14 +11,45 @@
 
 ## 👨‍💻 About the Creator: Rishi Roy — The Productivity Guy
 
-**Rishi Roy** is an entrepreneur, technology leader, and productivity bio-architect. 
+**Rishi Roy** is an entrepreneur, technology leader, and productivity bio-architect.
 
 * 🔗 **LinkedIn Profile:** [https://www.linkedin.com/in/rishiroy/](https://www.linkedin.com/in/rishiroy/)
-* ⚡ **Core Philosophy:** Treating **productivity as personal bio-architecture**. Productivity is not just churning through work tickets—it is engineering high-leverage workflows that accelerate professional output while keeping daily mental, physiological, and restorative routines sustainably healthy.
+* ⚡ **The Dual Origin Story of Anchor & Flow:**
+  1. **Executive Work Velocity:** Practicing serial tasking (as used by Napoleon and Elon Musk) to eliminate context switching and focus completely on the Top 3 daily priorities without wasting time on mundane tasks.
+  2. **Caring for His Mother's Glaucoma:** Anchor & Flow was also born out of a deeply personal necessity—to help manage the strict, exact medication intervals for his mother's glaucoma eye drops (represented by the preset `🧴 Eye drops` timers). This caregiving journey inspired Rishi's newly published book on overcoming glaucoma care routines and circadian health.
 
-Anchor & Flow was born from this exact mission: to replace rigid, broken time management apps with a dynamic executive cockpit that respects both immovable professional anchors and essential health habits (circadian alignment, hydration, mobility, and deep focus).
+* 🍏 **Apple Minimalist Philosophy:** Designed with pristine white canvas aesthetics (`#f5f5f7` / `#ffffff`), high-contrast typography, large touch targets, hands-free voice typing, and strict adherence to Pareto's 80/20 law.
 
----
+
+## 🚀 Product Overhaul: Multi-Page Architecture & Apple-Inspired Simplicity
+
+In response to user feedback regarding complexity and overloaded single-page interfaces, Anchor & Flow has been completely overhauled into a streamlined, multi-page architecture governed by Pareto's 80/20 Law and Apple Design Thinking:
+
+### 1. `index.html` — The Anchor & Flow AI Daily Planner (Home)
+* **Big AI Chat Interface:** Front-and-center conversational interface with the Flow Agent.
+* **Welcome Message from Rishi Roy:** Features Rishi Roy's personal daily planning routine, detailing how he uploads his Outlook calendar the previous evening and uses Harvard Timeboxing and Napoleon/Musk serial tasking to focus on the Top 3 priorities.
+* **Bold Direct Timer Option:** A prominent button at the very top: `⏱️ I want to just use the timer →` for immediate, zero-friction timer execution.
+* **User Memory & Preferences Profile:** Stores user name, typical work hours, anchor events, and preferences in local device memory (`anchor_flow_user_profile`), with 1-click export/import of `user_preferences.json`.
+* **Integrated Calendar Ingestion (.ics):** Drag-and-drop support for Outlook / Google Calendar (`.ics`) files, automatically extracting fixed meetings as immutable Anchor Events.
+* **Proactive Anchor Inquiry:** If a user lists tasks without a calendar, the Flow Agent automatically asks: *"Do you want to upload your calendar or tell me about any anchor events which have a fixed time—like your meetings, meal times, or appointments?"*
+* **Slide-Out Side Help Drawer:** One-click drawer with quick step-by-step export guides for Outlook Web, Outlook Desktop, and Google Calendar, with direct deep-links to `guide.html#calendar-export`.
+* **1-Click Launch into Timer:** Seamlessly saves the generated Harvard Timebox routine and transitions directly into `timer.html`.
+
+### 2. `timer.html` — Apple-Inspired Timers & Multi-Step Routines
+Faithfully crafted to match clean iOS Clock & Timer aesthetics:
+* **All Timers Dashboard:** Large, crisp digital typography (`15:00`, `22:00`, `1:30:00+`, `30 min Seq Tabata`), folder categorization, and soft-blue circular play buttons.
+* **Add Timer Sheet:** Supports 4 core timer modalities:
+  1. *Timer* (Countdown timer with repeats)
+  2. *Stopwatch* (Count-up timer)
+  3. *Countdown* (Target countdown)
+  4. *Routine* (Multi-step sequential timer combining focus blocks, rests, and anchors)
+* **Quick Timer Dashed Buttons:** Rapid 1-tap presets (`30 secs`, `1 min`, `5 mins`, `15 mins`, `25 mins`, `30 mins`, `45 mins`, `60 mins`).
+* **Pre-Built Templates:** EMOM, Tabata Workout, Pomodoro, 30 min Seq Tabata exercise, and Harvard Top 3 Deep Work.
+* **Bottom Control Bar:** Session history log, `All | Active` segmented control, and round `+` Add Timer button.
+* **Active Execution Player:** Distraction-free countdown, step counter, active notes display, restart, pause/resume, and Web Audio API harmonic bell chimes.
+
+### 3. `guide.html` — Master System Guide & Calendar Export Manual
+* Comprehensive visual manual with a dedicated `#calendar-export` section detailing exact export steps for Outlook Web, Outlook Desktop, Google Calendar, and Apple Calendar.
 
 ## 1. Why Anchor & Flow? (The Problem with Existing Timers)
 

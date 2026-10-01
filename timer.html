@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="#f2f2f7" name="theme-color"/>
+<title>Timers &amp; Routines — Anchor &amp; Flow</title>
+<meta content="Clean, minimal Apple-inspired timer, stopwatch, and multi-step sequential routines for deep work and workouts." name="description"/>
+<link href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;⏱️&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
+<link href="css/timer.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="app-viewport">
+<!-- Top Navigation Header (Matching Screenshot 1) -->
+<header class="app-header">
+<a class="header-btn" href="index.html" title="Back to AI Flow Planner">
+        ‹
+      </a>
+<div class="header-title-wrap">
+<h1 class="header-title" id="headerTitle">All Timers</h1>
+<span class="header-subtitle" id="timerCountSubtitle">7 Timers Stored</span>
+</div>
+<button class="header-btn" id="menuBtn" title="Timer Settings &amp; Options">
+        •••
+      </button>
+</header>
+<!-- Context Strip: Back to Planner & Creator Tag -->
+<div class="top-context-strip">
+<a class="planner-link-pill" href="index.html">
+<span>🧠</span> Plan My Day (AI)
+      </a>
+<a href="https://www.linkedin.com/in/rishiroy/" rel="noopener noreferrer" style="color: var(--text-secondary); text-decoration: none; font-size: 0.76rem;" target="_blank">
+        By <strong>Rishi Roy</strong> (Glaucoma Care & Productivity) ↗
+      </a>
+</div>
+<!-- Folders Horizontal Scroll Filter -->
+<div class="folder-scroll-bar" id="folderScrollBar">
+<button class="folder-pill active" data-folder="all">All Timers</button>
+<button class="folder-pill" data-folder="work">📁 Work &amp; Focus</button>
+<button class="folder-pill" data-folder="health">📁 Health &amp; Care</button>
+<button class="folder-pill" data-folder="workout">📁 Workouts &amp; HIIT</button>
+<button class="folder-pill" data-folder="routines">📁 Daily Routines</button>
+</div>
+<!-- Timers List Container (Matching Screenshot 1) -->
+<main class="timers-list-container">
+<div id="timersList">
+<!-- Rendered dynamically -->
+</div>
+</main>
+<!-- Bottom Bar (Matching Screenshot 1) -->
+<nav class="app-bottom-bar">
+<!-- History Icon -->
+<button class="bottom-bar-btn" id="historyBtn" title="Session History &amp; Log">
+        ⏱
+      </button>
+<!-- Center Segmented Control (All | Active) -->
+<div class="segmented-control">
+<button class="segment-btn active" id="segAllBtn">All</button>
+<button class="segment-btn" id="segActiveBtn">Active</button>
+</div>
+<!-- Plus Button on Right -->
+<button class="add-timer-fab" id="openAddTimerBtn" title="Add New Timer or Routine">
+        +
+      </button>
+</nav>
+<!-- ======================================================= -->
+<!-- "Add Timer" Modal Sheet (Matching Screenshots 2 & 3)    -->
+<!-- ======================================================= -->
+<div class="modal-sheet-backdrop" id="addTimerSheet">
+<div class="modal-sheet-content">
+<!-- Sheet Header -->
+<div class="sheet-header">
+<button class="sheet-close-btn" id="closeAddSheetBtn">×</button>
+<h2 class="sheet-title">Add Timer</h2>
+<div style="width: 34px;"></div> <!-- Spacer for symmetry -->
+</div>
+<div class="sheet-body">
+<!-- Section 1: Types (Screenshot 2) -->
+<div>
+<div class="sheet-section-title">TIMER TYPES</div>
+<div class="sheet-card-group">
+<div class="sheet-row-item" id="createSingleTimerRow">
+<div class="row-icon-wrap">⏱</div>
+<div class="row-text-wrap">
+<div class="row-title">Timer</div>
+<div class="row-desc">Countdown timer with optional repeats.</div>
+</div>
+<div class="row-chevron">›</div>
+</div>
+<div class="sheet-row-item" id="createStopwatchRow">
+<div class="row-icon-wrap">⏲</div>
+<div class="row-text-wrap">
+<div class="row-title">Stopwatch</div>
+<div class="row-desc">Count up timer.</div>
+</div>
+<div class="row-chevron">›</div>
+</div>
+<div class="sheet-row-item" id="createCountdownRow">
+<div class="row-icon-wrap">📅</div>
+<div class="row-text-wrap">
+<div class="row-title">Countdown</div>
+<div class="row-desc">Countdown to a specific time or target.</div>
+</div>
+<div class="row-chevron">›</div>
+</div>
+<div class="sheet-row-item" id="createRoutineRow">
+<div class="row-icon-wrap">🗂</div>
+<div class="row-text-wrap">
+<div class="row-title">Routine</div>
+<div class="row-desc">Combine timers and stopwatches into steps that run one after another.</div>
+</div>
+<div class="row-chevron">›</div>
+</div>
+</div>
+</div>
+<!-- Section 2: Quick Timer Dashed Pills (Screenshots 2 & 3) -->
+<div>
+<div class="sheet-section-title">QUICK TIMER</div>
+<div class="quick-timer-grid">
+<button class="quick-pill-btn" data-sec="30">
+<span>30</span>
+<span class="sub">secs</span>
+</button>
+<button class="quick-pill-btn" data-sec="60">
+<span>1</span>
+<span class="sub">min</span>
+</button>
+<button class="quick-pill-btn" data-sec="300">
+<span>5</span>
+<span class="sub">mins</span>
+</button>
+<button class="quick-pill-btn" data-sec="900">
+<span>15</span>
+<span class="sub">mins</span>
+</button>
+<button class="quick-pill-btn" data-sec="1500">
+<span>25</span>
+<span class="sub">mins</span>
+</button>
+<button class="quick-pill-btn" data-sec="1800">
+<span>30</span>
+<span class="sub">mins</span>
+</button>
+<button class="quick-pill-btn" data-sec="2700">
+<span>45</span>
+<span class="sub">mins</span>
+</button>
+<button class="quick-pill-btn" data-sec="3600">
+<span>60</span>
+<span class="sub">mins</span>
+</button>
+</div>
+</div>
+<!-- Section 3: Templates (Screenshot 3) -->
+<div>
+<div class="sheet-section-title">TEMPLATES</div>
+<div class="sheet-card-group">
+<div class="sheet-row-item" id="tmplEmomRow">
+<div class="row-icon-wrap">🗂</div>
+<div class="row-text-wrap">
+<div class="row-title">EMOM</div>
+<div class="row-desc">Every Minute On the Minute workout</div>
+</div>
+<div class="row-chevron">›</div>
+</div>
+<div class="sheet-row-item" id="tmplTabataRow">
+<div class="row-icon-wrap">🗂</div>
+<div class="row-text-wrap">
+<div class="row-title">Tabata Workout</div>
+<div class="row-desc">High-intensity interval training with work and rest periods</div>
+</div>
+<div class="row-chevron">›</div>
+</div>
+<div class="sheet-row-item" id="tmplPomodoroRow">
+<div class="row-icon-wrap">🗂</div>
+<div class="row-text-wrap">
+<div class="row-title">Pomodoro</div>
+<div class="row-desc">Work sessions with short breaks and a long break</div>
+</div>
+<div class="row-chevron">›</div>
+</div>
+<div class="sheet-row-item" id="tmplSeqTabataRow">
+<div class="row-icon-wrap">🗂</div>
+<div class="row-text-wrap">
+<div class="row-title">30 min Seq Tabata exercise</div>
+<div class="row-desc">Warmup, 8 Tabata rounds (20s work / 10s rest), and cooldown</div>
+</div>
+<div class="row-chevron">›</div>
+</div>
+<div class="sheet-row-item" id="tmplHarvardRow">
+<div class="row-icon-wrap">🗂</div>
+<div class="row-text-wrap">
+<div class="row-title">Harvard Top 3 Sprint</div>
+<div class="row-desc">3 serial deep focus blocks with calming pauses</div>
+</div>
+<div class="row-chevron">›</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ======================================================= -->
+<!-- Custom Timer Creator Modal (Simple, Zero Bloat)         -->
+<!-- ======================================================= -->
+<div class="config-modal-backdrop" id="customTimerModal">
+<div class="config-modal-card">
+<h3 class="config-modal-title" id="customModalTitle">New Timer</h3>
+<div class="form-group">
+<label>Timer Label</label>
+<input class="form-control" id="customLabelInput" placeholder="e.g. Timer, Eye drops, Deep Focus" type="text"/>
+</div>
+<div class="form-group">
+<label>Folder / Category</label>
+<select class="form-control" id="customFolderSelect">
+<option value="work">Work &amp; Focus</option>
+<option value="health">Health &amp; Care</option>
+<option value="workout">Workouts &amp; HIIT</option>
+<option value="routines">Daily Routines</option>
+</select>
+</div>
+<div class="form-group">
+<label>Duration (Minutes : Seconds)</label>
+<div class="form-row-2">
+<input class="form-control" id="customMinutesInput" min="0" placeholder="Minutes" type="number" value="15"/>
+<input class="form-control" id="customSecondsInput" max="59" min="0" placeholder="Seconds" type="number" value="0"/>
+</div>
+</div>
+<div class="form-group">
+<label>Execution Notes / Tips (Optional)</label>
+<input class="form-control" id="customNotesInput" placeholder="e.g. Keep spine tall, drink water" type="text"/>
+</div>
+<div class="modal-actions">
+<button class="btn-cancel" id="cancelCustomModalBtn">Cancel</button>
+<button class="btn-save" id="saveCustomModalBtn">Save &amp; Add</button>
+</div>
+</div>
+</div>
+<!-- ======================================================= -->
+<!-- Fullscreen Active Execution Player                      -->
+<!-- ======================================================= -->
+<div class="active-player-screen" id="activePlayerScreen">
+<!-- Player Header -->
+<div class="player-header">
+<button class="player-minimize-btn" id="minimizePlayerBtn" title="Minimize Player">∨</button>
+<span id="playerHeaderRoutineName" style="font-weight: 600; font-size: 0.95rem;">Active Timer</span>
+<button class="header-btn" id="toggleMuteBtn" title="Toggle Sound">🔔</button>
+</div>
+<!-- Player Body -->
+<div class="player-body">
+<span class="player-step-tag" id="playerStepTag">Step 1 of 1</span>
+<h2 class="player-task-title" id="playerTaskTitle">Focus Session</h2>
+<div class="player-task-notes" id="playerTaskNotes" style="display: none;">
+          📝 <strong>Notes:</strong> <span id="playerTaskNotesText"></span>
+</div>
+<!-- Progress Ring & Big Digits -->
+<div class="player-clock-container">
+<svg class="progress-ring" viewbox="0 0 280 280">
+<circle class="progress-ring-bg" cx="140" cy="140" r="130"></circle>
+<circle class="progress-ring-fill" cx="140" cy="140" id="playerRingFill" r="130"></circle>
+</svg>
+<div class="player-clock-digits" id="playerDigits">15:00</div>
+</div>
+<!-- Action Controls -->
+<div class="player-controls-row">
+<button class="player-btn-secondary" id="playerResetBtn" title="Restart Step">↺</button>
+<button class="player-btn-primary" id="playerPlayPauseBtn" title="Play or Pause">▶</button>
+<button class="player-btn-secondary" id="playerNextBtn" title="Next Step / Skip">⏭</button>
+</div>
+</div>
+</div>
+<!-- Toast Notification -->
+<div class="toast-pill" id="toastPill">Timer Saved</div>
+</div>
+<script src="js/timer.js"></script>
+</body>
+</html>
