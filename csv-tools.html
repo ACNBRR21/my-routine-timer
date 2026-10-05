@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#090d16" />
+  <meta name="theme-color" content="#f8fafc" />
   <title>CSV Schedule Tools & Template — Anchor & Flow</title>
   <meta name="description" content="Download CSV schedule templates and import custom Harvard Timebox routines into Anchor & Flow." />
   
@@ -17,17 +17,18 @@
 
   <style>
     :root {
-      --bg-primary: #090d16;
-      --bg-surface: #131b2e;
-      --bg-card: #1c2740;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-hover: #0ea5e9;
-      --success: #22c55e;
+      --bg-primary: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --border: #24324f;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -72,27 +73,28 @@
       align-items: center;
       gap: 6px;
       padding: 6px 12px;
-      background: rgba(56, 189, 248, 0.1);
+      background: rgba(2, 132, 199, 0.08);
       border: 1px solid var(--border);
       border-radius: 8px;
       transition: all 0.15s ease;
     }
     .back-btn:hover {
-      background: rgba(56, 189, 248, 0.2);
+      background: rgba(2, 132, 199, 0.15);
       border-color: var(--accent);
     }
 
     .card {
       background: var(--bg-surface);
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 24px;
+      box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
 
-    h1 { font-size: 1.35rem; color: #fff; }
+    h1 { font-size: 1.35rem; color: var(--text-main); font-weight: 700; }
     h2 { font-size: 1.15rem; color: var(--accent); }
     h3 { font-size: 0.98rem; color: var(--text-main); margin-top: 8px; }
     p { color: var(--text-muted); font-size: 0.92rem; }

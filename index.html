@@ -527,6 +527,7 @@
       renderDashboardTimers();
       renderMiniCalendar();
       renderUpcomingSchedulePanel();
+      runFlowGuruDiagnostics();
     }
 
     function formatClockDisplay(timeStr) {
@@ -565,7 +566,8 @@
       renderMiniCalendar();
     };
 
-    window.setUpcomingFilter = function(filter) {
+    function setUpcomingFilter(filter) {
+    window.setUpcomingFilter = setUpcomingFilter;
       upcomingHorizonFilter = filter;
       document.querySelectorAll('.upcoming-filter-pill').forEach(p => p.classList.remove('active'));
       const activePill = document.getElementById(
@@ -1705,6 +1707,59 @@
       });
     }
 
+
+    // 90s Interstitial Reset Functions (Global Scope)
+    function openDashboardInterstitialModal() {
+      const m = document.getElementById('interstitialResetModal');
+      if (m) m.classList.add('open');
+    }
+    window.openDashboardInterstitialModal = openDashboardInterstitialModal;
+
+    function completeDashboardInterstitialReset() {
+      const m = document.getElementById('interstitialResetModal');
+      if (m) m.classList.remove('open');
+      if (typeof showAppToast === 'function') {
+        showAppToast('🧘 Attention residue dissolved. Ready for peak execution!');
+      }
+    }
+    window.completeDashboardInterstitialReset = completeDashboardInterstitialReset;
+
+    // Evening Shutdown Ritual (Global Scope)
+    function openDashboardEveningShutdownModal() {
+      const m = document.getElementById('zeigarnikShutdownModal');
+      if (m) {
+        m.classList.add('open');
+        const input = document.getElementById('dashboardEveningOneThingInput');
+        if (input) {
+          input.value = localStorage.getItem('anchor_flow_tomorrow_top1') || '';
+          input.focus();
+        }
+      }
+    }
+    window.openDashboardEveningShutdownModal = openDashboardEveningShutdownModal;
+
+    function submitDashboardEveningOneThing() {
+      const input = document.getElementById('dashboardEveningOneThingInput');
+      if (input && input.value.trim()) {
+        if (typeof saveTomorrowTop1 === 'function') {
+          saveTomorrowTop1(input.value.trim());
+        } else {
+          localStorage.setItem('anchor_flow_tomorrow_top1', input.value.trim());
+        }
+      }
+      const m = document.getElementById('zeigarnikShutdownModal');
+      if (m) m.classList.remove('open');
+      if (typeof showAppToast === 'function') {
+        showAppToast('🌙 Locked in as tomorrow\'s Top 1 victory. Sleep well!');
+      }
+    }
+    window.submitDashboardEveningOneThing = submitDashboardEveningOneThing;
+
+    function openEveningShutdownModal() {
+      openDashboardEveningShutdownModal();
+    }
+    window.openEveningShutdownModal = openEveningShutdownModal;
+
     document.addEventListener('DOMContentLoaded', () => {
       initDashboard();
       runFlowGuruDiagnostics();
@@ -1724,7 +1779,8 @@
 
     // Evening Zeigarnik Shutdown Ritual
     
-    window.openDashboardEveningShutdownModal = function() {
+    function openDashboardEveningShutdownModal() {
+    window.openDashboardEveningShutdownModal = openDashboardEveningShutdownModal;
       const m = document.getElementById('zeigarnikShutdownModal');
       if (m) {
         m.classList.add('open');
@@ -1736,7 +1792,8 @@
       }
     };
 
-    window.submitDashboardEveningOneThing = function() {
+    function submitDashboardEveningOneThing() {
+    window.submitDashboardEveningOneThing = submitDashboardEveningOneThing;
       const input = document.getElementById('dashboardEveningOneThingInput');
       if (input && input.value.trim()) {
         if (typeof saveTomorrowTop1 === 'function') {
@@ -1824,21 +1881,7 @@
     });
   </script>
 
-  <!-- ========================================================= -->
-  <!-- FLOW GURU FULL AUDIT MODAL                                -->
-  <!-- ========================================================= -->
-  <div class="side-drawer-backdrop" id="guruAuditModal" onclick="if(event.target.id==='guruAuditModal')this.classList.remove('open')" style="justify-content: center; align-items: center;">
-    <div class="dashboard-card" style="width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); border-radius: 20px; padding: 26px; animation: modalPop 0.2s ease;">
-      <div class="card-header-row" style="margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span style="font-size: 1.8rem;">🧘</span>
-          <div>
-            <h3 style="margin: 0; font-size: 1.2rem; color: var(--text-primary);">Flow Guru Executive Audit</h3>
-            <span style="font-size: 0.78rem; color: var(--text-muted);">Personalized diagnostic for peak execution and recovery</span>
-          </div>
-        </div>
-        
-      </div>
+  
 
       <div style="display: flex; flex-direction: column; gap: 18px;">
         <!-- Scores Summary: 3 Core Executive Diagnostics -->
@@ -1943,7 +1986,6 @@
             <span style="font-size: 0.76rem; color: var(--text-muted);">Dr. Sophie Leroy (2009): Dissolve attention residue before starting next focus block</span>
           </div>
         </div>
-        <button onclick="document.getElementById('interstitialResetModal').classList.remove('open')" style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-card-subtle); border: 1px solid var(--border); cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">&times;</button>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 14px;">
@@ -1971,6 +2013,9 @@
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+          <button type="button" class="btn-secondary-launch" onclick="document.getElementById('interstitialResetModal').classList.remove('open')">
+            Cancel
+          </button>
           <button type="button" class="btn-primary-launch" onclick="completeDashboardInterstitialReset()" style="background: var(--accent-green); padding: 8px 18px; font-size: 0.85rem;">
             ✓ Reset Mind &amp; Start Focus Block
           </button>

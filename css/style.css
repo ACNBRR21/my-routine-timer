@@ -180,7 +180,7 @@ body {
 }
 
 /* Main Content Area */
-.main-viewport {
+.main-viewport, .app-main {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -205,13 +205,13 @@ body {
     gap: 4px;
   }
   .sidebar-motivation-card { display: none; }
-  .main-viewport { padding: 16px; }
+  .main-viewport, .app-main { padding: 16px; }
 }
 
 /* ========================================================= */
 /* DASHBOARD TOP HEADER                                      */
 /* ========================================================= */
-.dashboard-top-header {
+.dashboard-top-header, .app-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -220,7 +220,7 @@ body {
   margin-bottom: 24px;
 }
 
-.greeting-block h1 {
+.greeting-block h1, .page-title {
   font-size: 1.65rem;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -228,11 +228,14 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin: 0;
 }
 
-.greeting-block p {
+.greeting-block p, .page-subtitle {
   font-size: 0.92rem;
   color: var(--text-secondary);
+  margin-top: 2px;
+  margin-bottom: 0;
   margin-top: 2px;
 }
 
@@ -1231,4 +1234,27 @@ body {
 }
 .btn-add-table-task:hover {
   background: rgba(2, 132, 199, 0.08);
+}
+/* ========================================================= */
+/* MODALS & OVERLAYS (STRICTLY FIXED OVERLAY, HIDDEN BY DEFAULT) */
+/* ========================================================= */
+.side-drawer-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(5px) !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 99999 !important;
+  padding: 20px !important;
+  overflow-y: auto !important;
+}
+
+.side-drawer-backdrop.open {
+  display: flex !important;
 }

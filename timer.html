@@ -3,361 +3,538 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#f2f2f7" />
-  <title>Timers &amp; Routines — Anchor &amp; Flow</title>
+  <meta name="theme-color" content="#f8fafc" />
+  <title>Timers &amp; Routines — Anchor &amp; Flow Executive System</title>
   <meta name="description" content="Executive desktop timer, stopwatch, and multi-step sequential routines for deep work, caregiving, and workouts." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏱️</text></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/timer.css" />
+  <style>
+    /* Clean layout overrides to match index.html SaaS design system perfectly */
+    .timer-desktop-workspace {
+      width: 100%;
+      max-width: 100%;
+      padding: 0;
+    }
+    .header-search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 8px 16px;
+      width: 250px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s ease;
+    }
+    .header-search-wrap:focus-within {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+    .header-search-wrap input {
+      border: none;
+      background: transparent;
+      font-size: 0.88rem;
+      outline: none;
+      width: 100%;
+      color: var(--text-primary);
+      font-family: inherit;
+    }
+    .timer-hero-purple {
+      background: linear-gradient(135deg, #0284c7 0%, #8b5cf6 100%);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(2, 132, 199, 0.22);
+    }
+    .btn-hero-launch {
+      background: #ffffff;
+      color: #0284c7;
+      border: none;
+      border-radius: 9999px;
+      padding: 8px 16px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .btn-hero-launch:hover {
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+    .timer-insight-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .sidebar-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .center-workspace-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .center-bottom-bar {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .timer-card-desktop {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .timer-card-desktop:hover {
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+  </style>
 </head>
 <body>
+  <div class="app-container">
+    
+    <!-- Standard Left Navigation Sidebar (Identical to Dashboard & All Pages) -->
+    <aside class="app-sidebar">
+      <a href="index.html" class="sidebar-logo">
+        <div class="logo-badge">⚡</div>
+        <div>
+          <div class="logo-text-title">Anchor &amp; Flow</div>
+          <div class="logo-text-sub">Harvard Timebox Engine</div>
+        </div>
+      </a>
 
-  <div class="app-viewport-desktop">
-    <!-- Top Application Bar (Matching Reference Screenshot) -->
-    <header class="app-header-desktop">
-      <div style="display: flex; align-items: center; gap: 14px;">
-        <a href="index.html" class="desktop-logo" title="Anchor & Flow">
-          <span class="logo-symbol">⚡</span>
-          <span class="logo-text">Anchor &amp; Flow</span>
-        </a>
+      <ul class="sidebar-nav-list">
+        <li class="sidebar-nav-item">
+          <a href="index.html">
+            <span class="sidebar-nav-icon">🏠</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="guru.html">
+            <span class="sidebar-nav-icon">🧘</span>
+            <span>Flow Guru</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="planner.html">
+            <span class="sidebar-nav-icon">🧠</span>
+            <span>AI Day Planner</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item active">
+          <a href="timer.html">
+            <span class="sidebar-nav-icon">⏱️</span>
+            <span>Timers &amp; Routines</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="profile.html">
+            <span class="sidebar-nav-icon">👤</span>
+            <span>Overview &amp; Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="guide.html">
+            <span class="sidebar-nav-icon">📖</span>
+            <span>Guide &amp; Calendar Help</span>
+          </a>
+        </li>
+      </ul>
 
-        <!-- Desktop Navigation Tabs -->
-        <nav class="desktop-nav-tabs">
-          <a href="timer.html" class="desktop-nav-link active">
-            <span>⏱️</span> Timers &amp; Routines
-          </a>
-          <a href="planner.html" class="desktop-nav-link">
-            <span>🧠</span> AI Planner
-          </a>
-          <a href="index.html" class="desktop-nav-link">
-            <span>🏠</span> Dashboard
-          </a>
-          <a href="guru.html" class="desktop-nav-link">
-            <span>🧘</span> Flow Guru
-          </a>
-          <a href="profile.html" class="desktop-nav-link">
-            <span>👤</span> Profile
-          </a>
-          <a href="guide.html#timer-guide" class="desktop-nav-link">
-            <span>📖</span> Guide &amp; Manual
-          </a>
-        </nav>
+      <div class="sidebar-motivation-card">
+        <span class="plant-icon">🌿</span>
+        <p>A calmer mind leads to a brighter tomorrow. Focus on the Top 3.</p>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <!-- Search bar in top header -->
-        <div class="header-search-wrap">
-          <span style="color: var(--text-muted);">🔍</span>
-          <input type="text" id="headerSearchInput" placeholder="Search project, timer, category..." />
+      <!-- Creator & Direct Feedback Card -->
+      <div style="margin-top: 14px; background: #ffffff; border: 1px solid var(--border); border-radius: 14px; padding: 12px; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <div class="avatar-small" style="width: 26px; height: 26px; font-size: 0.7rem; background: linear-gradient(135deg, #0284c7, #8b5cf6); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">RR</div>
+          <div>
+            <strong style="color: var(--text-primary); font-size: 0.84rem;">Rishi Roy</strong>
+            <div style="font-size: 0.7rem; color: var(--accent-blue); font-weight: 600;">Creator &bull; The Productivity Guy</div>
+          </div>
         </div>
-
-        <a href="profile.html" class="user-profile-badge" title="Profile Settings" style="text-decoration:none;">
-          <div class="avatar-small" id="headerAvatar">RR</div>
-          <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);" id="headerUserName">Rishi Roy</span>
-        </a>
-
-        <button class="header-btn" id="menuBtn" title="Timer Settings &amp; Options">
-          •••
-        </button>
+        <p style="margin-bottom: 8px; font-size: 0.76rem; color: var(--text-muted);">
+          Have feedback or suggestions? Send directly to Rishi:
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" style="color: #0a66c2; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            <span>💼</span> LinkedIn Profile &rarr;
+          </a>
+          <a href="https://wa.me/919136228725?text=Hi%20Rishi,%20feedback%20on%20Anchor%20%26%20Flow:" target="_blank" rel="noopener noreferrer" style="color: #059669; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            <span>💬</span> WhatsApp: +91 9136228725
+          </a>
+          <a href="mailto:rishi@birdblast.com?subject=Feedback%20on%20Anchor%20%26%20Flow" style="color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            <span>✉️</span> rishi@birdblast.com
+          </a>
+        </div>
       </div>
-    </header>
+    </aside>
 
-    <!-- 3-Column Desktop Workspace (Matching Reference Screenshot) -->
-    <div class="timer-desktop-workspace">
-
-      <!-- ========================================================= -->
-      <!-- COLUMN 1: LEFT SIDEBAR (Quick Add & Folders)             -->
-      <!-- ========================================================= -->
-      <aside class="timer-left-sidebar">
-        <!-- Folders Management Card -->
-        <div class="sidebar-card">
-          <div class="sidebar-card-header">
-            <span class="sidebar-card-title">📁 FOLDERS &amp; CATEGORIES</span>
-          </div>
-
-          <div id="sidebarFoldersList" class="sidebar-folders-container">
-            <!-- Dynamically populated via renderFolderBar() -->
-          </div>
-
-          <!-- Prominent Manage Folders Button -->
-          <div style="margin-top: 10px;">
-            <button type="button" id="sidebarManageFoldersBtn" class="btn-manage-folders-prominent">
-              ⚙️ Manage Folders
-            </button>
-          </div>
+    <!-- Main Viewport -->
+    <main class="main-viewport">
+      
+      <!-- Top Dashboard Header (Matching index.html) -->
+      <header class="dashboard-top-header">
+        <div class="greeting-block">
+          <h1>Timers &amp; Routines ⏱️</h1>
+          <p>Precision Harvard timeboxing, multi-step sequential routines, and restorative attention resets.</p>
         </div>
 
-        <!-- Quick Add & Presets Card (Matching Reference Screenshot) -->
-        <div class="sidebar-card">
-          <div class="sidebar-card-header">
-            <span class="sidebar-card-title">⚡ QUICK PRESETS &amp; TEMPLATES</span>
+        <div class="header-action-group">
+          <!-- Live Search Bar -->
+          <div class="header-search-wrap">
+            <span style="color: var(--text-muted);">🔍</span>
+            <input type="text" id="headerSearchInput" placeholder="Search timer, category..." />
           </div>
 
-          <div class="sidebar-presets-list">
-            <div class="sidebar-preset-row">
-              <div>
-                <strong>Focus Sprint</strong>
-                <div class="sub">15m &bull; Work &amp; Focus</div>
-              </div>
-              <button class="btn-quick-add-plus" id="quickTimer15" title="Run 15m Focus Timer">+</button>
-            </div>
+          <!-- Launch Custom Timer CTA -->
+          <button type="button" class="btn-primary-launch" id="headerLaunchAddTimerBtn" onclick="document.getElementById('sidebarAddTimerBtn').click()" title="Create custom timer or routine">
+            + New Timer
+          </button>
 
-            <div class="sidebar-preset-row">
-              <div>
-                <strong>Harvard Deep Work</strong>
-                <div class="sub">45m &bull; Work &amp; Focus</div>
-              </div>
-              <button class="btn-quick-add-plus" id="quickTimer45" title="Run 45m Deep Work">+</button>
-            </div>
+          <!-- User Profile Badge -->
+          <a href="profile.html" class="user-profile-badge" title="Manage your local profile" style="text-decoration: none;">
+            <div class="avatar-small" id="headerAvatar">RR</div>
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);" id="headerUserName">Rishi Roy</span>
+          </a>
 
-            <div class="sidebar-preset-row">
-              <div>
-                <strong>Mother's Glaucoma Care</strong>
-                <div class="sub">1:30:00+ &bull; Health Preset</div>
-              </div>
-              <button class="btn-quick-add-plus" id="quickTimer90" title="Run 90m Glaucoma Timer">+</button>
-            </div>
-
-            <div class="sidebar-preset-row">
-              <div>
-                <strong>Secondary Eye Drops</strong>
-                <div class="sub">1:15:00 &bull; Health Preset</div>
-              </div>
-              <button class="btn-quick-add-plus" id="quickTimer75" title="Run 75m Eye Drop Timer">+</button>
-            </div>
-
-            <div class="sidebar-preset-row">
-              <div>
-                <strong>30m Seq Tabata</strong>
-                <div class="sub">Intervals &bull; Workouts</div>
-              </div>
-              <button class="btn-quick-add-plus" id="quickTabata" title="Run 30m Tabata Routine">+</button>
-            </div>
-
-            <div class="sidebar-preset-row">
-              <div>
-                <strong>Pomodoro Cycle</strong>
-                <div class="sub">25m Work / 5m Rest</div>
-              </div>
-              <button class="btn-quick-add-plus" id="quickPomodoro" title="Run Pomodoro Routine">+</button>
-            </div>
-          </div>
-
-          <div style="margin-top: 12px;">
-            <button type="button" id="sidebarAddTimerBtn" class="btn-sidebar-add-timer">
-              + New Custom Timer
-            </button>
-          </div>
-        </div>
-      </aside>
-
-
-      <!-- ========================================================= -->
-      <!-- COLUMN 2: CENTER WORKSPACE (Timers List & Daily Timeline)  -->
-      <!-- ========================================================= -->
-      <section class="timer-center-workspace">
-        
-        <!-- Center Header with Month & Segment Filter -->
-        <div class="center-workspace-card">
-          <div class="center-header-bar">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="display: flex; gap: 4px;">
-                <button class="nav-mini-btn" id="btnPrevMonth" title="Previous Month">&lsaquo;</button>
-                <button class="nav-mini-btn" id="btnNextMonth" title="Next Month">&rsaquo;</button>
-              </div>
-              <h2 class="center-month-title" id="centerMonthTitle">October 2026</h2>
-            </div>
-
-            <div class="segmented-control-desktop">
-              <button class="segment-btn active" id="segAllBtn">All Timers</button>
-              <button class="segment-btn" id="segActiveBtn">Active / Running</button>
-            </div>
-          </div>
-
-          <!-- Weekdays Horizontal Status Strip (Matching Reference Screenshot) -->
-          <div class="weekdays-strip" id="weekdaysStrip">
-            <div class="weekday-col">
-              <span class="weekday-name">MON 5</span>
-              <span class="weekday-hours" id="wkHoursMon">03:30</span>
-            </div>
-            <div class="weekday-col today">
-              <span class="weekday-name">TUE 6</span>
-              <span class="weekday-hours" id="wkHoursTue">04:15</span>
-            </div>
-            <div class="weekday-col">
-              <span class="weekday-name">WED 7</span>
-              <span class="weekday-hours" id="wkHoursWed">02:45</span>
-            </div>
-            <div class="weekday-col">
-              <span class="weekday-name">THU 8</span>
-              <span class="weekday-hours" id="wkHoursThu">03:00</span>
-            </div>
-            <div class="weekday-col">
-              <span class="weekday-name">FRI 9</span>
-              <span class="weekday-hours" id="wkHoursFri">04:00</span>
-            </div>
-            <div class="weekday-col">
-              <span class="weekday-name">SAT 10</span>
-              <span class="weekday-hours" id="wkHoursSat">01:15</span>
-            </div>
-            <div class="weekday-col">
-              <span class="weekday-name">SUN 11</span>
-              <span class="weekday-hours" id="wkHoursSun">00:45</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Timers List Container (Rendered Dynamically as Modern Desktop Cards) -->
-        <div id="timersList" class="desktop-timers-container">
-          <!-- Rendered dynamically -->
-        </div>
-
-        <!-- Center Bottom Summary & Prominent CTA Pill -->
-        <div class="center-bottom-bar">
-          <div style="font-size: 0.88rem; color: var(--text-secondary);" id="centerTotalFocusSummary">
-            Total Stored: <strong>7 Timers</strong> &bull; Total Duration: <strong>03:45:00</strong>
-          </div>
-
-          <!-- Large Purple Pill CTA matching reference screenshot -->
-          <button type="button" id="centerAddTimerBtn" class="btn-primary-purple-pill">
-            + Add New Timer or Routine
+          <!-- Hidden / Preserved Menu Button -->
+          <button class="header-btn" id="menuBtn" title="Timer Settings &amp; Options" style="display: none;">
+            •••
           </button>
         </div>
+      </header>
 
-        <!-- Creator Attribution & Direct Feedback Footer Banner -->
-        <footer style="margin-top: 14px; padding: 18px 22px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 16px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow-sm);">
-          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
-            <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px;">
-              <div class="avatar-small" style="width: 40px; height: 40px; font-size: 0.95rem; background: linear-gradient(135deg, #0284c7, #8b5cf6); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">RR</div>
-              <div>
-                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                  <span style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">Created by Rishi Roy</span>
-                  <span style="font-size: 0.72rem; background: rgba(2, 132, 199, 0.1); color: var(--accent-blue); padding: 2px 8px; border-radius: 9999px; font-weight: 600;">The Productivity Guy</span>
-                </div>
-                <p style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; margin-bottom: 0;">
-                  Anchor &amp; Flow was built to protect high-leverage focus while honoring essential caregiving routines. Have ideas or feedback? Send directly to Rishi:
-                </p>
+      <!-- Desktop Workspace Container -->
+      <div class="app-viewport-desktop">
+        <div class="timer-desktop-workspace">
+
+          <!-- ========================================================= -->
+          <!-- COLUMN 1: LEFT SIDEBAR (Folders & Presets)                -->
+          <!-- ========================================================= -->
+          <aside class="timer-left-sidebar">
+            <!-- Folders Management Card -->
+            <div class="sidebar-card">
+              <div class="sidebar-card-header">
+                <span class="sidebar-card-title">📁 FOLDERS &amp; CATEGORIES</span>
+              </div>
+
+              <div id="sidebarFoldersList" class="sidebar-folders-container">
+                <!-- Dynamically populated via renderFolderBar() -->
+              </div>
+
+              <!-- Prominent Manage Folders Button -->
+              <div style="margin-top: 12px;">
+                <button type="button" id="sidebarManageFoldersBtn" class="btn-manage-folders-prominent">
+                  ⚙️ Manage Folders
+                </button>
               </div>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-              <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #0a66c2; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: inline-flex; align-items: center;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px;"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                LinkedIn
-              </a>
-              <a href="https://wa.me/919136228725?text=Hi%20Rishi,%20feedback%20on%20Anchor%20%26%20Flow:" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #047857; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; background: rgba(16, 185, 129, 0.06);">
-                💬 WhatsApp / SMS: +91 9136228725
-              </a>
-              <a href="mailto:rishi@birdblast.com?subject=Feedback%20on%20Anchor%20%26%20Flow" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: var(--text-main);">
-                ✉️ rishi@birdblast.com
-              </a>
-            </div>
-          </div>
+            <!-- Quick Add & Presets Card -->
+            <div class="sidebar-card">
+              <div class="sidebar-card-header">
+                <span class="sidebar-card-title">⚡ QUICK PRESETS &amp; TEMPLATES</span>
+              </div>
 
-          <div style="width: 100%; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.78rem; color: var(--text-secondary);">
-            <div>
-              <span>&copy; 2026 Anchor &amp; Flow &bull; Local-First, Zero-Telemetry Architecture.</span>
+              <div class="sidebar-presets-list">
+                <div class="sidebar-preset-row">
+                  <div>
+                    <strong>Focus Sprint</strong>
+                    <div class="sub">15m &bull; Work &amp; Focus</div>
+                  </div>
+                  <button class="btn-quick-add-plus" id="quickTimer15" title="Run 15m Focus Timer">+</button>
+                </div>
+
+                <div class="sidebar-preset-row">
+                  <div>
+                    <strong>Harvard Deep Work</strong>
+                    <div class="sub">45m &bull; Work &amp; Focus</div>
+                  </div>
+                  <button class="btn-quick-add-plus" id="quickTimer45" title="Run 45m Deep Work">+</button>
+                </div>
+
+                <div class="sidebar-preset-row">
+                  <div>
+                    <strong>Mother's Glaucoma Care</strong>
+                    <div class="sub">1:30:00+ &bull; Health Preset</div>
+                  </div>
+                  <button class="btn-quick-add-plus" id="quickTimer90" title="Run 90m Glaucoma Timer">+</button>
+                </div>
+
+                <div class="sidebar-preset-row">
+                  <div>
+                    <strong>Secondary Eye Drops</strong>
+                    <div class="sub">1:15:00 &bull; Health Preset</div>
+                  </div>
+                  <button class="btn-quick-add-plus" id="quickTimer75" title="Run 75m Eye Drop Timer">+</button>
+                </div>
+
+                <div class="sidebar-preset-row">
+                  <div>
+                    <strong>30m Seq Tabata</strong>
+                    <div class="sub">Intervals &bull; Workouts</div>
+                  </div>
+                  <button class="btn-quick-add-plus" id="quickTabata" title="Run 30m Tabata Routine">+</button>
+                </div>
+
+                <div class="sidebar-preset-row">
+                  <div>
+                    <strong>Pomodoro Cycle</strong>
+                    <div class="sub">25m Work / 5m Rest</div>
+                  </div>
+                  <button class="btn-quick-add-plus" id="quickPomodoro" title="Run Pomodoro Routine">+</button>
+                </div>
+              </div>
+
+              <div style="margin-top: 14px;">
+                <button type="button" id="sidebarAddTimerBtn" class="btn-sidebar-add-timer">
+                  + New Custom Timer
+                </button>
+              </div>
             </div>
-            <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
-              <a href="guide.html" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">📖 User Manual</a>
-              <a href="guide.html#timer-guide" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">⏱️ Timer+ &amp; Routines Guide</a>
-              <a href="guide.html#privacy-policy" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">🔒 Privacy Policy</a>
-            </div>
-          </div>
-        </footer>
-      </section>
+          </aside>
 
 
-      <!-- ========================================================= -->
-      <!-- COLUMN 3: RIGHT PANEL (Active Timer Insight & Ring Widget)-->
-      <!-- ========================================================= -->
-      <aside class="timer-right-panel">
-        
-        <!-- Top Vibrant Purple Card (Matching Reference Screenshot) -->
-        <div class="timer-hero-purple">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <strong style="font-size: 1rem; font-weight: 700;">Anchor &amp; Flow Focus Cockpit</strong>
-            <span style="font-size: 1.3rem;">⚡</span>
-          </div>
-          <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.4; margin: 4px 0 10px 0;">
-            Protect unbroken single-task execution. Eliminate context switching and honor caregiving commitments.
-          </p>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button type="button" id="heroQuickLaunchBtn" class="btn-hero-launch" style="flex: 1;">
-              🚀 Start Focus Sprint
-            </button>
-            <button type="button" id="heroResetMindBtn" onclick="openInterstitialModal()" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 8px; padding: 6px 12px; font-size: 0.78rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(4px);">
-              🧘 90s Reset
-            </button>
-          </div>
+          <!-- ========================================================= -->
+          <!-- COLUMN 2: CENTER WORKSPACE (Timers List & Daily Timeline)  -->
+          <!-- ========================================================= -->
+          <section class="timer-center-workspace">
+            
+            <!-- Center Header with Month & Segment Filter -->
+            <div class="center-workspace-card">
+              <div class="center-header-bar">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="display: flex; gap: 4px;">
+                    <button class="nav-mini-btn" id="btnPrevMonth" title="Previous Month">&lsaquo;</button>
+                    <button class="nav-mini-btn" id="btnNextMonth" title="Next Month">&rsaquo;</button>
+                  </div>
+                  <h2 class="center-month-title" id="centerMonthTitle">October 2026</h2>
+                </div>
+
+                <div class="segmented-control-desktop">
+                  <button class="segment-btn active" id="segAllBtn">All Timers</button>
+                  <button class="segment-btn" id="segActiveBtn">Active / Running</button>
+                </div>
+              </div>
+
+              <!-- Weekdays Horizontal Status Strip -->
+              <div class="weekdays-strip" id="weekdaysStrip">
+                <div class="weekday-col">
+                  <span class="weekday-name">MON 5</span>
+                  <span class="weekday-hours" id="wkHoursMon">03:30</span>
+                </div>
+                <div class="weekday-col today">
+                  <span class="weekday-name">TUE 6</span>
+                  <span class="weekday-hours" id="wkHoursTue">04:15</span>
+                </div>
+                <div class="weekday-col">
+                  <span class="weekday-name">WED 7</span>
+                  <span class="weekday-hours" id="wkHoursWed">02:45</span>
+                </div>
+                <div class="weekday-col">
+                  <span class="weekday-name">THU 8</span>
+                  <span class="weekday-hours" id="wkHoursThu">03:00</span>
+                </div>
+                <div class="weekday-col">
+                  <span class="weekday-name">FRI 9</span>
+                  <span class="weekday-hours" id="wkHoursFri">04:00</span>
+                </div>
+                <div class="weekday-col">
+                  <span class="weekday-name">SAT 10</span>
+                  <span class="weekday-hours" id="wkHoursSat">01:15</span>
+                </div>
+                <div class="weekday-col">
+                  <span class="weekday-name">SUN 11</span>
+                  <span class="weekday-hours" id="wkHoursSun">00:45</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timers List Container (Rendered Dynamically as Modern Desktop Cards) -->
+            <div id="timersList" class="desktop-timers-container">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Center Bottom Summary & Prominent CTA Pill -->
+            <div class="center-bottom-bar">
+              <div style="font-size: 0.88rem; color: var(--text-secondary);" id="centerTotalFocusSummary">
+                Total Stored: <strong>7 Timers</strong> &bull; Total Duration: <strong>03:45:00</strong>
+              </div>
+
+              <!-- Large Pill CTA -->
+              <button type="button" id="centerAddTimerBtn" class="btn-primary-purple-pill">
+                + Add New Timer or Routine
+              </button>
+            </div>
+
+            <!-- Creator Attribution & Direct Feedback Footer Banner -->
+            <footer style="margin-top: 14px; padding: 18px 22px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 16px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px;">
+                  <div class="avatar-small" style="width: 40px; height: 40px; font-size: 0.95rem; background: linear-gradient(135deg, #0284c7, #8b5cf6); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">RR</div>
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <span style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">Created by Rishi Roy</span>
+                      <span style="font-size: 0.72rem; background: rgba(2, 132, 199, 0.1); color: var(--accent-blue); padding: 2px 8px; border-radius: 9999px; font-weight: 600;">The Productivity Guy</span>
+                    </div>
+                    <p style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; margin-bottom: 0;">
+                      Anchor &amp; Flow was built to protect high-leverage focus while honoring essential caregiving routines. Have ideas or feedback? Send directly to Rishi:
+                    </p>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                  <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #0a66c2; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: inline-flex; align-items: center;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px;"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                    LinkedIn
+                  </a>
+                  <a href="https://wa.me/919136228725?text=Hi%20Rishi,%20feedback%20on%20Anchor%20%26%20Flow:" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #047857; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; background: rgba(16, 185, 129, 0.06);">
+                    💬 WhatsApp / SMS: +91 9136228725
+                  </a>
+                  <a href="mailto:rishi@birdblast.com?subject=Feedback%20on%20Anchor%20%26%20Flow" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: var(--text-main);">
+                    ✉️ rishi@birdblast.com
+                  </a>
+                </div>
+              </div>
+
+              <div style="width: 100%; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.78rem; color: var(--text-secondary);">
+                <div>
+                  <span>&copy; 2026 Anchor &amp; Flow &bull; Local-First, Zero-Telemetry Architecture.</span>
+                </div>
+                <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+                  <a href="guide.html" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">📖 User Manual</a>
+                  <a href="guide.html#timer-guide" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">⏱️ Timer+ &amp; Routines Guide</a>
+                  <a href="guide.html#privacy-policy" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">🔒 Privacy Policy</a>
+                </div>
+              </div>
+            </footer>
+          </section>
+
+
+          <!-- ========================================================= -->
+          <!-- COLUMN 3: RIGHT PANEL (Active Timer Insight & Ring Widget)-->
+          <!-- ========================================================= -->
+          <aside class="timer-right-panel">
+            
+            <!-- Top Focus Cockpit Hero Card -->
+            <div class="timer-hero-purple">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <strong style="font-size: 1rem; font-weight: 700;">Anchor &amp; Flow Focus Cockpit</strong>
+                <span style="font-size: 1.3rem;">⚡</span>
+              </div>
+              <p style="font-size: 0.82rem; opacity: 0.95; line-height: 1.4; margin: 4px 0 10px 0;">
+                Protect unbroken single-task execution. Eliminate context switching and honor caregiving commitments.
+              </p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" id="heroQuickLaunchBtn" class="btn-hero-launch" style="flex: 1;">
+                  🚀 Start Focus Sprint
+                </button>
+                <button type="button" id="heroResetMindBtn" onclick="openInterstitialModal()" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 8px; padding: 6px 12px; font-size: 0.78rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(4px);">
+                  🧘 90s Reset
+                </button>
+              </div>
+            </div>
+
+            <!-- Live Insight Widget -->
+            <div class="timer-insight-card">
+              <div class="insight-header-row">
+                <span class="insight-title">Active Insight</span>
+                <button class="btn-expand-player" id="openActivePlayerModalBtn" title="Expand Fullscreen Focus Mode">↗</button>
+              </div>
+
+              <!-- Circular SVG Progress Ring -->
+              <div class="widget-ring-container">
+                <svg class="widget-progress-ring" viewBox="0 0 200 200">
+                  <circle class="widget-ring-bg" cx="100" cy="100" r="88"></circle>
+                  <circle class="widget-ring-fill" cx="100" cy="100" r="88" id="widgetRingFill"></circle>
+                </svg>
+                <div class="widget-center-content">
+                  <div class="widget-digits" id="widgetDigits">15:00</div>
+                  <div class="widget-sub-label" id="widgetSubLabel">Focus Session</div>
+                  <div class="widget-step-tag" id="widgetStepTag">Ready to start</div>
+                </div>
+              </div>
+
+              <!-- On-the-fly +/- adjustments -->
+              <div class="widget-adjust-row">
+                <button class="btn-adjust-mini" id="widgetMinus1m" type="button">-1m</button>
+                <button class="btn-adjust-mini" id="widgetPlus1m" type="button">+1m</button>
+                <button class="btn-adjust-mini" id="widgetPlus5m" type="button">+5m</button>
+              </div>
+
+              <!-- Widget Controls -->
+              <div class="widget-controls-row">
+                <button class="widget-btn-sec" id="widgetResetBtn" title="Restart Step">↺</button>
+                <button class="widget-btn-sec" id="widgetLapBtn" title="Record Lap" style="display: none; font-size: 0.78rem; font-weight:700;">+ Lap</button>
+                <button class="widget-btn-pri" id="widgetPlayPauseBtn" title="Play or Pause">▶</button>
+                <button class="widget-btn-sec" id="widgetDoneEarlyBtn" title="Finished Early? Log High Velocity" style="color: #059669; font-weight: 700; font-size: 0.76rem; border-color: rgba(16,185,129,0.4);">✓ Done</button>
+                <button class="widget-btn-sec" id="widgetNextBtn" title="Next Step">⏭</button>
+              </div>
+
+              <!-- Category Breakdown -->
+              <div class="insight-breakdown-list" id="categoryBreakdownList">
+                <div class="breakdown-row">
+                  <span class="breakdown-label"><span class="dot-color" style="background:#8b5cf6;"></span> Work &amp; Focus</span>
+                  <span class="breakdown-val">02:45:00</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-label"><span class="dot-color" style="background:#ec4899;"></span> Health &amp; Care</span>
+                  <span class="breakdown-val">01:30:00</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-label"><span class="dot-color" style="background:#0284c7;"></span> Workouts &amp; HIIT</span>
+                  <span class="breakdown-val">00:30:00</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-label"><span class="dot-color" style="background:#10b981;"></span> Daily Routines</span>
+                  <span class="breakdown-val">00:45:00</span>
+                </div>
+              </div>
+
+              <!-- History Quick Link -->
+              <div style="margin-top: 14px; width: 100%; text-align: right;">
+                <button type="button" id="historyBtn" class="btn-link-history">
+                  ⏱ View Full Session History &rarr;
+                </button>
+              </div>
+            </div>
+
+          </aside>
+
         </div>
-
-        <!-- Live Insight Widget (Matching Circular Progress Ring in Reference Screenshot) -->
-        <div class="timer-insight-card">
-          <div class="insight-header-row">
-            <span class="insight-title">Active Insight</span>
-            <button class="btn-expand-player" id="openActivePlayerModalBtn" title="Expand Fullscreen Focus Mode">↗</button>
-          </div>
-
-          <!-- Circular SVG Progress Ring -->
-          <div class="widget-ring-container">
-            <svg class="widget-progress-ring" viewBox="0 0 200 200">
-              <circle class="widget-ring-bg" cx="100" cy="100" r="88"></circle>
-              <circle class="widget-ring-fill" cx="100" cy="100" r="88" id="widgetRingFill"></circle>
-            </svg>
-            <div class="widget-center-content">
-              <div class="widget-digits" id="widgetDigits">15:00</div>
-              <div class="widget-sub-label" id="widgetSubLabel">Focus Session</div>
-              <div class="widget-step-tag" id="widgetStepTag">Ready to start</div>
-            </div>
-          </div>
-
-          <!-- On-the-fly +/- adjustments -->
-          <div class="widget-adjust-row">
-            <button class="btn-adjust-mini" id="widgetMinus1m" type="button">-1m</button>
-            <button class="btn-adjust-mini" id="widgetPlus1m" type="button">+1m</button>
-            <button class="btn-adjust-mini" id="widgetPlus5m" type="button">+5m</button>
-          </div>
-
-          <!-- Widget Controls -->
-          <div class="widget-controls-row">
-            <button class="widget-btn-sec" id="widgetResetBtn" title="Restart Step">↺</button>
-            <button class="widget-btn-sec" id="widgetLapBtn" title="Record Lap" style="display: none; font-size: 0.78rem; font-weight:700;">+ Lap</button>
-            <button class="widget-btn-pri" id="widgetPlayPauseBtn" title="Play or Pause">▶</button>
-            <button class="widget-btn-sec" id="widgetDoneEarlyBtn" title="Finished Early? Log High Velocity" style="color: #059669; font-weight: 700; font-size: 0.76rem; border-color: rgba(16,185,129,0.4);">✓ Done</button>
-            <button class="widget-btn-sec" id="widgetNextBtn" title="Next Step">⏭</button>
-          </div>
-
-          <!-- Category Breakdown (Matching Bottom of Insight in Screenshot) -->
-          <div class="insight-breakdown-list" id="categoryBreakdownList">
-            <div class="breakdown-row">
-              <span class="breakdown-label"><span class="dot-color" style="background:#8b5cf6;"></span> Work &amp; Focus</span>
-              <span class="breakdown-val">02:45:00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label"><span class="dot-color" style="background:#ec4899;"></span> Health &amp; Care</span>
-              <span class="breakdown-val">01:30:00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label"><span class="dot-color" style="background:#0284c7;"></span> Workouts &amp; HIIT</span>
-              <span class="breakdown-val">00:30:00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label"><span class="dot-color" style="background:#10b981;"></span> Daily Routines</span>
-              <span class="breakdown-val">00:45:00</span>
-            </div>
-          </div>
-
-          <!-- History Quick Link -->
-          <div style="margin-top: 14px; width: 100%; text-align: right;">
-            <button type="button" id="historyBtn" class="btn-link-history">
-              ⏱ View Full Session History &rarr;
-            </button>
-          </div>
-        </div>
-
-      </aside>
-
-    </div>
+      </div>
+    </main>
   </div>
 
 

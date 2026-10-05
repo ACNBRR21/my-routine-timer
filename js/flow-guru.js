@@ -1348,3 +1348,43 @@ if (typeof module !== "undefined" && module.exports) {
     saveTomorrowTop1
   };
 }
+// Browser Global Window Attachments for Guaranteed Accessibility
+if (typeof window !== "undefined") {
+  window.getExecutionHistory = getExecutionHistory;
+  window.saveExecutionHistory = saveExecutionHistory;
+  window.recordExecutionSession = recordExecutionSession;
+  window.calculateExecutionAdherenceMetrics = calculateExecutionAdherenceMetrics;
+  window.getHofstadterCalibrationMultiplier = getHofstadterCalibrationMultiplier;
+  window.calculateCircadianEnergyProfile = calculateCircadianEnergyProfile;
+  window.getInterstitialResetProtocol = getInterstitialResetProtocol;
+  window.performZeigarnikShutdown = performZeigarnikShutdown;
+  window.auditCalendarSchedule = auditCalendarSchedule;
+  window.auditTaskExecution = auditTaskExecution;
+  window.generateGuruStrategicAdvice = generateGuruStrategicAdvice;
+  window.getHumanGreeting = getHumanGreeting;
+  window.getGreetingEmoji = getGreetingEmoji;
+  window.formatDayDate = formatDayDate;
+  window.splitMeetingsPastAndUpcoming = splitMeetingsPastAndUpcoming;
+  window.getFormattedSyncCopy = getFormattedSyncCopy;
+  window.getTomorrowZeroMeetingsCopy = getTomorrowZeroMeetingsCopy;
+  window.getCachedOrFreshQuotes = getCachedOrFreshQuotes;
+  window.getQuoteOfTheDay = getQuoteOfTheDay;
+  window.getUserGoals = getUserGoals;
+  window.saveUserGoals = saveUserGoals;
+  window.evaluateGoalAlignment = evaluateGoalAlignment;
+  window.getGuruPushbackOnMeeting = getGuruPushbackOnMeeting;
+  window.generateGuruHeadlineSentence = generateGuruHeadlineSentence;
+  window.getHumanDiagnosticStatus = getHumanDiagnosticStatus;
+  window.generateWeeklyLetter = generateWeeklyLetter;
+  window.getGuruHistory = getGuruHistory;
+  window.saveGuruHistory = saveGuruHistory;
+  window.clearGuruHistory = clearGuruHistory;
+  window.calculateGuruTrends = calculateGuruTrends;
+  window.ONBOARDING_CONVERSATION_STEPS = ONBOARDING_CONVERSATION_STEPS;
+  window.getOnboardingAnswers = getOnboardingAnswers;
+  window.saveOnboardingAnswer = saveOnboardingAnswer;
+  window.completeOnboarding = completeOnboarding;
+  window.isOnboardingCompleted = isOnboardingCompleted;
+  window.getStreamlinedEveningShutdown = getStreamlinedEveningShutdown;
+  window.saveTomorrowTop1 = saveTomorrowTop1;
+}

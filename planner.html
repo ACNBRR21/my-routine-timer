@@ -918,7 +918,6 @@
           </div>
         `;
       }
-      const { items, dayAnchors, parsedTasks } = plan;
       currentExtractedSchedule = items;
       let totalMins = items.reduce((sum, it) => sum + it.duration, 0);
 
@@ -1330,6 +1329,36 @@
       }
     };
 
+function openEveningQuestionModal() {
+      const m = document.getElementById('eveningQuestionModal');
+      if (m) {
+        m.classList.add('open');
+        const input = document.getElementById('eveningRegretInput');
+        if (input) {
+          input.value = localStorage.getItem('anchor_flow_tomorrow_top1') || '';
+          input.focus();
+        }
+      }
+    }
+    window.openEveningQuestionModal = openEveningQuestionModal;
+
+    function submitEveningOneThing() {
+      const input = document.getElementById('eveningRegretInput');
+      if (input && input.value.trim()) {
+        if (typeof saveTomorrowTop1 === 'function') {
+          saveTomorrowTop1(input.value.trim());
+        } else {
+          localStorage.setItem('anchor_flow_tomorrow_top1', input.value.trim());
+        }
+      }
+      const m = document.getElementById('eveningQuestionModal');
+      if (m) m.classList.remove('open');
+      if (typeof showAppToast === 'function') {
+        showAppToast('🌙 Locked in as tomorrow\'s Top 1 victory. Sleep well!');
+      }
+    }
+    window.submitEveningOneThing = submitEveningOneThing;
+
     document.addEventListener('DOMContentLoaded', initPlanner);
   </script>
 
@@ -1357,32 +1386,7 @@
     </div>
   </div>
 
-  <script>
-    function openEveningQuestionModal() {
-      const m = document.getElementById('eveningQuestionModal');
-      if (m) {
-        m.classList.add('open');
-        const input = document.getElementById('eveningRegretInput');
-        if (input) {
-          input.value = localStorage.getItem('anchor_flow_tomorrow_top1') || '';
-          input.focus();
-        }
-      }
-    }
-    function submitEveningOneThing() {
-      const input = document.getElementById('eveningRegretInput');
-      if (input && input.value.trim()) {
-        if (typeof saveTomorrowTop1 === 'function') {
-          saveTomorrowTop1(input.value.trim());
-        } else {
-          localStorage.setItem('anchor_flow_tomorrow_top1', input.value.trim());
-        }
-      }
-      const m = document.getElementById('eveningQuestionModal');
-      if (m) m.classList.remove('open');
-      showAppToast('🌙 Locked in as tomorrow\'s Top 1 victory. Sleep well!');
-    }
-  </script>
+
 
 </body>
 </html>

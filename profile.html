@@ -1244,7 +1244,7 @@
     }
 
     // Save AI settings when profile is saved
-    const origSaveBtn = document.getElementById('saveProfileBtn');
+    const origSaveBtn = document.getElementById('saveAllProfileBtn') || document.getElementById('saveProfileBtn');
     if (origSaveBtn) {
       const origHandler = origSaveBtn.onclick;
       origSaveBtn.addEventListener('click', () => {
@@ -1255,7 +1255,7 @@
 
         if (elOKey) localStorage.setItem('anchor_flow_openai_key', elOKey.value.trim());
         if (elDKey) localStorage.setItem('anchor_flow_deepseek_key', elDKey.value.trim());
-        if (elPUrl) localStorage.setItem('anchor_flow_proxy_url', elPUrl.value.trim() || DEFAULT_PROXY_URL);
+        if (elPUrl) localStorage.setItem('anchor_flow_proxy_url', elPUrl.value.trim() || (typeof DEFAULT_PROXY_URL !== 'undefined' ? DEFAULT_PROXY_URL : 'https://anchor-flow-proxy.rishi-roy.workers.dev'));
         if (elPref) localStorage.setItem('anchor_flow_preferred_engine', elPref.value);
 
         populateAiSettings();

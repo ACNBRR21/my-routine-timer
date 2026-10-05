@@ -3,182 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flow Guru — Executive Coach & Living Mentor</title>
+  <title>Flow Guru — Executive Coach &amp; Living Mentor</title>
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    /* Styling inspired by the clean modern layout of the reference design */
-    :root {
-      --guru-bg: #f8fafc;
-      --guru-card-bg: #ffffff;
-      --guru-border: #e2e8f0;
-      --guru-text-main: #0f172a;
-      --guru-text-muted: #64748b;
-      --guru-accent-green: #10b981;
-      --guru-accent-blue: #3b82f6;
-      --guru-accent-purple: #8b5cf6;
-      --guru-accent-amber: #f59e0b;
-    }
-
-    body {
-      background: var(--guru-bg);
-      color: var(--guru-text-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    .guru-container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 24px 28px 60px 28px;
-    }
-
-    /* Top Pill Navigation Bar (Matching reference header) */
-    .guru-top-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #ffffff;
-      padding: 12px 24px;
-      border-radius: 999px;
-      border: 1px solid var(--guru-border);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-      margin-bottom: 28px;
-    }
-
-    .guru-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: var(--guru-text-main);
-      font-weight: 800;
-      font-size: 1.15rem;
-    }
-
-    .guru-pill-menu {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .guru-pill-menu a {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 18px;
-      border-radius: 999px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      text-decoration: none;
-      color: var(--guru-text-muted);
-      transition: all 0.15s ease;
-    }
-
-    .guru-pill-menu a:hover {
-      color: var(--guru-text-main);
-      background: rgba(0,0,0,0.04);
-    }
-
-    .guru-pill-menu a.active {
-      background: #0f172a;
-      color: #ffffff;
-    }
-
-    .guru-user-chip {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-      color: var(--guru-text-main);
-      font-size: 0.88rem;
-      font-weight: 600;
-    }
-
-    .guru-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.85rem;
-    }
-
-    /* Page Header */
-    .guru-page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .guru-title {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin: 0 0 6px 0;
-      color: var(--guru-text-main);
-    }
-
-    .guru-subtitle {
-      font-size: 0.95rem;
-      color: var(--guru-text-muted);
-      margin: 0;
-    }
-
-    .guru-header-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .btn-guru-action {
-      background: #ffffff;
-      border: 1px solid var(--guru-border);
-      border-radius: 12px;
-      padding: 9px 16px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--guru-text-main);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-    }
-
-    .btn-guru-action:hover {
-      background: #f1f5f9;
-      border-color: #cbd5e1;
-    }
-
-    .btn-guru-action.danger {
-      color: #dc2626;
-    }
-
-    .btn-guru-action.danger:hover {
-      background: #fef2f2;
-      border-color: #fecaca;
-    }
-
-    /* Top Headline Banner: The Answer, Not The Data */
+    /* Clean layout styling matching the dashboard aesthetic */
     .guru-headline-card {
       background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
-      border: 1px solid #bbf7d0;
-      border-radius: 20px;
+      border-left: 5px solid var(--accent-green);
+      border-radius: var(--radius-card);
       padding: 24px 28px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
       position: relative;
     }
 
@@ -198,7 +33,7 @@
       flex-wrap: wrap;
       gap: 12px;
       font-size: 0.88rem;
-      color: var(--guru-text-muted);
+      color: var(--text-muted);
     }
 
     .guru-status-tag {
@@ -227,11 +62,11 @@
     /* The Weekly Letter Card */
     .guru-letter-card {
       background: #ffffff;
-      border: 1px solid var(--guru-border);
-      border-radius: 20px;
-      padding: 30px 34px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-      margin-bottom: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 26px 30px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
       position: relative;
     }
 
@@ -251,21 +86,21 @@
     }
 
     .guru-letter-heading {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 800;
-      color: var(--guru-text-main);
+      color: var(--text-primary);
       margin: 0 0 4px 0;
       letter-spacing: -0.01em;
     }
 
     .guru-letter-sub {
       font-size: 0.85rem;
-      color: var(--guru-text-muted);
-      margin: 0 0 20px 0;
+      color: var(--text-muted);
+      margin: 0 0 18px 0;
     }
 
     .guru-letter-body p {
-      font-size: 1rem;
+      font-size: 0.96rem;
       line-height: 1.7;
       color: #334155;
       margin: 0 0 16px 0;
@@ -273,23 +108,23 @@
 
     .guru-letter-question {
       background: rgba(99, 102, 241, 0.05);
-      border-left: 4px solid var(--guru-accent-purple);
+      border-left: 4px solid var(--accent-purple);
       padding: 14px 20px;
       border-radius: 0 12px 12px 0;
       font-style: italic;
-      font-size: 1.05rem !important;
+      font-size: 1.02rem !important;
       color: #1e1b4b !important;
       font-weight: 600;
-      margin-top: 20px !important;
+      margin-top: 18px !important;
       margin-bottom: 0 !important;
     }
 
-    /* Grid Layout for Trends & Living Goals */
+    /* Two-column layout */
     .guru-grid-split {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
 
     @media (max-width: 900px) {
@@ -298,41 +133,32 @@
       }
     }
 
-    /* Trend, Not Tally Section */
-    .guru-trend-card {
-      background: #ffffff;
-      border: 1px solid var(--guru-border);
-      border-radius: 20px;
-      padding: 26px 28px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    }
-
     .trend-metrics-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 22px;
+      gap: 14px;
+      margin-bottom: 18px;
     }
 
     .trend-metric-box {
-      background: #f8fafc;
-      border: 1px solid #f1f5f9;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-subtle);
       border-radius: 14px;
-      padding: 16px;
+      padding: 14px;
     }
 
     .trend-metric-label {
       font-size: 0.78rem;
-      color: var(--guru-text-muted);
+      color: var(--text-muted);
       font-weight: 600;
       display: block;
       margin-bottom: 4px;
     }
 
     .trend-metric-val {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 800;
-      color: var(--guru-text-main);
+      color: var(--text-primary);
       display: flex;
       align-items: baseline;
       gap: 8px;
@@ -357,27 +183,19 @@
 
     .trend-metric-sub {
       font-size: 0.75rem;
-      color: var(--guru-text-muted);
+      color: var(--text-muted);
       margin-top: 4px;
       display: block;
     }
 
-    /* Living Goals Card */
-    .guru-goals-card {
-      background: #ffffff;
-      border: 1px solid var(--guru-border);
-      border-radius: 20px;
-      padding: 26px 28px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    }
-
+    /* Living Goals items */
     .goal-item-row {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 12px 14px;
-      background: #f8fafc;
-      border: 1px solid #f1f5f9;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-subtle);
       border-radius: 12px;
       margin-bottom: 10px;
     }
@@ -399,7 +217,7 @@
       flex: 1;
       font-size: 0.92rem;
       font-weight: 700;
-      color: var(--guru-text-main);
+      color: var(--text-primary);
     }
 
     .goal-streak-pill {
@@ -411,23 +229,14 @@
       border-radius: 999px;
     }
 
-    /* Goal Linked Suggestions */
-    .guru-suggestions-card {
-      background: #ffffff;
-      border: 1px solid var(--guru-border);
-      border-radius: 20px;
-      padding: 26px 28px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-      margin-bottom: 28px;
-    }
-
+    /* Suggestions */
     .suggestion-item {
       display: flex;
       gap: 14px;
       padding: 16px 18px;
       border-radius: 14px;
-      background: #f8fafc;
-      border: 1px solid var(--guru-border);
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border);
       margin-bottom: 12px;
     }
 
@@ -438,14 +247,14 @@
     .suggestion-content strong {
       display: block;
       font-size: 0.92rem;
-      color: var(--guru-text-main);
+      color: var(--text-primary);
       margin-bottom: 4px;
     }
 
     .suggestion-content p {
       margin: 0;
       font-size: 0.85rem;
-      color: #475569;
+      color: var(--text-secondary);
       line-height: 1.45;
     }
 
@@ -460,16 +269,7 @@
       margin-top: 6px;
     }
 
-    /* The Guru Has Opinions Section */
-    .guru-opinions-card {
-      background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
-      border: 1px solid #fecaca;
-      border-radius: 20px;
-      padding: 26px 28px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-      margin-bottom: 28px;
-    }
-
+    /* Pushback opinions */
     .opinion-bubble {
       background: #ffffff;
       border: 1px solid #fee2e2;
@@ -485,16 +285,7 @@
       gap: 12px;
     }
 
-    /* Mentors & Verified Anecdotes */
-    .guru-mentors-card {
-      background: #ffffff;
-      border: 1px solid var(--guru-border);
-      border-radius: 20px;
-      padding: 26px 28px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-      margin-bottom: 28px;
-    }
-
+    /* Mentors grid */
     .mentors-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -503,8 +294,8 @@
     }
 
     .mentor-box {
-      background: #f8fafc;
-      border: 1px solid var(--guru-border);
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border);
       border-radius: 14px;
       padding: 18px;
     }
@@ -512,7 +303,7 @@
     .mentor-name {
       font-size: 0.95rem;
       font-weight: 800;
-      color: var(--guru-text-main);
+      color: var(--text-primary);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -521,7 +312,7 @@
 
     .mentor-title {
       font-size: 0.75rem;
-      color: var(--guru-text-muted);
+      color: var(--text-muted);
       display: block;
       margin-bottom: 8px;
     }
@@ -533,13 +324,13 @@
       line-height: 1.45;
       margin-bottom: 10px;
       display: block;
-      border-left: 2px solid var(--guru-accent-blue);
+      border-left: 2px solid var(--accent-blue);
       padding-left: 8px;
     }
 
     .mentor-anecdote {
       font-size: 0.8rem;
-      color: var(--guru-text-muted);
+      color: var(--text-muted);
       line-height: 1.45;
       margin: 0;
     }
@@ -553,15 +344,7 @@
       font-weight: 600;
     }
 
-    /* 30-Day Audit History Table */
-    .guru-history-card {
-      background: #ffffff;
-      border: 1px solid var(--guru-border);
-      border-radius: 20px;
-      padding: 26px 28px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    }
-
+    /* History table */
     .history-table {
       width: 100%;
       border-collapse: collapse;
@@ -572,8 +355,8 @@
     .history-table th {
       text-align: left;
       padding: 10px 12px;
-      border-bottom: 2px solid var(--guru-border);
-      color: var(--guru-text-muted);
+      border-bottom: 2px solid var(--border);
+      color: var(--text-muted);
       font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -581,392 +364,443 @@
 
     .history-table td {
       padding: 12px;
-      border-bottom: 1px solid #f1f5f9;
-      color: var(--guru-text-main);
-    }
-
-    /* Modals */
-    .guru-modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(4px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-      padding: 20px;
-    }
-
-    .guru-modal-backdrop.open {
-      display: flex;
-    }
-
-    .guru-modal-box {
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 32px;
-      max-width: 540px;
-      width: 100%;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-      position: relative;
-      animation: modalFadeIn 0.2s ease-out;
-    }
-
-    @keyframes modalFadeIn {
-      from { opacity: 0; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1); }
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-primary);
     }
   </style>
 </head>
 <body>
-
-  <div class="guru-container">
+  <div class="app-container">
     
-    <!-- Top Pill Navigation Bar (Matching reference header layout) -->
-    <header class="guru-top-nav">
-      <a href="index.html" class="guru-brand">
-        <span style="font-size: 1.4rem;">⚡</span>
-        <span>Anchor &amp; Flow</span>
+    <!-- Standard Left Navigation Sidebar (Matching Dashboard overarching look and feel) -->
+    <aside class="app-sidebar">
+      <a href="index.html" class="sidebar-logo">
+        <div class="logo-badge">⚡</div>
+        <div>
+          <div class="logo-text-title">Anchor &amp; Flow</div>
+          <div class="logo-text-sub">Harvard Timebox Engine</div>
+        </div>
       </a>
 
-      <nav>
-        <ul class="guru-pill-menu">
-          <li><a href="index.html"><span>🏠</span> Dashboard</a></li>
-          <li><a href="guru.html" class="active"><span>🧘</span> Flow Guru</a></li>
-          <li><a href="planner.html"><span>🧠</span> AI Planner</a></li>
-          <li><a href="timer.html"><span>⏱️</span> Timers</a></li>
-          <li><a href="profile.html"><span>👤</span> Profile</a></li>
-        </ul>
-      </nav>
+      <ul class="sidebar-nav-list">
+        <li class="sidebar-nav-item">
+          <a href="index.html">
+            <span class="sidebar-nav-icon">🏠</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item active">
+          <a href="guru.html">
+            <span class="sidebar-nav-icon">🧘</span>
+            <span>Flow Guru</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="planner.html">
+            <span class="sidebar-nav-icon">🧠</span>
+            <span>AI Day Planner</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="timer.html">
+            <span class="sidebar-nav-icon">⏱️</span>
+            <span>Timers &amp; Routines</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="profile.html">
+            <span class="sidebar-nav-icon">👤</span>
+            <span>Overview &amp; Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="guide.html">
+            <span class="sidebar-nav-icon">📖</span>
+            <span>Guide &amp; Calendar Help</span>
+          </a>
+        </li>
+      </ul>
 
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <a href="guide.html" title="Guide & Help" style="text-decoration: none; font-size: 1.1rem; color: var(--guru-text-muted);">📖</a>
-        <a href="profile.html" class="guru-user-chip">
-          <div class="guru-avatar" id="guruNavAvatar">AL</div>
-          <span id="guruNavName">Alex</span>
-        </a>
+      <div class="sidebar-motivation-card">
+        <span class="plant-icon">🌿</span>
+        <p>A calmer mind leads to a brighter tomorrow. Focus on the Top 3.</p>
       </div>
-    </header>
 
-    <!-- Page Title & Header Actions -->
-    <div class="guru-page-header">
-      <div>
-        <h1 class="guru-title">Flow Guru Coach</h1>
-        <p class="guru-subtitle">The living executive mentor that protects your peak hours and holds your goals sacred.</p>
+      <!-- Creator & Direct Feedback Card -->
+      <div style="margin-top: 14px; background: #ffffff; border: 1px solid var(--border); border-radius: 14px; padding: 12px; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <div style="width: 24px; height: 24px; border-radius: 50%; background: #3b82f6; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem;">RR</div>
+          <div>
+            <strong style="color: var(--text-primary); font-size: 0.8rem;">Rishi Roy</strong>
+            <div style="font-size: 0.7rem; color: var(--text-muted);">Creator &bull; The Productivity Guy</div>
+          </div>
+        </div>
+        <p style="margin: 0 0 6px 0;">Have feedback or suggestions? Send directly to Rishi:</p>
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <a href="https://www.linkedin.com/in/contact-rishi-roy" target="_blank" style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">💼 LinkedIn Profile &rarr;</a>
+          <a href="https://wa.me/919136228725" target="_blank" style="color: #10b981; text-decoration: none; font-weight: 600;">📱 WhatsApp: +91 9136228725</a>
+          <a href="mailto:rishi@birdblast.com" style="color: var(--text-secondary); text-decoration: none;">✉️ rishi@birdblast.com</a>
+        </div>
       </div>
-      <div class="guru-header-actions">
-        <button type="button" class="btn-guru-action" onclick="openOnboardingModal(0)">
-          <span>☕</span> Get to know me again
-        </button>
-        <button type="button" class="btn-guru-action danger" onclick="confirmClearHistory()">
-          <span>🗑️</span> Clear History
-        </button>
-      </div>
-    </div>
+    </aside>
 
-    <!-- 1. The One Sentence That Matters (Top Answer Card) -->
-    <section class="guru-headline-card">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 12px;">
-        <span class="guru-status-tag" id="guruHeadlinePill">
-          <span>⚡</span> Your calendar is with you
-        </span>
-        <button type="button" class="guru-math-toggle" onclick="toggleMathDrawer()">
-          Show underlying diagnostic math &rarr;
-        </button>
-      </div>
-      <div class="guru-answer-text" id="guruHeadlineAnswer">
-        "Your peak is 9–12. You have one hard problem and a clean afternoon. Protect it."
-      </div>
-      <div class="guru-answer-meta">
-        <span id="guruAnswerMetaText">Evaluating today's biological readiness against your 3 living goals.</span>
-        <div style="display: flex; gap: 8px;">
-          <button type="button" class="btn-guru-action" style="padding: 4px 12px; font-size: 0.78rem;" onclick="openEveningQuestionModal()">
-            🌙 Evening Question
+    <!-- Main Content Area (Matching Dashboard look and feel) -->
+    <main class="app-main">
+      
+      <!-- Standard Dashboard Header -->
+      <header class="app-header">
+        <div>
+          <h1 class="page-title">Flow Guru Coach</h1>
+          <p class="page-subtitle">The living executive mentor that protects your peak hours and holds your goals sacred.</p>
+        </div>
+
+        <div class="header-action-group">
+          <button type="button" class="btn-secondary-launch" onclick="openOnboardingModal(0)">
+            <span>☕</span> Get to know me again
           </button>
-          <a href="planner.html" class="btn-guru-action" style="padding: 4px 12px; font-size: 0.78rem; text-decoration: none; background: #0f172a; color: #fff;">
-            Plan Today's Focus &rarr;
+          <button type="button" class="btn-secondary-launch" style="color:#dc2626;" onclick="confirmClearHistory()">
+            <span>🗑️</span> Clear History
+          </button>
+          <!-- Profile Badge -->
+          <a href="profile.html" class="user-profile-badge" title="Manage your local profile">
+            <div class="avatar-small" id="guruNavAvatar">AS</div>
+            <span style="font-size: 0.85rem; font-weight: 600;" id="guruNavName">Alex Smith</span>
           </a>
         </div>
-      </div>
+      </header>
 
-      <!-- Hidden Underlying Diagnostic Math Drawer -->
-      <div id="guruMathDrawer" style="display: none; margin-top: 18px; padding-top: 16px; border-top: 1px dashed rgba(0,0,0,0.12); font-size: 0.84rem; color: #334155;">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 10px;">
-          <div style="background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--guru-border);">
-            <strong style="color: #065f46; font-size: 1.1rem;" id="drawerCalScore">88 / 100</strong><br/>
-            <span style="font-size: 0.75rem; color: var(--guru-text-muted);">Calendar Health Score</span>
-          </div>
-          <div style="background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--guru-border);">
-            <strong style="color: #1e40af; font-size: 1.1rem;" id="drawerParetoScore">80 / 20</strong><br/>
-            <span style="font-size: 0.75rem; color: var(--guru-text-muted);">Pareto Efficiency</span>
-          </div>
-          <div style="background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--guru-border);">
-            <strong style="color: #7c3aed; font-size: 1.1rem;" id="drawerVelocityScore">0.88x</strong><br/>
-            <span style="font-size: 0.75rem; color: var(--guru-text-muted);">Execution Velocity</span>
+      <!-- 1. The One Sentence That Matters (Top Answer Card) -->
+      <section class="guru-headline-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 12px;">
+          <span class="guru-status-tag" id="guruHeadlinePill">
+            <span>⚡</span> Your calendar is with you
+          </span>
+          <button type="button" class="guru-math-toggle" onclick="toggleMathDrawer()">
+            Show underlying diagnostic math &rarr;
+          </button>
+        </div>
+        <div class="guru-answer-text" id="guruHeadlineAnswer">
+          "Your peak is 9–12. You have one hard problem and a clean afternoon. Protect it."
+        </div>
+        <div class="guru-answer-meta">
+          <span id="guruAnswerMetaText">Evaluating today's biological readiness against your 3 living goals.</span>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn-secondary-launch" style="padding: 4px 12px; font-size: 0.78rem;" onclick="openEveningQuestionModal()">
+              🌙 Evening Question
+            </button>
+            <a href="planner.html" class="btn-primary-launch" style="padding: 4px 14px; font-size: 0.78rem; text-decoration: none; background: #0f172a; color: #fff;">
+              Plan Today's Focus &rarr;
+            </a>
           </div>
         </div>
-        <p style="margin: 0; font-size: 0.78rem; color: var(--guru-text-muted); line-height: 1.45;">
-          <strong>Diagnostic Methodology:</strong> Starts at 100 points, penalizing meeting congestion (>2h: -10pts, >3h: -20pts), back-to-back calls without 5m buffer (-12pts each), and missing midday meal recovery (-12pts).
-        </p>
+
+        <!-- Hidden Underlying Diagnostic Math Drawer -->
+        <div id="guruMathDrawer" style="display: none; margin-top: 18px; padding-top: 16px; border-top: 1px dashed rgba(0,0,0,0.12); font-size: 0.84rem; color: #334155;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 10px;">
+            <div style="background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);">
+              <strong style="color: #065f46; font-size: 1.1rem;" id="drawerCalScore">88 / 100</strong><br/>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Calendar Health Score</span>
+            </div>
+            <div style="background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);">
+              <strong style="color: #1e40af; font-size: 1.1rem;" id="drawerParetoScore">80 / 20</strong><br/>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Pareto Efficiency</span>
+            </div>
+            <div style="background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);">
+              <strong style="color: #7c3aed; font-size: 1.1rem;" id="drawerVelocityScore">0.88x</strong><br/>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Execution Velocity</span>
+            </div>
+          </div>
+          <p style="margin: 0; font-size: 0.78rem; color: var(--text-muted); line-height: 1.45;">
+            <strong>Diagnostic Methodology:</strong> Starts at 100 points, penalizing meeting congestion (>2h: -10pts, >3h: -20pts), back-to-back calls without 5m buffer (-12pts each), and missing midday meal recovery (-12pts).
+          </p>
+        </div>
+      </section>
+
+      <!-- 2. The Weekly Letter (Sunday Night Summary) -->
+      <section class="guru-letter-card">
+        <span class="guru-letter-badge">💌 The Weekly Letter &bull; Sunday Night Mentor</span>
+        <h2 class="guru-letter-heading">What you protected, what slipped, and one question.</h2>
+        <p class="guru-letter-sub">Written every Sunday night. Not analytics. Not a chart. Three paragraphs from your coach.</p>
+
+        <div class="guru-letter-body">
+          <p id="letterPara1">
+            This week, you fiercely guarded your morning analytical blocks on Tuesday, Wednesday, and Thursday. That gave you 8.5 hours of uninterrupted deep work directly moving the needle on <strong>Ship Q4 Strategic Architecture</strong>. When you protect that early window, your execution velocity consistently holds around 0.88x, meaning you finish ahead of your own expectations and bank genuine focus surplus.
+          </p>
+          <p id="letterPara2">
+            Where your focus slipped was Friday afternoon: three ad-hoc syncs crept in without decompression buffers, cutting your afternoon synthesis in half and creating cognitive fatigue right before the weekend. Your <strong>Raise Seed / Series A funding</strong> goal received only 45 minutes of scheduled attention all week as administrative friction expanded to fill the void.
+          </p>
+          <p class="guru-letter-question" id="letterPara3">
+            "Looking ahead to next week, here is the one question worth sitting with: Which recurring meeting on your calendar would you cancel or decline tomorrow if you were completely honest about your highest leverage?"
+          </p>
+        </div>
+      </section>
+
+      <!-- 3. Two-Column Grid: Trend Not Tally + Living Goals Lens -->
+      <div class="guru-grid-split">
+        
+        <!-- Left Column: Trend, Not Tally -->
+        <section class="dashboard-card" style="margin-bottom:0;">
+          <div class="card-header-row" style="margin-bottom: 16px;">
+            <div>
+              <h3 class="card-title" style="margin: 0; font-size: 1.12rem;">Trend, Not Tally</h3>
+              <span style="font-size: 0.78rem; color: var(--text-muted);">Directional momentum over the past 30 days</span>
+            </div>
+            <span style="font-size: 0.75rem; background: var(--bg-card-subtle); padding: 3px 8px; border-radius: 6px; font-weight: 600;">30 Days Active</span>
+          </div>
+
+          <div class="trend-metrics-grid">
+            <div class="trend-metric-box">
+              <span class="trend-metric-label">Peak Protection</span>
+              <div class="trend-metric-val">
+                <span id="trendPeakRate">84%</span>
+                <span class="trend-badge green">+18% &uarr;</span>
+              </div>
+              <span class="trend-metric-sub">Up 4 weeks running</span>
+            </div>
+
+            <div class="trend-metric-box">
+              <span class="trend-metric-label">Meeting Friction</span>
+              <div class="trend-metric-val">
+                <span>-45%</span>
+                <span class="trend-badge green">&darr; Drops</span>
+              </div>
+              <span class="trend-metric-sub">Back-to-backs buffered</span>
+            </div>
+
+            <div class="trend-metric-box">
+              <span class="trend-metric-label">Execution Velocity</span>
+              <div class="trend-metric-val">
+                <span id="trendVelocity">0.88x</span>
+                <span class="trend-badge blue">Fast</span>
+              </div>
+              <span class="trend-metric-sub">+28m surplus banked</span>
+            </div>
+
+            <div class="trend-metric-box">
+              <span class="trend-metric-label">Goal Alignment</span>
+              <div class="trend-metric-val">
+                <span id="trendGoalAlign">82%</span>
+                <span class="trend-badge green">High</span>
+              </div>
+              <span class="trend-metric-sub">Timeboxes on Top 3</span>
+            </div>
+          </div>
+
+          <!-- 30-Day SVG Flow Quality Curve -->
+          <div style="background: var(--bg-card-subtle); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <strong style="font-size: 0.8rem; color: var(--text-primary);">Daily Flow Quality (30-Day Momentum)</strong>
+              <span style="font-size: 0.7rem; color: var(--text-muted);">Baseline &bull; 100 Max</span>
+            </div>
+            <svg viewBox="0 0 400 120" style="width: 100%; height: 110px; overflow: visible;" id="guruSvgTrendChart">
+              <defs>
+                <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#10b981" stop-opacity="0.35" />
+                  <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
+                </linearGradient>
+              </defs>
+              <line x1="0" y1="20" x2="400" y2="20" stroke="#e2e8f0" stroke-dasharray="3,3" />
+              <line x1="0" y1="60" x2="400" y2="60" stroke="#e2e8f0" stroke-dasharray="3,3" />
+              <line x1="0" y1="100" x2="400" y2="100" stroke="#e2e8f0" stroke-dasharray="3,3" />
+              <path id="svgAreaPath" d="" fill="url(#chartGrad)" />
+              <path id="svgLinePath" d="" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" />
+            </svg>
+            <div style="display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-muted); margin-top: 4px;">
+              <span>30 days ago</span>
+              <span>15 days ago</span>
+              <span>Today</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right Column: Living Goals Lens -->
+        <section class="dashboard-card" style="margin-bottom:0;">
+          <div class="card-header-row" style="margin-bottom: 16px;">
+            <div>
+              <h3 class="card-title" style="margin: 0; font-size: 1.12rem;">Living Goals</h3>
+              <span style="font-size: 0.78rem; color: var(--text-muted);">A lens for every task, not a buried form</span>
+            </div>
+            <button type="button" class="btn-secondary-launch" style="padding: 4px 10px; font-size: 0.75rem;" onclick="openOnboardingModal(0)">
+              Edit Goals &rarr;
+            </button>
+          </div>
+
+          <!-- Welcome / First Time Setup Banner -->
+          <div id="firstTimeGoalsBanner" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08)); border: 1px dashed rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+              <div>
+                <strong style="color: #1e3a8a; font-size: 0.9rem; display: block; margin-bottom: 2px;">🌱 First Time Setting Up Living Goals?</strong>
+                <span style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; display: block;">
+                  Flow Guru evaluates every single task and meeting against your goals. Tell Flow Guru what matters most right now in a 60-second conversation.
+                </span>
+              </div>
+              <button type="button" class="btn-primary-launch" onclick="openOnboardingModal(0)" style="background: #0f172a; color: #ffffff; font-size: 0.8rem; padding: 6px 14px; font-weight: 700;">
+                ☕ Start 60s Setup &rarr;
+              </button>
+            </div>
+          </div>
+
+          <div id="livingGoalsList">
+            <!-- Populated dynamically with the 3 living goals -->
+          </div>
+
+          <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 12px 14px; margin-top: 14px; font-size: 0.8rem; color: #1e3a8a; line-height: 1.45;">
+            <strong>How Flow Guru protects them:</strong> Every time you create a timebox, Flow Guru asks if it moves one of these three goals forward. If it doesn't, we prompt you to question if it's the right use of today.
+          </div>
+        </section>
+
       </div>
-    </section>
 
-    <!-- 2. The Weekly Letter (Sunday Night Summary) -->
-    <section class="guru-letter-card">
-      <span class="guru-letter-badge">💌 The Weekly Letter &bull; Sunday Night Mentor</span>
-      <h2 class="guru-letter-heading">What you protected, what slipped, and one question.</h2>
-      <p class="guru-letter-sub">Written every Sunday night. Not analytics. Not a chart. Three paragraphs from your coach.</p>
-
-      <div class="guru-letter-body">
-        <p id="letterPara1">
-          This week, you fiercely guarded your morning analytical blocks on Tuesday, Wednesday, and Thursday. That gave you 8.5 hours of uninterrupted deep work directly moving the needle on <strong>Ship Q4 Strategic Architecture</strong>. When you protect that early window, your execution velocity consistently holds around 0.88x, meaning you finish ahead of your own expectations and bank genuine focus surplus.
-        </p>
-        <p id="letterPara2">
-          Where your focus slipped was Friday afternoon: three ad-hoc syncs crept in without decompression buffers, cutting your afternoon synthesis in half and creating cognitive fatigue right before the weekend. Your <strong>Raise Seed / Series A funding</strong> goal received only 45 minutes of scheduled attention all week as administrative friction expanded to fill the void.
-        </p>
-        <p class="guru-letter-question" id="letterPara3">
-          "Looking ahead to next week, here is the one question worth sitting with: Which recurring meeting on your calendar would you cancel or decline tomorrow if you were completely honest about your highest leverage?"
-        </p>
-      </div>
-    </section>
-
-    <!-- 3. Two-Column Grid: Trend Not Tally + Living Goals Lens -->
-    <div class="guru-grid-split">
-      
-      <!-- Left Column: Trend, Not Tally -->
-      <section class="guru-trend-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <!-- 4. Suggestions Linked to Stated Goals -->
+      <section class="dashboard-card" style="margin-bottom: 24px;">
+        <div class="card-header-row" style="margin-bottom: 16px;">
           <div>
-            <h3 style="margin: 0; font-size: 1.15rem; color: var(--guru-text-main);">Trend, Not Tally</h3>
-            <span style="font-size: 0.78rem; color: var(--guru-text-muted);">Directional momentum over the past 30 days</span>
+            <h3 class="card-title" style="margin: 0; font-size: 1.12rem;">High-Leverage Coaching Suggestions</h3>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Every suggestion is strictly tied to one of your stated goals</span>
           </div>
-          <span style="font-size: 0.75rem; background: #e2e8f0; padding: 3px 8px; border-radius: 6px; font-weight: 600;">30 Days Active</span>
+          <span class="guru-status-tag" style="background: #0284c7;">🎯 Goal-Tied</span>
         </div>
 
-        <div class="trend-metrics-grid">
-          <div class="trend-metric-box">
-            <span class="trend-metric-label">Peak Protection</span>
-            <div class="trend-metric-val">
-              <span id="trendPeakRate">84%</span>
-              <span class="trend-badge green">+18% &uarr;</span>
-            </div>
-            <span class="trend-metric-sub">Up 4 weeks running</span>
-          </div>
+        <div id="guruGoalSuggestionsList">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
 
-          <div class="trend-metric-box">
-            <span class="trend-metric-label">Meeting Friction</span>
-            <div class="trend-metric-val">
-              <span>-45%</span>
-              <span class="trend-badge green">&darr; Drops</span>
-            </div>
-            <span class="trend-metric-sub">Back-to-backs buffered</span>
-          </div>
-
-          <div class="trend-metric-box">
-            <span class="trend-metric-label">Execution Velocity</span>
-            <div class="trend-metric-val">
-              <span id="trendVelocity">0.88x</span>
-              <span class="trend-badge blue">Fast</span>
-            </div>
-            <span class="trend-metric-sub">+28m surplus banked</span>
-          </div>
-
-          <div class="trend-metric-box">
-            <span class="trend-metric-label">Goal Alignment</span>
-            <div class="trend-metric-val">
-              <span id="trendGoalAlign">82%</span>
-              <span class="trend-badge green">High</span>
-            </div>
-            <span class="trend-metric-sub">Timeboxes on Top 3</span>
+      <!-- 5. The Guru Has Opinions (Pushback Coach) -->
+      <section class="dashboard-card" style="background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); border-left: 5px solid #ef4444; margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+          <span style="font-size: 1.6rem;">🛡️</span>
+          <div>
+            <h3 class="card-title" style="margin: 0; font-size: 1.12rem; color: #991b1b;">The Guru Has Opinions</h3>
+            <span style="font-size: 0.78rem; color: #b91c1c;">A mirror is not a coach. Flow Guru pushes back when focus is in danger.</span>
           </div>
         </div>
 
-        <!-- 30-Day SVG Flow Quality Curve (Modeled after reference line chart) -->
-        <div style="background: #f8fafc; border: 1px solid var(--guru-border); border-radius: 14px; padding: 14px; margin-top: 10px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <strong style="font-size: 0.8rem; color: var(--guru-text-main);">Daily Flow Quality (30-Day Momentum)</strong>
-            <span style="font-size: 0.7rem; color: var(--guru-text-muted);">Baseline &bull; 100 Max</span>
+        <div class="opinion-bubble">
+          <span>🛑</span>
+          <div>
+            <strong>Peak Protection:</strong> "You're about to book a call during your 9–12 peak. I'd move it to the 13:00–15:00 afternoon dip."
           </div>
-          <svg viewBox="0 0 400 120" style="width: 100%; height: 110px; overflow: visible;" id="guruSvgTrendChart">
-            <defs>
-              <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#10b981" stop-opacity="0.35" />
-                <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
-              </linearGradient>
-            </defs>
-            <!-- Grid Lines -->
-            <line x1="0" y1="20" x2="400" y2="20" stroke="#e2e8f0" stroke-dasharray="3,3" />
-            <line x1="0" y1="60" x2="400" y2="60" stroke="#e2e8f0" stroke-dasharray="3,3" />
-            <line x1="0" y1="100" x2="400" y2="100" stroke="#e2e8f0" stroke-dasharray="3,3" />
-            <!-- Path populated dynamically -->
-            <path id="svgAreaPath" d="" fill="url(#chartGrad)" />
-            <path id="svgLinePath" d="" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" />
-          </svg>
-          <div style="display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--guru-text-muted); margin-top: 4px;">
-            <span>30 days ago</span>
-            <span>15 days ago</span>
-            <span>Today</span>
+        </div>
+
+        <div class="opinion-bubble">
+          <span>⚠️</span>
+          <div>
+            <strong>Goal Alignment:</strong> "You scheduled five tasks today, but none touch your primary goal. Is today about looking busy or making progress?"
+          </div>
+        </div>
+
+        <div class="opinion-bubble">
+          <span>⏳</span>
+          <div>
+            <strong>Hofstadter Buffer:</strong> "Your last three technical sessions ran 25% long. I've automatically added a 15m buffer so you don't compress your evening."
           </div>
         </div>
       </section>
 
-      <!-- Right Column: Living Goals Lens -->
-      <section class="guru-goals-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <!-- 6. Historical Masters of Time-Blocking -->
+      <section class="dashboard-card" id="anecdotes" style="margin-bottom: 24px;">
+        <div class="card-header-row" style="margin-bottom: 8px;">
           <div>
-            <h3 style="margin: 0; font-size: 1.15rem; color: var(--guru-text-main);">Living Goals</h3>
-            <span style="font-size: 0.78rem; color: var(--guru-text-muted);">A lens for every task, not a buried form</span>
+            <h3 class="card-title" style="margin: 0; font-size: 1.12rem;">Historical Mentors of Time-Blocking</h3>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Verifiable quotes and documented practice anecdotes across history</span>
           </div>
-          <button type="button" class="btn-guru-action" style="padding: 4px 10px; font-size: 0.75rem;" onclick="openOnboardingModal(0)">
-            Edit Goals &rarr;
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Cached for instant load</span>
+        </div>
+
+        <div class="mentors-grid" id="mentorsGrid">
+          <!-- Populated from HISTORICAL_QUOTES_AND_ANECDOTES -->
+        </div>
+      </section>
+
+      <!-- 7. Historical Daily Audit Records (Retaining 30+ Days) -->
+      <section class="dashboard-card">
+        <div class="card-header-row" style="margin-bottom: 12px;">
+          <div>
+            <h3 class="card-title" style="margin: 0; font-size: 1.12rem;">Daily Flow Audit History</h3>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Stored locally in your browser. Retained for 30+ days.</span>
+          </div>
+          <button type="button" class="btn-secondary-launch" style="color: #dc2626;" onclick="confirmClearHistory()">
+            Clear History
           </button>
         </div>
 
-        <div id="livingGoalsList">
-          <!-- Populated dynamically with the 3 living goals -->
-        </div>
-
-        <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 12px 14px; margin-top: 14px; font-size: 0.8rem; color: #1e3a8a; line-height: 1.45;">
-          <strong>How Flow Guru protects them:</strong> Every time you create a timebox, Flow Guru asks if it moves one of these three goals forward. If it doesn't, we prompt you to question if it's the right use of today.
+        <div style="overflow-x: auto;">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Flow Assessment</th>
+                <th>Score</th>
+                <th>Meetings</th>
+                <th>Peak Protected?</th>
+                <th>Focus Sprints</th>
+                <th>Primary Goal Touched</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
         </div>
       </section>
 
-    </div>
-
-    <!-- 4. Suggestions Linked to Stated Goals -->
-    <section class="guru-suggestions-card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <div>
-          <h3 style="margin: 0; font-size: 1.15rem; color: var(--guru-text-main);">High-Leverage Coaching Suggestions</h3>
-          <span style="font-size: 0.78rem; color: var(--guru-text-muted);">Every suggestion is strictly tied to one of your stated goals</span>
+      <footer class="app-footer">
+        <div class="footer-row">
+          <div>
+            <strong>Anchor &amp; Flow</strong> &bull; Harvard Timebox Engine
+          </div>
+          <div class="footer-links">
+            <a href="index.html" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">Dashboard</a>
+            <a href="planner.html" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">AI Day Planner</a>
+            <a href="timer.html" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">Timers &amp; Routines</a>
+            <a href="profile.html" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">Overview &amp; Profile</a>
+          </div>
         </div>
-        <span class="guru-status-tag" style="background: #0284c7;">🎯 Goal-Tied</span>
-      </div>
-
-      <div id="guruGoalSuggestionsList">
-        <!-- Populated dynamically -->
-      </div>
-    </section>
-
-    <!-- 5. The Guru Has Opinions (Pushback Coach) -->
-    <section class="guru-opinions-card">
-      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
-        <span style="font-size: 1.6rem;">🛡️</span>
-        <div>
-          <h3 style="margin: 0; font-size: 1.15rem; color: #991b1b;">The Guru Has Opinions</h3>
-          <span style="font-size: 0.78rem; color: #b91c1c;">A mirror is not a coach. Flow Guru pushes back when focus is in danger.</span>
-        </div>
-      </div>
-
-      <div class="opinion-bubble">
-        <span>🛑</span>
-        <div>
-          <strong>Peak Protection:</strong> "You're about to book a call during your 9–12 peak. I'd move it to the 13:00–15:00 afternoon dip."
-        </div>
-      </div>
-
-      <div class="opinion-bubble">
-        <span>⚠️</span>
-        <div>
-          <strong>Goal Alignment:</strong> "You scheduled five tasks today, but none touch your primary goal. Is today about looking busy or making progress?"
-        </div>
-      </div>
-
-      <div class="opinion-bubble">
-        <span>⏳</span>
-        <div>
-          <strong>Hofstadter Buffer:</strong> "Your last three technical sessions ran 25% long. I've automatically added a 15m buffer so you don't compress your evening."
-        </div>
-      </div>
-    </section>
-
-    <!-- 6. Historical Masters of Time-Blocking -->
-    <section class="guru-mentors-card" id="anecdotes">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <div>
-          <h3 style="margin: 0; font-size: 1.15rem; color: var(--guru-text-main);">Historical Mentors of Time-Blocking</h3>
-          <span style="font-size: 0.78rem; color: var(--guru-text-muted);">Verifiable quotes and documented practice anecdotes across history</span>
-        </div>
-        <span style="font-size: 0.75rem; color: var(--guru-text-muted);">Cached for instant load</span>
-      </div>
-
-      <div class="mentors-grid" id="mentorsGrid">
-        <!-- Populated from HISTORICAL_QUOTES_AND_ANECDOTES -->
-      </div>
-    </section>
-
-    <!-- 7. Historical Daily Audit Records (Retaining 30+ Days) -->
-    <section class="guru-history-card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <div>
-          <h3 style="margin: 0; font-size: 1.15rem; color: var(--guru-text-main);">Daily Flow Audit History</h3>
-          <span style="font-size: 0.78rem; color: var(--guru-text-muted);">Stored locally in your browser. Retained for 30+ days.</span>
-        </div>
-        <button type="button" class="btn-guru-action danger" onclick="confirmClearHistory()">
-          Clear History
-        </button>
-      </div>
-
-      <div style="overflow-x: auto;">
-        <table class="history-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Flow Assessment</th>
-              <th>Score</th>
-              <th>Meetings</th>
-              <th>Peak Protected?</th>
-              <th>Focus Sprints</th>
-              <th>Primary Goal Touched</th>
-            </tr>
-          </thead>
-          <tbody id="historyTableBody">
-            <!-- Populated dynamically -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
+      </footer>
+    </main>
   </div>
 
   <!-- ========================================================= -->
   <!-- CONVERSATIONAL ONBOARDING MODAL (1 QUESTION PER SCREEN)   -->
   <!-- ========================================================= -->
-  <div class="guru-modal-backdrop" id="onboardingModal">
-    <div class="guru-modal-box">
+  <a id="onboard" style="display:none;"></a>
+  <div class="side-drawer-backdrop" id="onboardingModal" onclick="if(event.target===this)closeOnboardingModal()">
+    <div class="dashboard-card" style="width: 100%; max-width: 540px; box-shadow: var(--shadow-lg); border-radius: 24px; padding: 32px; animation: modalPop 0.2s ease;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <span style="font-size: 0.75rem; font-weight: 700; color: var(--guru-accent-blue); text-transform: uppercase;" id="onboardStepBadge">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-blue); text-transform: uppercase;" id="onboardStepBadge">
           Question 1 of 5
         </span>
-        <button type="button" onclick="closeOnboardingModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--guru-text-muted);">&times;</button>
+        <button type="button" onclick="closeOnboardingModal()" class="btn-secondary-launch" style="padding: 4px 10px; font-size: 0.8rem;">
+          Close
+        </button>
       </div>
 
-      <h3 style="margin: 0 0 6px 0; font-size: 1.35rem; color: var(--guru-text-main);" id="onboardQuestionTitle">
+      <h3 style="margin: 0 0 6px 0; font-size: 1.35rem; color: var(--text-primary);" id="onboardQuestionTitle">
         What are your goals right now?
       </h3>
-      <p style="margin: 0 0 14px 0; font-size: 0.85rem; color: var(--guru-text-muted);" id="onboardQuestionSub">
+      <p style="margin: 0 0 14px 0; font-size: 0.85rem; color: var(--text-muted);" id="onboardQuestionSub">
         A living lens, not a form
       </p>
 
-      <div style="background: rgba(59, 130, 246, 0.06); border-left: 3px solid var(--guru-accent-blue); padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 16px; font-size: 0.82rem; color: #1e3a8a; line-height: 1.45;" id="onboardWhyBox">
+      <div style="background: rgba(59, 130, 246, 0.06); border-left: 3px solid var(--accent-blue); padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 16px; font-size: 0.82rem; color: #1e3a8a; line-height: 1.45;" id="onboardWhyBox">
         <strong>Why this matters:</strong> Your goals are the North Star for Flow Guru. Every time a task or meeting appears, Flow Guru asks whether it truly moves these forward.
       </div>
 
-      <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--guru-text-main); margin-bottom: 8px;" id="onboardPromptLabel">
+      <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;" id="onboardPromptLabel">
         Name 2 to 3 things that would make the next 90 days a massive success:
       </label>
-      <textarea id="onboardInputArea" rows="4" style="width: 100%; border: 1px solid var(--guru-border); border-radius: 12px; padding: 12px; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; resize: vertical; margin-bottom: 20px;" placeholder="e.g. 1. Ship Q4 Strategic Architecture..."></textarea>
+      <textarea id="onboardInputArea" rows="4" style="width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 12px; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; resize: vertical; margin-bottom: 20px;" placeholder="e.g. 1. Ship Q4 Strategic Architecture..."></textarea>
 
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <button type="button" class="btn-guru-action" onclick="skipOnboardingStep()" style="color: var(--guru-text-muted);">
+        <button type="button" class="btn-secondary-launch" onclick="skipOnboardingStep()" style="color: var(--text-muted);">
           Skip
         </button>
         <div style="display: flex; gap: 8px;">
-          <button type="button" class="btn-guru-action" id="onboardPrevBtn" onclick="prevOnboardingStep()" style="display: none;">
+          <button type="button" class="btn-secondary-launch" id="onboardPrevBtn" onclick="prevOnboardingStep()" style="display: none;">
             &larr; Back
           </button>
-          <button type="button" class="btn-guru-action" id="onboardNextBtn" onclick="nextOnboardingStep()" style="background: #0f172a; color: #ffffff; font-weight: 700;">
+          <button type="button" class="btn-primary-launch" id="onboardNextBtn" onclick="nextOnboardingStep()" style="background: #0f172a; color: #ffffff; font-weight: 700;">
             Save &amp; Continue &rarr;
           </button>
         </div>
@@ -977,23 +811,23 @@
   <!-- ========================================================= -->
   <!-- STREAMLINED EVENING QUESTION MODAL (ONE BEAUTIFUL THING)  -->
   <!-- ========================================================= -->
-  <div class="guru-modal-backdrop" id="eveningQuestionModal">
-    <div class="guru-modal-box" style="text-align: center;">
-      <span style="font-size: 2.2rem; display: block; margin-bottom: 12px;">🌙</span>
-      <h3 style="font-size: 1.35rem; color: var(--guru-text-main); margin: 0 0 8px 0; font-weight: 800;">
+  <div class="side-drawer-backdrop" id="eveningQuestionModal" onclick="if(event.target===this)closeEveningQuestionModal()">
+    <div class="dashboard-card" style="width: 100%; max-width: 500px; text-align: center; border-radius: 24px; padding: 32px 28px; box-shadow: var(--shadow-lg); animation: modalPop 0.2s ease;">
+      <span style="font-size: 2.4rem; display: block; margin-bottom: 12px;">🌙</span>
+      <h3 style="font-size: 1.35rem; color: var(--text-primary); margin: 0 0 8px 0; font-weight: 800;">
         What's the one thing you'd regret not doing tomorrow?
       </h3>
-      <p style="font-size: 0.85rem; color: var(--guru-text-muted); margin: 0 0 20px 0; line-height: 1.45;">
-        Lock in your primary victory now. Then close your laptop and rest with a calm mind.
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0 0 20px 0; line-height: 1.45;">
+        Lock in your primary victory now. Then close your laptop and let the mind rest.
       </p>
 
-      <input type="text" id="eveningRegretInput" placeholder="e.g. Finalize partnership agreement draft" style="width: 100%; border: 1px solid var(--guru-border); border-radius: 12px; padding: 12px 14px; font-size: 0.95rem; font-family: inherit; box-sizing: border-box; margin-bottom: 20px;" />
+      <input type="text" id="eveningRegretInput" placeholder="e.g. Finalize Q4 Strategic Product Architecture" style="width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 0.95rem; font-family: inherit; box-sizing: border-box; margin-bottom: 20px;" />
 
       <div style="display: flex; justify-content: center; gap: 10px;">
-        <button type="button" class="btn-guru-action" onclick="closeEveningQuestionModal()">
+        <button type="button" class="btn-secondary-launch" onclick="closeEveningQuestionModal()">
           Cancel
         </button>
-        <button type="button" class="btn-guru-action" onclick="submitEveningOneThing()" style="background: #7c3aed; color: #fff; font-weight: 700;">
+        <button type="button" class="btn-primary-launch" onclick="submitEveningOneThing()" style="background: #7c3aed; color: #fff; font-weight: 700; padding: 10px 20px;">
           ✓ Lock It In &amp; Close for Tonight
         </button>
       </div>
@@ -1016,12 +850,14 @@
       const profRaw = localStorage.getItem('anchor_flow_user_profile');
       let profile = {};
       try { if (profRaw) profile = JSON.parse(profRaw); } catch(e) {}
-      const userName = profile.userName || 'Alex';
-      document.getElementById('guruNavName').textContent = userName;
-      document.getElementById('guruNavAvatar').textContent = userName.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() || 'AL';
+      const userName = profile.userName || 'Alex Smith';
+      const navName = document.getElementById('guruNavName');
+      const navAvatar = document.getElementById('guruNavAvatar');
+      if (navName) navName.textContent = userName;
+      if (navAvatar) navAvatar.textContent = userName.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() || 'AS';
 
       // 2. Load History & Render Trends
-      const history = getGuruHistory();
+      const history = (typeof getGuruHistory === 'function') ? getGuruHistory() : [];
       renderGuruHeadline();
       renderWeeklyLetter();
       renderTrendsAndChart(history);
@@ -1041,7 +877,8 @@
     function toggleMathDrawer() {
       const drawer = document.getElementById('guruMathDrawer');
       if (drawer) {
-        drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
+        const isHidden = (drawer.style.display === 'none' || !drawer.style.display);
+        drawer.style.display = isHidden ? 'block' : 'none';
       }
     }
 
@@ -1050,11 +887,20 @@
       let profile = {};
       try { if (profRaw) profile = JSON.parse(profRaw); } catch(e) {}
 
-      const events = deduplicateCalendarEvents(profile.calendarEvents || []);
-      const audit = auditCalendarSchedule(events, profile);
+      const raw = profile.calendarEvents || [];
+      const events = (typeof deduplicateCalendarEvents === 'function')
+        ? deduplicateCalendarEvents(raw)
+        : raw;
+      const audit = (typeof auditCalendarSchedule === 'function')
+        ? auditCalendarSchedule(events, profile)
+        : { healthScore: 88, meetingCount: 0, backToBackCount: 0 };
 
-      const headlineText = generateGuruHeadlineSentence(audit, profile);
-      const status = getHumanDiagnosticStatus(audit);
+      const headlineText = (typeof generateGuruHeadlineSentence === 'function')
+        ? generateGuruHeadlineSentence(audit, profile)
+        : "Your peak is 9–12. You have one hard problem and a clean afternoon. Protect it.";
+      const status = (typeof getHumanDiagnosticStatus === 'function')
+        ? getHumanDiagnosticStatus(audit)
+        : { statusText: "Your calendar is with you", color: "#059669", bg: "rgba(16, 185, 129, 0.12)" };
 
       const headEl = document.getElementById('guruHeadlineAnswer');
       if (headEl) headEl.textContent = `"${headlineText}"`;
@@ -1066,26 +912,36 @@
       }
 
       // Fill math drawer
-      document.getElementById('drawerCalScore').textContent = `${audit.healthScore}/100`;
-      document.getElementById('drawerParetoScore').textContent = `80/20`;
-      document.getElementById('drawerVelocityScore').textContent = `0.88x`;
+      const cEl = document.getElementById('drawerCalScore');
+      const pEl = document.getElementById('drawerParetoScore');
+      const vEl = document.getElementById('drawerVelocityScore');
+      if (cEl) cEl.textContent = `${audit.healthScore}/100`;
+      if (pEl) pEl.textContent = `80/20`;
+      if (vEl) vEl.textContent = `0.88x`;
     }
 
     function renderWeeklyLetter() {
+      if (typeof generateWeeklyLetter !== 'function') return;
       const letter = generateWeeklyLetter();
-      document.getElementById('letterPara1').innerHTML = letter.paragraph1;
-      document.getElementById('letterPara2').innerHTML = letter.paragraph2;
-      document.getElementById('letterPara3').innerHTML = `"${letter.paragraph3}"`;
+      const p1 = document.getElementById('letterPara1');
+      const p2 = document.getElementById('letterPara2');
+      const p3 = document.getElementById('letterPara3');
+      if (p1) p1.innerHTML = letter.paragraph1;
+      if (p2) p2.innerHTML = letter.paragraph2;
+      if (p3) p3.innerHTML = `"${letter.paragraph3}"`;
     }
 
     function renderTrendsAndChart(history) {
+      if (typeof calculateGuruTrends !== 'function') return;
       const trends = calculateGuruTrends(history);
-      document.getElementById('trendPeakRate').textContent = `${trends.peakProtectionRate}%`;
-      document.getElementById('trendVelocity').textContent = trends.velocityMultiplier.split(' ')[0];
-      document.getElementById('trendGoalAlign').textContent = `${trends.goalAlignmentRate}%`;
+      const pk = document.getElementById('trendPeakRate');
+      const vel = document.getElementById('trendVelocity');
+      const ga = document.getElementById('trendGoalAlign');
+      if (pk) pk.textContent = `${trends.peakProtectionRate}%`;
+      if (vel) vel.textContent = trends.velocityMultiplier.split(' ')[0];
+      if (ga) ga.textContent = `${trends.goalAlignmentRate}%`;
 
       // Draw SVG chart with 30 data points
-      const svg = document.getElementById('guruSvgTrendChart');
       const records = history.slice(-30);
       if (records.length === 0) return;
 
@@ -1095,7 +951,6 @@
 
       let points = records.map((r, i) => {
         const x = i * step;
-        // score 50 to 100 mapped to height 100 to 15
         const y = height - ((r.flowScore - 50) / 50) * (height - 20) - 10;
         return { x, y };
       });
@@ -1104,14 +959,17 @@
       for (let i = 1; i < points.length; i++) {
         pathD += ` L ${points[i].x} ${points[i].y}`;
       }
-      document.getElementById('svgLinePath').setAttribute('d', pathD);
-
-      let areaD = `${pathD} L ${points[points.length-1].x} 115 L ${points[0].x} 115 Z`;
-      document.getElementById('svgAreaPath').setAttribute('d', areaD);
+      const lineEl = document.getElementById('svgLinePath');
+      const areaEl = document.getElementById('svgAreaPath');
+      if (lineEl) lineEl.setAttribute('d', pathD);
+      if (areaEl) {
+        let areaD = `${pathD} L ${points[points.length-1].x} 115 L ${points[0].x} 115 Z`;
+        areaEl.setAttribute('d', areaD);
+      }
     }
 
     function renderLivingGoals() {
-      const goals = getUserGoals();
+      const goals = (typeof getUserGoals === 'function') ? getUserGoals() : [];
       const list = document.getElementById('livingGoalsList');
       if (!list) return;
 
@@ -1125,7 +983,7 @@
     }
 
     function renderGoalSuggestions() {
-      const goals = getUserGoals();
+      const goals = (typeof getUserGoals === 'function') ? getUserGoals() : [];
       const list = document.getElementById('guruGoalSuggestionsList');
       if (!list) return;
 
@@ -1167,7 +1025,7 @@
       const grid = document.getElementById('mentorsGrid');
       if (!grid) return;
 
-      const quotes = getCachedOrFreshQuotes();
+      const quotes = (typeof getCachedOrFreshQuotes === 'function') ? getCachedOrFreshQuotes() : [];
       grid.innerHTML = quotes.map(m => `
         <div class="mentor-box">
           <div class="mentor-name">
@@ -1204,56 +1062,134 @@
 
     function confirmClearHistory() {
       if (confirm('Are you sure you want to clear your Flow Guru audit history? This action cannot be undone.')) {
-        clearGuruHistory();
-        seedGuruHistoryIfEmpty();
+        if (typeof clearGuruHistory === 'function') clearGuruHistory();
+        if (typeof seedGuruHistoryIfEmpty === 'function') seedGuruHistoryIfEmpty();
         initGuruPage();
         alert('Flow Guru history cleared and re-initialized.');
       }
     }
 
+    function getOnboardingSteps() {
+      if (typeof window !== 'undefined' && window.ONBOARDING_CONVERSATION_STEPS && Array.isArray(window.ONBOARDING_CONVERSATION_STEPS)) {
+        return window.ONBOARDING_CONVERSATION_STEPS;
+      }
+      if (typeof ONBOARDING_CONVERSATION_STEPS !== 'undefined' && Array.isArray(ONBOARDING_CONVERSATION_STEPS)) {
+        return ONBOARDING_CONVERSATION_STEPS;
+      }
+      return [
+        {
+          step: 1,
+          title: "What are your goals right now?",
+          subtitle: "A living lens, not a form",
+          whyItMatters: "Your goals are the North Star for Flow Guru. Every time a task or meeting appears, Flow Guru asks whether it truly moves these forward.",
+          prompt: "Name 2 to 3 things that would make the next 90 days a massive success (personal & professional):",
+          placeholder: "e.g. 1. Ship Q4 Strategic Architecture\n2. Raise Series A funding\n3. Marathon training & 8h sleep",
+          key: "goals"
+        },
+        {
+          step: 2,
+          title: "What do your typical habits & routines look like?",
+          subtitle: "Mapping your biological energy curve",
+          whyItMatters: "Human cognitive sharpness follows biological ultradian cycles. We want to align your hardest problem to your natural neurological peak.",
+          prompt: "When do you typically wake up, and when do you feel your sharpest mental focus?",
+          placeholder: "e.g. Wake up at 7:00 AM, sharpest between 9:00 AM and 12:30 PM, afternoon gym at 5:00 PM.",
+          key: "routines"
+        },
+        {
+          step: 3,
+          title: "What gets in the way?",
+          subtitle: "Identifying your primary friction points",
+          whyItMatters: "Knowing where your focus frays allows Flow Guru to push back on your behalf before meetings compress your deep work blocks.",
+          prompt: "Be completely honest: what steals your time most frequently?",
+          placeholder: "e.g. Back-to-back Zoom calls, constant Slack pings, procrastination on hard writing tasks.",
+          key: "friction"
+        },
+        {
+          step: 4,
+          title: "How do you like to plan?",
+          subtitle: "Designing your operating rhythm",
+          whyItMatters: "A rigid schedule fails if you crave flexibility. We match Flow Guru to your preferred executive posture.",
+          prompt: "Do you prefer planning the night before, first thing in the morning, or with loose flexible timeblocks?",
+          placeholder: "e.g. Night before evening shutdown + loose 45-minute focus sprints during the day.",
+          key: "planningPreference"
+        },
+        {
+          step: 5,
+          title: "What do you actually want out of this tool?",
+          subtitle: "Your definition of victory",
+          whyItMatters: "We measure success not by checkboxes completed, but by how calm and proud you feel when you shut your laptop at 5 PM.",
+          prompt: "If Flow Guru works magically for you, what changes in your daily life?",
+          placeholder: "e.g. Finishing my work with zero guilt by 5:30 PM and knowing I protected my biggest long-term goals.",
+          key: "outcome"
+        }
+      ];
+    }
+
     // --- ONBOARDING MODAL LOGIC ---
     function openOnboardingModal(stepIndex = 0) {
       currentStep = stepIndex;
-      localAnswers = getOnboardingAnswers();
+      localAnswers = (typeof getOnboardingAnswers === 'function') ? getOnboardingAnswers() : {};
       renderOnboardingStep();
-      document.getElementById('onboardingModal').classList.add('open');
+      const m = document.getElementById('onboardingModal');
+      if (m) m.classList.add('open');
     }
 
     function closeOnboardingModal() {
-      document.getElementById('onboardingModal').classList.remove('open');
+      const m = document.getElementById('onboardingModal');
+      if (m) m.classList.remove('open');
     }
 
     function renderOnboardingStep() {
-      const step = ONBOARDING_CONVERSATION_STEPS[currentStep];
+      const steps = getOnboardingSteps();
+      const step = steps[currentStep];
       if (!step) return;
 
-      document.getElementById('onboardStepBadge').textContent = `Question ${currentStep + 1} of ${ONBOARDING_CONVERSATION_STEPS.length}`;
-      document.getElementById('onboardQuestionTitle').textContent = step.title;
-      document.getElementById('onboardQuestionSub').textContent = step.subtitle;
-      document.getElementById('onboardWhyBox').innerHTML = `<strong>Why this matters:</strong> ${escapeHtml(step.whyItMatters)}`;
-      document.getElementById('onboardPromptLabel').textContent = step.prompt;
-
+      const badge = document.getElementById('onboardStepBadge');
+      const title = document.getElementById('onboardQuestionTitle');
+      const sub = document.getElementById('onboardQuestionSub');
+      const why = document.getElementById('onboardWhyBox');
+      const promptLabel = document.getElementById('onboardPromptLabel');
       const input = document.getElementById('onboardInputArea');
-      input.placeholder = step.placeholder;
-      input.value = localAnswers[step.key] || '';
+      const prevBtn = document.getElementById('onboardPrevBtn');
+      const nextBtn = document.getElementById('onboardNextBtn');
 
-      document.getElementById('onboardPrevBtn').style.display = currentStep > 0 ? 'inline-flex' : 'none';
-      document.getElementById('onboardNextBtn').textContent = currentStep === ONBOARDING_CONVERSATION_STEPS.length - 1 ? 'Finish Setup ✓' : 'Save & Continue →';
+      if (badge) badge.textContent = `Question ${currentStep + 1} of ${steps.length}`;
+      if (title) title.textContent = step.title;
+      if (sub) sub.textContent = step.subtitle;
+      if (why) why.innerHTML = `<strong>Why this matters:</strong> ${escapeHtml(step.whyItMatters)}`;
+      if (promptLabel) promptLabel.textContent = step.prompt;
+
+      if (input) {
+        input.placeholder = step.placeholder;
+        input.value = localAnswers[step.key] || '';
+        setTimeout(() => input.focus(), 100);
+      }
+
+      if (prevBtn) prevBtn.style.display = currentStep > 0 ? 'inline-flex' : 'none';
+      if (nextBtn) nextBtn.textContent = currentStep === steps.length - 1 ? 'Finish Setup ✓' : 'Save & Continue →';
     }
 
     function nextOnboardingStep() {
-      const step = ONBOARDING_CONVERSATION_STEPS[currentStep];
+      const steps = getOnboardingSteps();
+      const step = steps[currentStep];
       const val = document.getElementById('onboardInputArea').value;
-      saveOnboardingAnswer(step.key, val);
+      if (typeof saveOnboardingAnswer === 'function') {
+        saveOnboardingAnswer(step.key, val);
+      } else {
+        localAnswers[step.key] = val;
+        try { localStorage.setItem('anchor_flow_onboarding_answers', JSON.stringify(localAnswers)); } catch(e) {}
+      }
       localAnswers[step.key] = val;
 
-      if (currentStep < ONBOARDING_CONVERSATION_STEPS.length - 1) {
+      if (currentStep < steps.length - 1) {
         currentStep++;
         renderOnboardingStep();
       } else {
-        completeOnboarding();
+        if (typeof completeOnboarding === 'function') completeOnboarding();
         closeOnboardingModal();
         initGuruPage();
+        const banner = document.getElementById('firstTimeGoalsBanner');
+        if (banner) banner.style.display = 'none';
       }
     }
 
@@ -1265,7 +1201,8 @@
     }
 
     function skipOnboardingStep() {
-      if (currentStep < ONBOARDING_CONVERSATION_STEPS.length - 1) {
+      const steps = getOnboardingSteps();
+      if (currentStep < steps.length - 1) {
         currentStep++;
         renderOnboardingStep();
       } else {
@@ -1275,25 +1212,31 @@
 
     // --- EVENING QUESTION MODAL ---
     function openEveningQuestionModal() {
-      document.getElementById('eveningQuestionModal').classList.add('open');
+      const m = document.getElementById('eveningQuestionModal');
+      if (m) m.classList.add('open');
       const input = document.getElementById('eveningRegretInput');
       if (input) {
         input.value = localStorage.getItem('anchor_flow_tomorrow_top1') || '';
-        input.focus();
+        setTimeout(() => input.focus(), 100);
       }
     }
 
     function closeEveningQuestionModal() {
-      document.getElementById('eveningQuestionModal').classList.remove('open');
+      const m = document.getElementById('eveningQuestionModal');
+      if (m) m.classList.remove('open');
     }
 
     function submitEveningOneThing() {
       const val = document.getElementById('eveningRegretInput').value;
       if (val && val.trim()) {
-        saveTomorrowTop1(val.trim());
+        if (typeof saveTomorrowTop1 === 'function') {
+          saveTomorrowTop1(val.trim());
+        } else {
+          localStorage.setItem('anchor_flow_tomorrow_top1', val.trim());
+        }
       }
       closeEveningQuestionModal();
-      alert('Locked in as tomorrow's Top 1 victory. Step away and sleep in peace 🌙');
+      alert("Locked in as tomorrow's Top 1 victory. Step away and sleep in peace 🌙");
     }
 
     function escapeHtml(str) {
@@ -1305,6 +1248,35 @@
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
+
+    // Explicit Window Attachments for Guaranteed Interactivity
+    window.openOnboardingModal = openOnboardingModal;
+    window.closeOnboardingModal = closeOnboardingModal;
+    window.openEveningQuestionModal = openEveningQuestionModal;
+    window.closeEveningQuestionModal = closeEveningQuestionModal;
+    window.toggleMathDrawer = toggleMathDrawer;
+    window.confirmClearHistory = confirmClearHistory;
+    window.renderOnboardingStep = renderOnboardingStep;
+    window.nextOnboardingStep = nextOnboardingStep;
+    window.prevOnboardingStep = prevOnboardingStep;
+    window.skipOnboardingStep = skipOnboardingStep;
+    window.submitEveningOneThing = submitEveningOneThing;
+    window.initGuruPage = initGuruPage;
+
+    // Listen for hash change (#onboard)
+    window.addEventListener('hashchange', () => {
+      if (window.location.hash === '#onboard') {
+        openOnboardingModal(0);
+      }
+    });
+
+    // Close on Escape key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeOnboardingModal();
+        closeEveningQuestionModal();
+      }
+    });
   </script>
 </body>
 </html>
