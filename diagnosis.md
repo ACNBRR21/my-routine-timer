@@ -173,3 +173,29 @@
   * Added calendar relay proxying directly into `cloudflare-worker.js` for users deploying their own proxy.
   * **Zero-Data-Loss Cache Retention:** If a live network fetch fails, `syncLiveCalendar()` now retains that calendar's previously cached meetings, marks the status as `warning`, and maintains the user's agenda on the dashboard rather than clearing it.
   * Added a `📋 Paste iCal` quick-sync button directly on calendar rows in `profile.html` to easily import raw `.ics` data when proxies are blocked by adblockers.
+
+---
+
+### 16. Outlook Calendar `.ics` Direct Upload & Unencoded Relay Support (`js/calendar-sync.js` / `profile.html` / `index.html`)
+* **Problem:** Adding an Outlook calendar showed a "temporarily busy" warning. When clicking the Outlook link in a browser, it downloaded the `reachcalendar.ics` file directly. Furthermore, Microsoft Exchange / IIS servers block URLs containing double-escaped slashes (`%2F`) with `HTTP 404.11`, causing encoded proxy relays to fail.
+* **Resolution:**
+  * **Direct `.ics` File Upload & Drag-and-Drop:** Added a prominent **"📁 Upload / Drop .ics File Directly"** button and file input in `profile.html` and `index.html`. Users who download their Outlook `.ics` file can import it with a single click—processing events 100% offline with zero proxy latency or CORS restrictions.
+  * **Unencoded Relay Support:** Added direct unencoded relay queries (`https://corsproxy.io/?${cleanUrl}`) and default worker relay routes (`https://anchor-flow-proxy.rishi-roy.workers.dev?proxyUrl=...`) in `js/calendar-sync.js` to prevent IIS `%2F` rejection.
+
+---
+
+### 17. Multi-Tier LLM Engine Re-Integration (`js/ai-engine.js` / `profile.html` / `planner.html` / `index.html`)
+* **Problem:** The planning agent and Flow Guru had stopped querying external LLMs, relying only on hardcoded local logic. Users had no UI to configure their OpenAI, DeepSeek, or Cloudflare Proxy settings.
+* **Resolution:**
+  * Created `js/ai-engine.js` implementing a unified multi-tier LLM caller (`executeMultiTierAi`) supporting OpenAI (`gpt-4o`, `gpt-4o-mini`), DeepSeek (`deepseek-chat`), Cloudflare AI Proxy, and smart local heuristics.
+  * Added a dedicated **AI Engine & LLM Configuration** card in `profile.html` with model selection, password-masked API key inputs, serverless proxy URL input, and a **"⚡ Test AI Connection"** button.
+  * Wired both `planner.html` and Flow Guru in `index.html` to query `executeMultiTierAi()`, displaying dynamic engine badges (e.g. `[OpenAI (GPT-4o)]`, `[DeepSeek]`, `[Cloudflare AI Proxy]`).
+
+---
+
+### 18. Time-Awareness & Future Date Planning ("6th February, tomorrow") (`planner.html`)
+* **Problem:** Planning for "tomorrow" still used today's calendar anchors, and planning in the evening (7:30 PM) was showing concluded morning meetings.
+* **Resolution:**
+  * **Intelligent Date Parser:** Implemented `parseTargetDateFromPrompt()` supporting natural language dates (e.g., `"6th February, tomorrow"`, `"Feb 6"`, `"tomorrow"`, `"today"`). Calendar anchors are strictly queried for that resolved target date.
+  * **Evening Time-Awareness:** Implemented `filterCalendarEventsByTime()`. When planning for today in the evening (> 18:00), past morning meetings (whose end time is before the current time) are automatically suppressed from focus plans and timers.
+  * **Conversational Intake:** When the user provides a date opener without task items (e.g. *"I want to plan for 6th February, tomorrow"*), the AI does not dump a schedule; it acknowledges the date, summarizes calendar commitments, and asks: *"What are the top three things you want to do?"*.

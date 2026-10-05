@@ -234,7 +234,60 @@
       </section>
 
       
-      <!-- Section: The Flow Guru & Pareto 80/20 Calendar Auditing -->
+      <!-- ========================================================= -->
+      <!-- SECTION: AI ENGINE & LLM ARCHITECTURE                     -->
+      <!-- ========================================================= -->
+      <section class="settings-section-card" id="ai-engine-guide" style="border-left: 5px solid var(--accent-purple, #8b5cf6);">
+        <div class="card-header-row">
+          <div>
+            <h2 class="settings-section-title">🤖 AI Engine &amp; Multi-Tier LLM Architecture</h2>
+            <p class="settings-section-desc">How Anchor &amp; Flow leverages OpenAI GPT-4o, DeepSeek, and Cloudflare AI Workers for time-aware executive intelligence.</p>
+          </div>
+          <span class="card-header-badge" style="background: rgba(139, 92, 246, 0.15); color: #7c3aed; font-weight: 700;">
+            Multi-Tier AI
+          </span>
+        </div>
+
+        <div style="font-size: 0.92rem; color: var(--text-primary); line-height: 1.6; margin-bottom: 16px;">
+          The Anchor &amp; Flow Day Planner and Flow Guru Executive Assistant use a flexible, privacy-preserving multi-tier AI architecture:
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+          <div style="background: var(--bg-card-subtle); border-radius: 12px; padding: 16px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: #047857; margin-bottom: 6px;">
+              ⚡ 1. Direct Model API Keys (OpenAI &amp; DeepSeek)
+            </h4>
+            <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.5;">
+              You can connect your own OpenAI API key (for <strong>GPT-4o Flagship</strong> or <strong>GPT-4o-mini</strong>) or DeepSeek key (<strong>deepseek-chat</strong>) in <a href="profile.html" style="color:var(--accent-blue); font-weight:600;">Profile Settings</a>. Your keys are stored 100% locally in your browser's private storage and never transmitted to our servers.
+            </p>
+          </div>
+
+          <div style="background: var(--bg-card-subtle); border-radius: 12px; padding: 16px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: #0284c7; margin-bottom: 6px;">
+              🌐 2. Cloudflare AI Worker Proxy
+            </h4>
+            <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.5;">
+              Anchor &amp; Flow includes a zero-config serverless proxy template in <code>cloudflare-worker.js</code>. Deploy it to your free Cloudflare account (100,000 requests/day) or use the default proxy endpoint (<code>https://anchor-flow-proxy.rishi-roy.workers.dev</code>) for seamless shared access.
+            </p>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-card-subtle); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: #b45309; margin-bottom: 6px;">
+            🕰️ 3. Time-Aware &amp; Date-Aware Conversational Intake
+          </h4>
+          <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.5;">
+            The planner understands both conversational scheduling openers and natural dates:
+          </p>
+          <ul style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6; margin-left: 20px;">
+            <li><strong>Conversational Planning Openers:</strong> Stating <em>"I want to plan for 6th February, tomorrow"</em> engages the AI as a conversational assistant. It checks your calendar for that date, reports any scheduled meetings, and asks for your Top 3 priorities before generating your schedule.</li>
+            <li><strong>Intelligent Time-Awareness:</strong> When planning for today in the evening (e.g. 7:30 PM), past morning meetings (e.g. 9:00 AM) are automatically excluded so your focus plan and timers only track upcoming commitments.</li>
+            <li><strong>In-Place Editing:</strong> In the generated Harvard Timebox table, you can edit titles, adjust durations, swap priorities (Top 1, 2, 3), delete tasks, or add new focus blocks directly.</li>
+          </ul>
+        </div>
+      </section>
+
+<!-- Section: The Flow Guru & Pareto 80/20 Calendar Auditing -->
       <section class="settings-section-card" id="flow-guru" style="border-left: 5px solid var(--accent-green);">
         <div class="card-header-row">
           <div>

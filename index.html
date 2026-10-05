@@ -250,10 +250,17 @@
             <!-- Upcoming Horizon Notice -->
             <div id="dashboardUpcomingNotice" style="margin-top: 10px;"></div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px;">
-              <a href="profile.html" style="font-size: 0.84rem; color: var(--accent-blue); font-weight: 600; text-decoration: none;">
-                + Link or Manage Calendars &rarr;
-              </a>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px; flex-wrap: wrap; gap: 8px;">
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="profile.html" style="font-size: 0.84rem; color: var(--accent-blue); font-weight: 600; text-decoration: none;">
+                  + Manage Calendars
+                </a>
+                <span style="color: var(--border);">|</span>
+                <input type="file" id="dashIcsFileInput" accept=".ics,text/calendar" style="display: none;" />
+                <button type="button" id="dashTriggerIcsBtn" style="background: none; border: 1px dashed #059669; border-radius: 6px; padding: 3px 8px; color: #059669; cursor: pointer; font-size: 0.78rem; font-weight: 600;">
+                  📁 Import .ics File
+                </button>
+              </div>
               <button id="refreshSyncBtn" onclick="refreshDashboardEvents()" style="background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; color: var(--text-secondary); cursor: pointer; font-size: 0.78rem; display: flex; align-items: center; gap: 4px;">
                 <span id="refreshSyncIcon">🔄</span>
                 <span id="refreshSyncLabel">Refresh Sync</span>
@@ -459,6 +466,7 @@
 
   <!-- SCRIPTS -->
   <script src="js/calendar-sync.js"></script>
+  <script src="js/ai-engine.js"></script>
   <script src="js/flow-guru.js"></script>
   <script>
     // Universal HTML Sanitizer Helper
@@ -1121,7 +1129,8 @@
 
         const recs = generateGuruStrategicAdvice(calAudit, taskAudit, userProfile);
         const recsContainer = document.getElementById('modalGuruRecsContainer');
-        recsContainer.innerHTML = recs.map(r => `
+        
+        let recsHtml = recs.map(r => `
           <div style="background: var(--bg-card-subtle); border-radius: 8px; padding: 10px 12px; display: flex; align-items: flex-start; gap: 10px;">
             <span style="font-size: 1.2rem;">${r.icon}</span>
             <div>
@@ -1131,7 +1140,29 @@
           </div>
         `).join('');
 
+        recsContainer.innerHTML = recsHtml;
         guruModal.classList.add('open');
+
+        // Asynchronously query live LLM for real-time strategic advice if configured!
+        (async () => {
+          const sysPrompt = `You are Flow Guru, an elite executive productivity advisor. Analyze the executive calendar load and provide 2 concise, punchy strategic recommendations.`;
+          const usrPrompt = `Executive calendar load: ${calAudit.meetingCount} meetings (${calAudit.totalMeetingHours}h, ${calAudit.meetingLoadPercent}% of day). Back-to-back: ${calAudit.backToBackCount}. Health score: ${calAudit.healthScore}/100. Lunch anchor: ${calAudit.hasLunchAnchor ? 'Preserved' : 'Missing'}.`;
+          try {
+            const aiRes = await executeMultiTierAi(sysPrompt, usrPrompt);
+            if (aiRes && aiRes.content) {
+              const aiCard = document.createElement('div');
+              aiCard.style.cssText = 'background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 12px; margin-top: 10px;';
+              aiCard.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <strong style="font-size:0.85rem; color:#7c3aed;">🧠 Live Strategic Guidance</strong>
+                  <span style="font-size:0.7rem; background:#7c3aed; color:#fff; padding:2px 6px; border-radius:999px; font-weight:700;">${escapeHtml(aiRes.engine)}</span>
+                </div>
+                <div style="font-size:0.82rem; color:var(--text-primary); line-height:1.5;">${escapeHtml(aiRes.content)}</div>
+              `;
+              recsContainer.prepend(aiCard);
+            }
+          } catch(e) {}
+        })();
       });
     }
 

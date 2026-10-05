@@ -180,15 +180,25 @@
                 <label for="newCalUrl">Calendar Share URL (iCal / Webcal / ICS format)</label>
                 <input type="url" id="newCalUrl" class="form-input-text" placeholder="https://outlook.office.com/owa/calendar/.../reachcalendar.ics or https://calendar.google.com/calendar/ical/.../basic.ics" />
               </div>
-              <button id="addCalendarBtn" class="btn-secondary-launch" style="background:#ffffff; border-color:var(--accent-blue); color:var(--accent-blue); font-weight:600;">
-                + Link This Calendar
-              </button>
+              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button id="addCalendarBtn" class="btn-secondary-launch" style="background:#ffffff; border-color:var(--accent-blue); color:var(--accent-blue); font-weight:600;">
+                  + Link This Calendar URL
+                </button>
+                <span style="font-size: 0.82rem; color: var(--text-muted);">or</span>
+                <input type="file" id="directIcsFileInput" accept=".ics,text/calendar" style="display: none;" />
+                <button type="button" id="triggerIcsFileBtn" class="btn-secondary-launch" style="background:#ffffff; border-color:#059669; color:#059669; font-weight:600;">
+                  📁 Upload / Drop .ics File Directly
+                </button>
+              </div>
             </div>
           
             <!-- Direct iCal Text Paste / Fallback Sync Option -->
-            <div style="margin-top: 14px; text-align: right;">
+            <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+              <span style="font-size: 0.8rem; color: var(--text-secondary);">
+                💡 Tip: If your browser downloads the <code>.ics</code> file (common with Outlook), click <strong>Upload .ics File</strong> for instant, offline sync!
+              </span>
               <button id="openPasteIcalModalBtn" class="btn-secondary-launch" style="font-size: 0.8rem; padding: 6px 14px;">
-                📋 Paste Raw iCal Text (Direct Sync)
+                📋 Paste Raw iCal Text
               </button>
             </div>
 
@@ -358,7 +368,56 @@
       </section>
 
 
-      <!-- Section 5: Stored Timers & History Cleaner -->
+            <!-- Section: AI Engine & Multi-Tier LLM Configuration -->
+      <section class="settings-section-card" style="border-left: 5px solid var(--accent-purple, #8b5cf6);">
+        <div class="card-header-row">
+          <div>
+            <h2 class="settings-section-title">🤖 AI Engine &amp; LLM Configuration</h2>
+            <p class="settings-section-desc">Connect OpenAI (GPT-4o), DeepSeek, or the free Cloudflare AI Worker Proxy to power executive reasoning.</p>
+          </div>
+          <span class="card-header-badge" id="aiStatusBadge" style="background: rgba(139, 92, 246, 0.15); color: #7c3aed; font-weight: 700;">
+            Active Engine
+          </span>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field-group">
+            <label for="inputPreferredEngine">Preferred Intelligence Engine</label>
+            <select id="inputPreferredEngine" class="form-input-text">
+              <option value="gpt-4o">OpenAI (GPT-4o Flagship Omni)</option>
+              <option value="gpt-4o-mini">OpenAI (GPT-4o-mini Fast)</option>
+              <option value="deepseek">DeepSeek (deepseek-chat)</option>
+              <option value="proxy">Cloudflare AI Worker Proxy</option>
+              <option value="local">Local Smart Heuristics (Offline)</option>
+            </select>
+          </div>
+
+          <div class="form-field-group">
+            <label for="inputServerlessProxy">Serverless Proxy URL</label>
+            <input type="text" id="inputServerlessProxy" class="form-input-text" placeholder="https://anchor-flow-proxy.rishi-roy.workers.dev" />
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field-group">
+            <label for="inputOpenAiKey">OpenAI API Key (Stored Locally in Browser)</label>
+            <input type="password" id="inputOpenAiKey" class="form-input-text" placeholder="sk-proj-..." />
+          </div>
+
+          <div class="form-field-group">
+            <label for="inputDeepSeekKey">DeepSeek API Key (Stored Locally in Browser)</label>
+            <input type="password" id="inputDeepSeekKey" class="form-input-text" placeholder="sk-..." />
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+          <button id="testAiConnectionBtn" type="button" class="btn-secondary-launch" style="padding: 7px 16px; font-size: 0.85rem;">
+            ⚡ Test AI Connection
+          </button>
+        </div>
+      </section>
+
+<!-- Section 5: Stored Timers & History Cleaner -->
       <section class="settings-section-card">
         <div class="card-header-row">
           <div>
@@ -440,6 +499,7 @@
 
   <!-- SCRIPTS -->
   <script src="js/calendar-sync.js"></script>
+  <script src="js/ai-engine.js"></script>
   <script>
     // Universal HTML Sanitizer Helper
     function escapeHtml(str) {
@@ -958,7 +1018,145 @@
       });
     }
 
-    document.addEventListener('DOMContentLoaded', populateProfileForm);
+    
+    // Direct .ics File Upload Handling
+    const icsInput = document.getElementById('directIcsFileInput');
+    const triggerIcsBtn = document.getElementById('triggerIcsFileBtn');
+    if (triggerIcsBtn && icsInput) {
+      triggerIcsBtn.addEventListener('click', () => icsInput.click());
+      icsInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const content = evt.target.result;
+          if (!content || !content.includes('BEGIN:VCALENDAR')) {
+            alert('The selected file does not appear to be a valid iCalendar (.ics) file.');
+            return;
+          }
+          const calName = file.name.replace(/\.ics$/i, '') || 'Uploaded Outlook Calendar';
+          const newCalId = 'cal-' + Date.now();
+          const parsed = parseIcsTextToEvents(content, calName, 'outlook', newCalId);
+          if (parsed.length > 0) {
+            const newCal = {
+              id: newCalId,
+              name: calName,
+              url: 'file://' + file.name,
+              type: 'outlook',
+              color: '#0078d4',
+              enabled: true,
+              syncStatus: 'success',
+              eventCount: parsed.length,
+              lastSync: new Date().toISOString()
+            };
+            currentProfile.linkedCalendars = currentProfile.linkedCalendars || [];
+            currentProfile.linkedCalendars.push(newCal);
+
+            const routineAnchors = (currentProfile.calendarEvents || []).filter(ev => ev.sourceType === 'routine');
+            const otherEvents = (currentProfile.calendarEvents || []).filter(ev => ev.sourceType !== 'routine');
+            currentProfile.calendarEvents = routineAnchors.concat(otherEvents).concat(parsed);
+            currentProfile.calendarEvents = deduplicateCalendarEvents(currentProfile.calendarEvents);
+
+            saveStoredProfile(currentProfile);
+            renderLinkedCalendars();
+            renderProfileSyncedMeetings();
+            showAppToast(`✅ Imported ${parsed.length} meetings from ${file.name}!`);
+          } else {
+            alert('No active events found in the uploaded .ics file.');
+          }
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    // AI Settings Population & Save
+    function populateAiSettings() {
+      const oKey = localStorage.getItem('anchor_flow_openai_key') || '';
+      const dKey = localStorage.getItem('anchor_flow_deepseek_key') || '';
+      const pUrl = localStorage.getItem('anchor_flow_proxy_url') || DEFAULT_PROXY_URL;
+      const pref = localStorage.getItem('anchor_flow_preferred_engine') || 'gpt-4o';
+
+      const elOKey = document.getElementById('inputOpenAiKey');
+      const elDKey = document.getElementById('inputDeepSeekKey');
+      const elPUrl = document.getElementById('inputServerlessProxy');
+      const elPref = document.getElementById('inputPreferredEngine');
+
+      if (elOKey) elOKey.value = oKey;
+      if (elDKey) elDKey.value = dKey;
+      if (elPUrl) elPUrl.value = pUrl;
+      if (elPref) elPref.value = pref;
+
+      updateAiStatusBadge(pref, oKey, dKey, pUrl);
+    }
+
+    function updateAiStatusBadge(pref, oKey, dKey, pUrl) {
+      const badge = document.getElementById('aiStatusBadge');
+      if (!badge) return;
+      if (pref === 'gpt-4o' && oKey) {
+        badge.textContent = 'OpenAI (GPT-4o)';
+        badge.style.color = '#059669';
+        badge.style.background = 'rgba(16, 185, 129, 0.15)';
+      } else if (pref === 'deepseek' && dKey) {
+        badge.textContent = 'DeepSeek (deepseek-chat)';
+        badge.style.color = '#0284c7';
+        badge.style.background = 'rgba(2, 132, 199, 0.15)';
+      } else if (pUrl) {
+        badge.textContent = 'Cloudflare AI Proxy';
+        badge.style.color = '#7c3aed';
+        badge.style.background = 'rgba(139, 92, 246, 0.15)';
+      } else {
+        badge.textContent = 'Local Heuristics';
+        badge.style.color = 'var(--text-secondary)';
+        badge.style.background = 'rgba(142, 142, 147, 0.15)';
+      }
+    }
+
+    // Test AI Connection button
+    const testAiBtn = document.getElementById('testAiConnectionBtn');
+    if (testAiBtn) {
+      testAiBtn.addEventListener('click', async () => {
+        testAiBtn.disabled = true;
+        testAiBtn.textContent = 'Testing AI...';
+        showAppToast('Testing AI connection...');
+        try {
+          const res = await executeMultiTierAi('You are a test agent. Respond with "AI connection verified!" and your model name.', 'Hello, testing connection.');
+          if (res && res.content) {
+            showAppToast(`✅ ${res.engine}: Connection verified!`);
+          } else {
+            showAppToast('ℹ️ Local heuristics engine active (ready for offline use).');
+          }
+        } catch(e) {
+          showAppToast(`⚠️ AI test failed: ${e.message}`);
+        } finally {
+          testAiBtn.disabled = false;
+          testAiBtn.textContent = '⚡ Test AI Connection';
+        }
+      });
+    }
+
+    // Save AI settings when profile is saved
+    const origSaveBtn = document.getElementById('saveProfileBtn');
+    if (origSaveBtn) {
+      const origHandler = origSaveBtn.onclick;
+      origSaveBtn.addEventListener('click', () => {
+        const elOKey = document.getElementById('inputOpenAiKey');
+        const elDKey = document.getElementById('inputDeepSeekKey');
+        const elPUrl = document.getElementById('inputServerlessProxy');
+        const elPref = document.getElementById('inputPreferredEngine');
+
+        if (elOKey) localStorage.setItem('anchor_flow_openai_key', elOKey.value.trim());
+        if (elDKey) localStorage.setItem('anchor_flow_deepseek_key', elDKey.value.trim());
+        if (elPUrl) localStorage.setItem('anchor_flow_proxy_url', elPUrl.value.trim() || DEFAULT_PROXY_URL);
+        if (elPref) localStorage.setItem('anchor_flow_preferred_engine', elPref.value);
+
+        populateAiSettings();
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      populateProfileForm();
+      populateAiSettings();
+    });
   </script>
 
   <!-- Direct iCal Paste Modal -->

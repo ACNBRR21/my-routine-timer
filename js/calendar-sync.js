@@ -639,10 +639,19 @@ async function fetchCalendarFromUrl(calendarUrl, onProgress = null) {
     endpoints.push({ name: 'Cloudflare Worker Relay', url: workerUrl, timeout: 4500, isJson: false });
   }
 
+  // Default Worker Relay
+  endpoints.push({
+    name: 'Default Worker Relay',
+    url: `https://anchor-flow-proxy.rishi-roy.workers.dev?proxyUrl=${encodeURIComponent(cleanUrl)}`,
+    timeout: 5000
+  });
+
   // 2. High-speed public CORS proxies with correct URL formatting & JSON unwrap
   endpoints.push(
-    // CORSProxy (official syntax: https://corsproxy.io/?<url>)
-    { name: 'CORSProxy', url: `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`, timeout: 3500 },
+    // Raw URL CORSProxy (crucial for Outlook/Office365 which block encoded %2F slashes with HTTP 404.11)
+    { name: 'CORSProxy (Direct)', url: `https://corsproxy.io/?${cleanUrl}`, timeout: 3500 },
+    // Encoded CORSProxy
+    { name: 'CORSProxy (Encoded)', url: `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`, timeout: 3500 },
     // AllOrigins GET JSON endpoint (unwraps json.contents to prevent raw mime-type blockage)
     { name: 'AllOrigins (JSON)', url: `https://api.allorigins.win/get?url=${encodeURIComponent(cleanUrl)}`, timeout: 4000, isJson: true },
     // CodeTabs proxy

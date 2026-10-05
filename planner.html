@@ -299,6 +299,7 @@
 
     <!-- SCRIPTS -->
   <script src="js/calendar-sync.js"></script>
+  <script src="js/ai-engine.js"></script>
   <script src="js/flow-guru.js"></script>
   <script>
     // Universal HTML Sanitizer Helper
@@ -316,8 +317,12 @@
     const chatContainer = document.getElementById('plannerChatMessages');
     const inputField = document.getElementById('plannerInputField');
     const sendBtn = document.getElementById('plannerSendBtn');
+
+    // Planning State
     let currentExtractedSchedule = null;
     let lastGeneratedPlan = null;
+    let planningTargetDate = new Date(); // Defaults to today, updates on prompt
+    let hasAskedForTasks = false;
 
     // Speech Recognition state
     let recognition = null;
@@ -332,15 +337,16 @@
       chatContainer.innerHTML = '';
       updateAnchorsStatusUI();
 
+      const now = new Date();
       const rawEvents = userProfile.calendarEvents || [];
       const deduplicated = deduplicateCalendarEvents(rawEvents);
-      const todayAnchors = deduplicated.filter(e => e.isToday || e.daysFromToday === 0 || e.sourceType === 'routine');
+      const todayAnchors = filterCalendarEventsByTime(deduplicated, true);
 
       let calendarContextMsg = '';
       if (userProfile.linkedCalendars && userProfile.linkedCalendars.length > 0) {
-        calendarContextMsg = `<br/><br/>📅 Automatically synchronized <strong>${todayAnchors.length} meetings &amp; routine anchors</strong> for today from your linked calendar (${userProfile.linkedCalendars.map(c=>escapeHtml(c.name)).join(' &amp; ')}).`;
+        calendarContextMsg = `<br/><br/>📅 Automatically synchronized <strong>${todayAnchors.length} active meetings &amp; anchors</strong> from your calendar (${userProfile.linkedCalendars.map(c=>escapeHtml(c.name)).join(' &amp; ')}).`;
       } else {
-        calendarContextMsg = `<br/><br/>🔗 <em>Tip: You can add your Google or Outlook calendar share URL in your <a href="profile.html" style="color:var(--accent-blue); font-weight:600;">Profile Settings</a> to automatically lock meetings as non-negotiable anchors!</em>`;
+        calendarContextMsg = `<br/><br/>🔗 <em>Tip: You can add your Google or Outlook calendar in <a href="profile.html" style="color:var(--accent-blue); font-weight:600;">Profile Settings</a> to automatically lock meetings as non-negotiable anchors!</em>`;
       }
 
       let lunchMsg = '';
@@ -350,15 +356,46 @@
 
       appendBotBubble(`
         <strong>Good day, ${escapeHtml(userName)}! ☀️</strong>${calendarContextMsg}${lunchMsg}<br/><br/>
-        What focus priorities, tasks, or agenda do you want to accomplish today? You can paste a list, speak via 🎙️ voice typing, or tap a starter below.
+        What focus priorities, tasks, or agenda do you want to accomplish? You can plan for today, get ahead for tomorrow, or specify any target date (e.g. <em>"I want to plan for 6th February, tomorrow"</em>).
       `, [
+        { label: 'Plan for tomorrow', action: () => processUserPrompt("I want to plan for tomorrow") },
         { label: 'Deep work on Top 1 proposal (45m)', action: () => processUserPrompt("Deep work on Top 1 proposal 45m") },
         { label: 'Q4 strategic roadmap (45m)', action: () => processUserPrompt("Q4 strategic roadmap 45m") },
-        { label: 'Clear inbox zero (30m)', action: () => processUserPrompt("Clear inbox zero 30m") },
-        { label: 'Review eye medication log', action: () => processUserPrompt("Review glaucoma eye drops log 15m") }
+        { label: 'Clear inbox zero (30m)', action: () => processUserPrompt("Clear inbox zero 30m") }
       ]);
 
       setupVoice();
+    }
+
+    function timeStrToMinutes(timeStr) {
+      if (!timeStr) return 0;
+      const parts = String(timeStr).trim().split(':');
+      return (parseInt(parts[0], 10) || 0) * 60 + (parseInt(parts[1], 10) || 0);
+    }
+
+    function formatTime12(d) {
+      return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    }
+
+    // Filters calendar events:
+    // If isToday, suppresses past morning meetings if planning later in the day!
+    function filterCalendarEventsByTime(events, isToday) {
+      const now = new Date();
+      const currentTotalMins = now.getHours() * 60 + now.getMinutes();
+
+      return (events || []).filter(e => {
+        if (!isToday) return true;
+        // If event has endTime, check if it's already over by more than 15 mins
+        if (e.endTime) {
+          const endMins = timeStrToMinutes(e.endTime);
+          return endMins >= (currentTotalMins - 15);
+        }
+        if (e.startTime) {
+          const startMins = timeStrToMinutes(e.startTime);
+          return startMins >= (currentTotalMins - 60);
+        }
+        return true;
+      });
     }
 
     function updateAnchorsStatusUI() {
@@ -367,15 +404,23 @@
 
       const rawEvents = userProfile.calendarEvents || [];
       const dedupe = deduplicateCalendarEvents(rawEvents);
-      const dayAnchors = dedupe.filter(e => e.isToday || e.daysFromToday === 0 || e.sourceType === 'routine');
+      const activeAnchors = filterCalendarEventsByTime(dedupe.filter(e => e.isToday || e.daysFromToday === 0), true);
 
-      badge.innerHTML = `📅 <strong>${dayAnchors.length} Anchors</strong> Locked Today`;
+      badge.innerHTML = `📅 <strong>${activeAnchors.length} Active Anchors</strong> Today`;
     }
 
-    function appendBotBubble(html, chips = []) {
+    function appendBotBubble(html, chips = [], engineLabel = null) {
       const bubble = document.createElement('div');
       bubble.className = 'chat-bubble bot';
-      bubble.innerHTML = html;
+
+      let header = '';
+      if (engineLabel) {
+        header = `<div style="font-size:0.72rem; color:var(--accent-blue); font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:4px;">
+          <span>🧠</span> ${escapeHtml(engineLabel)}
+        </div>`;
+      }
+
+      bubble.innerHTML = header + html;
 
       if (chips && chips.length > 0) {
         const row = document.createElement('div');
@@ -459,9 +504,37 @@
     }
     inputField.addEventListener('input', autoResize);
 
-    // Main Prompt Processor: Distinguishes conversational edits from fresh plans
-    function processUserPrompt(text) {
-      // 1. Immediately halt active speech recognition on submit!
+    // Date Parser for Prompts like "6th February, tomorrow" or "tomorrow" or "Feb 6"
+    function parseTargetDateFromPrompt(text) {
+      const now = new Date();
+      const lower = (text || '').toLowerCase();
+
+      // Explicit Month and Day (e.g. "6th February", "Feb 6", "6 Feb")
+      const mMatch = lower.match(/(\d{1,2})(?:st|nd|rd|th)?\s+(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i);
+      const mMatch2 = lower.match(/(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+(\d{1,2})(?:st|nd|rd|th)?/i);
+
+      if (mMatch || mMatch2) {
+        const day = parseInt((mMatch ? mMatch[1] : mMatch2[2]), 10);
+        const monthStr = (mMatch ? mMatch[2] : mMatch2[1]).toLowerCase();
+        const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+        const monthIdx = months.findIndex(m => monthStr.startsWith(m));
+        if (monthIdx > -1 && day >= 1 && day <= 31) {
+          let year = now.getFullYear();
+          return new Date(year, monthIdx, day, 9, 0, 0);
+        }
+      }
+
+      if (/\btomorrow\b/i.test(lower)) {
+        const d = new Date(now);
+        d.setDate(d.getDate() + 1);
+        return d;
+      }
+
+      return now;
+    }
+
+    // Main Prompt Processor
+    async function processUserPrompt(text) {
       stopRecording();
 
       const val = (text || inputField.value || '').trim();
@@ -479,15 +552,13 @@
         }
       }
 
-      // Check for Conversational Edit Commands on Active Plan
+      // 1. Check for Conversational Edit Commands on Existing Active Plan
       if (currentExtractedSchedule && currentExtractedSchedule.length > 0) {
-        // A. Swap Top 1 & Top 2 Priorities
         if (/swap\s*(?:top\s*)?(?:1|one)\s*(?:and|with|&)\s*(?:top\s*)?(?:2|two)/i.test(val) || /swap\s*priorities/i.test(val)) {
           swapTopPriorities();
           return;
         }
 
-        // B. Elevate / Set a Task as Top 1
         const elevateMatch = val.match(/(?:make|set|promote)\s+(?:task\s+)?(\d+)\s+(?:as\s+)?(?:top\s*1|priority\s*1|#1)/i);
         if (elevateMatch) {
           const taskNum = parseInt(elevateMatch[1], 10);
@@ -495,7 +566,6 @@
           return;
         }
 
-        // C. Change Task Duration
         const durMatch = val.match(/(?:change|set|make)\s+(?:task\s+)?(\d+)\s+(?:to\s+|duration\s+)?(\d+)\s*(?:m|min|mins|minutes)/i);
         if (durMatch) {
           const taskNum = parseInt(durMatch[1], 10);
@@ -504,7 +574,6 @@
           return;
         }
 
-        // D. Delete / Remove Task
         const delMatch = val.match(/(?:delete|remove)\s+(?:task\s+)?(\d+)/i);
         if (delMatch) {
           const taskNum = parseInt(delMatch[1], 10);
@@ -512,28 +581,113 @@
           return;
         }
 
-        // E. Add Task
         const addMatch = val.match(/^add\s+(?:task\s+)?(.+)/i);
         if (addMatch && !val.includes('\n')) {
           addTaskByChat(addMatch[1]);
           return;
         }
 
-        // F. Confirmation / Save to Timers
         if (/^(?:looks\s+good|lock\s+it\s+in|save\s+(?:to\s+)?timers|confirm|perfect|all\s+good|save)$/i.test(val)) {
           saveScheduleToTimersLibrary(true);
           return;
         }
       }
 
-      // Fresh Plan Synthesis
-      appendBotBubble(`<em>🤖 Synthesizing your Harvard Timebox, locking anchors, and ranking Pareto priorities...</em>`);
+      // 2. Check for Date Intent & Conversational Opener
+      const parsedTasks = parseUserTasks(val);
+      const isDateOpener = /^(?:i\s+(?:want|need|would\s+like)\s+to\s+plan|plan\s+for|can\s+you\s+help\s+me\s+plan|let'?s\s+plan|planning\s+for|plan\s+my\s+day)/i.test(val) ||
+        (val.split(' ').length <= 8 && /tomorrow|february|today|monday|tuesday|wednesday|thursday|friday|saturday|sunday/i.test(val));
+
+      // If user is just stating when they want to plan (e.g. "I want to plan for 6th February, tomorrow") without listing tasks:
+      if (isDateOpener && parsedTasks.length === 0) {
+        planningTargetDate = parseTargetDateFromPrompt(val);
+        hasAskedForTasks = true;
+
+        const now = new Date();
+        const isToday = planningTargetDate.toDateString() === now.toDateString();
+        const dateFormatted = planningTargetDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+
+        // Retrieve calendar anchors for that specific date
+        const targetStr = `${planningTargetDate.getFullYear()}-${String(planningTargetDate.getMonth()+1).padStart(2,'0')}-${String(planningTargetDate.getDate()).padStart(2,'0')}`;
+        const rawEvents = userProfile.calendarEvents || [];
+        const dedupe = deduplicateCalendarEvents(rawEvents);
+        
+        let targetAnchors = dedupe.filter(e => {
+          if (isToday) return (e.isToday || e.daysFromToday === 0);
+          return e.dateStr === targetStr || e.relativeDay === 'Tomorrow';
+        });
+
+        if (isToday) {
+          targetAnchors = filterCalendarEventsByTime(targetAnchors, true);
+        }
+
+        let calReport = '';
+        if (targetAnchors.length > 0) {
+          calReport = `I checked your calendar: found <strong>${targetAnchors.length} scheduled anchors</strong>:<br/>` +
+            targetAnchors.map(a => `• <strong>${escapeHtml(a.title)}</strong> (${a.startTime}-${a.endTime || ''})`).join('<br/>');
+        } else {
+          calReport = `I checked your calendar: <strong>Zero conflicting meetings</strong> on this date—a clean canvas for deep focus!`;
+        }
+
+        // Try LLM for dynamic chatbot reply if available
+        let botResponse = null;
+        try {
+          const sysPrompt = `You are an elite executive Harvard Timeboxing assistant. The user wants to plan for ${dateFormatted} (${isToday ? 'Today' : 'Upcoming date'}). Local time is ${now.getHours()}:${now.getMinutes()}. Calendar status: ${targetAnchors.length} meetings. Respond conversationally, acknowledge the date, mention their calendar status, and warmly ask what their top 3 priorities or tasks are. Keep it concise, friendly, and professional.`;
+          const aiRes = await executeMultiTierAi(sysPrompt, val);
+          if (aiRes && aiRes.content) {
+            appendBotBubble(aiRes.content, [
+              { label: 'Deep work sprint (45m)', action: () => processUserPrompt('Deep work sprint 45m') },
+              { label: 'Strategic review (45m)', action: () => processUserPrompt('Strategic review 45m') },
+              { label: 'Clear inbox zero (30m)', action: () => processUserPrompt('Clear inbox zero 30m') }
+            ], aiRes.engine);
+            return;
+          }
+        } catch(e) {}
+
+        // Local intelligent heuristic fallback
+        appendBotBubble(`
+          Oh, okay! Let's get ahead and plan for <strong>${dateFormatted}</strong>. 🌅<br/><br/>
+          ${calReport}<br/><br/>
+          👉 <strong>What are the top three things you want to do?</strong><br/>
+          Dictate via 🎙️ or type your tasks below, and I'll map out your prioritized Harvard Timebox schedule!
+        `, [
+          { label: '1. Proposal deck 45m, 2. Team sync, 3. Review log', action: () => processUserPrompt('1. Proposal deck 45m, 2. Team sync 30m, 3. Review log 15m') },
+          { label: 'Deep work sprint (45m)', action: () => processUserPrompt('Deep work sprint 45m') },
+          { label: 'Clear inbox zero (30m)', action: () => processUserPrompt('Clear inbox zero 30m') }
+        ], 'Local Heuristics Engine');
+        return;
+      }
+
+      // 3. User Provided Actionable Tasks: Synthesize Harvard Timebox Plan
+      const detectedDate = parseTargetDateFromPrompt(val);
+      if (detectedDate.toDateString() !== new Date().toDateString()) {
+        planningTargetDate = detectedDate;
+      }
+
+      const now = new Date();
+      const isToday = planningTargetDate.toDateString() === now.toDateString();
+      const dateFormatted = planningTargetDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+
+      appendBotBubble(`<em>🤖 Synthesizing your Harvard Timebox for ${dateFormatted}, protecting calendar anchors, and isolating Top 3 Pareto priorities...</em>`);
+
+      // Attempt LLM execution for deep task synthesis if configured
+      let llmGuidance = null;
+      let engineName = 'Local Smart Engine';
+
+      try {
+        const sysPrompt = `You are an executive Harvard Timeboxing architect. Local time is ${now.getHours()}:${now.getMinutes()}. Planning for ${dateFormatted}. Analyze user tasks, prioritize the vital 20% high leverage items into Top 1, Top 2, Top 3, and provide brief executive strategic advice.`;
+        const aiRes = await executeMultiTierAi(sysPrompt, val);
+        if (aiRes && aiRes.content) {
+          llmGuidance = aiRes.content;
+          engineName = aiRes.engine;
+        }
+      } catch(e) {}
 
       setTimeout(() => {
-        const plan = generateHarvardSchedule(val);
+        const plan = generateHarvardSchedule(val, planningTargetDate);
         lastGeneratedPlan = plan;
-        renderScheduleCard(plan);
-      }, 350);
+        renderScheduleCard(plan, planningTargetDate, llmGuidance, engineName);
+      }, 300);
     }
 
     // Cleanly parses multiline, numbered, bulleted, or natural language tasks
@@ -548,13 +702,15 @@
         const hasBulletOrNum = /^\s*(?:[-*•]|\d+[\.\)])/.test(line);
         let clean = line.replace(/^\s*(?:[-*•]|\d+[\.\)])\s*/, '').trim();
         if (!clean) return;
+        
         // Skip conversational preamble and introductory headers
         if (!hasBulletOrNum && (
           /:$/.test(clean) ||
-          /^(?:here\s+(?:is|are)|i\s+have|these\s+are|my\s+tasks|today'?s\s+tasks|tomorrow'?s\s+tasks|things\s+to\s+do|to[- ]?do\s+list|tasks\s+list|agenda|plan\s+for|schedule\s+for|what\s+i\s+need|i\s+need\s+to\s+plan|please\s+plan)\b/i.test(clean)
+          /^(?:here\s+(?:is|are)|i\s+have|these\s+are|my\s+tasks|today'?s\s+tasks|tomorrow'?s\s+tasks|things\s+to\s+do|to[- ]?do\s+list|tasks\s+list|agenda|plan\s+for|schedule\s+for|what\s+i\s+need|i\s+need\s+to\s+plan|please\s+plan|i\s+want\s+to\s+plan)\b/i.test(clean)
         )) {
           return;
         }
+
         const subClauses = clean.split(/[,;](?=\s*[A-Z0-9a-z])/).map(s => s.trim()).filter(Boolean);
 
         subClauses.forEach(clause => {
@@ -597,10 +753,32 @@
       return tasks;
     }
 
-    function generateHarvardSchedule(input) {
+    function generateHarvardSchedule(input, targetDate = new Date()) {
+      const now = new Date();
+      const isToday = targetDate.toDateString() === now.toDateString();
+
       const rawEvents = userProfile.calendarEvents || [];
       const dedupeAnchors = deduplicateCalendarEvents(rawEvents);
-      const dayAnchors = dedupeAnchors.filter(ev => ev.isToday === true || ev.daysFromToday === 0 || ev.sourceType === 'routine');
+
+      const targetY = targetDate.getFullYear();
+      const targetM = targetDate.getMonth();
+      const targetD = targetDate.getDate();
+      const targetStr = `${targetY}-${String(targetM + 1).padStart(2, '0')}-${String(targetD).padStart(2, '0')}`;
+
+      // Filter anchors strictly for target day
+      let dayAnchors = dedupeAnchors.filter(ev => {
+        if (isToday) {
+          return ev.dateStr === targetStr || ev.isToday === true || ev.sourceType === 'routine';
+        } else {
+          return ev.dateStr === targetStr;
+        }
+      });
+
+      // TIME-AWARE FILTERING FOR TODAY:
+      // If planning for today in the evening (e.g. 7:30 PM), past morning meetings must NOT be shown!
+      if (isToday) {
+        dayAnchors = filterCalendarEventsByTime(dayAnchors, true);
+      }
 
       const items = [];
 
@@ -650,13 +828,13 @@
     }
 
     // Render Harvard Timebox with In-Place Editable Table & Verification Dialogue
-    function renderScheduleCard(plan) {
+    function renderScheduleCard(plan, targetDate = new Date(), llmGuidance = null, engineName = 'Local Smart Engine') {
       const { items, dayAnchors, parsedTasks } = plan;
       currentExtractedSchedule = items;
       let totalMins = items.reduce((sum, it) => sum + it.duration, 0);
 
-      const targetObj = new Date();
-      const formattedDate = targetObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+      const formattedDate = targetDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+      const isToday = targetDate.toDateString() === new Date().toDateString();
 
       // Identify Top 3 Tasks for Executive Briefing
       const topTasks = items.filter(it => !it.isAnchor && it.priorityRank);
@@ -718,29 +896,29 @@
 
       // Run Flow Guru Audits
       const calAudit = auditCalendarSchedule(dayAnchors, userProfile);
-      const taskAudit = auditTaskExecution(items, userProfile);
 
       let executiveBriefingHtml = `
         <div style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px;">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px;">
               <span style="font-size: 1.3rem;">🧘</span>
-              <strong style="font-size: 0.95rem; color: #065f46;">Harvard Timebox Blueprint &bull; Today (${formattedDate})</strong>
+              <strong style="font-size: 0.95rem; color: #065f46;">Harvard Timebox Blueprint &bull; ${formattedDate}</strong>
             </div>
             <span style="font-size: 0.74rem; background: rgba(16, 185, 129, 0.2); color: #047857; padding: 2px 8px; border-radius: 9999px; font-weight: 700;">
               Score: ${calAudit.healthScore}/100 &bull; ${calAudit.statusLabel}
             </span>
           </div>
           <div style="font-size: 0.86rem; color: #1e293b; line-height: 1.5;">
-            I have analyzed your tasks and structured them around your <strong>${dayAnchors.length} calendar anchors</strong>.
+            I have analyzed your tasks and structured them around your <strong>${dayAnchors.length} calendar anchors</strong> for <strong>${formattedDate}</strong>.
             Applying Pareto's 80/20 Law, here are the tentative Top 3 Priorities:
             <ul style="margin: 6px 0 8px 18px; padding: 0;">
               ${top1 ? `<li><strong>Top 1 Priority:</strong> ${escapeHtml(top1.shortName)} (${top1.duration}m) — <em>Peak leverage sprint</em></li>` : ''}
               ${top2 ? `<li><strong>Top 2 Priority:</strong> ${escapeHtml(top2.shortName)} (${top2.duration}m) — <em>Core milestone completion</em></li>` : ''}
               ${top3 ? `<li><strong>Top 3 Priority:</strong> ${escapeHtml(top3.shortName)} (${top3.duration}m) — <em>High-impact deliverable</em></li>` : ''}
             </ul>
+            ${llmGuidance ? `<div style="background:rgba(255,255,255,0.8); border-left:3px solid #7c3aed; padding:6px 10px; margin:6px 0; border-radius:4px; font-size:0.83rem;"><strong>AI Strategy Note:</strong> ${escapeHtml(llmGuidance)}</div>` : ''}
             <div style="background:rgba(255,255,255,0.7); border:1px solid rgba(16,185,129,0.25); border-radius:8px; padding:8px 12px; margin-top:8px;">
-              <strong>👉 Double-Check with You:</strong> Do these 3 align with what you consider your most important outcomes today?
+              <strong>👉 Double-Check with You:</strong> Do these 3 reflect your highest leverage outcomes?
               You can edit tasks or swap priorities directly in the table below, or tell me in chat (e.g. <em>"Swap 1 and 2"</em> or <em>"Make task 3 my #1 priority"</em>).
             </div>
           </div>
@@ -752,8 +930,8 @@
           ${executiveBriefingHtml}
           <div class="schedule-review-header">
             <div>
-              <h3 style="font-size:1.05rem; color:var(--text-primary); margin:0;">📋 Harvard Timebox Schedule (Interactive &amp; Editable)</h3>
-              <span style="font-size:0.8rem; color:var(--text-muted);">${items.length} Activities &bull; ${Math.floor(totalMins/60)}h ${totalMins%60}m Total (${formattedDate})</span>
+              <h3 style="font-size:1.05rem; color:var(--text-primary); margin:0;">📋 Harvard Timebox Schedule (${formattedDate})</h3>
+              <span style="font-size:0.8rem; color:var(--text-muted);">${items.length} Activities &bull; ${Math.floor(totalMins/60)}h ${totalMins%60}m Total</span>
             </div>
             <span class="badge-deduped">⚡ Calendar Anchors Protected</span>
           </div>
@@ -809,7 +987,7 @@
         { label: '🔄 Swap Top 1 & Top 2', action: () => swapTopPriorities() },
         { label: '➕ Add Focus Task', action: () => addPlanTask() },
         { label: '🚀 Launch in Timer', action: () => launchScheduleInTimer() }
-      ]);
+      ], engineName);
     }
 
     // --- Interactive In-Place Plan Editing Helpers ---
@@ -836,7 +1014,6 @@
       if (!currentExtractedSchedule || !currentExtractedSchedule[idx]) return;
       const rank = parseInt(val, 10);
       
-      // If setting to 1, 2, or 3, reassign any existing task with that rank
       if (rank > 0) {
         currentExtractedSchedule.forEach((t, i) => {
           if (i !== idx && t.priorityRank === rank) {
@@ -877,7 +1054,7 @@
     function refreshScheduleCardInPlace() {
       if (!lastGeneratedPlan) return;
       lastGeneratedPlan.items = currentExtractedSchedule;
-      renderScheduleCard(lastGeneratedPlan);
+      renderScheduleCard(lastGeneratedPlan, planningTargetDate);
     }
 
     // --- Conversational Edit Handlers ---
@@ -921,7 +1098,7 @@
       refreshScheduleCardInPlace();
       appendBotBubble(`
         🎯 <strong>Elevated Task #${taskNum} to Top 1 Priority!</strong><br/>
-        <strong>${escapeHtml(target.shortName)}</strong> is now your primary focus for today.
+        <strong>${escapeHtml(target.shortName)}</strong> is now your primary focus.
       `, [
         { label: '💾 Save to Timers & Routines', action: () => saveScheduleToTimersLibrary(true) },
         { label: '🚀 Start Routine Now', action: () => launchScheduleInTimer() }
@@ -980,12 +1157,11 @@
       }
     }
 
-    // Save plan as reusable routine in Timers Library (can be used today, tomorrow, or anytime!)
+    // Save plan as reusable routine in Timers Library
     window.saveScheduleToTimersLibrary = function(replyInChat = false) {
       if (!currentExtractedSchedule || currentExtractedSchedule.length === 0) return;
 
-      const targetObj = new Date();
-      const formattedDate = targetObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      const formattedDate = planningTargetDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 
       const totalSec = currentExtractedSchedule.reduce((sum, it) => sum + (it.duration * 60), 0);
       const steps = currentExtractedSchedule.map(it => ({
@@ -997,7 +1173,7 @@
 
       const routine = {
         id: 'flow-plan-' + Date.now(),
-        title: `Harvard Timebox Plan (${formattedDate})`,
+        title: `Harvard Timebox (${formattedDate})`,
         icon: '🎯',
         type: 'routine',
         folder: 'routines',
@@ -1015,8 +1191,8 @@
       if (replyInChat) {
         appendBotBubble(`
           🎉 <strong>Plan Locked &amp; Saved!</strong><br/>
-          Your Harvard Timebox plan has been saved to your <strong>Timers &amp; Routines Library</strong> under <em>"Daily Routines"</em>.<br/><br/>
-          💡 <strong>Flexible Execution:</strong> You can launch this routine now, use it tomorrow, or delete it anytime from your Timers screen.
+          Your Harvard Timebox plan for <strong>${formattedDate}</strong> has been saved to your <strong>Timers &amp; Routines Library</strong> under <em>"Daily Routines"</em>.<br/><br/>
+          💡 <strong>Flexible Execution:</strong> You can launch this routine now, run it tomorrow, or delete it anytime from your Timers screen.
         `, [
           { label: '🚀 Launch in Timer Screen Now', action: () => window.location.href = 'timer.html?load=' + routine.id },
           { label: '📁 Go to Timers Library', action: () => window.location.href = 'timer.html' }
@@ -1027,8 +1203,7 @@
     window.launchScheduleInTimer = function() {
       if (!currentExtractedSchedule || currentExtractedSchedule.length === 0) return;
 
-      const targetObj = new Date();
-      const formattedDate = targetObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      const formattedDate = planningTargetDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 
       const totalSec = currentExtractedSchedule.reduce((sum, it) => sum + (it.duration * 60), 0);
       const steps = currentExtractedSchedule.map(it => ({
@@ -1040,7 +1215,7 @@
 
       const routine = {
         id: 'flow-plan-' + Date.now(),
-        title: `Harvard Timebox Plan (${formattedDate})`,
+        title: `Harvard Timebox (${formattedDate})`,
         icon: '🎯',
         type: 'routine',
         folder: 'routines',
