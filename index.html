@@ -403,6 +403,17 @@
   <script src="js/calendar-sync.js"></script>
   <script src="js/flow-guru.js"></script>
   <script>
+    // Universal HTML Sanitizer Helper
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     let userProfile = getStoredProfile();
 
     function initDashboard() {
@@ -446,18 +457,26 @@
     // Render Calendar Anchors with Live Intelligent Deduplication!
     function renderDashboardCalendarEvents() {
       const container = document.getElementById('dashboardEventsList');
-      const rawEvents = userProfile.calendarEvents || [];
+      if (!container) return;
+      
+      const rawEvents = (userProfile && userProfile.calendarEvents) ? userProfile.calendarEvents : [];
 
       // Run Intelligent Deduplication Engine!
       const deduplicatedEvents = deduplicateCalendarEvents(rawEvents);
-      document.getElementById('kpiAnchorsCount').textContent = `${deduplicatedEvents.length} Anchors`;
+      
+      const kpiEl = document.getElementById('kpiAnchorsCount');
+      if (kpiEl) {
+        kpiEl.textContent = `${deduplicatedEvents.length} Anchors`;
+      }
 
       if (deduplicatedEvents.length === 0) {
         container.innerHTML = `
-          <div class="calendar-connect-prompt">
-            <p><strong>No meetings found for today.</strong></p>
-            <a href="profile.html" class="btn-secondary-launch" style="padding: 6px 14px; font-size: 0.8rem;">
-              + Link Your Calendar Share URL
+          <div class="calendar-connect-prompt" style="text-align: center; padding: 24px 16px; background: var(--bg-card-subtle); border-radius: 12px; border: 1px dashed var(--border);">
+            <p style="margin: 0 0 10px 0; color: var(--text-secondary); font-size: 0.9rem;">
+              <strong>No meetings found in synced calendars.</strong>
+            </p>
+            <a href="profile.html" class="btn-secondary-launch" style="padding: 6px 14px; font-size: 0.8rem; display: inline-block;">
+              + Link or Manage Calendar Share URLs
             </a>
           </div>
         `;
@@ -466,22 +485,39 @@
 
       let html = '';
       deduplicatedEvents.forEach(ev => {
-        const isDedupe = ev.isDeduplicated;
+        const isDedupe = !!ev.isDeduplicated;
+        const sourceText = (ev.sources && Array.isArray(ev.sources) && ev.sources.length > 0)
+          ? ev.sources.join(' & ')
+          : (ev.calendarName || 'Calendar');
+
         const dedupeBadge = isDedupe
-          ? `<span class="dedupe-indicator">⚡ Unified across ${escapeHtml(ev.sources.join(' & '))}</span>`
-          : `<span class="event-cal-source">${escapeHtml(ev.calendarName || 'Calendar')}</span>`;
+          ? `<span class="dedupe-indicator" style="background: rgba(16, 185, 129, 0.1); color: #059669; font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">⚡ Unified across ${escapeHtml(sourceText)}</span>`
+          : `<span class="event-cal-source" style="font-size: 0.72rem; color: var(--text-muted);">${escapeHtml(sourceText)}</span>`;
+
+        const isToday = ev.isToday !== false;
+        const timeStart = ev.startTime || '09:00';
+        const formattedDate = ev.dateFormatted || ev.dateStr;
+        
+        const timeColHtml = isToday
+          ? `<span class="event-time-start">${escapeHtml(timeStart)}</span>
+             <span class="event-dur">${ev.duration || 30}m</span>`
+          : `<span class="event-time-start" style="font-size: 0.8rem; font-weight: 700; color: var(--accent-blue);">${escapeHtml(formattedDate || 'Upcoming')}</span>
+             <span class="event-dur">${escapeHtml(timeStart)} (${ev.duration || 30}m)</span>`;
+
+        const badgeHtml = isToday
+          ? `<span class="tag-anchor">Anchor</span>`
+          : `<span class="tag-anchor" style="background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd;">Upcoming</span>`;
 
         html += `
           <div class="event-timeline-item ${ev.sourceType === 'routine' ? 'meal-anchor' : 'anchor-highlight'}">
             <div class="event-time-col">
-              <span class="event-time-start">${ev.startTime}</span>
-              <span class="event-dur">${ev.duration}m</span>
+              ${timeColHtml}
             </div>
             <div class="event-title-col">
-              <div class="event-name">${escapeHtml(ev.title)}</div>
+              <div class="event-name">${escapeHtml(ev.title || 'Meeting')}</div>
               ${dedupeBadge}
             </div>
-            <span class="tag-anchor">Anchor</span>
+            ${badgeHtml}
           </div>
         `;
       });
@@ -491,18 +527,24 @@
 
     window.refreshDashboardEvents = async function() {
       showAppToast('⏳ Syncing live calendars from web...');
-      const res = await syncLiveCalendar();
-      userProfile = getStoredProfile();
-      renderDashboardCalendarEvents();
-      runFlowGuruDiagnostics();
-      if (res.success) {
-        showAppToast(`✅ ${res.message}`);
-      } else {
-        showAppToast(`ℹ️ Refreshed cached calendar events.`);
+      try {
+        const res = await syncLiveCalendar();
+        userProfile = getStoredProfile();
+        renderDashboardCalendarEvents();
+        runFlowGuruDiagnostics();
+        if (res.success) {
+          showAppToast(`✅ ${res.message}`);
+        } else {
+          showAppToast(`ℹ️ Refreshed cached calendar events.`);
+        }
+      } catch (err) {
+        console.error('Error refreshing calendar events:', err);
+        userProfile = getStoredProfile();
+        renderDashboardCalendarEvents();
+        showAppToast('ℹ️ Refreshed cached calendar events.');
       }
     };
-
-    // Render Stored Timers with Direct Deletion!
+// Render Stored Timers with Direct Deletion!
     function renderDashboardTimers() {
       const container = document.getElementById('dashboardTimersList');
       const timers = getStoredTimers();
@@ -697,6 +739,32 @@
       });
     }
 
+
+    // Cross-Tab & Focus Synchronization with profile.html
+    window.addEventListener('storage', (e) => {
+      if (!e.key || e.key === 'anchor_flow_user_profile') {
+        userProfile = getStoredProfile();
+        renderDashboardCalendarEvents();
+        renderDashboardTimers();
+        runFlowGuruDiagnostics();
+      }
+    });
+
+    window.addEventListener('focus', () => {
+      userProfile = getStoredProfile();
+      renderDashboardCalendarEvents();
+      renderDashboardTimers();
+      runFlowGuruDiagnostics();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        userProfile = getStoredProfile();
+        renderDashboardCalendarEvents();
+        renderDashboardTimers();
+        runFlowGuruDiagnostics();
+      }
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
       initDashboard();

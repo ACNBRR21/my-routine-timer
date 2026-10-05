@@ -2,6 +2,20 @@
 // ANCHOR & FLOW — USER PROFILE, CALENDAR LINK & DEDUPE ENGINE
 // =========================================================
 
+// Universal HTML Sanitizer Helper
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+if (typeof window !== 'undefined') {
+  window.escapeHtml = escapeHtml;
+}
+
 const STORAGE_KEY_PROFILE = 'anchor_flow_user_profile';
 const STORAGE_KEY_TIMERS = 'anchor_flow_timers';
 const STORAGE_KEY_ACTIVE_ROUTINE = 'anchor_flow_active_routine';
@@ -282,22 +296,29 @@ function deduplicateCalendarEvents(events) {
   const signatureMap = new Map();
 
   events.forEach(ev => {
-    // Normalized signature: title alphanumeric + startTime
+    if (!ev || !ev.title) return;
+    // Normalized signature: title alphanumeric + dateStr + startTime
     const cleanTitle = (ev.title || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    const dateKey = (ev.dateStr || (ev.isToday ? 'today' : 'undated')).trim();
     const timeKey = (ev.startTime || '').trim();
-    const signature = `${cleanTitle}_${timeKey}`;
+    const signature = `${cleanTitle}_${dateKey}_${timeKey}`;
 
     if (!signatureMap.has(signature)) {
+      const sourcesList = (Array.isArray(ev.sources) && ev.sources.length > 0)
+        ? [...ev.sources]
+        : [ev.calendarName || 'Calendar'];
+
       signatureMap.set(signature, {
         ...ev,
-        sources: [ev.calendarName || 'Calendar']
+        sources: sourcesList,
+        isDeduplicated: !!ev.isDeduplicated
       });
       deduplicated.push(signature);
     } else {
-      // Duplicate meeting found across multiple calendars!
+      // Duplicate meeting found across multiple calendars on the same date/time!
       const existing = signatureMap.get(signature);
       const src = ev.calendarName || 'Secondary Calendar';
-      if (!existing.sources.includes(src)) {
+      if (Array.isArray(existing.sources) && !existing.sources.includes(src)) {
         existing.sources.push(src);
       }
       existing.isDeduplicated = true;
@@ -305,9 +326,14 @@ function deduplicateCalendarEvents(events) {
     }
   });
 
-  // Extract merged list and sort chronologically by startTime
+  // Extract merged list and sort chronologically by timestamp and startTime
   const result = deduplicated.map(sig => signatureMap.get(sig));
-  result.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+  result.sort((a, b) => {
+    const tA = (typeof a.timestamp === 'number') ? a.timestamp : 0;
+    const tB = (typeof b.timestamp === 'number') ? b.timestamp : 0;
+    if (tA && tB && tA !== tB) return tA - tB;
+    return (a.startTime || '').localeCompare(b.startTime || '');
+  });
   return result;
 }
 
@@ -389,17 +415,22 @@ function parseIcsTextToEvents(icsText, calendarName, sourceType) {
       }
       inEvent = false;
     } else if (inEvent) {
-      if (line.startsWith('SUMMARY')) {
-        const val = line.split(':', 2)[1] || 'Meeting';
-        cur.summary = val.replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\n/g, ' ').trim();
-      } else if (line.startsWith('DTSTART')) {
-        cur.dtstart = line.split(':', 2)[1] || '';
-      } else if (line.startsWith('DTEND')) {
-        cur.dtend = line.split(':', 2)[1] || '';
-      } else if (line.startsWith('LOCATION')) {
-        cur.location = line.split(':', 2)[1] || '';
-      } else if (line.startsWith('DESCRIPTION')) {
-        cur.description = line.split(':', 2)[1] || '';
+      const colonIdx = line.indexOf(':');
+      if (colonIdx > -1) {
+        const propPart = line.substring(0, colonIdx).trim().toUpperCase();
+        const valPart = line.substring(colonIdx + 1).trim();
+
+        if (propPart === 'SUMMARY' || propPart.startsWith('SUMMARY;')) {
+          cur.summary = valPart.replace(/\,/g, ',').replace(/\;/g, ';').replace(/\n/g, ' ').trim();
+        } else if (propPart === 'DTSTART' || propPart.startsWith('DTSTART;')) {
+          cur.dtstart = valPart;
+        } else if (propPart === 'DTEND' || propPart.startsWith('DTEND;')) {
+          cur.dtend = valPart;
+        } else if (propPart === 'LOCATION' || propPart.startsWith('LOCATION;')) {
+          cur.location = valPart.replace(/\,/g, ',').replace(/\;/g, ';').trim();
+        } else if (propPart === 'DESCRIPTION' || propPart.startsWith('DESCRIPTION;')) {
+          cur.description = valPart.replace(/\,/g, ',').replace(/\;/g, ';').trim();
+        }
       }
     }
   }
@@ -452,7 +483,7 @@ function parseIcsTextToEvents(icsText, calendarName, sourceType) {
 // Parses ICS date strings like "20261005T093000Z" (UTC) or "20261005T140000" (Local)
 function parseIcsDateString(str) {
   if (!str) return new Date();
-  const clean = str.replace(/[^0-9TZ]/g, '');
+  const clean = String(str).trim().replace(/^.*:/, '').replace(/[^0-9TZ]/g, '');
 
   // 1. UTC ISO format: YYYYMMDDTHHMMSSZ
   const utcMatch = clean.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?Z$/);
@@ -569,14 +600,22 @@ async function syncLiveCalendar(calendarId = null) {
   }
 
   const routineAnchors = (profile.calendarEvents || []).filter(e => e.sourceType === 'routine');
-  const todayEvents = allNewEvents.filter(e => e.isToday);
-  let finalEventsToKeep = [];
+  
+  // Sort all newly retrieved calendar events chronologically
+  allNewEvents.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
-  if (todayEvents.length > 0) {
-    finalEventsToKeep = todayEvents;
-  } else if (allNewEvents.length > 0) {
-    allNewEvents.sort((a, b) => a.timestamp - b.timestamp);
-    finalEventsToKeep = allNewEvents.slice(0, 10);
+  let finalEventsToKeep = [];
+  if (allNewEvents.length > 0) {
+    const todayEvents = allNewEvents.filter(e => e.isToday);
+    const upcomingEvents = allNewEvents.filter(e => !e.isToday && e.isFuture);
+    
+    // Always include today's events, plus upcoming meetings (up to 20 total)
+    finalEventsToKeep = todayEvents.concat(upcomingEvents).slice(0, 20);
+    
+    // If no future/today events were matched (e.g. past events), keep top most recent events
+    if (finalEventsToKeep.length === 0) {
+      finalEventsToKeep = allNewEvents.slice(0, 10);
+    }
   }
 
   profile.calendarEvents = routineAnchors.concat(finalEventsToKeep);
