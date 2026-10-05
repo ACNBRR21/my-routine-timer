@@ -27,6 +27,13 @@
 * 🍏 **Apple Minimalist Philosophy:** Designed with pristine white canvas aesthetics (`#f5f5f7` / `#ffffff`), high-contrast typography, large touch targets, hands-free voice typing, and strict adherence to Pareto's 80/20 law.
 
 
+## 🚀 Version 3.1.0: Calendar Sync Clarity & Interactive Horizon
+* **Real-Time Sync Progress:** Live progress bar with status stepper showing download, parsing, and deduplication progress.
+* **Separation of Today vs Upcoming Schedule:** Today's widget shows strictly today's anchors; future meetings are cleanly organized in the interactive Mini Calendar.
+* **Interactive Month Calendar & Next 2–7 Days View:** Navigate months, see days with meetings, click dates to view schedules, and toggle between Next 2 Days, Next 7 Days, or Selected Day.
+* **Synced Meetings Preview in Profile:** Dedicated right-hand live preview showing newly synchronized meetings with KPI count chips.
+* **Privacy Sanitization:** Clean public defaults with zero personal calendar URLs.
+
 ## 🌟 Major Overhaul: Executive Dashboard & Live Calendar Linking
 
 Anchor & Flow has been elevated into an **Executive Productivity & Bio-Rhythm Dashboard**, directly incorporating modern design patterns from Calmly and Taskly with Apple-grade minimalism:

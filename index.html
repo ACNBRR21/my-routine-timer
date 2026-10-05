@@ -212,34 +212,51 @@
         <!-- Left Column: Calendar Anchors & Tasks -->
         <div class="grid-col-left">
           
-          <!-- Today's Calendar & Important Meetings Widget -->
-          <section class="dashboard-card">
+          <!-- Calendar & Meetings Widget (Strictly Today's Schedule or Selected Day) -->
+          <section class="dashboard-card" id="calendarCardSection">
             <div class="card-header-row">
               <h2 class="card-title">
                 <span>📅</span>
-                <span>Today's Calendar &amp; Important Meetings</span>
+                <span id="calendarCardTitleText">Today's Calendar &amp; Important Meetings</span>
               </h2>
-              <span class="card-header-badge badge-deduped" id="dedupeStatusBadge">
-                ⚡ Deduplication Active
-              </span>
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <button id="btnBackToToday" onclick="resetCalendarToToday()" class="mini-cal-today-badge" style="display: none; padding: 4px 10px; font-size: 0.78rem; cursor: pointer; border-radius: 6px;">
+                  📅 View Today
+                </button>
+                <span class="card-header-badge" id="todayDateBadge" style="background: rgba(37,99,235,0.1); color: var(--accent-blue); font-weight: 700;">
+                  Today
+                </span>
+                <span class="card-header-badge badge-deduped" id="dedupeStatusBadge">
+                  ⚡ Deduplication Active
+                </span>
+              </div>
             </div>
 
-            <!-- Deduplication Notice -->
-            <p style="font-size: 0.83rem; color: var(--text-muted); margin-top: -6px;">
-              Automatically synchronized from your linked calendar URLs. If a meeting appears on both Outlook and Google, it is unified into one clean entry.
+            <!-- Focus Description -->
+            <p style="font-size: 0.83rem; color: var(--text-muted); margin-top: -6px;" id="calendarCardSubtitle">
+              Your synchronized agenda and routine anchors strictly for today. Tap any date on the Mini Calendar (right) to view meetings for other days.
             </p>
 
-            <!-- Events Timeline List -->
+            <!-- Sync Status Banner (Active during sync) -->
+            <div id="dashboardSyncStatus" style="display: none; padding: 6px 12px; margin-bottom: 10px; background: rgba(37,99,235,0.08); border-radius: 8px; font-size: 0.78rem; color: var(--accent-blue);">
+              <span class="spin-icon">🔄</span> Syncing calendars...
+            </div>
+
+            <!-- Events Timeline List (Today Only) -->
             <div class="calendar-events-list" id="dashboardEventsList">
               <!-- Rendered dynamically -->
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+            <!-- Upcoming Horizon Notice -->
+            <div id="dashboardUpcomingNotice" style="margin-top: 10px;"></div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px;">
               <a href="profile.html" style="font-size: 0.84rem; color: var(--accent-blue); font-weight: 600; text-decoration: none;">
                 + Link or Manage Calendars &rarr;
               </a>
-              <button onclick="refreshDashboardEvents()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;">
-                🔄 Refresh Sync
+              <button id="refreshSyncBtn" onclick="refreshDashboardEvents()" style="background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; color: var(--text-secondary); cursor: pointer; font-size: 0.78rem; display: flex; align-items: center; gap: 4px;">
+                <span id="refreshSyncIcon">🔄</span>
+                <span id="refreshSyncLabel">Refresh Sync</span>
               </button>
             </div>
           </section>
@@ -291,14 +308,41 @@
         <!-- Right Column: Calendar Widget & Regular Timers -->
         <div class="grid-col-right">
           
-          <!-- Mini Calendar Widget -->
+          <!-- Mini Calendar Widget & Upcoming Horizon (Interactive Month + Next 2-7 Days) -->
           <div class="mini-calendar-widget" style="margin-bottom: 24px;">
             <div class="mini-cal-header">
-              <span class="mini-cal-month" id="miniCalMonthHeader">October 2026</span>
-              <span style="font-size: 0.75rem; color: var(--text-muted);">Today highlighted</span>
+              <div class="mini-cal-month-wrap">
+                <span class="mini-cal-month" id="miniCalMonthHeader">October 2026</span>
+                <button class="mini-cal-today-badge" onclick="resetMiniCalToToday()" title="Jump to current month &amp; date">Today</button>
+              </div>
+              <div class="mini-cal-nav">
+                <button class="mini-cal-nav-btn" onclick="prevMiniCalMonth()" title="Previous Month">&larr;</button>
+                <button class="mini-cal-nav-btn" onclick="nextMiniCalMonth()" title="Next Month">&rarr;</button>
+              </div>
             </div>
+            
             <div class="mini-cal-grid" id="miniCalGrid">
-              <!-- Dynamically generated days -->
+              <!-- Dynamically generated days with real weekday offsets and event dots -->
+            </div>
+
+            <!-- Attached Upcoming Schedule Panel -->
+            <div class="mini-cal-upcoming-panel" id="miniCalUpcomingPanel">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary);" id="upcomingPanelHeading">
+                  Upcoming Horizon &amp; Tasks
+                </span>
+                <span style="font-size: 0.72rem; color: var(--text-muted);" id="upcomingPanelSub">Next 2 Days</span>
+              </div>
+
+              <div class="upcoming-filter-tabs">
+                <button class="upcoming-filter-pill active" id="pillNext2" onclick="setUpcomingFilter('next2')">Next 2 Days</button>
+                <button class="upcoming-filter-pill" id="pillNext7" onclick="setUpcomingFilter('next7')">Next 7 Days</button>
+                <button class="upcoming-filter-pill" id="pillSelectedDate" onclick="setUpcomingFilter('selected')" style="display: none;">Selected Date</button>
+              </div>
+
+              <div class="upcoming-events-container" id="upcomingEventsContainer">
+                <!-- Dynamically rendered upcoming meetings and priority tasks -->
+              </div>
             </div>
           </div>
 
@@ -442,6 +486,7 @@
       renderDashboardCalendarEvents();
       renderDashboardTimers();
       renderMiniCalendar();
+      renderUpcomingSchedulePanel();
     }
 
     function formatClockDisplay(timeStr) {
@@ -454,8 +499,88 @@
       return `${h}:${m} ${ampm}`;
     }
 
-    // Render Calendar Anchors with Live Intelligent Deduplication!
-    function renderDashboardCalendarEvents() {
+    // Calendar State & Interactive Month Viewer
+    let currentCalMonthDate = new Date();
+    let selectedCalDayDate = null;
+    let upcomingHorizonFilter = 'next2'; // 'next2', 'next7', 'selected'
+    const monthNamesFull = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const monthNamesShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    window.resetMiniCalToToday = function() {
+      currentCalMonthDate = new Date();
+      selectedCalDayDate = null;
+      const pillSel = document.getElementById('pillSelectedDate');
+      if (pillSel) pillSel.style.display = 'none';
+      setUpcomingFilter('next2');
+      renderMiniCalendar();
+    };
+
+    window.prevMiniCalMonth = function() {
+      currentCalMonthDate.setMonth(currentCalMonthDate.getMonth() - 1);
+      renderMiniCalendar();
+    };
+
+    window.nextMiniCalMonth = function() {
+      currentCalMonthDate.setMonth(currentCalMonthDate.getMonth() + 1);
+      renderMiniCalendar();
+    };
+
+    window.setUpcomingFilter = function(filter) {
+      upcomingHorizonFilter = filter;
+      document.querySelectorAll('.upcoming-filter-pill').forEach(p => p.classList.remove('active'));
+      const activePill = document.getElementById(
+        filter === 'next2' ? 'pillNext2' : filter === 'next7' ? 'pillNext7' : 'pillSelectedDate'
+      );
+      if (activePill) activePill.classList.add('active');
+
+      const sub = document.getElementById('upcomingPanelSub');
+      if (sub) {
+        sub.textContent = filter === 'next2' ? 'Next 2 Days' : filter === 'next7' ? 'Next 7 Days' : 'Selected Date';
+      }
+      renderUpcomingSchedulePanel();
+    };
+
+    window.resetCalendarToToday = function() {
+      selectedCalDayDate = null;
+      const pillSel = document.getElementById('pillSelectedDate');
+      if (pillSel) pillSel.style.display = 'none';
+      setUpcomingFilter('next2');
+      renderMiniCalendar();
+      renderDashboardCalendarEvents(null);
+    };
+
+    window.resetMiniCalToToday = function() {
+      currentCalMonthDate = new Date();
+      resetCalendarToToday();
+    };
+
+    window.selectCalendarDay = function(year, month, day) {
+      selectedCalDayDate = new Date(year, month, day);
+      const pillSel = document.getElementById('pillSelectedDate');
+      if (pillSel) {
+        pillSel.style.display = 'inline-block';
+        pillSel.textContent = `${monthNamesShort[month]} ${day}`;
+      }
+      setUpcomingFilter('selected');
+      renderMiniCalendar();
+      renderDashboardCalendarEvents(selectedCalDayDate);
+
+      const calCard = document.getElementById('calendarCardSection');
+      if (calCard && typeof window !== 'undefined' && window.innerWidth < 850) {
+        calCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+
+    window.focusMiniCalUpcoming = function() {
+      const panel = document.getElementById('miniCalUpcomingPanel');
+      if (panel) {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      setUpcomingFilter('next7');
+    };
+
+    // Render Calendar Anchors STRICTLY FOR TODAY OR SELECTED DATE
+    function renderDashboardCalendarEvents(targetDate = null) {
       const container = document.getElementById('dashboardEventsList');
       if (!container) return;
       
@@ -463,75 +588,223 @@
 
       // Run Intelligent Deduplication Engine!
       const deduplicatedEvents = deduplicateCalendarEvents(rawEvents);
-      
-      const kpiEl = document.getElementById('kpiAnchorsCount');
-      if (kpiEl) {
-        kpiEl.textContent = `${deduplicatedEvents.length} Anchors`;
-      }
 
-      if (deduplicatedEvents.length === 0) {
-        container.innerHTML = `
-          <div class="calendar-connect-prompt" style="text-align: center; padding: 24px 16px; background: var(--bg-card-subtle); border-radius: 12px; border: 1px dashed var(--border);">
-            <p style="margin: 0 0 10px 0; color: var(--text-secondary); font-size: 0.9rem;">
-              <strong>No meetings found in synced calendars.</strong>
-            </p>
-            <a href="profile.html" class="btn-secondary-launch" style="padding: 6px 14px; font-size: 0.8rem; display: inline-block;">
-              + Link or Manage Calendar Share URLs
-            </a>
-          </div>
-        `;
-        return;
-      }
+      const titleEl = document.getElementById('calendarCardTitleText');
+      const subtitleEl = document.getElementById('calendarCardSubtitle');
+      const todayBadge = document.getElementById('todayDateBadge');
+      const btnBackToday = document.getElementById('btnBackToToday');
+      const upcomingNotice = document.getElementById('dashboardUpcomingNotice');
 
-      let html = '';
-      deduplicatedEvents.forEach(ev => {
-        const isDedupe = !!ev.isDeduplicated;
-        const sourceText = (ev.sources && Array.isArray(ev.sources) && ev.sources.length > 0)
-          ? ev.sources.join(' & ')
-          : (ev.calendarName || 'Calendar');
+      const isSpecificDay = targetDate instanceof Date && !isNaN(targetDate);
+      const todayObj = new Date();
+      const todayY = todayObj.getFullYear();
+      const todayM = todayObj.getMonth();
+      const todayD = todayObj.getDate();
+      const todayStr = `${todayY}-${String(todayM + 1).padStart(2, '0')}-${String(todayD).padStart(2, '0')}`;
 
-        const dedupeBadge = isDedupe
-          ? `<span class="dedupe-indicator" style="background: rgba(16, 185, 129, 0.1); color: #059669; font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">⚡ Unified across ${escapeHtml(sourceText)}</span>`
-          : `<span class="event-cal-source" style="font-size: 0.72rem; color: var(--text-muted);">${escapeHtml(sourceText)}</span>`;
+      if (isSpecificDay) {
+        const selY = targetDate.getFullYear();
+        const selM = targetDate.getMonth();
+        const selD = targetDate.getDate();
+        const selDateStr = `${selY}-${String(selM + 1).padStart(2, '0')}-${String(selD).padStart(2, '0')}`;
+        const isSelectedToday = (selDateStr === todayStr);
 
-        const isToday = ev.isToday !== false;
-        const timeStart = ev.startTime || '09:00';
-        const formattedDate = ev.dateFormatted || ev.dateStr;
-        
-        const timeColHtml = isToday
-          ? `<span class="event-time-start">${escapeHtml(timeStart)}</span>
-             <span class="event-dur">${ev.duration || 30}m</span>`
-          : `<span class="event-time-start" style="font-size: 0.8rem; font-weight: 700; color: var(--accent-blue);">${escapeHtml(formattedDate || 'Upcoming')}</span>
-             <span class="event-dur">${escapeHtml(timeStart)} (${ev.duration || 30}m)</span>`;
+        const formattedDay = targetDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 
-        const badgeHtml = isToday
-          ? `<span class="tag-anchor">Anchor</span>`
-          : `<span class="tag-anchor" style="background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd;">Upcoming</span>`;
+        if (titleEl) {
+          titleEl.textContent = isSelectedToday ? "Today's Calendar & Important Meetings" : `Calendar & Meetings — ${formattedDay}`;
+        }
+        if (subtitleEl) {
+          subtitleEl.innerHTML = isSelectedToday 
+            ? "Your synchronized agenda and routine anchors strictly for today. Tap any date on the Mini Calendar (right) to view other days."
+            : `Showing schedule for <strong>${formattedDay}</strong>. Click 'View Today' to return to today's agenda.`;
+        }
+        if (btnBackToday) {
+          btnBackToday.style.display = isSelectedToday ? 'none' : 'inline-flex';
+        }
 
-        html += `
-          <div class="event-timeline-item ${ev.sourceType === 'routine' ? 'meal-anchor' : 'anchor-highlight'}">
-            <div class="event-time-col">
-              ${timeColHtml}
+        // Filter events strictly for this specific date
+        const dayEvents = deduplicatedEvents.filter(ev => {
+          if (ev.dateStr === selDateStr) return true;
+          if (isSelectedToday && (ev.isToday || ev.sourceType === 'routine')) return true;
+          return false;
+        });
+
+        if (todayBadge) {
+          todayBadge.textContent = `${dayEvents.length} ${isSelectedToday ? 'Today' : 'Meetings'} • ${formattedDay}`;
+        }
+
+        if (dayEvents.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 24px 16px; background: var(--bg-card-subtle); border-radius: 12px; border: 1px dashed var(--border);">
+              <p style="margin: 0 0 6px 0; color: var(--text-primary); font-size: 0.95rem;">
+                <strong>No meetings scheduled for ${formattedDay}</strong>
+              </p>
+              <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 12px;">
+                This day is clear for uninterrupted focus sprints or personal recovery.
+              </span>
+              <button onclick="resetCalendarToToday()" class="btn-secondary-launch" style="padding: 6px 14px; font-size: 0.8rem; display: inline-block; cursor: pointer;">
+                &larr; Back to Today's Agenda
+              </button>
             </div>
-            <div class="event-title-col">
-              <div class="event-name">${escapeHtml(ev.title || 'Meeting')}</div>
-              ${dedupeBadge}
-            </div>
-            ${badgeHtml}
-          </div>
-        `;
-      });
+          `;
+        } else {
+          let html = '';
+          dayEvents.forEach(ev => {
+            const isDedupe = !!ev.isDeduplicated;
+            const sourceText = (ev.sources && Array.isArray(ev.sources) && ev.sources.length > 0)
+              ? ev.sources.join(' & ')
+              : (ev.calendarName || 'Calendar');
 
-      container.innerHTML = html;
+            const dedupeBadge = isDedupe
+              ? `<span class="dedupe-indicator" style="background: rgba(16, 185, 129, 0.1); color: #059669; font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">⚡ Unified across ${escapeHtml(sourceText)}</span>`
+              : `<span class="event-cal-source" style="font-size: 0.72rem; color: var(--text-muted);">${escapeHtml(sourceText)}</span>`;
+
+            const timeStart = ev.startTime || '09:00';
+
+            html += `
+              <div class="event-timeline-item ${ev.sourceType === 'routine' ? 'meal-anchor' : 'anchor-highlight'}">
+                <div class="event-time-col">
+                  <span class="event-time-start">${escapeHtml(timeStart)}</span>
+                  <span class="event-dur">${ev.duration || 30}m</span>
+                </div>
+                <div class="event-title-col">
+                  <div class="event-name">${escapeHtml(ev.title || 'Meeting')}</div>
+                  ${dedupeBadge}
+                </div>
+                <span class="tag-anchor">Anchor</span>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+        }
+
+        if (upcomingNotice) {
+          upcomingNotice.innerHTML = '';
+        }
+      } else {
+        // DEFAULT: Strictly Today's Schedule
+        if (titleEl) {
+          titleEl.textContent = "Today's Calendar & Important Meetings";
+        }
+        if (subtitleEl) {
+          subtitleEl.innerHTML = "Your synchronized agenda and routine anchors strictly for today. Tap any date on the Mini Calendar (right) to view other days.";
+        }
+        if (btnBackToday) {
+          btnBackToday.style.display = 'none';
+        }
+
+        const todayEvents = deduplicatedEvents.filter(ev => ev.isToday === true || ev.sourceType === 'routine');
+        const upcomingEvents = deduplicatedEvents.filter(ev => ev.isToday !== true && ev.sourceType !== 'routine');
+
+        if (todayBadge) {
+          const todayFormatted = todayObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+          todayBadge.textContent = `${todayEvents.length} Today • ${todayFormatted}`;
+        }
+
+        const kpiEl = document.getElementById('kpiAnchorsCount');
+        if (kpiEl) {
+          kpiEl.textContent = `${todayEvents.length} Anchors`;
+        }
+
+        if (todayEvents.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 24px 16px; background: var(--bg-card-subtle); border-radius: 12px; border: 1px dashed var(--border);">
+              <p style="margin: 0 0 6px 0; color: var(--text-primary); font-size: 0.95rem;">
+                <strong>🎉 No meetings scheduled for today!</strong>
+              </p>
+              <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 12px;">
+                Pristine calendar: your entire day is clear for unbroken deep work sprints.
+              </span>
+              <a href="profile.html" class="btn-secondary-launch" style="padding: 6px 14px; font-size: 0.8rem; display: inline-block;">
+                + Manage Linked Calendars
+              </a>
+            </div>
+          `;
+        } else {
+          let html = '';
+          todayEvents.forEach(ev => {
+            const isDedupe = !!ev.isDeduplicated;
+            const sourceText = (ev.sources && Array.isArray(ev.sources) && ev.sources.length > 0)
+              ? ev.sources.join(' & ')
+              : (ev.calendarName || 'Calendar');
+
+            const dedupeBadge = isDedupe
+              ? `<span class="dedupe-indicator" style="background: rgba(16, 185, 129, 0.1); color: #059669; font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">⚡ Unified across ${escapeHtml(sourceText)}</span>`
+              : `<span class="event-cal-source" style="font-size: 0.72rem; color: var(--text-muted);">${escapeHtml(sourceText)}</span>`;
+
+            const timeStart = ev.startTime || '09:00';
+
+            html += `
+              <div class="event-timeline-item ${ev.sourceType === 'routine' ? 'meal-anchor' : 'anchor-highlight'}">
+                <div class="event-time-col">
+                  <span class="event-time-start">${escapeHtml(timeStart)}</span>
+                  <span class="event-dur">${ev.duration || 30}m</span>
+                </div>
+                <div class="event-title-col">
+                  <div class="event-name">${escapeHtml(ev.title || 'Meeting')}</div>
+                  ${dedupeBadge}
+                </div>
+                <span class="tag-anchor">Anchor</span>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+        }
+
+        // Render upcoming notice banner under today's meetings (Does NOT dump future meetings underneath!)
+        if (upcomingNotice) {
+          if (upcomingEvents.length > 0) {
+            upcomingNotice.innerHTML = `
+              <div style="padding: 8px 12px; background: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.15); border-radius: 8px; font-size: 0.78rem; color: var(--accent-blue); display: flex; align-items: center; justify-content: space-between;">
+                <span style="display: flex; align-items: center; gap: 6px;">
+                  <span>🗓️</span>
+                  <span><strong>${upcomingEvents.length} upcoming meetings</strong> scheduled across future dates.</span>
+                </span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Tap dates on Mini Calendar &rarr;</span>
+              </div>
+            `;
+          } else {
+            upcomingNotice.innerHTML = '';
+          }
+        }
+      }
     }
 
+    // Refresh Dashboard Events with Live Status & Button Spinner
     window.refreshDashboardEvents = async function() {
+      const btn = document.getElementById('refreshSyncBtn');
+      const icon = document.getElementById('refreshSyncIcon');
+      const label = document.getElementById('refreshSyncLabel');
+      const syncStatus = document.getElementById('dashboardSyncStatus');
+
+      if (btn && btn.disabled) return;
+      if (btn) btn.disabled = true;
+      if (icon) icon.classList.add('spin-icon');
+      if (label) label.textContent = 'Syncing...';
+      if (syncStatus) {
+        syncStatus.style.display = 'block';
+        syncStatus.innerHTML = `<span class="spin-icon">🔄</span> Connecting to calendar feeds...`;
+      }
       showAppToast('⏳ Syncing live calendars from web...');
+
       try {
-        const res = await syncLiveCalendar();
+        const res = await syncLiveCalendar(null, (p) => {
+          if (syncStatus) {
+            syncStatus.innerHTML = `<span class="spin-icon">🔄</span> ${escapeHtml(p.message || 'Syncing...')}`;
+          }
+        });
         userProfile = getStoredProfile();
         renderDashboardCalendarEvents();
+        renderMiniCalendar();
+        renderUpcomingSchedulePanel();
         runFlowGuruDiagnostics();
+
+        if (syncStatus) {
+          syncStatus.innerHTML = `✅ ${escapeHtml(res.message)}`;
+          setTimeout(() => { syncStatus.style.display = 'none'; }, 2200);
+        }
+
         if (res.success) {
           showAppToast(`✅ ${res.message}`);
         } else {
@@ -541,10 +814,21 @@
         console.error('Error refreshing calendar events:', err);
         userProfile = getStoredProfile();
         renderDashboardCalendarEvents();
+        renderMiniCalendar();
+        renderUpcomingSchedulePanel();
+        if (syncStatus) {
+          syncStatus.innerHTML = `⚠️ Sync notice: ${escapeHtml(err.message)}`;
+          setTimeout(() => { syncStatus.style.display = 'none'; }, 3000);
+        }
         showAppToast('ℹ️ Refreshed cached calendar events.');
+      } finally {
+        if (btn) btn.disabled = false;
+        if (icon) icon.classList.remove('spin-icon');
+        if (label) label.textContent = 'Refresh Sync';
       }
     };
-// Render Stored Timers with Direct Deletion!
+
+    // Render Stored Timers with Direct Deletion!
     function renderDashboardTimers() {
       const container = document.getElementById('dashboardTimersList');
       const timers = getStoredTimers();
@@ -555,7 +839,6 @@
       }
 
       let html = '';
-      // Show top 4 timers
       timers.slice(0, 5).forEach(t => {
         const mins = Math.floor(t.totalSeconds / 60);
         html += `
@@ -590,12 +873,15 @@
       }
     };
 
-    // Mini Calendar Render
+    // Mini Calendar Render (Accurate Month Layout, Clickable Days, Event Dots)
     function renderMiniCalendar() {
       const grid = document.getElementById('miniCalGrid');
-      const d = new Date();
-      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      document.getElementById('miniCalMonthHeader').textContent = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+      const header = document.getElementById('miniCalMonthHeader');
+      if (!grid || !header) return;
+
+      const year = currentCalMonthDate.getFullYear();
+      const month = currentCalMonthDate.getMonth();
+      header.textContent = `${monthNamesFull[month]} ${year}`;
 
       const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
       let html = '';
@@ -603,17 +889,134 @@
         html += `<div class="mini-cal-day-header">${dow}</div>`;
       });
 
-      const today = d.getDate();
-      for (let day = 1; day <= 31; day++) {
-        const isToday = day === today ? 'today' : '';
-        const hasAnchor = (day === today || day === today + 1 || day === 15) ? 'has-anchor' : '';
-        html += `<div class="mini-cal-cell ${isToday} ${hasAnchor}">${day}</div>`;
+      const firstDayOfWeek = new Date(year, month, 1).getDay(); // 0 = Sun
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      // Empty padding cells before 1st of month
+      for (let p = 0; p < firstDayOfWeek; p++) {
+        html += `<div class="mini-cal-cell empty">&nbsp;</div>`;
+      }
+
+      const today = new Date();
+      const isCurrentMonth = (today.getFullYear() === year && today.getMonth() === month);
+      const todayDate = today.getDate();
+
+      const rawEvents = (userProfile && userProfile.calendarEvents) ? userProfile.calendarEvents : [];
+      const deduplicatedEvents = deduplicateCalendarEvents(rawEvents);
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = isCurrentMonth && (day === todayDate);
+        const dayDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+        // Check if any event falls on this date
+        const hasEvents = deduplicatedEvents.some(e => {
+          if (e.dateStr === dayDateStr) return true;
+          if (isToday && e.isToday) return true;
+          return false;
+        });
+
+        const isSelected = selectedCalDayDate &&
+          selectedCalDayDate.getFullYear() === year &&
+          selectedCalDayDate.getMonth() === month &&
+          selectedCalDayDate.getDate() === day;
+
+        const classes = [
+          'mini-cal-cell',
+          isToday ? 'today' : '',
+          isSelected ? 'selected' : '',
+          hasEvents ? 'has-anchor' : ''
+        ].filter(Boolean).join(' ');
+
+        html += `<div class="${classes}" onclick="selectCalendarDay(${year}, ${month}, ${day})" title="${monthNamesShort[month]} ${day}${hasEvents ? ' (Has schedule)' : ''}">${day}</div>`;
       }
 
       grid.innerHTML = html;
     }
 
-    
+    // Render Upcoming Schedule Panel (Next 2 Days / Next 7 Days / Selected Date)
+    function renderUpcomingSchedulePanel() {
+      const container = document.getElementById('upcomingEventsContainer');
+      if (!container) return;
+
+      const rawEvents = (userProfile && userProfile.calendarEvents) ? userProfile.calendarEvents : [];
+      const deduplicatedEvents = deduplicateCalendarEvents(rawEvents);
+
+      // Filter events based on upcomingHorizonFilter
+      let filtered = [];
+      let label = 'Upcoming Horizon & Tasks';
+
+      if (upcomingHorizonFilter === 'next2') {
+        label = 'Schedule for Next 2 Days';
+        filtered = deduplicatedEvents.filter(e => {
+          if (typeof e.daysFromToday === 'number') {
+            return e.daysFromToday >= 1 && e.daysFromToday <= 2;
+          }
+          return !e.isToday && e.sourceType !== 'routine';
+        });
+      } else if (upcomingHorizonFilter === 'next7') {
+        label = 'Schedule for Next 7 Days';
+        filtered = deduplicatedEvents.filter(e => {
+          if (typeof e.daysFromToday === 'number') {
+            return e.daysFromToday >= 1 && e.daysFromToday <= 7;
+          }
+          return !e.isToday && e.sourceType !== 'routine';
+        });
+      } else if (upcomingHorizonFilter === 'selected' && selectedCalDayDate) {
+        const selYear = selectedCalDayDate.getFullYear();
+        const selMonth = selectedCalDayDate.getMonth();
+        const selDay = selectedCalDayDate.getDate();
+        const selDateStr = `${selYear}-${String(selMonth + 1).padStart(2, '0')}-${String(selDay).padStart(2, '0')}`;
+        label = `Schedule for ${selectedCalDayDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}`;
+
+        filtered = deduplicatedEvents.filter(e => {
+          if (e.dateStr === selDateStr) return true;
+          const today = new Date();
+          if (today.getFullYear() === selYear && today.getMonth() === selMonth && today.getDate() === selDay) {
+            return e.isToday;
+          }
+          return false;
+        });
+      }
+
+      const heading = document.getElementById('upcomingPanelHeading');
+      if (heading) heading.textContent = label;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 18px 8px; background: var(--bg-card-subtle); border-radius: 8px; font-size: 0.78rem; color: var(--text-muted);">
+            <span>☕</span> No meetings scheduled in this window. Great time for focused tasks!
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(ev => {
+        const timeStr = `${ev.startTime || '09:00'}${ev.endTime ? ' - ' + ev.endTime : ''}`;
+        const relDay = ev.relativeDay || (ev.isToday ? 'Today' : (ev.dateFormatted || ev.dateStr || 'Upcoming'));
+        const sourceText = (ev.sources && Array.isArray(ev.sources) && ev.sources.length > 0)
+          ? ev.sources.join(' & ')
+          : (ev.calendarName || 'Calendar');
+
+        html += `
+          <div class="upcoming-event-item">
+            <div class="upcoming-event-time-col">
+              <span class="upcoming-event-time">${escapeHtml(ev.startTime || '09:00')}</span>
+              <span class="upcoming-event-rel">${escapeHtml(relDay)}</span>
+            </div>
+            <div class="upcoming-event-details">
+              <div class="upcoming-event-title">${escapeHtml(ev.title || 'Meeting')}</div>
+              <div class="upcoming-event-source">
+                ${ev.isDeduplicated ? `⚡ Unified: ${escapeHtml(sourceText)}` : escapeHtml(sourceText)} &bull; ${ev.duration || 30}m
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
     // --- FLOW GURU DIAGNOSTIC INTEGRATION ---
     function runFlowGuruDiagnostics() {
       const rawEvents = userProfile.calendarEvents || [];
@@ -741,30 +1144,40 @@
 
 
     // Cross-Tab & Focus Synchronization with profile.html
-    window.addEventListener('storage', (e) => {
-      if (!e.key || e.key === 'anchor_flow_user_profile') {
-        userProfile = getStoredProfile();
-        renderDashboardCalendarEvents();
-        renderDashboardTimers();
-        runFlowGuruDiagnostics();
-      }
-    });
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+      window.addEventListener('storage', (e) => {
+        if (!e.key || e.key === 'anchor_flow_user_profile') {
+          userProfile = getStoredProfile();
+          renderDashboardCalendarEvents(selectedCalDayDate);
+          renderDashboardTimers();
+          renderMiniCalendar();
+          renderUpcomingSchedulePanel();
+          runFlowGuruDiagnostics();
+        }
+      });
 
-    window.addEventListener('focus', () => {
-      userProfile = getStoredProfile();
-      renderDashboardCalendarEvents();
-      renderDashboardTimers();
-      runFlowGuruDiagnostics();
-    });
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
+      window.addEventListener('focus', () => {
         userProfile = getStoredProfile();
-        renderDashboardCalendarEvents();
+        renderDashboardCalendarEvents(selectedCalDayDate);
         renderDashboardTimers();
+        renderMiniCalendar();
+        renderUpcomingSchedulePanel();
         runFlowGuruDiagnostics();
-      }
-    });
+      });
+    }
+
+    if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          userProfile = getStoredProfile();
+          renderDashboardCalendarEvents(selectedCalDayDate);
+          renderDashboardTimers();
+          renderMiniCalendar();
+          renderUpcomingSchedulePanel();
+          runFlowGuruDiagnostics();
+        }
+      });
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
       initDashboard();

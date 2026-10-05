@@ -682,12 +682,13 @@ body {
   background: #fee2e2;
 }
 
-/* Mini Calendar Widget (Emily / Taskly inspired) */
+/* Mini Calendar Widget (Interactive & Multi-Day Horizon) */
 .mini-calendar-widget {
   background: #ffffff;
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
-  padding: 16px;
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
 }
 .mini-cal-header {
   display: flex;
@@ -695,10 +696,52 @@ body {
   justify-content: space-between;
   margin-bottom: 12px;
 }
+.mini-cal-month-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .mini-cal-month {
   font-weight: 700;
   font-size: 0.95rem;
   color: var(--text-primary);
+}
+.mini-cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.mini-cal-nav-btn {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.15s ease;
+}
+.mini-cal-nav-btn:hover {
+  background: var(--accent-blue);
+  color: #ffffff;
+  border-color: var(--accent-blue);
+}
+.mini-cal-today-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-blue);
+  background: rgba(37, 99, 235, 0.08);
+  padding: 2px 7px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: none;
+}
+.mini-cal-today-badge:hover {
+  background: rgba(37, 99, 235, 0.16);
 }
 .mini-cal-grid {
   display: grid;
@@ -710,21 +753,40 @@ body {
 .mini-cal-day-header {
   font-weight: 600;
   color: var(--text-muted);
-  padding-bottom: 4px;
+  padding-bottom: 6px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
 }
 .mini-cal-cell {
-  padding: 6px 0;
+  padding: 7px 0;
   border-radius: 8px;
   color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.mini-cal-cell.empty {
+  cursor: default;
+  color: transparent;
+  pointer-events: none;
+}
+.mini-cal-cell:hover:not(.empty):not(.today) {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--accent-blue);
 }
 .mini-cal-cell.today {
   background: var(--accent-blue);
-  color: #ffffff;
+  color: #ffffff !important;
   font-weight: 700;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
 }
-.mini-cal-cell.has-anchor {
-  position: relative;
-  font-weight: 600;
+.mini-cal-cell.selected:not(.today) {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: -2px;
+  font-weight: 700;
+  background: rgba(37, 99, 235, 0.06);
 }
 .mini-cal-cell.has-anchor::after {
   content: '';
@@ -736,6 +798,234 @@ body {
   height: 4px;
   border-radius: 50%;
   background: var(--accent-purple);
+}
+.mini-cal-cell.today.has-anchor::after {
+  background: #ffffff;
+}
+
+/* Mini Calendar Upcoming Schedule Panel */
+.mini-cal-upcoming-panel {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+.upcoming-filter-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.upcoming-filter-pill {
+  padding: 4px 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-card-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.upcoming-filter-pill:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+.upcoming-filter-pill.active {
+  background: var(--accent-blue);
+  color: #ffffff;
+  border-color: var(--accent-blue);
+}
+.upcoming-events-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.upcoming-event-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg-card-subtle);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-blue);
+  transition: transform 0.12s ease;
+}
+.upcoming-event-item:hover {
+  transform: translateX(2px);
+}
+.upcoming-event-time-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 65px;
+}
+.upcoming-event-time {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.upcoming-event-rel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+.upcoming-event-details {
+  flex: 1;
+}
+.upcoming-event-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.upcoming-event-source {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* ========================================================= */
+/* PROFILE LIVE CALENDAR 2-COLUMN SPLIT & PROGRESS BAR       */
+/* ========================================================= */
+.profile-calendar-split {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 960px) {
+  .profile-calendar-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Live Sync Progress Indicator Box */
+.sync-progress-box {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08);
+  animation: fadeIn 0.2s ease-in-out;
+}
+.sync-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #14532d;
+}
+.sync-progress-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: rgba(16, 185, 129, 0.2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.sync-progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.sync-progress-status-text {
+  font-size: 0.8rem;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Spinning Animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.spin-icon {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+/* Synced Calendar Schedule Preview Card (Right-hand Column in Profile) */
+.calendar-preview-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+.calendar-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.calendar-preview-title {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.preview-stats-chips {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.preview-stat-chip {
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 6px;
+  background: var(--bg-card-subtle);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.calendar-preview-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+.cal-preview-tab-btn {
+  background: none;
+  border: 1px solid transparent;
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.cal-preview-tab-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-subtle);
+}
+.cal-preview-tab-btn.active {
+  background: var(--accent-blue);
+  color: #ffffff;
+  border-color: var(--accent-blue);
+}
+.calendar-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 /* ========================================================= */

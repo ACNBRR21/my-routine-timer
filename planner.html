@@ -401,8 +401,8 @@
       }
 
       // Proactive check: If no calendar linked and user didn't mention meetings
-      if ((!userProfile.linkedCalendars || userProfile.linkedCalendars.length === 0) && !sessionStorage.getItem('calendar_link_prompted')) {
-        sessionStorage.setItem('calendar_link_prompted', 'true');
+      if ((!userProfile.linkedCalendars || userProfile.linkedCalendars.length === 0) && !(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('calendar_link_prompted'))) {
+        if (typeof sessionStorage !== 'undefined') { try { sessionStorage.setItem('calendar_link_prompted', 'true'); } catch(e) {} }
         appendBotBubble(`
           <strong>💡 Calendar Anchor Check:</strong><br />
           You haven't linked a calendar share URL yet. Would you like to add your Google or Outlook calendar link so I can lock in your meetings automatically?<br />

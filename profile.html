@@ -104,7 +104,7 @@
         <div class="card-header-row">
           <div>
             <h2 class="settings-section-title">🔗 Linked Calendars (Share URLs)</h2>
-            <p class="settings-section-desc">Add your Google, Outlook, or Apple calendar share links. Anchor &amp; Flow automatically pulls your meetings and locks them as anchors.</p>
+            <p class="settings-section-desc">Add your Google, Outlook, or Apple calendar share links. Anchor &amp; Flow automatically pulls your meetings, tracks sync progress, and locks anchors.</p>
           </div>
           <a href="guide.html#calendar-links" target="_blank" style="font-size: 0.82rem; color: var(--accent-blue); font-weight: 600; text-decoration: underline;">
             How to get your Calendar Link &rarr;
@@ -119,48 +119,124 @@
           </div>
         </div>
 
-        <!-- Linked Calendars Table -->
-        <div id="linkedCalendarsList" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-          <!-- Rendered dynamically -->
-        </div>
+        <!-- Two-Column Profile Calendar Layout: Left = Calendar Management, Right = Synced Meetings Preview -->
+        <div class="profile-calendar-split">
+          
+          <!-- Left Column: Linked Calendars & Sync Controls -->
+          <div class="profile-cal-left">
+            
+            <!-- Live Sync Progress Box (Animated during sync) -->
+            <div id="profileSyncProgressBox" class="sync-progress-box" style="display: none;">
+              <div class="sync-progress-header">
+                <span style="display: flex; align-items: center; gap: 6px;">
+                  <span class="spin-icon">🔄</span>
+                  <span>Syncing Live Calendars...</span>
+                </span>
+                <span id="syncProgressPercent" style="font-weight: 700; color: #15803d;">0%</span>
+              </div>
+              <div class="sync-progress-bar-bg">
+                <div class="sync-progress-bar-fill" id="syncProgressBarFill" style="width: 0%;"></div>
+              </div>
+              <div class="sync-progress-status-text" id="syncProgressStatusText">
+                Connecting to calendar feeds...
+              </div>
+            </div>
 
-        <!-- Add Calendar Form -->
-        <div style="background: var(--bg-card-subtle); border: 1px dashed var(--border); border-radius: 12px; padding: 16px;">
-          <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">+ Add a New Calendar Link</h3>
-          <div class="form-grid-2" style="margin-bottom: 12px;">
-            <div class="form-field-group">
-              <label for="newCalName">Calendar Name</label>
-              <input type="text" id="newCalName" class="form-input-text" placeholder="e.g. Work Outlook, Personal Google" />
+            <!-- Global Action Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: var(--bg-card-subtle); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);">
+              <button id="syncAllCalendarsBtn" class="btn-primary-launch" style="padding: 6px 16px; font-size: 0.82rem; display: flex; align-items: center; gap: 6px;">
+                <span id="syncAllIcon">🔄</span>
+                <span id="syncAllText">Sync All Calendars Now</span>
+              </button>
+              <span id="profileLastSyncText" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">
+                Ready to sync
+              </span>
             </div>
-            <div class="form-field-group">
-              <label for="newCalType">Calendar Provider</label>
-              <select id="newCalType" class="form-input-text">
-                <option value="outlook">Microsoft Outlook (ICS / Webcal)</option>
-                <option value="google">Google Calendar (Secret iCal URL)</option>
-                <option value="apple">Apple iCloud Calendar (Webcal)</option>
-                <option value="custom">Other iCal URL</option>
-              </select>
+
+            <!-- Linked Calendars Table -->
+            <div id="linkedCalendarsList" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Add Calendar Form -->
+            <div style="background: var(--bg-card-subtle); border: 1px dashed var(--border); border-radius: 12px; padding: 16px;">
+              <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">+ Add a New Calendar Link</h3>
+              <div class="form-grid-2" style="margin-bottom: 12px;">
+                <div class="form-field-group">
+                  <label for="newCalName">Calendar Name</label>
+                  <input type="text" id="newCalName" class="form-input-text" placeholder="e.g. Work Outlook, Personal Google" />
+                </div>
+                <div class="form-field-group">
+                  <label for="newCalType">Calendar Provider</label>
+                  <select id="newCalType" class="form-input-text">
+                    <option value="outlook">Microsoft Outlook (ICS / Webcal)</option>
+                    <option value="google">Google Calendar (Secret iCal URL)</option>
+                    <option value="apple">Apple iCloud Calendar (Webcal)</option>
+                    <option value="custom">Other iCal URL</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field-group" style="margin-bottom: 16px;">
+                <label for="newCalUrl">Calendar Share URL (iCal / Webcal / ICS format)</label>
+                <input type="url" id="newCalUrl" class="form-input-text" placeholder="https://outlook.office.com/owa/calendar/.../reachcalendar.ics or https://calendar.google.com/calendar/ical/.../basic.ics" />
+              </div>
+              <button id="addCalendarBtn" class="btn-secondary-launch" style="background:#ffffff; border-color:var(--accent-blue); color:var(--accent-blue); font-weight:600;">
+                + Link This Calendar
+              </button>
+            </div>
+          
+            <!-- Direct iCal Text Paste / Fallback Sync Option -->
+            <div style="margin-top: 14px; text-align: right;">
+              <button id="openPasteIcalModalBtn" class="btn-secondary-launch" style="font-size: 0.8rem; padding: 6px 14px;">
+                📋 Paste Raw iCal Text (Direct Sync)
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Synced Meetings Live Preview -->
+          <div class="profile-cal-right">
+            <div class="calendar-preview-card">
+              <div class="calendar-preview-header">
+                <div class="calendar-preview-title">
+                  <span>📅</span>
+                  <span>Synced Schedule Preview</span>
+                </div>
+                <span id="previewCountBadge" class="card-header-badge" style="background: rgba(37,99,235,0.1); color: var(--accent-blue); font-weight: 700;">
+                  0 meetings
+                </span>
+              </div>
+              
+              <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0 0 10px 0;">
+                Live preview of meetings pulled from your linked calendars. When sync runs, incoming meetings update here immediately.
+              </p>
+
+              <!-- Stat Chips -->
+              <div class="preview-stats-chips">
+                <div class="preview-stat-chip" id="statChipTotal">Total: 0</div>
+                <div class="preview-stat-chip" id="statChipToday">Today: 0</div>
+                <div class="preview-stat-chip" id="statChipNext7">Next 7 Days: 0</div>
+              </div>
+
+              <!-- Filter Tabs -->
+              <div class="calendar-preview-tabs">
+                <button class="cal-preview-tab-btn active" id="tabBtnNext7" onclick="setProfilePreviewTab('next7')">Next 7 Days</button>
+                <button class="cal-preview-tab-btn" id="tabBtnNext2" onclick="setProfilePreviewTab('next2')">Next 2 Days</button>
+                <button class="cal-preview-tab-btn" id="tabBtnToday" onclick="setProfilePreviewTab('today')">Today</button>
+                <button class="cal-preview-tab-btn" id="tabBtnAll" onclick="setProfilePreviewTab('all')">All Synced</button>
+              </div>
+
+              <!-- Synced Meetings List -->
+              <div class="calendar-preview-list" id="profileSyncedMeetingsList">
+                <!-- Dynamically rendered -->
+              </div>
             </div>
           </div>
-          <div class="form-field-group" style="margin-bottom: 16px;">
-            <label for="newCalUrl">Calendar Share URL (iCal / Webcal / ICS format)</label>
-            <input type="url" id="newCalUrl" class="form-input-text" placeholder="https://outlook.office.com/owa/calendar/.../reachcalendar.ics or https://calendar.google.com/calendar/ical/.../basic.ics" />
-          </div>
-          <button id="addCalendarBtn" class="btn-secondary-launch" style="background:#ffffff; border-color:var(--accent-blue); color:var(--accent-blue);">
-            + Link This Calendar
-          </button>
-        </div>
-      
-        <!-- Direct iCal Text Paste / Fallback Sync Option -->
-        <div style="margin-top: 14px; text-align: right;">
-          <button id="openPasteIcalModalBtn" class="btn-secondary-launch" style="font-size: 0.8rem; padding: 6px 14px;">
-            📋 Paste Raw iCal Text (Direct Sync)
-          </button>
+
         </div>
 
       </section>
-
-      <!-- Section 3: Daily Routine & Meal Timings -->
+<!-- Section 3: Daily Routine & Meal Timings -->
       <section class="settings-section-card">
         <h2 class="settings-section-title">🍱 Daily Routine &amp; Meal Anchors</h2>
         <p class="settings-section-desc">The AI Day Planner references these times to protect your daily wellness habits (e.g. <em>"Hey, you typically have lunch at 1:00 PM"</em>).</p>
@@ -336,6 +412,133 @@
     }
 
     let currentProfile = getStoredProfile();
+    let profilePreviewFilter = 'next7';
+
+    function setProfilePreviewTab(tab) {
+      profilePreviewFilter = tab;
+      document.querySelectorAll('.cal-preview-tab-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById(
+        tab === 'next7' ? 'tabBtnNext7' : tab === 'next2' ? 'tabBtnNext2' : tab === 'today' ? 'tabBtnToday' : 'tabBtnAll'
+      );
+      if (activeBtn) activeBtn.classList.add('active');
+      renderProfileSyncedMeetings();
+    }
+
+    function renderProfileSyncedMeetings() {
+      const container = document.getElementById('profileSyncedMeetingsList');
+      if (!container) return;
+
+      const rawEvents = (currentProfile && currentProfile.calendarEvents) ? currentProfile.calendarEvents : [];
+      const deduplicated = deduplicateCalendarEvents(rawEvents);
+
+      // Calculate stats
+      const totalCount = deduplicated.length;
+      const todayCount = deduplicated.filter(e => e.isToday).length;
+      const next2Count = deduplicated.filter(e => e.isToday || (typeof e.daysFromToday === 'number' && e.daysFromToday >= 1 && e.daysFromToday <= 2)).length;
+      const next7Count = deduplicated.filter(e => e.isToday || (typeof e.daysFromToday === 'number' && e.daysFromToday >= 1 && e.daysFromToday <= 7)).length;
+
+      const totalChip = document.getElementById('statChipTotal');
+      const todayChip = document.getElementById('statChipToday');
+      const next7Chip = document.getElementById('statChipNext7');
+      const countBadge = document.getElementById('previewCountBadge');
+
+      if (totalChip) totalChip.textContent = `Total: ${totalCount}`;
+      if (todayChip) todayChip.textContent = `Today: ${todayCount}`;
+      if (next7Chip) next7Chip.textContent = `Next 7 Days: ${next7Count}`;
+      if (countBadge) countBadge.textContent = `${totalCount} meetings`;
+
+      // Filter events based on active tab
+      let filtered = [];
+      if (profilePreviewFilter === 'today') {
+        filtered = deduplicated.filter(e => e.isToday);
+      } else if (profilePreviewFilter === 'next2') {
+        filtered = deduplicated.filter(e => e.isToday || (typeof e.daysFromToday === 'number' && e.daysFromToday >= 1 && e.daysFromToday <= 2));
+      } else if (profilePreviewFilter === 'next7') {
+        filtered = deduplicated.filter(e => e.isToday || (typeof e.daysFromToday === 'number' && e.daysFromToday >= 1 && e.daysFromToday <= 7));
+      } else {
+        filtered = deduplicated;
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 28px 14px; background: var(--bg-card-subtle); border-radius: 10px; border: 1px dashed var(--border);">
+            <span style="font-size: 1.6rem; display: block; margin-bottom: 6px;">📅</span>
+            <strong style="font-size: 0.9rem; color: var(--text-primary);">No meetings in this view</strong>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 0 0;">
+              ${deduplicated.length > 0 ? 'Switch tabs above to inspect other dates.' : 'Add your calendar link on the left and click Sync to see meetings appear here in real-time.'}
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(ev => {
+        const isDedupe = !!ev.isDeduplicated;
+        const sourceText = (ev.sources && Array.isArray(ev.sources) && ev.sources.length > 0)
+          ? ev.sources.join(' & ')
+          : (ev.calendarName || 'Calendar');
+
+        const relDay = ev.relativeDay || (ev.isToday ? 'Today' : (ev.dateFormatted || ev.dateStr || 'Upcoming'));
+        const dateBadgeBg = ev.isToday ? 'var(--accent-blue)' : (ev.daysFromToday === 1 ? '#0284c7' : 'var(--text-secondary)');
+
+        html += `
+          <div class="event-timeline-item" style="padding: 10px 12px; border-left-color: ${ev.sourceType === 'routine' ? 'var(--accent-green)' : 'var(--accent-blue)'};">
+            <div style="display: flex; flex-direction: column; min-width: 60px;">
+              <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-primary);">${escapeHtml(ev.startTime || '09:00')}</span>
+              <span style="font-size: 0.68rem; color: var(--text-muted);">${ev.duration || 30}m</span>
+            </div>
+            <div style="flex: 1; padding: 0 8px;">
+              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <strong style="font-size: 0.86rem; color: var(--text-primary);">${escapeHtml(ev.title || 'Meeting')}</strong>
+                <span style="background: ${dateBadgeBg}; color: #ffffff; font-size: 0.68rem; font-weight: 600; padding: 1px 6px; border-radius: 999px;">
+                  ${escapeHtml(relDay)}
+                </span>
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">
+                ${isDedupe
+                  ? `<span style="color: #059669; font-weight: 600;">⚡ Unified across ${escapeHtml(sourceText)}</span>`
+                  : escapeHtml(sourceText)}
+              </div>
+            </div>
+            <span class="tag-anchor" style="font-size: 0.7rem; padding: 2px 6px;">Anchor</span>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function updateSyncProgress(prog) {
+      const box = document.getElementById('profileSyncProgressBox');
+      const fill = document.getElementById('syncProgressBarFill');
+      const pctText = document.getElementById('syncProgressPercent');
+      const statusText = document.getElementById('syncProgressStatusText');
+
+      if (!box || !fill || !pctText || !statusText) return;
+
+      box.style.display = 'flex';
+      const pct = Math.max(0, Math.min(100, prog.percent || 0));
+      fill.style.width = `${pct}%`;
+      pctText.textContent = `${pct}%`;
+      statusText.innerHTML = `<span class="spin-icon">🔄</span> ${escapeHtml(prog.message || 'Synchronizing...')}`;
+    }
+
+    function hideSyncProgressWithSuccess(msg) {
+      const box = document.getElementById('profileSyncProgressBox');
+      const fill = document.getElementById('syncProgressBarFill');
+      const pctText = document.getElementById('syncProgressPercent');
+      const statusText = document.getElementById('syncProgressStatusText');
+
+      if (fill) fill.style.width = '100%';
+      if (pctText) pctText.textContent = '100%';
+      if (statusText) statusText.innerHTML = `✅ ${escapeHtml(msg || 'Sync complete!')}`;
+
+      setTimeout(() => {
+        if (box) box.style.display = 'none';
+        if (fill) fill.style.width = '0%';
+      }, 1600);
+    }
 
     function populateProfileForm() {
       currentProfile = getStoredProfile();
@@ -352,6 +555,14 @@
 
       renderLinkedCalendars();
       renderStoredTimersList();
+      renderProfileSyncedMeetings();
+
+      if (currentProfile.lastSyncTimestamp) {
+        try {
+          const d = new Date(currentProfile.lastSyncTimestamp);
+          document.getElementById('profileLastSyncText').textContent = `Last synced: ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        } catch(e) {}
+      }
     }
 
     function renderLinkedCalendars() {
@@ -360,7 +571,7 @@
         list.innerHTML = `
           <div class="calendar-connect-prompt">
             <p><strong>No calendars currently linked.</strong></p>
-            <span style="font-size: 0.8rem; color: var(--text-secondary);">Add your Google or Outlook iCal share link below to lock meetings as anchors automatically.</span>
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Add your Google, Outlook, or Apple calendar link below to pull your meetings automatically.</span>
           </div>
         `;
         return;
@@ -369,19 +580,28 @@
       let html = '';
       currentProfile.linkedCalendars.forEach(cal => {
         const typeIcon = cal.type === 'outlook' ? '💻' : cal.type === 'google' ? '📅' : '🌐';
+        const syncBadge = cal.syncStatus === 'success' 
+          ? `<span style="color:#10b981; font-size:0.72rem; font-weight:600;">✓ ${cal.eventCount || 0} events synced</span>`
+          : cal.syncStatus === 'error'
+          ? `<span style="color:#ef4444; font-size:0.72rem; font-weight:600;">⚠️ Sync warning</span>`
+          : `<span style="color:var(--text-muted); font-size:0.72rem;">Ready</span>`;
+
         html += `
           <div class="event-timeline-item" style="border-left-color: ${cal.color || 'var(--accent-blue)'};">
             <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
               <span style="font-size: 1.3rem;">${typeIcon}</span>
               <div>
-                <strong style="font-size: 0.95rem; color: var(--text-primary);">${cal.name}</strong>
-                <div style="font-size: 0.74rem; color: var(--text-muted); word-break: break-all;">
-                  ${cal.url}
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <strong style="font-size: 0.92rem; color: var(--text-primary);">${escapeHtml(cal.name)}</strong>
+                  ${syncBadge}
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); word-break: break-all;">
+                  ${escapeHtml(cal.url)}
                 </div>
               </div>
             </div>
             <div style="display: flex; gap: 6px;">
-              <button onclick="testSyncCalendar('${cal.id}')" class="btn-secondary-launch" style="padding: 4px 10px; font-size: 0.78rem;">Sync</button>
+              <button onclick="testSyncCalendar('${cal.id}', this)" class="btn-secondary-launch" style="padding: 4px 10px; font-size: 0.78rem;">Sync</button>
               <button onclick="removeCalendar('${cal.id}')" class="btn-timer-delete-small" title="Remove Calendar">🗑️</button>
             </div>
           </div>
@@ -407,8 +627,8 @@
             <div class="timer-widget-info">
               <span class="timer-widget-digits">${mins}m</span>
               <div class="timer-widget-label">
-                <span class="timer-widget-name">${t.title}</span>
-                <span class="timer-widget-sub">${t.notes || 'Timer preset'}</span>
+                <span class="timer-widget-name">${escapeHtml(t.title)}</span>
+                <span class="timer-widget-sub">${escapeHtml(t.notes || 'Timer preset')}</span>
               </div>
             </div>
             <button onclick="handleDeleteTimer('${t.id}')" class="btn-timer-delete-small" title="Delete from history">🗑️</button>
@@ -431,21 +651,85 @@
         currentProfile.linkedCalendars = currentProfile.linkedCalendars.filter(c => c.id !== id);
         saveStoredProfile(currentProfile);
         renderLinkedCalendars();
+        renderProfileSyncedMeetings();
         showAppToast('Calendar link removed');
       }
     };
 
-    window.testSyncCalendar = async function(id) {
-      showAppToast('⏳ Fetching live calendar feed & syncing...');
-      const res = await syncLiveCalendar(id);
-      currentProfile = getStoredProfile();
-      renderLinkedCalendars();
-      if (res.success) {
-        showAppToast(`✅ ${res.message}`);
-      } else {
-        showAppToast(`⚠️ ${res.message}`);
+    window.testSyncCalendar = async function(id, btn = null) {
+      const origHtml = btn ? btn.innerHTML : 'Sync';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spin-icon">🔄</span> Syncing...';
+      }
+      updateSyncProgress({ percent: 15, message: 'Connecting to calendar via fast relays...' });
+      try {
+        const res = await syncLiveCalendar(id, updateSyncProgress);
+        currentProfile = getStoredProfile();
+        renderLinkedCalendars();
+        renderProfileSyncedMeetings();
+
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const lastSyncText = document.getElementById('profileLastSyncText');
+        if (lastSyncText) lastSyncText.textContent = `Last synced: ${timeStr}`;
+
+        hideSyncProgressWithSuccess(res.message);
+        showAppToast(res.success ? `✅ ${res.message}` : `⚠️ ${res.message}`);
+        // Scroll to synced meetings preview so user immediately sees what synced
+        const previewEl = document.getElementById('syncedMeetingsPreviewCard');
+        if (previewEl) {
+          previewEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      } catch (err) {
+        showAppToast(`⚠️ ${err.message}`);
+        const pBox = document.getElementById('profileSyncProgressBox');
+        if (pBox) pBox.style.display = 'none';
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+        }
       }
     };
+
+    // Global Sync All Button Listener
+    document.getElementById('syncAllCalendarsBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('syncAllCalendarsBtn');
+      const icon = document.getElementById('syncAllIcon');
+      const text = document.getElementById('syncAllText');
+      const lastSyncText = document.getElementById('profileLastSyncText');
+
+      if (btn.disabled) return;
+      btn.disabled = true;
+      icon.classList.add('spin-icon');
+      text.textContent = 'Syncing...';
+
+      updateSyncProgress({ percent: 10, message: 'Initiating calendar synchronization...' });
+
+      try {
+        const res = await syncLiveCalendar(null, updateSyncProgress);
+        currentProfile = getStoredProfile();
+        renderLinkedCalendars();
+        renderProfileSyncedMeetings();
+
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (lastSyncText) lastSyncText.textContent = `Last synced: ${timeStr}`;
+
+        hideSyncProgressWithSuccess(res.message);
+        showAppToast(res.success ? `✅ ${res.message}` : `⚠️ ${res.message}`);
+      } catch (err) {
+        console.error('Sync error:', err);
+        updateSyncProgress({ percent: 100, message: `Sync error: ${err.message}` });
+        setTimeout(() => {
+          document.getElementById('profileSyncProgressBox').style.display = 'none';
+        }, 3000);
+        showAppToast(`⚠️ ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        icon.classList.remove('spin-icon');
+        text.textContent = 'Sync All Calendars Now';
+      }
+    });
 
     // Add New Calendar
     document.getElementById('addCalendarBtn').addEventListener('click', () => {
@@ -477,17 +761,29 @@
       renderLinkedCalendars();
       showAppToast(`Linking "${name}" & fetching live meetings...`);
 
-      // Immediately trigger live sync for newly added calendar!
-      syncLiveCalendar(newCal.id).then(res => {
+      // Immediately trigger live sync with progress for newly added calendar!
+      updateSyncProgress({ percent: 15, message: `Connecting to ${name}...` });
+      syncLiveCalendar(newCal.id, updateSyncProgress).then(res => {
         currentProfile = getStoredProfile();
         renderLinkedCalendars();
+        renderProfileSyncedMeetings();
+        hideSyncProgressWithSuccess(res.message);
         if (res.success) {
           showAppToast(`✅ ${res.message}`);
         } else {
-          showAppToast(`Calendar link saved. Tip: You can also paste iCal text below.`);
+          showAppToast(`Calendar link saved. Tip: You can also paste raw iCal text below.`);
         }
       });
     });
+
+    // Listen for cross-tab calendar sync events
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+      window.addEventListener('anchor_flow_calendar_synced', (e) => {
+        currentProfile = getStoredProfile();
+        renderLinkedCalendars();
+        renderProfileSyncedMeetings();
+      });
+    }
 
     // Save All Profile Changes
     document.getElementById('saveAllProfileBtn').addEventListener('click', () => {
@@ -557,7 +853,6 @@
       }
     });
 
-    
     // Paste iCal Modal logic
     const pasteModal = document.getElementById('pasteIcalModal');
     const openPasteBtn = document.getElementById('openPasteIcalModalBtn');
@@ -592,7 +887,6 @@
         }
       });
     }
-
 
     document.addEventListener('DOMContentLoaded', populateProfileForm);
   </script>

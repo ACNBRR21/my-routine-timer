@@ -106,3 +106,34 @@ The beloved **Flow Guru** has been brought back and substantially elevated into 
 * **Harvard Rule of 3 & Pareto 80/20 Enforcement:** Isolates the vital 20% of high-impact priorities from low-leverage busywork, guiding the user to execute Top 1, 2, and 3 serially.
 * **Executive Health Index:** Computes a live 0–100 calendar health score (Optimal Flow vs. Fragmentation).
 * **Interactive Deep Audit Modal:** Provides actionable recommendations with 1-click buffer optimization.
+
+---
+
+## 🚀 Version 3.1.0 Update: Calendar Sync Clarity, Mini-Calendar Upgrades & Privacy Protection
+
+### 🔒 1. Public Distribution Privacy Protection
+- **Personal Calendar Removal:** Completely purged author's private Google Calendar iCal URL (`rishi@birdblast.com`) from code and default profile presets.
+- **Automated Local Storage Sanitization:** Added automatic migration in `getStoredProfile()` that scrubs any legacy private calendar links from browser `localStorage` on load, ensuring a 100% clean slate for public distribution.
+
+### ⚡ 2. Real-Time Calendar Sync Clarity & Timeout Guards
+- **Live Progress Indicator:** Added an animated progress bar and status stepper in `profile.html` (e.g. `Connecting...`, `Downloaded feed (42 KB)`, `Parsing RFC 5545 events...`, `Unified 8 meetings`).
+- **Eliminated Freezing / Long Hangs:** Implemented `AbortController` timeout guards (7.5s max per proxy strategy) so unresponsive proxies fail fast and switch to working endpoints instead of hanging for 1-2 minutes.
+- **Button State Feedback:** Dashboard and profile sync buttons now display an active spinning indicator (`🔄 Syncing...`) and are disabled during synchronization to prevent accidental duplicate sync requests.
+
+### 📅 3. Synced Meetings Live Preview in Profile
+- **Two-Column Split Layout:** Re-architected Section 2 in `profile.html` into a responsive 2-column workspace:
+  - *Left Column:* Linked calendar management, real-time progress bar, add-calendar form, and sync actions.
+  - *Right Column:* Live Synced Schedule Preview panel showing all retrieved meetings, KPI counter chips (Total, Today, Next 7 Days), and tab filters (`Next 7 Days`, `Next 2 Days`, `Today`, `All Synced`).
+
+### 🎯 4. Clean Separation of Today's Calendar from Upcoming Weeks
+- **Today's Focus Protected:** Restructured the Dashboard's "Today's Calendar & Anchors" widget to display **strictly today's meetings and routine anchors**.
+- **No More Confusion:** Upcoming meetings from next week or future months no longer clutter today's schedule. A subtle indicator links directly to the upcoming horizon viewer.
+
+### 🗓️ 5. Interactive Mini-Calendar & Upcoming Horizon (Next 2–7 Days)
+- **Dynamic Month Calendar:** Upgraded the static mini calendar into an interactive calendar with real weekday alignment, previous/next month navigation, and a "Today" reset button.
+- **Visual Event Indicators:** Days containing meetings display a dot indicator.
+- **Clickable Days:** Users can click any calendar day to inspect that specific date's agenda.
+- **Attached Upcoming Schedule Panel:** Directly beneath the calendar, users can toggle between:
+  - *Next 2 Days:* Clean schedule for tomorrow and the day after.
+  - *Next 7 Days:* Full week upcoming schedule horizon.
+  - *Selected Date:* Deep dive into any clicked calendar date.
