@@ -1,130 +1,3 @@
-
-    // =========================================================
-    // TIMER+ SUITE: TIMERS, STOPWATCHES, COUNTDOWNS & ROUTINES
-    // =========================================================
-    let currentCreatorMode = 'timer'; // 'timer', 'stopwatch', 'countdown', 'routine'
-    let currentRoutineSteps = [
-      { title: 'Work Interval', duration: 25 * 60, notes: 'Deep focused execution' },
-      { title: 'Rest Interval', duration: 5 * 60, notes: 'Stand up, hydrate, and stretch' }
-    ];
-    let stopwatchLaps = [];
-    let isStopwatch = false;
-    let stopwatchElapsed = 0;
-
-    function setCreatorMode(mode) {
-      currentCreatorMode = mode;
-      document.getElementById('customTypeInput').value = mode;
-
-      const titleEl = document.getElementById('customModalTitle');
-      const labelPrompt = document.getElementById('customLabelPrompt');
-      const labelInput = document.getElementById('customLabelInput');
-      const folderSelect = document.getElementById('customFolderSelect');
-
-      const timerFields = document.getElementById('timerSpecificFields');
-      const swFields = document.getElementById('stopwatchSpecificFields');
-      const cdFields = document.getElementById('countdownSpecificFields');
-      const rtFields = document.getElementById('routineSpecificFields');
-
-      timerFields.style.display = (mode === 'timer') ? 'block' : 'none';
-      swFields.style.display = (mode === 'stopwatch') ? 'block' : 'none';
-      cdFields.style.display = (mode === 'countdown') ? 'block' : 'none';
-      rtFields.style.display = (mode === 'routine') ? 'block' : 'none';
-
-      if (mode === 'timer') {
-        titleEl.textContent = 'New Countdown Timer';
-        labelPrompt.textContent = 'Timer Label / Title';
-        labelInput.value = 'Focus Session';
-        folderSelect.value = 'work';
-      } else if (mode === 'stopwatch') {
-        titleEl.textContent = 'New Stopwatch';
-        labelPrompt.textContent = 'Stopwatch Title';
-        labelInput.value = 'Work Sprint Stopwatch';
-        folderSelect.value = 'work';
-      } else if (mode === 'countdown') {
-        titleEl.textContent = 'New Target Date Countdown';
-        labelPrompt.textContent = 'Event / Target Name';
-        labelInput.value = 'Target Milestone';
-        folderSelect.value = 'work';
-
-        // Default target date: tomorrow at 09:00
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(9, 0, 0, 0);
-        const isoLocal = new Date(tomorrow.getTime() - tomorrow.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-        document.getElementById('customTargetDateInput').value = isoLocal;
-      } else if (mode === 'routine') {
-        titleEl.textContent = 'New Multi-Segment Routine';
-        labelPrompt.textContent = 'Routine Title';
-        labelInput.value = 'Custom Interval Routine';
-        folderSelect.value = 'workout';
-        renderRoutineStepsBuilder();
-      }
-
-      document.getElementById('customTimerModal').classList.add('open');
-    }
-
-    function renderRoutineStepsBuilder() {
-      const container = document.getElementById('routineStepsBuilderList');
-      if (!container) return;
-
-      let html = '';
-      currentRoutineSteps.forEach((step, idx) => {
-        const mins = Math.floor(step.duration / 60);
-        const secs = step.duration % 60;
-        html += `
-          <div class="routine-step-item" data-idx="${idx}">
-            <div class="routine-step-row-top">
-              <span style="font-weight: 700; font-size: 0.82rem; color: var(--accent-blue);">Step ${idx + 1}</span>
-              ${currentRoutineSteps.length > 1 ? `<button type="button" class="btn-delete-step" onclick="removeRoutineStep(${idx})" title="Remove Step">✕</button>` : ''}
-            </div>
-            <input class="form-control" type="text" placeholder="Step Name" value="${escapeHtml(step.title)}" onchange="updateRoutineStepTitle(${idx}, this.value)" style="margin-bottom: 6px;" />
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <div>
-                <label style="font-size: 0.72rem; color: var(--text-muted);">Mins</label>
-                <input class="form-control" type="number" min="0" value="${mins}" onchange="updateRoutineStepDuration(${idx}, this.value, 'm')" />
-              </div>
-              <div>
-                <label style="font-size: 0.72rem; color: var(--text-muted);">Secs</label>
-                <input class="form-control" type="number" min="0" max="59" value="${secs}" onchange="updateRoutineStepDuration(${idx}, this.value, 's')" />
-              </div>
-            </div>
-          </div>
-        `;
-      });
-      container.innerHTML = html;
-    }
-
-    window.updateRoutineStepTitle = function(idx, val) {
-      if (currentRoutineSteps[idx]) {
-        currentRoutineSteps[idx].title = val.trim() || `Step ${idx + 1}`;
-      }
-    };
-
-    window.updateRoutineStepDuration = function(idx, val, unit) {
-      if (!currentRoutineSteps[idx]) return;
-      const num = parseInt(val, 10) || 0;
-      const current = currentRoutineSteps[idx].duration;
-      let mins = Math.floor(current / 60);
-      let secs = current % 60;
-      if (unit === 'm') mins = num;
-      if (unit === 's') secs = num;
-      currentRoutineSteps[idx].duration = Math.max(5, mins * 60 + secs);
-    };
-
-    window.removeRoutineStep = function(idx) {
-      if (currentRoutineSteps.length <= 1) return;
-      currentRoutineSteps.splice(idx, 1);
-      renderRoutineStepsBuilder();
-    };
-
-    window.adjustActiveTime = function(deltaSeconds) {
-      if (!activeTimer || isStopwatch) return;
-      secondsRemaining = Math.max(0, secondsRemaining + deltaSeconds);
-      if (stepTotalSeconds < secondsRemaining) stepTotalSeconds = secondsRemaining;
-      updatePlayerUI();
-      showToast(`${deltaSeconds > 0 ? '+' : ''}${Math.round(deltaSeconds/60)}m applied`);
-    };
-
 // --- 1. DEFAULT TIMERS (Strictly matching Screenshots 1, 2, 3) ---
     const DEFAULT_TIMERS = [
       {
@@ -446,29 +319,15 @@
       clearInterval(timerInterval);
       activeTimer = target;
       currentStepIndex = 0;
-      stopwatchLaps = [];
 
-      isStopwatch = (target.type === 'stopwatch');
+      const firstStep = (activeTimer.steps && activeTimer.steps.length > 0)
+        ? activeTimer.steps[0]
+        : { title: activeTimer.title, duration: activeTimer.totalSeconds, notes: activeTimer.notes };
 
-      if (isStopwatch) {
-        stopwatchElapsed = target.elapsed || 0;
-        secondsRemaining = 0;
-        stepTotalSeconds = 0;
-      } else if (target.type === 'countdown' && target.targetDate) {
-        const targetMs = new Date(target.targetDate).getTime();
-        const diffSec = Math.max(0, Math.round((targetMs - Date.now()) / 1000));
-        secondsRemaining = diffSec;
-        stepTotalSeconds = diffSec;
-      } else {
-        const firstStep = (activeTimer.steps && activeTimer.steps.length > 0)
-          ? activeTimer.steps[0]
-          : { title: activeTimer.title, duration: activeTimer.totalSeconds, notes: activeTimer.notes };
-
-        secondsRemaining = firstStep.duration;
-        stepTotalSeconds = firstStep.duration;
-      }
-
+      secondsRemaining = firstStep.duration;
+      stepTotalSeconds = firstStep.duration;
       isRunning = true;
+
       playChime('step');
       runTimerLoop();
       updatePlayerUI();
@@ -495,25 +354,12 @@
       timerInterval = setInterval(() => {
         if (!isRunning) return;
 
-        if (isStopwatch) {
-          stopwatchElapsed++;
-          activeTimer.elapsed = stopwatchElapsed;
+        if (secondsRemaining > 0) {
+          secondsRemaining--;
           updatePlayerUI();
-        } else if (activeTimer && activeTimer.type === 'countdown' && activeTimer.targetDate) {
-          const targetMs = new Date(activeTimer.targetDate).getTime();
-          const diffSec = Math.round((targetMs - Date.now()) / 1000);
-          secondsRemaining = diffSec;
-          updatePlayerUI();
-          if (diffSec <= 0 && diffSec > -2) {
-            playChime('done');
-          }
         } else {
-          if (secondsRemaining > 0) {
-            secondsRemaining--;
-            updatePlayerUI();
-          } else {
-            advanceToNextStep();
-          }
+          // Step finished!
+          advanceToNextStep();
         }
       }, 1000);
     }
@@ -533,20 +379,6 @@
         showToast(`Next: ${nextStep.title}`);
         updatePlayerUI();
       } else {
-        // Routine or timer complete! Check repeats
-        if (activeTimer.repeats && activeTimer.repeats > 1) {
-          activeTimer.currentRepeat = (activeTimer.currentRepeat || 1) + 1;
-          if (activeTimer.currentRepeat <= activeTimer.repeats) {
-            currentStepIndex = 0;
-            const nextStep = activeTimer.steps[0];
-            secondsRemaining = nextStep.duration;
-            stepTotalSeconds = nextStep.duration;
-            playChime('step');
-            showToast(`Repeat ${activeTimer.currentRepeat} of ${activeTimer.repeats}!`);
-            updatePlayerUI();
-            return;
-          }
-        }
         completeTimer();
       }
     }
@@ -587,60 +419,16 @@
       const playBtn = document.getElementById('playerPlayPauseBtn');
       const ringFill = document.getElementById('playerRingFill');
 
-      const adjustRow = document.getElementById('playerAdjustRow');
-      const lapBtn = document.getElementById('playerLapBtn');
-      const lapsBox = document.getElementById('playerLapsBox');
-      const lapsList = document.getElementById('playerLapsList');
-      const targetDesc = document.getElementById('playerTargetDateDesc');
-
       headerTitle.textContent = activeTimer.title;
-
-      if (isStopwatch) {
-        digits.textContent = formatTime(stopwatchElapsed);
-        stepTag.textContent = 'Stopwatch (Count-Up)';
-        taskTitle.textContent = activeTimer.title;
-        if (adjustRow) adjustRow.style.display = 'none';
-        if (lapBtn) lapBtn.style.display = 'inline-flex';
-        if (lapsBox) lapsBox.style.display = stopwatchLaps.length > 0 ? 'block' : 'none';
-        if (targetDesc) targetDesc.style.display = 'none';
-      } else if (activeTimer.type === 'countdown' && activeTimer.targetDate) {
-        const targetMs = new Date(activeTimer.targetDate).getTime();
-        const diff = Math.round((targetMs - Date.now()) / 1000);
-        if (diff >= 0) {
-          const d = Math.floor(diff / 86400);
-          const rem = diff % 86400;
-          digits.textContent = (d > 0 ? `${d}d ` : '') + formatTime(rem);
-          stepTag.textContent = 'Target Date Countdown';
-        } else {
-          digits.textContent = '+' + formatTime(Math.abs(diff));
-          stepTag.textContent = 'Count Up (Past Target)';
-        }
-        taskTitle.textContent = activeTimer.title;
-        if (adjustRow) adjustRow.style.display = 'none';
-        if (lapBtn) lapBtn.style.display = 'none';
-        if (lapsBox) lapsBox.style.display = 'none';
-        if (targetDesc) {
-          targetDesc.style.display = 'block';
-          targetDesc.textContent = `Target: ${new Date(activeTimer.targetDate).toLocaleString()}`;
-        }
-      } else {
-        digits.textContent = formatTime(secondsRemaining);
-        const steps = activeTimer.steps && activeTimer.steps.length > 0 ? activeTimer.steps : [{ title: activeTimer.title, duration: activeTimer.totalSeconds, notes: activeTimer.notes }];
-        const currentStep = steps[currentStepIndex] || steps[0];
-
-        stepTag.textContent = steps.length > 1 ? `Step ${currentStepIndex + 1} of ${steps.length}` : (activeTimer.repeats > 1 ? `Repeat ${(activeTimer.currentRepeat || 1)} of ${activeTimer.repeats}` : `Single Timer`);
-        taskTitle.textContent = currentStep.title;
-
-        if (adjustRow) adjustRow.style.display = 'flex';
-        if (lapBtn) lapBtn.style.display = 'none';
-        if (lapsBox) lapsBox.style.display = 'none';
-        if (targetDesc) targetDesc.style.display = 'none';
-      }
+      digits.textContent = formatTime(secondsRemaining);
 
       const steps = activeTimer.steps && activeTimer.steps.length > 0 ? activeTimer.steps : [{ title: activeTimer.title, duration: activeTimer.totalSeconds, notes: activeTimer.notes }];
       const currentStep = steps[currentStepIndex] || steps[0];
 
-      if (currentStep && currentStep.notes && currentStep.notes.trim()) {
+      stepTag.textContent = steps.length > 1 ? `Step ${currentStepIndex + 1} of ${steps.length}` : `Single Timer`;
+      taskTitle.textContent = currentStep.title;
+
+      if (currentStep.notes && currentStep.notes.trim()) {
         notesText.textContent = currentStep.notes.trim();
         notesBox.style.display = 'block';
       } else {
@@ -658,12 +446,10 @@
 
       // Progress Ring calculation
       const circumference = 2 * Math.PI * 130; // ~816.8
-      if (!isStopwatch && stepTotalSeconds > 0) {
-        const fraction = Math.max(0, Math.min(1, secondsRemaining / stepTotalSeconds));
+      if (stepTotalSeconds > 0) {
+        const fraction = secondsRemaining / stepTotalSeconds;
         const offset = circumference * (1 - fraction);
         ringFill.style.strokeDashoffset = offset;
-      } else {
-        ringFill.style.strokeDashoffset = 0;
       }
     }
 
@@ -858,192 +644,70 @@
         if (e.target.id === 'addTimerSheet') closeAddSheet();
       });
 
-      // =========================================================
-      // TIMER+ CREATOR CONTROLS (Timer, Stopwatch, Countdown, Routine)
-      // =========================================================
+      // Custom Single Timer Modal
       document.getElementById('createSingleTimerRow').addEventListener('click', () => {
         closeAddSheet();
-        setCreatorMode('timer');
+        document.getElementById('customModalTitle').textContent = 'New Countdown Timer';
+        document.getElementById('customLabelInput').value = 'Timer';
+        document.getElementById('customMinutesInput').value = '15';
+        document.getElementById('customSecondsInput').value = '0';
+        document.getElementById('customModalCard').style.display = 'block';
+        document.getElementById('customTimerModal').classList.add('open');
       });
 
       document.getElementById('createStopwatchRow').addEventListener('click', () => {
         closeAddSheet();
-        setCreatorMode('stopwatch');
-      });
-
-      document.getElementById('createCountdownRow').addEventListener('click', () => {
-        closeAddSheet();
-        setCreatorMode('countdown');
+        const sw = {
+          id: 'sw-' + Date.now(),
+          title: 'Stopwatch',
+          icon: '⏱',
+          type: 'stopwatch',
+          folder: 'work',
+          totalSeconds: 3600,
+          notes: 'Count up focus stopwatch',
+          steps: [{ title: 'Stopwatch', duration: 3600, notes: 'Count up session' }]
+        };
+        saveAndLaunchRoutine(sw);
       });
 
       document.getElementById('createRoutineRow').addEventListener('click', () => {
         closeAddSheet();
-        setCreatorMode('routine');
+        window.location.href = 'index.html'; // Direct to AI Flow planner to generate multi-step routine!
       });
-
-      // Add Step to Routine Builder
-      const addStepBtn = document.getElementById('addRoutineStepBtn');
-      if (addStepBtn) {
-        addStepBtn.addEventListener('click', () => {
-          currentRoutineSteps.push({
-            title: `Step ${currentRoutineSteps.length + 1}`,
-            duration: 5 * 60,
-            notes: ''
-          });
-          renderRoutineStepsBuilder();
-        });
-      }
 
       document.getElementById('cancelCustomModalBtn').addEventListener('click', () => {
         document.getElementById('customTimerModal').classList.remove('open');
       });
 
       document.getElementById('saveCustomModalBtn').addEventListener('click', () => {
-        const mode = currentCreatorMode;
         const title = document.getElementById('customLabelInput').value.trim() || 'Timer';
+        const mins = parseInt(document.getElementById('customMinutesInput').value, 10) || 0;
+        const secs = parseInt(document.getElementById('customSecondsInput').value, 10) || 0;
+        const total = mins * 60 + secs;
         const folder = document.getElementById('customFolderSelect').value || 'work';
         const notes = document.getElementById('customNotesInput').value.trim();
 
-        if (mode === 'timer') {
-          const hrs = parseInt(document.getElementById('customHoursInput').value, 10) || 0;
-          const mins = parseInt(document.getElementById('customMinutesInput').value, 10) || 0;
-          const secs = parseInt(document.getElementById('customSecondsInput').value, 10) || 0;
-          const repeats = parseInt(document.getElementById('customRepeatsSelect').value, 10) || 1;
-          const total = hrs * 3600 + mins * 60 + secs;
-
-          if (total <= 0) {
-            alert('Please enter a duration greater than 0 seconds.');
-            return;
-          }
-
-          const newTimer = {
-            id: 't-' + Date.now(),
-            title: title,
-            type: 'timer',
-            folder: folder,
-            totalSeconds: total,
-            repeats: repeats,
-            notes: notes,
-            steps: [{ title: title, duration: total, notes: notes }]
-          };
-
-          timers.unshift(newTimer);
-          saveTimersToStorage();
-          document.getElementById('customTimerModal').classList.remove('open');
-          renderTimersList();
-          showToast(`Saved Timer "${title}"!`);
-        } else if (mode === 'stopwatch') {
-          const sw = {
-            id: 'sw-' + Date.now(),
-            title: title || 'Stopwatch',
-            icon: '⏱',
-            type: 'stopwatch',
-            folder: folder,
-            totalSeconds: 0,
-            elapsed: 0,
-            notes: notes || 'Count-up session with lap recording',
-            steps: [{ title: title || 'Stopwatch', duration: 0, notes: notes }]
-          };
-          timers.unshift(sw);
-          saveTimersToStorage();
-          document.getElementById('customTimerModal').classList.remove('open');
-          renderTimersList();
-          showToast(`Created Stopwatch "${title}"!`);
-          openActivePlayer(sw.id);
-        } else if (mode === 'countdown') {
-          const targetStr = document.getElementById('customTargetDateInput').value;
-          if (!targetStr) {
-            alert('Please select a target date and time.');
-            return;
-          }
-          const targetDateObj = new Date(targetStr);
-          const diffSec = Math.max(0, Math.round((targetDateObj.getTime() - Date.now()) / 1000));
-
-          const cd = {
-            id: 'cd-' + Date.now(),
-            title: title || 'Target Countdown',
-            icon: '📅',
-            type: 'countdown',
-            folder: folder,
-            targetDate: targetDateObj.toISOString(),
-            totalSeconds: diffSec,
-            notes: notes || `Target: ${targetDateObj.toLocaleDateString()}`,
-            steps: [{ title: title, duration: diffSec, notes: notes }]
-          };
-          timers.unshift(cd);
-          saveTimersToStorage();
-          document.getElementById('customTimerModal').classList.remove('open');
-          renderTimersList();
-          showToast(`Saved Countdown "${title}"!`);
-        } else if (mode === 'routine') {
-          if (!currentRoutineSteps || currentRoutineSteps.length === 0) {
-            alert('Please add at least one step to your routine.');
-            return;
-          }
-          const rounds = parseInt(document.getElementById('customRoundsInput').value, 10) || 1;
-          const compiledSteps = [];
-          for (let r = 1; r <= rounds; r++) {
-            currentRoutineSteps.forEach(s => {
-              compiledSteps.push({
-                title: rounds > 1 ? `${s.title} (Round ${r})` : s.title,
-                duration: s.duration,
-                notes: s.notes || notes
-              });
-            });
-          }
-          const totalSec = compiledSteps.reduce((sum, s) => sum + s.duration, 0);
-
-          const newRoutine = {
-            id: 'rt-' + Date.now(),
-            title: title || 'Custom Routine',
-            icon: '🗂',
-            type: 'routine',
-            folder: folder,
-            totalSeconds: totalSec,
-            rounds: rounds,
-            notes: notes || `${compiledSteps.length} segments (${Math.floor(totalSec/60)}m)`,
-            steps: compiledSteps
-          };
-
-          timers.unshift(newRoutine);
-          saveTimersToStorage();
-          document.getElementById('customTimerModal').classList.remove('open');
-          renderTimersList();
-          showToast(`Saved Routine "${title}" (${compiledSteps.length} Steps)!`);
+        if (total <= 0) {
+          alert('Please enter a duration greater than 0 seconds.');
+          return;
         }
+
+        const newTimer = {
+          id: 't-' + Date.now(),
+          title: title,
+          type: 'timer',
+          folder: folder,
+          totalSeconds: total,
+          notes: notes,
+          steps: [{ title: title, duration: total, notes: notes }]
+        };
+
+        timers.unshift(newTimer);
+        saveTimersToStorage();
+        document.getElementById('customTimerModal').classList.remove('open');
+        renderTimersList();
+        showToast(`Saved "${title}"!`);
       });
-
-      // Stopwatch Lap recording button
-      const lapBtn = document.getElementById('playerLapBtn');
-      if (lapBtn) {
-        lapBtn.addEventListener('click', () => {
-          if (!isStopwatch) return;
-          const lapNum = stopwatchLaps.length + 1;
-          const lapTime = formatTime(stopwatchElapsed);
-          stopwatchLaps.unshift({ num: lapNum, time: lapTime });
-          
-          const lapsBox = document.getElementById('playerLapsBox');
-          const lapsList = document.getElementById('playerLapsList');
-          if (lapsBox && lapsList) {
-            lapsBox.style.display = 'block';
-            lapsList.innerHTML = stopwatchLaps.map(l => `
-              <div class="lap-row">
-                <span>Lap ${l.num}</span>
-                <span style="font-family: monospace; font-weight: 600;">${l.time}</span>
-              </div>
-            `).join('');
-          }
-          showToast(`Lap ${lapNum}: ${lapTime}`);
-        });
-      }
-
-      // On-the-fly adjustment buttons
-      const btnMinus1m = document.getElementById('btnAdjustMinus1m');
-      const btnPlus1m = document.getElementById('btnAdjustPlus1m');
-      const btnPlus5m = document.getElementById('btnAdjustPlus5m');
-      if (btnMinus1m) btnMinus1m.onclick = () => adjustActiveTime(-60);
-      if (btnPlus1m) btnPlus1m.onclick = () => adjustActiveTime(60);
-      if (btnPlus5m) btnPlus5m.onclick = () => adjustActiveTime(300);
 
       // Player Controls
       document.getElementById('minimizePlayerBtn').addEventListener('click', closeActivePlayer);

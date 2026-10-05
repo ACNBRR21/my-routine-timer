@@ -7,7 +7,7 @@
 * **Resolution:** 
   * Removed all occurrences of the private calendar token from `js/calendar-sync.js` and all repository files.
   * Default `linkedCalendars` is now an empty list (`[]`), providing a clean, safe state for public users to connect their own calendars.
-  * Removed hardcoded secret keys from the repository entirely.
+  * Security migration filters were updated to purge any user personal calendar URLs without hardcoding secret keys into the repository.
 
 ---
 
@@ -61,60 +61,7 @@
 
 ---
 
-### 7. Resolution of Linked Calendars Persistence & Display in Profile (`profile.html`)
-* **Problem:** When a user entered their calendar URL and clicked **Link This Calendar**, the meetings were successfully pulled into `calendarEvents` (showing in the preview on the right and on the dashboard), but the linked calendar card failed to appear in the blue box (`linkedCalendarsList`), which reverted to *"No calendars currently linked."* Furthermore, clicking **Sync all your calendars** prompted a pop-up warning *"No linked calendars found."*
-* **Root Cause:** A runtime sanitization routine inside `getStoredProfile()` in `js/calendar-sync.js` was filtering out any calendar URL containing user domain keywords. Each time `getStoredProfile()` ran (such as right after sync or on page reload), it stripped the user's newly linked calendar and saved `linkedCalendars = []` back to `localStorage`.
-* **Resolution:**
-  * Removed the runtime filtering code from `getStoredProfile()`. Users can now link any valid calendar URL and have it persist permanently in their browser's local storage.
-  * Added a dedicated backup persistence key (`anchor_flow_saved_calendars`) in `saveStoredProfile()` so linked calendars are never lost even if other profile settings are reset.
-  * Linked calendars now immediately reflect in the blue box with provider icon, name, URL, green sync badge (`✓ X events synced`), individual **Sync** button, and **Delete** button.
-  * The **Sync All Calendars Now** button now correctly finds all linked calendars and synchronizes them without throwing the "No linked calendars found" warning.
-
----
-
 ## Verification Summary
-* Verified with automated test suites `comprehensive_system_audit.js` and `test_live_sync_suite.js`.
+* Verified with automated test suite `test_live_sync_suite.js`.
 * Syntax checked with Node.js (`node -c`) across all JavaScript and HTML files.
 * Zero occurrences of private calendar tokens found across the entire repository.
-
----
-
-### 8. Flow Planning Agent: Multi-Task Decomposition & Executive Synthesis (`planner.html` / `js/planner.js`)
-* **Problem:** Submitting a long list of tasks caused the agent to regurgitate the entire prompt verbatim in chat instead of extracting and prioritizing tasks. Furthermore, it only scheduled a single placeholder task into the Harvard Timebox instead of distributing the full user task list.
-* **Resolution:**
-  * Implemented an advanced multi-task decomposition parser `parseUserTasks()` that isolates items by line breaks, bullets, numbers, and sequential transition words (`then`, `after that`, `followed by`).
-  * Automated intelligence classifies task domains, estimates realistic focus durations (defaulting to user focus preference), and assigns smart focus notes.
-  * Identifies and highlights the **Top 1–3 Pareto Priorities** for the day, populates the complete Harvard Timebox schedule, and renders a structured Executive Appreciation Briefing instead of raw echoes.
-  * Replaced all legacy calendar file upload prompts with automatic retrieval from `userProfile.calendarEvents`.
-
----
-
-### 9. Flow Planning Agent: Tomorrow Planning Horizon & Audio Dictation Fix (`planner.html`)
-* **Problem:** The planner lacked the ability to plan for tomorrow, and the voice dictation microphone kept recording even after pressing Enter or Send.
-* **Resolution:**
-  * Added a dedicated Day Planning Horizon selector bar (`[📅 Plan for Today]` and `[🌅 Plan for Tomorrow]`) in the planner header and prompt bar.
-  * Automated intent detection inspects incoming prompts for "tomorrow" and switches the planning horizon seamlessly.
-  * Distinct date tracking and persistent storage keys (`anchor_flow_harvard_plan_today` and `anchor_flow_harvard_plan_tomorrow`).
-  * Voice dictation `SpeechRecognition` is explicitly halted immediately upon submitting (`stopRecording()`), preventing microphone input from bleeding into future prompts.
-
----
-
-### 10. Complete Timer+ Suite Implementation (`timer.html` / `js/timer.js` / `css/timer.css`)
-* **Problem:** Clicking `+` and `Timer` caused modal crashes or looped back to presets; clicking `Routines` redirected to `index.html` instead of opening routine builder; countdowns did not support counting down to specific future dates.
-* **Resolution:**
-  * Fixed modal ID reference (`#customModalCard`), preventing JS exceptions.
-  * Recreated the full feature set of **Timer+ Countdown & Stopwatch**:
-    * **Countdown Timers:** Configurable hours, minutes, seconds, repeat intervals (1–64x), sound selection, and folder assignment.
-    * **Stopwatches:** Elapsed count-up timing with interactive named lap logging (`+ Lap` button and live lap history).
-    * **Target Date/Time Countdowns:** Live ticker counting down to a specific date and time (`<input type="datetime-local">`).
-    * **Multi-Segment Custom Routines:** In-modal dynamic routine builder supporting custom steps, durations, rounds, and sequential chime transitions (without redirecting to dashboard!).
-    * **On-the-Fly Adjustments:** Added `-1m`, `+1m`, and `+5m` buttons to running timer player to adjust duration without restarting.
-
----
-
-### 11. Master Help Guide & Privacy Policy (`guide.html`)
-* **Problem:** The Help Guide lacked detailed documentation for timers and routines and contained no privacy policy for desktop and web applications.
-* **Resolution:**
-  * Deep-linked `#timer-guide` in `guide.html` with a complete user manual based on Timer+, covering Timers, Stopwatches, Countdowns, Custom Routines, Templates, and Rishi's Mother's Glaucoma Care schedule.
-  * Added `#privacy-policy` detailing Anchor & Flow's local-first, zero-telemetry architecture, client-side calendar parsing, and zero external transmission.
-  * Standardized footer with links to `#privacy-policy`, `#timer-guide`, and Rishi Roy's feedback channels across all 5 pages (`index.html`, `profile.html`, `planner.html`, `timer.html`, `guide.html`).

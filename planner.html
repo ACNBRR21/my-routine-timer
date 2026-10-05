@@ -210,22 +210,6 @@
       <!-- Big Chat Box Container -->
       <div class="planner-chat-layout">
         
-        <!-- Day Planning Horizon Bar (Today vs Tomorrow) -->
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; background: var(--bg-card-subtle); border-bottom: 1px solid var(--border); border-top-left-radius: var(--radius-card); border-top-right-radius: var(--radius-card); flex-wrap: wrap; gap: 8px;">
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Horizon:</span>
-            <button type="button" class="action-chip active" id="btnPlanToday" onclick="setPlanningHorizon('today')" style="padding: 4px 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer;">
-              📅 Plan for Today (<span id="dispDateToday">Today</span>)
-            </button>
-            <button type="button" class="action-chip" id="btnPlanTomorrow" onclick="setPlanningHorizon('tomorrow')" style="padding: 4px 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer;">
-              🌅 Plan for Tomorrow (<span id="dispDateTomorrow">Tomorrow</span>)
-            </button>
-          </div>
-          <div id="plannerCalStatusBadge" style="font-size: 0.78rem; font-weight: 600; color: var(--accent-blue); display: flex; align-items: center; gap: 4px;">
-            📅 Anchors loading...
-          </div>
-        </div>
-
         <!-- Chat Messages Stream -->
         <div class="planner-chat-messages" id="plannerChatMessages">
           <!-- Rendered dynamically -->
@@ -253,47 +237,6 @@
         </div>
       </div>
 
-    <!-- Creator Attribution & Direct Feedback Footer Banner -->
-      <footer style="margin-top: 24px; margin-bottom: 24px; padding: 18px 22px; background: #ffffff; border: 1px solid var(--border, #e2e8f0); border-radius: var(--radius-card, 16px); display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05));">
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
-          <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px;">
-            <div class="avatar-small" style="width: 40px; height: 40px; font-size: 0.95rem; background: linear-gradient(135deg, #0284c7, #8b5cf6); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">RR</div>
-            <div>
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary, #1e293b);">Created by Rishi Roy</span>
-                <span style="font-size: 0.72rem; background: rgba(2, 132, 199, 0.1); color: var(--accent-blue, #0284c7); padding: 2px 8px; border-radius: 9999px; font-weight: 600;">The Productivity Guy</span>
-              </div>
-              <p style="font-size: 0.82rem; color: var(--text-secondary, #64748b); margin-top: 2px; line-height: 1.4; margin-bottom: 0;">
-                Anchor &amp; Flow was built to protect high-leverage focus while honoring essential caregiving routines. Have ideas or feedback? Send directly to Rishi:
-              </p>
-            </div>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #0a66c2; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: inline-flex; align-items: center;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px;"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-              LinkedIn
-            </a>
-            <a href="https://wa.me/919136228725?text=Hi%20Rishi,%20feedback%20on%20Anchor%20%26%20Flow:" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #047857; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; background: rgba(16, 185, 129, 0.06);">
-              💬 WhatsApp / SMS: +91 9136228725
-            </a>
-            <a href="mailto:rishi@birdblast.com?subject=Feedback%20on%20Anchor%20%26%20Flow" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: var(--text-primary, #1e293b);">
-              ✉️ rishi@birdblast.com
-            </a>
-          </div>
-        </div>
-
-        <div style="width: 100%; border-top: 1px solid var(--border, #e2e8f0); padding-top: 10px; margin-top: 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.78rem; color: var(--text-secondary, #64748b);">
-          <div>
-            <span>&copy; 2026 Anchor &amp; Flow &bull; Local-First, Zero-Telemetry Architecture.</span>
-          </div>
-          <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
-            <a href="guide.html" style="color: var(--accent-blue, #0284c7); text-decoration: none; font-weight: 500;">📖 User Manual</a>
-            <a href="guide.html#timer-guide" style="color: var(--accent-blue, #0284c7); text-decoration: none; font-weight: 500;">⏱️ Timer+ &amp; Routines Guide</a>
-            <a href="guide.html#privacy-policy" style="color: var(--accent-blue, #0284c7); text-decoration: none; font-weight: 500;">🔒 Privacy Policy</a>
-          </div>
-        </div>
-      </footer>
     </main>
   </div>
 
@@ -317,11 +260,6 @@
     const inputField = document.getElementById('plannerInputField');
     const sendBtn = document.getElementById('plannerSendBtn');
     let currentExtractedSchedule = null;
-    let planningHorizon = 'today'; // 'today' or 'tomorrow'
-
-    // Speech Recognition state
-    let recognition = null;
-    let isRecording = false;
 
     function initPlanner() {
       userProfile = getStoredProfile();
@@ -331,95 +269,33 @@
 
       chatContainer.innerHTML = '';
 
-      // Set formatted dates in horizon pills
-      const todayObj = new Date();
-      const tomorrowObj = new Date();
-      tomorrowObj.setDate(tomorrowObj.getDate() + 1);
-
-      const dToday = document.getElementById('dispDateToday');
-      const dTomorrow = document.getElementById('dispDateTomorrow');
-      if (dToday) dToday.textContent = todayObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-      if (dTomorrow) dTomorrow.textContent = tomorrowObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-
-      updateHorizonStatusUI();
-
+      // Check linked calendars and deduplicate
       const rawEvents = userProfile.calendarEvents || [];
       const deduplicated = deduplicateCalendarEvents(rawEvents);
-      const todayAnchors = deduplicated.filter(e => e.isToday || e.daysFromToday === 0 || e.sourceType === 'routine');
+      const meetingCount = deduplicated.length;
 
       let calendarContextMsg = '';
       if (userProfile.linkedCalendars && userProfile.linkedCalendars.length > 0) {
-        calendarContextMsg = `<br/><br/>📅 I have automatically synchronized <strong>${todayAnchors.length} meetings &amp; routine anchors</strong> for today from your linked calendar URLs (${userProfile.linkedCalendars.map(c=>escapeHtml(c.name)).join(' &amp; ')}).`;
+        calendarContextMsg = `<br/><br/>📅 I have automatically synced <strong>${meetingCount} meetings</strong> from your linked calendars (unified across ${userProfile.linkedCalendars.map(c=>c.name).join(' & ')}).`;
       } else {
-        calendarContextMsg = `<br/><br/>🔗 <em>Tip: You can add your Google or Outlook calendar share URL in your <a href="profile.html" style="color:var(--accent-blue); font-weight:600;">Profile Settings</a> to automatically lock your meetings as unmovable anchors!</em>`;
+        calendarContextMsg = `<br/><br/>🔗 <em>Tip: You haven't linked your Google or Outlook calendar yet. You can <a href="profile.html" style="color:var(--accent-blue); font-weight:600;">link your calendar share URL in your Profile</a> to lock meetings automatically!</em>`;
       }
 
       let lunchMsg = '';
       if (userProfile.lunchTime) {
-        lunchMsg = ` Your set lunch anchor is reserved at <strong>${escapeHtml(userProfile.lunchTime)}</strong>.`;
+        lunchMsg = ` Your set lunch anchor is reserved at <strong>${userProfile.lunchTime}</strong>.`;
       }
 
       appendBotBubble(`
         <strong>Good day, ${escapeHtml(userName)}! ☀️</strong>${calendarContextMsg}${lunchMsg}<br/><br/>
-        What focus priorities, tasks, or agenda do you want to accomplish? You can plan for <strong>Today</strong> or toggle to <strong>Tomorrow</strong> above. Tap 🎙️ to dictate or paste your list below.
+        What flexible tasks or focus priorities do you want to accomplish today around your anchors? Tap 🎙️ to dictate or type them below.
       `, [
         { label: 'Deep work on Top 1 proposal (45m)', action: () => processUserPrompt("Deep work on Top 1 proposal 45m") },
         { label: 'Q4 strategic roadmap (45m)', action: () => processUserPrompt("Q4 strategic roadmap 45m") },
-        { label: 'Plan for tomorrow', action: () => setPlanningHorizon('tomorrow') },
         { label: 'Clear inbox zero (30m)', action: () => processUserPrompt("Clear inbox zero 30m") }
       ]);
 
       setupVoice();
-    }
-
-    window.setPlanningHorizon = function(horizon, announce = true) {
-      planningHorizon = horizon;
-      const btnToday = document.getElementById('btnPlanToday');
-      const btnTomorrow = document.getElementById('btnPlanTomorrow');
-
-      if (btnToday && btnTomorrow) {
-        if (horizon === 'today') {
-          btnToday.classList.add('active');
-          btnTomorrow.classList.remove('active');
-        } else {
-          btnTomorrow.classList.add('active');
-          btnToday.classList.remove('active');
-        }
-      }
-
-      updateHorizonStatusUI();
-
-      if (announce) {
-        const targetObj = new Date();
-        if (horizon === 'tomorrow') targetObj.setDate(targetObj.getDate() + 1);
-        const dayLabel = horizon === 'today' ? 'Today' : 'Tomorrow';
-        const formattedDate = targetObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-
-        const rawEvents = userProfile.calendarEvents || [];
-        const dedupe = deduplicateCalendarEvents(rawEvents);
-        const targetStr = `${targetObj.getFullYear()}-${String(targetObj.getMonth()+1).padStart(2,'0')}-${String(targetObj.getDate()).padStart(2,'0')}`;
-        const dayAnchors = dedupe.filter(e => horizon === 'today' ? (e.isToday || e.daysFromToday === 0 || e.sourceType === 'routine') : (e.dateStr === targetStr || e.daysFromToday === 1));
-
-        appendBotBubble(`
-          <strong>🌅 Switched Planning Horizon to ${dayLabel} (${formattedDate})</strong><br />
-          Found <strong>${dayAnchors.length} scheduled anchors</strong> for this date. What tasks would you like to achieve around these commitments?
-        `);
-      }
-    };
-
-    function updateHorizonStatusUI() {
-      const badge = document.getElementById('plannerCalStatusBadge');
-      if (!badge) return;
-
-      const rawEvents = userProfile.calendarEvents || [];
-      const dedupe = deduplicateCalendarEvents(rawEvents);
-      const targetObj = new Date();
-      if (planningHorizon === 'tomorrow') targetObj.setDate(targetObj.getDate() + 1);
-
-      const targetStr = `${targetObj.getFullYear()}-${String(targetObj.getMonth()+1).padStart(2,'0')}-${String(targetObj.getDate()).padStart(2,'0')}`;
-      const dayAnchors = dedupe.filter(e => planningHorizon === 'today' ? (e.isToday || e.daysFromToday === 0 || e.sourceType === 'routine') : (e.dateStr === targetStr || e.daysFromToday === 1));
-
-      badge.textContent = `📅 ${dayAnchors.length} Anchors (${planningHorizon === 'today' ? 'Today' : 'Tomorrow'})`;
     }
 
     function appendBotBubble(html, chips = []) {
@@ -452,7 +328,10 @@
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    // Voice Typing Setup with Reliable Stop-on-Submit
+    // Voice Typing
+    let recognition = null;
+    let isRecording = false;
+
     function setupVoice() {
       const voiceBtn = document.getElementById('plannerVoiceBtn');
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -471,7 +350,7 @@
       recognition.onstart = () => {
         isRecording = true;
         voiceBtn.classList.add('recording');
-        showAppToast('🎙️ Listening... Dictate your tasks');
+        showAppToast('🎙️ Listening... Speak your tasks');
       };
 
       recognition.onresult = (e) => {
@@ -483,24 +362,20 @@
         autoResize();
       };
 
-      recognition.onerror = () => stopRecording();
-      recognition.onend = () => stopRecording();
+      recognition.onerror = () => stopRec();
+      recognition.onend = () => stopRec();
 
       voiceBtn.onclick = () => {
-        if (isRecording) stopRecording();
+        if (isRecording) stopRec();
         else {
           try { recognition.start(); } catch(err) {}
         }
       };
-    }
 
-    function stopRecording() {
-      isRecording = false;
-      if (recognition) {
-        try { recognition.stop(); } catch(e) {}
+      function stopRec() {
+        isRecording = false;
+        voiceBtn.classList.remove('recording');
       }
-      const voiceBtn = document.getElementById('plannerVoiceBtn');
-      if (voiceBtn) voiceBtn.classList.remove('recording');
     }
 
     function autoResize() {
@@ -509,132 +384,49 @@
     }
     inputField.addEventListener('input', autoResize);
 
-    // Main Prompt Processor
     function processUserPrompt(text) {
-      // 1. Immediately halt active speech recognition on submit!
-      stopRecording();
-
       const val = (text || inputField.value || '').trim();
       if (!val) return;
       inputField.value = '';
       inputField.style.height = 'auto';
       appendUserBubble(val);
 
-      // Check if user specifically requested tomorrow in their message
-      if (/tomorrow/i.test(val) && planningHorizon !== 'tomorrow') {
-        planningHorizon = 'tomorrow';
-        const btnToday = document.getElementById('btnPlanToday');
-        const btnTomorrow = document.getElementById('btnPlanTomorrow');
-        if (btnToday && btnTomorrow) {
-          btnTomorrow.classList.add('active');
-          btnToday.classList.remove('active');
-        }
-        updateHorizonStatusUI();
-      }
-
-      // Check if user provided lunch time in prompt
+      // Check if user provided lunch time or work start in prompt
       if (/lunch|meal/i.test(val)) {
-        const m = val.match(/lunch\s+(?:at|around)?\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/i);
+        const m = val.match(/lunch\\s+(?:at|around)?\\s*(\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)?)/i);
         if (m) {
           userProfile.lunchTime = m[1];
           saveStoredProfile(userProfile);
         }
       }
 
-      appendBotBubble(`<em>🤖 Synthesizing ${planningHorizon === 'tomorrow' ? "tomorrow's" : "today's"} Harvard Timebox, locking anchors, and packing Pareto priorities...</em>`);
+      // Proactive check: If no calendar linked and user didn't mention meetings
+      if ((!userProfile.linkedCalendars || userProfile.linkedCalendars.length === 0) && !(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('calendar_link_prompted'))) {
+        if (typeof sessionStorage !== 'undefined') { try { sessionStorage.setItem('calendar_link_prompted', 'true'); } catch(e) {} }
+        appendBotBubble(`
+          <strong>💡 Calendar Anchor Check:</strong><br />
+          You haven't linked a calendar share URL yet. Would you like to add your Google or Outlook calendar link so I can lock in your meetings automatically?<br />
+          <a href="profile.html" style="color:var(--accent-blue); font-weight:600;">&rarr; Link Calendar in Profile</a> or <a href="guide.html#calendar-links" target="_blank" style="color:var(--accent-blue);">See How to Share Calendar Links ↗</a>
+        `);
+      }
+
+      appendBotBubble(`<em>🤖 Synthesizing schedule, locking anchors, and packing Top 3 Harvard priorities...</em>`);
 
       setTimeout(() => {
-        const plan = generateHarvardSchedule(val, planningHorizon);
-        renderScheduleCard(plan, planningHorizon);
-      }, 350);
+        const schedule = generateHarvardSchedule(val);
+        renderScheduleCard(schedule);
+      }, 400);
     }
 
-    // Cleanly parses multiline, numbered, bulleted, or natural language tasks
-    function parseUserTasks(input) {
-      const tasks = [];
-      const rawLines = input
-        .replace(/\r\n|\r/g, '\n')
-        .replace(/\b(?:and\s+then|then|after\s+that|followed\s+by)\b/gi, '\n')
-        .split('\n');
-
-      rawLines.forEach(line => {
-        const hasBulletOrNum = /^\s*(?:[-*•]|\d+[\.\)])/.test(line);
-        let clean = line.replace(/^\s*(?:[-*•]|\d+[\.\)])\s*/, '').trim();
-        if (!clean) return;
-        // Skip conversational preamble and introductory headers
-        if (!hasBulletOrNum && (
-          /:$/.test(clean) ||
-          /^(?:here\s+(?:is|are)|i\s+have|these\s+are|my\s+tasks|today'?s\s+tasks|tomorrow'?s\s+tasks|things\s+to\s+do|to[- ]?do\s+list|tasks\s+list|agenda|plan\s+for|schedule\s+for|what\s+i\s+need|i\s+need\s+to\s+plan|please\s+plan)/i.test(clean)
-        )) {
-          return;
-        }
-        const subClauses = clean.split(/[,;](?=\s*[A-Z0-9a-z])/).map(s => s.trim()).filter(Boolean);
-
-        subClauses.forEach(clause => {
-          let dur = userProfile.preferredFocusDuration || 45;
-          let cleanedTask = clause;
-
-          const hourMatch = clause.match(/(\d+(?:\.\d+)?)\s*(?:hr|hrs|hour|hours)\b/i);
-          const minMatch = clause.match(/(\d+)\s*(?:min|mins|minutes|m\b)/i);
-
-          if (hourMatch) {
-            dur = Math.round(parseFloat(hourMatch[1]) * 60);
-            cleanedTask = cleanedTask.replace(/(\d+(?:\.\d+)?)\s*(?:hr|hrs|hour|hours)\b/gi, '');
-          } else if (minMatch) {
-            dur = parseInt(minMatch[1], 10);
-            cleanedTask = cleanedTask.replace(/(\d+)\s*(?:min|mins|minutes|m\b)/gi, '');
-          } else {
-            if (/brush|teeth|water|hydrate/i.test(clause)) dur = 5;
-            else if (/eye\s*drops/i.test(clause)) dur = 2;
-            else if (/yoga|stretch|walk|hiit|tabata/i.test(clause)) dur = 20;
-            else if (/inbox|email|slack|messages/i.test(clause)) dur = 30;
-            else if (/review|proposal|code|architecture|model|deck/i.test(clause)) dur = 45;
-          }
-
-          cleanedTask = cleanedTask
-            .replace(/\b(?:for\s+about|for\s+around|taking\s+around|taking\s+about)\b/gi, '')
-            .replace(/\bfor\s+(?=\s*\d+)/gi, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-
-          if (cleanedTask.length > 1) {
-            tasks.push({
-              shortName: cleanedTask.charAt(0).toUpperCase() + cleanedTask.slice(1),
-              duration: dur,
-              notes: getSmartNotes(cleanedTask)
-            });
-          }
-        });
-      });
-
-      return tasks;
-    }
-
-    function generateHarvardSchedule(input, horizon = 'today') {
+    function generateHarvardSchedule(input) {
+      // Pull deduplicated calendar anchors
       const rawEvents = userProfile.calendarEvents || [];
       const dedupeAnchors = deduplicateCalendarEvents(rawEvents);
 
-      const targetObj = new Date();
-      if (horizon === 'tomorrow') targetObj.setDate(targetObj.getDate() + 1);
-
-      const targetY = targetObj.getFullYear();
-      const targetM = targetObj.getMonth();
-      const targetD = targetObj.getDate();
-      const targetStr = `${targetY}-${String(targetM + 1).padStart(2, '0')}-${String(targetD).padStart(2, '0')}`;
-
-      // Filter anchors strictly for target day
-      const dayAnchors = dedupeAnchors.filter(ev => {
-        if (horizon === 'tomorrow') {
-          return ev.dateStr === targetStr || ev.daysFromToday === 1;
-        } else {
-          return ev.dateStr === targetStr || ev.isToday === true || ev.sourceType === 'routine';
-        }
-      });
-
       const items = [];
 
-      // Add Calendar Anchors
-      dayAnchors.forEach(a => {
+      // Add Anchors
+      dedupeAnchors.forEach(a => {
         items.push({
           id: 'anchor-' + (items.length + 1),
           shortName: a.title,
@@ -645,54 +437,57 @@
         });
       });
 
-      // Add User Tasks parsed cleanly
-      const parsedTasks = parseUserTasks(input);
-      parsedTasks.forEach(t => {
+      // Split user tasks
+      const clean = input.replace(/\b(?:and\s+then|then|after\s+that|followed\s+by|next)\b/gi, '\n')
+                         .replace(/[,;•*]|\b\d+\.\s+/g, '\n');
+      const clauses = clean.split('\n').map(c => c.trim()).filter(c => c.length > 0);
+
+      clauses.forEach((c, idx) => {
+        let dur = userProfile.preferredFocusDuration || 45;
+        if (/brush|teeth/i.test(c)) dur = 3;
+        else if (/water|hydrate/i.test(c)) dur = 3;
+        else if (/eye\s*drops/i.test(c)) dur = 2;
+        else if (/yoga|stretch|walk/i.test(c)) dur = 15;
+        else if (/meeting|sync|call/i.test(c)) dur = 30;
+
+        const durM = c.match(/(\d+)\s*(?:min|mins|minutes|m\b)/i);
+        if (durM) dur = parseInt(durM[1], 10);
+
+        let sName = c.replace(/\b\d+\s*(?:min|mins|minutes)\b/gi, '').trim();
+        if (!sName) sName = `Task ${idx + 1}`;
+
         items.push({
           id: items.length + 1,
-          shortName: t.shortName,
-          duration: t.duration,
+          shortName: sName.charAt(0).toUpperCase() + sName.slice(1),
+          duration: dur,
           isAnchor: false,
           startTime: '--:--',
-          notes: t.notes
+          notes: getSmartNotes(sName)
         });
       });
 
-      // Rank Tasks & Assign Top 3 Pareto Priorities
-      let rank = 1;
-      items.forEach(it => {
-        if (!it.isAnchor && rank <= 3) {
-          it.priorityRank = rank;
-          rank++;
-        }
-      });
-
-      return { items, dayAnchors, parsedTasks };
+      return items;
     }
 
     function getSmartNotes(name) {
-      if (/proposal|deck|code|architecture|model|review/i.test(name)) return 'Single-task deep work sprint; silence notifications';
-      if (/eye\s*drops/i.test(name)) return 'Carefully administer prescribed drops; rest vision 60s';
-      if (/yoga|stretch|walk/i.test(name)) return 'Gentle floor mobility to down-regulate nervous system';
-      if (/inbox|email/i.test(name)) return 'Triage messages rapidly; protect high-energy focus for Top 1';
+      if (/proposal|deck|code|architecture|review/i.test(name)) return 'Single-task execution; silence notifications';
+      if (/eye\s*drops/i.test(name)) return 'Administer prescribed drops; rest eyes for 60s';
+      if (/yoga|stretch/i.test(name)) return 'Gentle floor mobility to down-regulate nervous system';
+      if (/teeth/i.test(name)) return 'Thorough 2-min clean brushing and rinse';
       return 'Dedicated focus block; maintain single-task momentum';
     }
 
-    function renderScheduleCard(plan, horizon = 'today') {
-      const { items, dayAnchors, parsedTasks } = plan;
+    function renderScheduleCard(items) {
       currentExtractedSchedule = items;
       let totalMins = items.reduce((sum, it) => sum + it.duration, 0);
 
-      const targetObj = new Date();
-      if (horizon === 'tomorrow') targetObj.setDate(targetObj.getDate() + 1);
-      const dayLabel = horizon === 'today' ? 'Today' : 'Tomorrow';
-      const formattedDate = targetObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-
-      // Identify Top 3 Tasks for Executive Briefing
-      const topTasks = items.filter(it => !it.isAnchor && it.priorityRank);
-      const top1 = topTasks.find(t => t.priorityRank === 1);
-      const top2 = topTasks.find(t => t.priorityRank === 2);
-      const top3 = topTasks.find(t => t.priorityRank === 3);
+      let topCount = 0;
+      items.forEach(it => {
+        if (!it.isAnchor && topCount < 3) {
+          topCount++;
+          it.priorityRank = topCount;
+        }
+      });
 
       let rowsHtml = '';
       items.forEach((it, idx) => {
@@ -713,39 +508,36 @@
       });
 
       // Run Flow Guru Audits
-      const calAudit = auditCalendarSchedule(dayAnchors, userProfile);
+      const calAudit = auditCalendarSchedule(deduplicateCalendarEvents(userProfile.calendarEvents || []), userProfile);
       const taskAudit = auditTaskExecution(items, userProfile);
+      const guruRecs = generateGuruStrategicAdvice(calAudit, taskAudit, userProfile);
 
-      let executiveBriefingHtml = `
-        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+      let guruFeedbackHtml = `
+        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 1.3rem;">🧘</span>
-              <strong style="font-size: 0.95rem; color: #065f46;">Harvard Timebox Strategy &bull; ${dayLabel} (${formattedDate})</strong>
+              <span style="font-size: 1.2rem;">🧘</span>
+              <strong style="font-size: 0.92rem; color: #065f46;">Flow Guru Strategic Feedback:</strong>
             </div>
             <span style="font-size: 0.74rem; background: rgba(16, 185, 129, 0.2); color: #047857; padding: 2px 8px; border-radius: 9999px; font-weight: 700;">
-              Score: ${calAudit.healthScore}/100 &bull; ${calAudit.statusLabel}
+              Health: ${calAudit.healthScore}/100 &bull; ${calAudit.statusLabel}
             </span>
           </div>
-          <div style="font-size: 0.86rem; color: #1e293b; line-height: 1.5;">
-            I have analyzed your <strong>${parsedTasks.length} tasks</strong> and organized them around your <strong>${dayAnchors.length} calendar anchors</strong>. Applying Pareto's 80/20 law, here is your prioritized execution blueprint:
-            <ul style="margin: 6px 0 6px 18px; padding: 0;">
-              ${top1 ? `<li><strong>Top 1 Priority:</strong> ${escapeHtml(top1.shortName)} (${top1.duration}m) — <em>Peak velocity single-task block</em></li>` : ''}
-              ${top2 ? `<li><strong>Top 2 Priority:</strong> ${escapeHtml(top2.shortName)} (${top2.duration}m) — <em>Core milestone completion</em></li>` : ''}
-              ${top3 ? `<li><strong>Top 3 Priority:</strong> ${escapeHtml(top3.shortName)} (${top3.duration}m) — <em>High-impact deliverable</em></li>` : ''}
-            </ul>
-            🛡️ Calendar meetings are locked as non-negotiable anchors. Restorative lunch break is reserved around <strong>${escapeHtml(userProfile.lunchTime || '13:00')}</strong>.
+          <div style="font-size: 0.84rem; color: #1e293b; line-height: 1.45;">
+            &bull; <strong>Calendar Feedback:</strong> ${calAudit.meetingCount} meetings (${calAudit.totalMeetingHours}h). ${calAudit.warnings.length > 0 ? calAudit.warnings.map(w => w.message).join(' ') : 'Calendar load is balanced.'}<br/>
+            &bull; <strong>Pareto 80/20 Law:</strong> ${taskAudit.paretoAdvice}<br/>
+            &bull; <strong>Restorative Anchor:</strong> ${calAudit.hasLunchAnchor ? `Lunch anchor secured around ${userProfile.lunchTime || '13:00'}.` : 'No lunch anchor detected — schedule time for nutrition!'}
           </div>
         </div>
       `;
 
       const card = `
         <div class="schedule-review-wrap">
-          ${executiveBriefingHtml}
+          ${guruFeedbackHtml}
           <div class="schedule-review-header">
             <div>
-              <h3 style="font-size:1.05rem; color:var(--text-primary); margin:0;">📋 ${dayLabel}'s Harvard Timebox Schedule</h3>
-              <span style="font-size:0.8rem; color:var(--text-muted);">${items.length} Activities &bull; ${Math.floor(totalMins/60)}h ${totalMins%60}m Total (${formattedDate})</span>
+              <h3 style="font-size:1.05rem; color:var(--text-primary); margin:0;">📋 Harvard Timebox Schedule</h3>
+              <span style="font-size:0.8rem; color:var(--text-muted);">${items.length} Activities &bull; ${Math.floor(totalMins/60)}h ${totalMins%60}m Total</span>
             </div>
             <span class="badge-deduped">⚡ Calendar Anchors Protected</span>
           </div>
@@ -787,11 +579,6 @@
     window.launchScheduleInTimer = function() {
       if (!currentExtractedSchedule || currentExtractedSchedule.length === 0) return;
 
-      const targetObj = new Date();
-      if (planningHorizon === 'tomorrow') targetObj.setDate(targetObj.getDate() + 1);
-      const dayLabel = planningHorizon === 'today' ? 'Today' : 'Tomorrow';
-      const formattedDate = targetObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-
       const totalSec = currentExtractedSchedule.reduce((sum, it) => sum + (it.duration * 60), 0);
       const steps = currentExtractedSchedule.map(it => ({
         title: it.shortName,
@@ -802,7 +589,7 @@
 
       const routine = {
         id: 'flow-plan-' + Date.now(),
-        title: `${dayLabel}'s Harvard Timebox (${formattedDate})`,
+        title: "Today's Harvard Timebox (" + new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ")",
         icon: '🎯',
         type: 'routine',
         folder: 'routines',

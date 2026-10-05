@@ -273,17 +273,21 @@ function getStoredProfile() {
     profile.userName = cookieName;
   }
 
-  // Persistent recovery if linkedCalendars array was empty
-  if (!profile.linkedCalendars || profile.linkedCalendars.length === 0) {
-    try {
-      const backupRaw = localStorage.getItem('anchor_flow_saved_calendars');
-      if (backupRaw) {
-        const backupCals = JSON.parse(backupRaw);
-        if (Array.isArray(backupCals) && backupCals.length > 0) {
-          profile.linkedCalendars = backupCals;
-        }
+  // Security & Privacy migration: purge any legacy personal calendar URLs from local storage
+  if (profile.linkedCalendars && Array.isArray(profile.linkedCalendars)) {
+    const originalLen = profile.linkedCalendars.length;
+    profile.linkedCalendars = profile.linkedCalendars.filter(cal => {
+      if (!cal || !cal.url) return false;
+      const urlLower = cal.url.toLowerCase();
+      // Remove any private user calendar URLs
+      if (urlLower.includes('birdblast') || urlLower.includes('rishiroy') || urlLower.includes('rishi@')) {
+        return false;
       }
-    } catch(e) {}
+      return true;
+    });
+    if (profile.linkedCalendars.length !== originalLen) {
+      saveStoredProfile(profile);
+    }
   }
 
   return profile;
@@ -291,11 +295,6 @@ function getStoredProfile() {
 
 function saveStoredProfile(profile) {
   localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profile));
-  if (profile && Array.isArray(profile.linkedCalendars)) {
-    try {
-      localStorage.setItem('anchor_flow_saved_calendars', JSON.stringify(profile.linkedCalendars));
-    } catch(e) {}
-  }
   if (profile.userName) {
     setCookie(COOKIE_USER_NAME, profile.userName, 365);
   }
