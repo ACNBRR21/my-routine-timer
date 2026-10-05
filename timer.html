@@ -38,7 +38,7 @@
       <span>👤</span> Profile
     </a>
   </div>
-  <a href="guide.html" rel="noopener noreferrer" style="color: var(--accent-blue); text-decoration: none; font-size: 0.78rem; font-weight:600;">
+  <a href="guide.html#timer-guide" rel="noopener noreferrer" style="color: var(--accent-blue); text-decoration: none; font-size: 0.78rem; font-weight:600;">
     📖 Help Guide &rarr;
   </a>
 </div>
@@ -55,6 +55,47 @@
 <div id="timersList">
 <!-- Rendered dynamically -->
 </div>
+<!-- Creator Attribution & Direct Feedback Footer Banner -->
+      <footer style="margin-top: 24px; margin-bottom: 24px; padding: 18px 22px; background: #ffffff; border: 1px solid var(--border, #e2e8f0); border-radius: var(--radius-card, 16px); display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05));">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+          <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px;">
+            <div class="avatar-small" style="width: 40px; height: 40px; font-size: 0.95rem; background: linear-gradient(135deg, #0284c7, #8b5cf6); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">RR</div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary, #1e293b);">Created by Rishi Roy</span>
+                <span style="font-size: 0.72rem; background: rgba(2, 132, 199, 0.1); color: var(--accent-blue, #0284c7); padding: 2px 8px; border-radius: 9999px; font-weight: 600;">The Productivity Guy</span>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-secondary, #64748b); margin-top: 2px; line-height: 1.4; margin-bottom: 0;">
+                Anchor &amp; Flow was built to protect high-leverage focus while honoring essential caregiving routines. Have ideas or feedback? Send directly to Rishi:
+              </p>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #0a66c2; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: inline-flex; align-items: center;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px;"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+              LinkedIn
+            </a>
+            <a href="https://wa.me/919136228725?text=Hi%20Rishi,%20feedback%20on%20Anchor%20%26%20Flow:" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #047857; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; background: rgba(16, 185, 129, 0.06);">
+              💬 WhatsApp / SMS: +91 9136228725
+            </a>
+            <a href="mailto:rishi@birdblast.com?subject=Feedback%20on%20Anchor%20%26%20Flow" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: var(--text-primary, #1e293b);">
+              ✉️ rishi@birdblast.com
+            </a>
+          </div>
+        </div>
+
+        <div style="width: 100%; border-top: 1px solid var(--border, #e2e8f0); padding-top: 10px; margin-top: 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.78rem; color: var(--text-secondary, #64748b);">
+          <div>
+            <span>&copy; 2026 Anchor &amp; Flow &bull; Local-First, Zero-Telemetry Architecture.</span>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+            <a href="guide.html" style="color: var(--accent-blue, #0284c7); text-decoration: none; font-weight: 500;">📖 User Manual</a>
+            <a href="guide.html#timer-guide" style="color: var(--accent-blue, #0284c7); text-decoration: none; font-weight: 500;">⏱️ Timer+ &amp; Routines Guide</a>
+            <a href="guide.html#privacy-policy" style="color: var(--accent-blue, #0284c7); text-decoration: none; font-weight: 500;">🔒 Privacy Policy</a>
+          </div>
+        </div>
+      </footer>
 </main>
 <!-- Bottom Bar (Matching Screenshot 1) -->
 <nav class="app-bottom-bar">
@@ -213,35 +254,98 @@
 <!-- Custom Timer Creator Modal (Simple, Zero Bloat)         -->
 <!-- ======================================================= -->
 <div class="config-modal-backdrop" id="customTimerModal">
-<div class="config-modal-card">
+<div class="config-modal-card" id="customModalCard">
 <h3 class="config-modal-title" id="customModalTitle">New Timer</h3>
+
+<input type="hidden" id="customTypeInput" value="timer" />
+
+<!-- Common: Timer Label -->
 <div class="form-group">
-<label>Timer Label</label>
-<input class="form-control" id="customLabelInput" placeholder="e.g. Timer, Eye drops, Deep Focus" type="text"/>
+  <label id="customLabelPrompt">Timer Label / Title</label>
+  <input class="form-control" id="customLabelInput" placeholder="e.g. Focus Session, Laundry, Eye drops" type="text" />
 </div>
+
+<!-- Common: Folder / Category -->
 <div class="form-group">
-<label>Folder / Category</label>
-<select class="form-control" id="customFolderSelect">
-<option value="work">Work &amp; Focus</option>
-<option value="health">Health &amp; Care</option>
-<option value="workout">Workouts &amp; HIIT</option>
-<option value="routines">Daily Routines</option>
-</select>
+  <label>Folder / Category</label>
+  <select class="form-control" id="customFolderSelect">
+    <option value="work">Work &amp; Focus</option>
+    <option value="health">Health &amp; Care</option>
+    <option value="workout">Workouts &amp; HIIT</option>
+    <option value="routines">Daily Routines</option>
+  </select>
 </div>
-<div class="form-group">
-<label>Duration (Minutes : Seconds)</label>
-<div class="form-row-2">
-<input class="form-control" id="customMinutesInput" min="0" placeholder="Minutes" type="number" value="15"/>
-<input class="form-control" id="customSecondsInput" max="59" min="0" placeholder="Seconds" type="number" value="0"/>
+
+<!-- 1. Timer Mode Fields: Duration (Hours, Minutes, Seconds) + Repeats -->
+<div id="timerSpecificFields">
+  <div class="form-group">
+    <label>Duration (Hours : Minutes : Seconds)</label>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+      <input class="form-control" id="customHoursInput" min="0" placeholder="Hours" type="number" value="0" />
+      <input class="form-control" id="customMinutesInput" min="0" placeholder="Minutes" type="number" value="15" />
+      <input class="form-control" id="customSecondsInput" max="59" min="0" placeholder="Seconds" type="number" value="0" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Repeats (Timer+ Loop)</label>
+    <select class="form-control" id="customRepeatsSelect">
+      <option value="1">Run Once (No Repeats)</option>
+      <option value="2">Repeat 2 Times</option>
+      <option value="3">Repeat 3 Times</option>
+      <option value="4">Repeat 4 Times</option>
+      <option value="8">Repeat 8 Times</option>
+      <option value="10">Repeat 10 Times</option>
+      <option value="64">Repeat 64 Times (Max)</option>
+    </select>
+  </div>
 </div>
+
+<!-- 2. Stopwatch Mode Fields -->
+<div id="stopwatchSpecificFields" style="display: none;">
+  <div style="background: rgba(0, 122, 255, 0.08); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 0.85rem; color: var(--accent-blue);">
+    ⏱ <strong>Count-Up Stopwatch:</strong> Tracks elapsed time with millisecond precision and lap recording.
+  </div>
 </div>
-<div class="form-group">
-<label>Execution Notes / Tips (Optional)</label>
-<input class="form-control" id="customNotesInput" placeholder="e.g. Keep spine tall, drink water" type="text"/>
+
+<!-- 3. Countdown Mode Fields: Specific Target Date and Time -->
+<div id="countdownSpecificFields" style="display: none;">
+  <div class="form-group">
+    <label>Target Date &amp; Time (Countdown Target)</label>
+    <input class="form-control" id="customTargetDateInput" type="datetime-local" />
+  </div>
+  <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: -6px; margin-bottom: 12px;">
+    Counts down days, hours, and minutes to this exact event or deadline.
+  </div>
 </div>
+
+<!-- 4. Routine Mode Fields: Multi-Step Interval Builder -->
+<div id="routineSpecificFields" style="display: none;">
+  <div class="form-group">
+    <label>Total Rounds / Sets</label>
+    <input class="form-control" id="customRoundsInput" type="number" min="1" max="10" value="1" />
+  </div>
+  
+  <div class="form-group">
+    <label style="display: flex; justify-content: space-between; align-items: center;">
+      <span>Routine Steps / Segments</span>
+      <span style="font-size: 0.72rem; color: var(--text-muted);">Sequential flow</span>
+    </label>
+    <div id="routineStepsBuilderList">
+      <!-- Steps rendered dynamically -->
+    </div>
+    <button type="button" class="btn-add-step" id="addRoutineStepBtn">+ Add Step</button>
+  </div>
+</div>
+
+<!-- Common: Notes -->
+<div class="form-group" style="margin-top: 10px;">
+  <label>Execution Notes / Instructions</label>
+  <input class="form-control" id="customNotesInput" placeholder="e.g. Single-task focus, drink water" type="text" />
+</div>
+
 <div class="modal-actions">
-<button class="btn-cancel" id="cancelCustomModalBtn">Cancel</button>
-<button class="btn-save" id="saveCustomModalBtn">Save &amp; Add</button>
+  <button class="btn-cancel" id="cancelCustomModalBtn" type="button">Cancel</button>
+  <button class="btn-save" id="saveCustomModalBtn" type="button">Save &amp; Add</button>
 </div>
 </div>
 </div>
@@ -271,10 +375,31 @@
 <div class="player-clock-digits" id="playerDigits">15:00</div>
 </div>
 <!-- Action Controls -->
+<!-- On-the-fly +/- Time Adjustments (Timer+ Capability) -->
+<div class="player-adjust-row" id="playerAdjustRow">
+  <button class="btn-adjust-time" id="btnAdjustMinus1m" type="button">-1m</button>
+  <button class="btn-adjust-time" id="btnAdjustPlus1m" type="button">+1m</button>
+  <button class="btn-adjust-time" id="btnAdjustPlus5m" type="button">+5m</button>
+</div>
+
+<!-- Target Date Countdown Context -->
+<div id="playerTargetDateDesc" style="display: none; font-size: 0.85rem; color: var(--accent-blue); margin-bottom: 12px; font-weight: 600;"></div>
+
+<!-- Stopwatch Laps Box -->
+<div class="player-laps-box" id="playerLapsBox" style="display: none;">
+  <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">
+    <span>Lap</span>
+    <span>Split Time</span>
+  </div>
+  <div id="playerLapsList"></div>
+</div>
+
+<!-- Action Controls -->
 <div class="player-controls-row">
-<button class="player-btn-secondary" id="playerResetBtn" title="Restart Step">↺</button>
-<button class="player-btn-primary" id="playerPlayPauseBtn" title="Play or Pause">▶</button>
-<button class="player-btn-secondary" id="playerNextBtn" title="Next Step / Skip">⏭</button>
+  <button class="player-btn-secondary" id="playerResetBtn" title="Restart Step" type="button">↺</button>
+  <button class="player-btn-secondary" id="playerLapBtn" title="Record Lap" type="button" style="display: none; font-size: 0.85rem; font-weight: 700;">+ Lap</button>
+  <button class="player-btn-primary" id="playerPlayPauseBtn" title="Play or Pause" type="button">▶</button>
+  <button class="player-btn-secondary" id="playerNextBtn" title="Next Step / Skip" type="button">⏭</button>
 </div>
 </div>
 </div>
