@@ -129,9 +129,9 @@ function auditTaskExecution(tasks, userProfile) {
   const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   // Check Harvard Top 3 Prioritization
-  const top1 = allTasks.find(t => t.priorityRank === 1 || /top\s*1/i.test(t.title || ''));
-  const top2 = allTasks.find(t => t.priorityRank === 2 || /top\s*2/i.test(t.title || ''));
-  const top3 = allTasks.find(t => t.priorityRank === 3 || /top\s*3/i.test(t.title || ''));
+  const top1 = allTasks.find(t => t.priorityRank === 1 || /top\s*1/i.test(t.title || t.shortName || ''));
+  const top2 = allTasks.find(t => t.priorityRank === 2 || /top\s*2/i.test(t.title || t.shortName || ''));
+  const top3 = allTasks.find(t => t.priorityRank === 3 || /top\s*3/i.test(t.title || t.shortName || ''));
   const hasTop3Designated = !!(top1 || top2 || top3);
 
   // Pareto 80/20 Analysis
@@ -164,9 +164,9 @@ function auditTaskExecution(tasks, userProfile) {
     completedCount,
     completionRate,
     hasTop3Designated,
-    top1: top1 ? top1.title : null,
-    top2: top2 ? top2.title : null,
-    top3: top3 ? top3.title : null,
+    top1: top1 ? (top1.title || top1.shortName) : null,
+    top2: top2 ? (top2.title || top2.shortName) : null,
+    top3: top3 ? (top3.title || top3.shortName) : null,
     paretoStatus,
     paretoAdvice,
     productivityScore

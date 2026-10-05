@@ -1132,3 +1132,103 @@ body {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
 }
+
+/* Interactive In-Place Harvard Timebox Plan Table Styling */
+.plan-edit-input {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-family: inherit;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.15s ease;
+}
+.plan-edit-input:focus {
+  border-color: var(--accent-blue);
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+}
+.plan-edit-dur {
+  width: 58px;
+  padding: 5px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: monospace;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  transition: all 0.15s ease;
+}
+.plan-edit-dur:focus {
+  border-color: var(--accent-blue);
+  background: #ffffff;
+}
+.plan-priority-select {
+  padding: 5px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  font-weight: 700;
+  outline: none;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.plan-priority-select.pri-1 {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.plan-priority-select.pri-2 {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.plan-priority-select.pri-3 {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+.plan-priority-select.pri-0 {
+  background: var(--bg-card-subtle);
+  color: var(--text-secondary);
+}
+.btn-table-del {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+.btn-table-del:hover {
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.12);
+}
+.btn-add-table-task {
+  background: transparent;
+  border: 1px dashed var(--accent-blue);
+  color: var(--accent-blue);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+.btn-add-table-task:hover {
+  background: rgba(2, 132, 199, 0.08);
+}

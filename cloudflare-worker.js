@@ -1,5 +1,5 @@
 /**
- * Cloudflare Worker for Anchor & Flow AI Proxy
+ * Cloudflare Worker for Anchor & Flow AI Proxy & Calendar Relay
  * Deploy this on Cloudflare Workers (Free tier: 100,000 requests/day).
  * 
  * Instructions:
@@ -9,7 +9,7 @@
  *    Add 'OPENAI_API_KEY' (your OpenAI key)
  *    Add 'DEEPSEEK_API_KEY' (your DeepSeek key)
  * 4. Click Save and Deploy. Copy your worker URL (e.g., https://anchor-flow-proxy.yourname.workers.dev).
- * 5. Paste that URL into Anchor & Flow's Settings under "Serverless Proxy URL".
+ * 5. Paste that URL into Anchor & Flow's Profile Settings under "Serverless Proxy URL".
  */
 
 export default {
@@ -20,17 +20,54 @@ export default {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Headers': 'Content-Type, Accept, Authorization',
         }
       });
+    }
+
+    const reqUrl = new URL(request.url);
+    const proxyTarget = reqUrl.searchParams.get('url') || reqUrl.searchParams.get('proxyUrl');
+
+    // Calendar Proxy via GET
+    if (request.method === 'GET' && proxyTarget) {
+      try {
+        let cleanTarget = proxyTarget.trim();
+        if (cleanTarget.startsWith('webcal://')) {
+          cleanTarget = 'https://' + cleanTarget.substring(9);
+        }
+        const calRes = await fetch(cleanTarget, {
+          headers: { 'Accept': 'text/calendar, text/plain, */*' }
+        });
+        if (!calRes.ok) {
+          return new Response(`Upstream calendar returned HTTP ${calRes.status}`, {
+            status: calRes.status,
+            headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'text/plain' }
+          });
+        }
+        const calText = await calRes.text();
+        return new Response(calText, {
+          status: 200,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'text/calendar; charset=utf-8',
+            'Cache-Control': 'no-cache'
+          }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: `Calendar relay failed: ${err.message}` }), {
+          status: 502,
+          headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }
+        });
+      }
     }
 
     // Friendly health check on browser GET
     if (request.method === 'GET') {
       return new Response(JSON.stringify({
         status: 'online',
-        service: 'Anchor & Flow AI Proxy (Cloudflare Worker)',
-        message: 'Proxy is running, healthy, and ready to process requests!',
+        service: 'Anchor & Flow AI Proxy & Calendar Relay (Cloudflare Worker)',
+        message: 'Proxy is running, healthy, and ready to process AI & calendar requests!',
+        capabilities: ['ai_completions', 'calendar_relay'],
         origin: 'https://acnbrr21.github.io/my-routine-timer/'
       }, null, 2), {
         status: 200,
@@ -50,6 +87,32 @@ export default {
 
     try {
       const body = await request.json();
+
+      // Calendar Proxy via POST
+      if (body && body.calendarUrl) {
+        let cleanTarget = body.calendarUrl.trim();
+        if (cleanTarget.startsWith('webcal://')) {
+          cleanTarget = 'https://' + cleanTarget.substring(9);
+        }
+        const calRes = await fetch(cleanTarget, {
+          headers: { 'Accept': 'text/calendar, text/plain, */*' }
+        });
+        if (!calRes.ok) {
+          return new Response(`Upstream calendar returned HTTP ${calRes.status}`, {
+            status: calRes.status,
+            headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'text/plain' }
+          });
+        }
+        const calText = await calRes.text();
+        return new Response(calText, {
+          status: 200,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'text/calendar; charset=utf-8'
+          }
+        });
+      }
+
       const { systemPrompt, userPrompt, model } = body || {};
 
       if (!systemPrompt || !userPrompt) {

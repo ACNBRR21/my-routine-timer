@@ -185,9 +185,9 @@ function initChat() {
     appendChatBubble('bot', `
       <strong>👋 Hey ${escapeHtml(userProfile.userName)}! Welcome back.</strong>${memoryNote}<br/>
       The previous evening is the best time to organize your next high-impact day.<br/><br/>
-      Drop your <strong>Outlook / Google Calendar file (.ics)</strong> below, tap 🎙️ to speak your tasks, or type them directly!
+      Link your <strong>Google or Outlook calendar URL</strong> in Profile, tap 🎙️ to speak your tasks, or type them directly!
     `, [
-      { label: '📎 Upload Calendar (.ics)', action: () => document.getElementById('calendarFileInput').click() },
+      { label: '🔗 Manage Calendar Links', action: () => window.location.href = 'profile.html' },
       { label: '📖 Calendar Export Guide', action: openHelpDrawer },
       { label: '⚡ Run Quick Harvard Sprint', action: () => handleUserMessage("Deep work on top priority 45m, Secondary priority 45m, Routine admin 30m") }
     ]);
@@ -376,12 +376,12 @@ async function handleUserMessage(msgText) {
     appendChatBubble('bot', `
       <strong>Delighted to meet you, ${escapeHtml(userProfile.userName)}! 🎉</strong><br/>
       I have saved your name locally in a cookie and text file.<br/><br/>
-      To help me plan your schedule: Do you have any regular daily anchors—like what time you usually start work, have lunch, or dinner? (e.g. <em>'I start at 9 AM and eat lunch at 1 PM'</em>). Or simply <strong>upload your calendar (.ics)</strong>!
+      To help me plan your schedule: Do you have any regular daily anchors—like what time you usually start work, have lunch, or dinner? (e.g. <em>'I start at 9 AM and eat lunch at 1 PM'</em>). Or simply add your calendar link in <a href='profile.html' style='color:var(--accent-blue); font-weight:600;'>Profile Settings</a>!
     `, [
-      { label: '📎 Upload Calendar (.ics)', action: () => document.getElementById('calendarFileInput').click() },
+      { label: '🔗 Manage Calendar Links', action: () => window.location.href = 'profile.html' },
       { label: '📖 Calendar Export Guide', action: openHelpDrawer }
     ]);
-    chatInput.placeholder = "Type your tasks, upload your calendar, or tell me your anchors...";
+    chatInput.placeholder = "Type your tasks, plan your day, or tell me your anchors...";
     return;
   }
 
@@ -406,9 +406,9 @@ async function handleUserMessage(msgText) {
     renderScheduleReviewCard(parsed, "Note: No fixed calendar anchors were detected. Would you like to add any?");
     appendChatBubble('bot', `
       <strong>💡 Question about your schedule:</strong><br/>
-      Do you want to upload your calendar or tell me about any <strong>anchor events</strong> which have a fixed time&mdash;like your meetings, meal times, or appointments?
+      Would you like to link your calendar share URL in Profile or tell me about any <strong>anchor events</strong> which have a fixed time&mdash;like your meetings, meal times, or appointments?
     `, [
-      { label: '📎 Upload Calendar (.ics)', action: () => document.getElementById('calendarFileInput').click() },
+      { label: '🔗 Manage Calendar Links', action: () => window.location.href = 'profile.html' },
       { label: 'No fixed meetings today (Keep schedule)', action: () => showToast('Proceeding with flexible serial focus!') },
       { label: '📖 Calendar Export Guide', action: openHelpDrawer }
     ]);

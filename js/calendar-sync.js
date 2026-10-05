@@ -273,21 +273,17 @@ function getStoredProfile() {
     profile.userName = cookieName;
   }
 
-  // Security & Privacy migration: purge any legacy personal calendar URLs from local storage
-  if (profile.linkedCalendars && Array.isArray(profile.linkedCalendars)) {
-    const originalLen = profile.linkedCalendars.length;
-    profile.linkedCalendars = profile.linkedCalendars.filter(cal => {
-      if (!cal || !cal.url) return false;
-      const urlLower = cal.url.toLowerCase();
-      // Remove any private user calendar URLs
-      if (urlLower.includes('birdblast') || urlLower.includes('rishiroy') || urlLower.includes('rishi@')) {
-        return false;
+  // Persistent recovery if linkedCalendars array was empty
+  if (!profile.linkedCalendars || profile.linkedCalendars.length === 0) {
+    try {
+      const backupRaw = localStorage.getItem('anchor_flow_saved_calendars');
+      if (backupRaw) {
+        const backupCals = JSON.parse(backupRaw);
+        if (Array.isArray(backupCals) && backupCals.length > 0) {
+          profile.linkedCalendars = backupCals;
+        }
       }
-      return true;
-    });
-    if (profile.linkedCalendars.length !== originalLen) {
-      saveStoredProfile(profile);
-    }
+    } catch(e) {}
   }
 
   return profile;
@@ -295,6 +291,11 @@ function getStoredProfile() {
 
 function saveStoredProfile(profile) {
   localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profile));
+  if (profile && Array.isArray(profile.linkedCalendars)) {
+    try {
+      localStorage.setItem('anchor_flow_saved_calendars', JSON.stringify(profile.linkedCalendars));
+    } catch(e) {}
+  }
   if (profile.userName) {
     setCookie(COOKIE_USER_NAME, profile.userName, 365);
   }
@@ -614,6 +615,8 @@ async function fetchCalendarFromUrl(calendarUrl, onProgress = null) {
   let cleanUrl = calendarUrl.trim();
   if (cleanUrl.startsWith('webcal://')) {
     cleanUrl = 'https://' + cleanUrl.substring(9);
+  } else if (cleanUrl.startsWith('http://') && (cleanUrl.includes('google.com') || cleanUrl.includes('office.com') || cleanUrl.includes('outlook.'))) {
+    cleanUrl = 'https://' + cleanUrl.substring(7);
   }
 
   if (typeof onProgress === 'function') {
@@ -624,23 +627,40 @@ async function fetchCalendarFromUrl(calendarUrl, onProgress = null) {
     });
   }
 
-  // Fast proxy relays with strict per-request timeouts
-  const endpoints = [
-    { name: 'CORSProxy', url: `https://corsproxy.io/?url=${encodeURIComponent(cleanUrl)}`, timeout: 3500 },
+  const profile = (typeof getStoredProfile === 'function') ? getStoredProfile() : {};
+  const endpoints = [];
+
+  // 1. Dedicated Cloudflare Worker Relay if configured in Profile Settings
+  const userProxy = (profile.serverlessProxyUrl || profile.aiProxyUrl || '').trim();
+  if (userProxy && userProxy.startsWith('http')) {
+    const workerUrl = userProxy.includes('?') 
+      ? `${userProxy}&proxyUrl=${encodeURIComponent(cleanUrl)}`
+      : `${userProxy}?proxyUrl=${encodeURIComponent(cleanUrl)}`;
+    endpoints.push({ name: 'Cloudflare Worker Relay', url: workerUrl, timeout: 4500, isJson: false });
+  }
+
+  // 2. High-speed public CORS proxies with correct URL formatting & JSON unwrap
+  endpoints.push(
+    // CORSProxy (official syntax: https://corsproxy.io/?<url>)
+    { name: 'CORSProxy', url: `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`, timeout: 3500 },
+    // AllOrigins GET JSON endpoint (unwraps json.contents to prevent raw mime-type blockage)
+    { name: 'AllOrigins (JSON)', url: `https://api.allorigins.win/get?url=${encodeURIComponent(cleanUrl)}`, timeout: 4000, isJson: true },
+    // CodeTabs proxy
     { name: 'CodeTabs', url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(cleanUrl)}`, timeout: 3800 },
-    { name: 'AllOrigins', url: `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`, timeout: 4200 },
-    { name: 'ThingProxy', url: `https://thingproxy.freeboard.io/fetch/${cleanUrl}`, timeout: 4500 },
+    // AllOrigins Raw fallback
+    { name: 'AllOrigins (Raw)', url: `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`, timeout: 4000 },
+    // Direct Feed (successful in Electron desktop apps or CORS-enabled endpoints)
     { name: 'Direct Feed', url: cleanUrl, timeout: 2500 }
-  ];
+  );
 
   async function fetchEndpoint(ep) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), ep.timeout || 3800);
+    const timeoutId = setTimeout(() => controller.abort(), ep.timeout || 4000);
 
     try {
       const response = await fetch(ep.url, {
         method: 'GET',
-        headers: { 'Accept': 'text/calendar, text/plain, */*' },
+        headers: { 'Accept': 'text/calendar, text/plain, application/json, */*' },
         signal: controller.signal
       });
       clearTimeout(timeoutId);
@@ -648,7 +668,19 @@ async function fetchCalendarFromUrl(calendarUrl, onProgress = null) {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
-      const text = await response.text();
+
+      let text = await response.text();
+
+      // Check if response is JSON (like AllOrigins /get wrapper)
+      if (ep.isJson || text.trim().startsWith('{')) {
+        try {
+          const parsed = JSON.parse(text);
+          if (parsed && parsed.contents && typeof parsed.contents === 'string') {
+            text = parsed.contents;
+          }
+        } catch(jErr) {}
+      }
+
       if (text && text.includes('BEGIN:VCALENDAR')) {
         return { name: ep.name, text };
       }
@@ -782,6 +814,7 @@ async function syncLiveCalendar(calendarId = null, onProgress = null) {
       cal.lastSync = new Date().toISOString();
       cal.syncStatus = 'success';
       cal.eventCount = parsed.length;
+      cal.lastError = null;
       successfulCalendars++;
       totalEventsFound += parsed.length;
 
@@ -796,9 +829,20 @@ async function syncLiveCalendar(calendarId = null, onProgress = null) {
       }
     } catch (err) {
       console.error(`Failed to sync calendar "${cal.name}":`, err);
-      cal.syncStatus = 'error';
       cal.lastError = err.message;
       failedCalendars.push(cal.name);
+
+      // CRITICAL PRESERVATION: Retain existing cached events for this calendar
+      // so a temporary relay hiccup or CORS block NEVER wipes out the user's agenda!
+      const prevEventsForCal = (profile.calendarEvents || []).filter(e => e.calendarId === cal.id && e.sourceType !== 'routine');
+      if (prevEventsForCal.length > 0) {
+        allNewEvents = allNewEvents.concat(prevEventsForCal);
+        cal.eventCount = prevEventsForCal.length;
+        cal.syncStatus = 'warning'; // Warning: using cached data
+        successfulCalendars++;
+      } else {
+        cal.syncStatus = 'error';
+      }
 
       if (typeof onProgress === 'function') {
         onProgress({
@@ -806,7 +850,9 @@ async function syncLiveCalendar(calendarId = null, onProgress = null) {
           percent: Math.min(85, basePct + 20),
           calendarName: cal.name,
           error: err.message,
-          message: `⚠️ Could not sync "${cal.name}": ${err.message}`
+          message: prevEventsForCal.length > 0
+            ? `⚠️ "${cal.name}" relay unreachable; retained ${prevEventsForCal.length} cached meetings.`
+            : `⚠️ Could not sync "${cal.name}": ${err.message}`
         });
       }
     }
@@ -827,7 +873,7 @@ async function syncLiveCalendar(calendarId = null, onProgress = null) {
     ? profile.calendarEvents.filter(e => e.sourceType !== 'routine' && e.calendarId && e.calendarId !== calendarId)
     : [];
 
-  const combinedNewEvents = otherCalendarEvents.concat(allNewEvents);
+  let combinedNewEvents = otherCalendarEvents.concat(allNewEvents);
   combinedNewEvents.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
   let finalEventsToKeep = [];
@@ -841,6 +887,9 @@ async function syncLiveCalendar(calendarId = null, onProgress = null) {
     if (finalEventsToKeep.length === 0) {
       finalEventsToKeep = combinedNewEvents.slice(0, 20);
     }
+  } else if ((profile.calendarEvents || []).length > 0) {
+    // If no new events could be fetched at all, retain previous non-routine calendar events!
+    finalEventsToKeep = (profile.calendarEvents || []).filter(e => e.sourceType !== 'routine');
   }
 
   profile.calendarEvents = routineAnchors.concat(finalEventsToKeep);
@@ -889,9 +938,23 @@ async function syncLiveCalendar(calendarId = null, onProgress = null) {
       message: `Successfully synced ${successfulCalendars} calendar(s)! ${profile.calendarEvents.length} meetings active and deduplicated.`
     };
   } else {
+    const activeCount = (profile.calendarEvents || []).length;
+    if (activeCount > 0) {
+      return {
+        success: true,
+        retainedCache: true,
+        totalEvents: activeCount,
+        todayCount,
+        upcomingCount,
+        syncedCount: 0,
+        failedList: failedCalendars,
+        events: profile.calendarEvents,
+        message: `Relay temporarily busy. Maintained ${activeCount} cached meetings for your agenda.`
+      };
+    }
     return {
       success: false,
-      message: `Could not sync calendars directly. Error: ${failedCalendars.join(', ')}`
+      message: `Could not reach calendar relays directly. You can paste iCal text in Profile to sync offline.`
     };
   }
 }
