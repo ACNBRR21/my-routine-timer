@@ -1,0 +1,132 @@
+name: AI Planning & Analysis Proxy
+
+on:
+  workflow_dispatch:
+    inputs:
+      action_type:
+        description: 'Action type (plan_day or daily_report)'
+        required: true
+        default: 'plan_day'
+      payload_json:
+        description: 'Input payload (JSON format, max 8k chars)'
+        required: true
+      session_token:
+        description: 'Signed short-lived session token'
+        required: false
+
+jobs:
+  execute-ai:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Request & Payload Size
+        run: |
+          PAYLOAD_SIZE=$(echo -n "${{ github.event.inputs.payload_json }}" | wc -c)
+          if [ "$PAYLOAD_SIZE" -gt 8192 ]; then
+            echo "Error: Payload exceeds 8k character ceiling."
+            exit 1
+          fi
+          echo "Payload size validated: ${PAYLOAD_SIZE} chars."
+
+      - name: Call AI Engine (OpenAI Option 1 with DeepSeek Option 2 Fallback)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          ACTION="${{ github.event.inputs.action_type }}"
+
+          python3 -c "
+          import os, json, urllib.request, sys
+
+          openai_key = os.environ.get('OPENAI_API_KEY', '').strip()
+          deepseek_key = os.environ.get('DEEPSEEK_API_KEY', '').strip()
+          action = '$ACTION'
+          raw_input = '''${{ github.event.inputs.payload_json }}'''
+
+          system_prompt = (
+              'You are the executive scheduling engine for Anchor & Flow. '
+              'You enforce Harvard Timeboxing. Every row gets Scheduled Start. '
+              'Output strictly RFC-4180 CSV with headers: Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start'
+              if action == 'plan_day' else
+              'You are Flow Guru, the calibration coach for Anchor & Flow. '
+              'Provide a concise 3-part narrative with highlights, biggest drift, and 2-3 actionable tips.'
+          )
+
+          success = False
+          content = ''
+
+          # --- Option 1: Try OpenAI ---
+          if openai_key:
+              try:
+                  print('Attempting execution via OpenAI (Option 1)...')
+                  req_body = json.dumps({
+                      'model': 'gpt-4o-mini',
+                      'messages': [
+                          {'role': 'system', 'content': system_prompt},
+                          {'role': 'user', 'content': raw_input}
+                      ],
+                      'temperature': 0.3
+                  }).encode('utf-8')
+
+                  req = urllib.request.Request(
+                      'https://api.openai.com/v1/chat/completions',
+                      data=req_body,
+                      headers={
+                          'Authorization': f'Bearer {openai_key}',
+                          'Content-Type': 'application/json'
+                      }
+                  )
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      res = json.loads(resp.read().decode())
+                      content = res['choices'][0]['message']['content']
+                      success = True
+                      print('OpenAI request succeeded.')
+              except Exception as e:
+                  print(f'OpenAI attempt encountered an issue: {type(e).__name__}. Triggering DeepSeek fallback...')
+          else:
+              print('OPENAI_API_KEY not configured. Routing directly to DeepSeek...')
+
+          # --- Option 2: Fallback to DeepSeek ---
+          if not success:
+              if not deepseek_key:
+                  print('Error: Neither OPENAI_API_KEY nor DEEPSEEK_API_KEY is configured in repository secrets.')
+                  sys.exit(1)
+
+              try:
+                  print('Attempting execution via DeepSeek (Option 2 Fallback)...')
+                  req_body = json.dumps({
+                      'model': 'deepseek-chat',
+                      'messages': [
+                          {'role': 'system', 'content': system_prompt},
+                          {'role': 'user', 'content': raw_input}
+                      ],
+                      'temperature': 0.3
+                  }).encode('utf-8')
+
+                  req = urllib.request.Request(
+                      'https://api.deepseek.com/chat/completions',
+                      data=req_body,
+                      headers={
+                          'Authorization': f'Bearer {deepseek_key}',
+                          'Content-Type': 'application/json'
+                      }
+                  )
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      res = json.loads(resp.read().decode())
+                      content = res['choices'][0]['message']['content']
+                      success = True
+                      print('DeepSeek fallback request succeeded.')
+              except Exception as e:
+                  print(f'DeepSeek attempt failed: {type(e).__name__}')
+                  sys.exit(1)
+
+          with open('ai_result.txt', 'w') as f:
+              f.write(content)
+          print('Execution artifact ready.')
+          "
+
+      - name: Save Execution Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-response
+          path: ai_result.txt
+          retention-days: 1
