@@ -31,6 +31,9 @@
           <a href="index.html" class="desktop-nav-link">
             <span>🏠</span> Dashboard
           </a>
+          <a href="guru.html" class="desktop-nav-link">
+            <span>🧘</span> Flow Guru
+          </a>
           <a href="profile.html" class="desktop-nav-link">
             <span>👤</span> Profile
           </a>
@@ -278,9 +281,12 @@
           <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.4; margin: 4px 0 10px 0;">
             Protect unbroken single-task execution. Eliminate context switching and honor caregiving commitments.
           </p>
-          <div>
-            <button type="button" id="heroQuickLaunchBtn" class="btn-hero-launch">
-              🚀 Quick Start Focus Sprint
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" id="heroQuickLaunchBtn" class="btn-hero-launch" style="flex: 1;">
+              🚀 Start Focus Sprint
+            </button>
+            <button type="button" id="heroResetMindBtn" onclick="openInterstitialModal()" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 8px; padding: 6px 12px; font-size: 0.78rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(4px);">
+              🧘 90s Reset
             </button>
           </div>
         </div>
@@ -317,6 +323,7 @@
             <button class="widget-btn-sec" id="widgetResetBtn" title="Restart Step">↺</button>
             <button class="widget-btn-sec" id="widgetLapBtn" title="Record Lap" style="display: none; font-size: 0.78rem; font-weight:700;">+ Lap</button>
             <button class="widget-btn-pri" id="widgetPlayPauseBtn" title="Play or Pause">▶</button>
+            <button class="widget-btn-sec" id="widgetDoneEarlyBtn" title="Finished Early? Log High Velocity" style="color: #059669; font-weight: 700; font-size: 0.76rem; border-color: rgba(16,185,129,0.4);">✓ Done</button>
             <button class="widget-btn-sec" id="widgetNextBtn" title="Next Step">⏭</button>
           </div>
 
@@ -594,7 +601,56 @@
         <button class="player-btn-secondary" id="playerResetBtn" title="Restart Step" type="button">↺</button>
         <button class="player-btn-secondary" id="playerLapBtn" title="Record Lap" type="button" style="display: none; font-size: 0.85rem; font-weight: 700;">+ Lap</button>
         <button class="player-btn-primary" id="playerPlayPauseBtn" title="Play or Pause" type="button">▶</button>
+        <button class="player-btn-secondary" id="playerDoneEarlyBtn" title="Finished Early? Log High Velocity" type="button" style="color: #059669; font-weight: 700; border-color: rgba(16,185,129,0.5);">✓ Done Early</button>
         <button class="player-btn-secondary" id="playerNextBtn" title="Next Step / Skip" type="button">⏭</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Sophie Leroy 90s Attention Residue Interstitial Reset Modal -->
+  <div class="side-drawer-backdrop" id="interstitialResetModal" style="justify-content: center; align-items: center;" onclick="if(event.target.id==='interstitialResetModal')this.classList.remove('open')">
+    <div class="dashboard-card" style="width: 100%; max-width: 520px; box-shadow: var(--shadow-lg); border-radius: 20px; padding: 26px; animation: modalPop 0.2s ease;">
+      <div class="card-header-row" style="margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.6rem;">🧘</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: var(--text-main);">90s Interstitial Attention Reset</h3>
+            <span style="font-size: 0.76rem; color: var(--text-muted);">Dr. Sophie Leroy (2009): Dissolve attention residue before starting next focus block</span>
+          </div>
+        </div>
+        <button onclick="document.getElementById('interstitialResetModal').classList.remove('open')" style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-color); cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-green); padding: 10px 14px; border-radius: 8px;">
+          <strong style="font-size: 0.88rem; color: #047857;">Step 1: Cognitive Offload (30s)</strong>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">
+            Jot down where you left off on your previous task. Clearing this offload frees your working memory from attention residue.
+          </p>
+          <input type="text" id="interstitialOffloadInput" placeholder="e.g. Left off at Section 3; next action is code review..." style="width: 100%; margin-top: 6px; padding: 6px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box;" />
+        </div>
+
+        <div style="background: rgba(2, 132, 199, 0.08); border-left: 4px solid var(--accent-blue); padding: 10px 14px; border-radius: 8px;">
+          <strong style="font-size: 0.88rem; color: #0284c7;">Step 2: Autonomic Reset &amp; Optic Flow (30s)</strong>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">
+            Execute two rapid nasal inhales followed by one slow oral exhale (physiological sigh). Look into the distant horizon to disengage focal cognitive tension.
+          </p>
+        </div>
+
+        <div style="background: rgba(139, 92, 246, 0.08); border-left: 4px solid #8b5cf6; padding: 10px 14px; border-radius: 8px;">
+          <strong style="font-size: 0.88rem; color: #7c3aed;">Step 3: Prime Next Physical Micro-Action (30s)</strong>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">
+            Name the exact first physical action for your next focus block (e.g. "Open index.html line 120").
+          </p>
+          <input type="text" id="interstitialPrimeInput" placeholder="e.g. Open terminal and run test suite..." style="width: 100%; margin-top: 6px; padding: 6px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box;" />
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+          <button type="button" class="btn-primary-purple-pill" onclick="completeInterstitialReset()" style="padding: 8px 18px; font-size: 0.85rem;">
+            ✓ Reset Mind &amp; Start Focus Block
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -602,6 +658,7 @@
   <!-- Toast Notification -->
   <div class="toast-pill" id="toastPill">Timer Saved</div>
 
+  <script src="js/flow-guru.js"></script>
   <script src="js/timer.js"></script>
 </body>
 </html>

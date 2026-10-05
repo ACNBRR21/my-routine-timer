@@ -154,6 +154,12 @@
             <span>Dashboard</span>
           </a>
         </li>
+        <li class="sidebar-nav-item">
+          <a href="guru.html">
+            <span class="sidebar-nav-icon">🧘</span>
+            <span>Flow Guru</span>
+          </a>
+        </li>
         <li class="sidebar-nav-item active">
           <a href="planner.html">
             <span class="sidebar-nav-icon">🧠</span>
@@ -340,29 +346,68 @@
       const now = new Date();
       const rawEvents = userProfile.calendarEvents || [];
       const deduplicated = deduplicateCalendarEvents(rawEvents);
-      const todayAnchors = filterCalendarEventsByTime(deduplicated, true);
+      const todayEvents = deduplicated.filter(e => e.isToday || e.daysFromToday === 0);
 
-      let calendarContextMsg = '';
-      if (userProfile.linkedCalendars && userProfile.linkedCalendars.length > 0) {
-        calendarContextMsg = `<br/><br/>📅 Automatically synchronized <strong>${todayAnchors.length} active meetings &amp; anchors</strong> from your calendar (${userProfile.linkedCalendars.map(c=>escapeHtml(c.name)).join(' &amp; ')}).`;
+      // Split meetings into past and upcoming using splitMeetingsPastAndUpcoming
+      const split = (typeof splitMeetingsPastAndUpcoming === 'function')
+        ? splitMeetingsPastAndUpcoming(todayEvents, now)
+        : { past: [], upcoming: todayEvents, allPastAndDone: false, pastSummaryText: 'You had no meetings earlier today.' };
+
+      // Strictly enforce the 4 time thresholds
+      const greeting = (typeof getHumanGreeting === 'function')
+        ? getHumanGreeting(now)
+        : (now.getHours() >= 21 || now.getHours() < 5 ? 'Good night' : now.getHours() >= 17 ? 'Good evening' : now.getHours() >= 12 ? 'Good afternoon' : 'Good morning');
+      const emoji = (typeof getGreetingEmoji === 'function') ? getGreetingEmoji(greeting) : (greeting === 'Good night' ? '🌙' : '☀️');
+
+      const calName = (userProfile.linkedCalendars && userProfile.linkedCalendars.length > 0)
+        ? userProfile.linkedCalendars.map(c=>escapeHtml(c.name)).join(' &amp; ')
+        : 'Work';
+
+      const explicitSyncCopy = (typeof getFormattedSyncCopy === 'function')
+        ? getFormattedSyncCopy(now, todayEvents.length, calName, userProfile.lunchTime || '13:00')
+        : `For today, [${formatDayDate(now, false)}]: Automatically synchronized ${todayEvents.length} active meetings & anchors from your calendar (${calName}).`;
+
+      const tomorrowObj = new Date(now);
+      tomorrowObj.setDate(now.getDate() + 1);
+      const tomorrowFormatted = (typeof formatDayDate === 'function') ? formatDayDate(tomorrowObj, true) : `[${tomorrowObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}]`;
+
+      // Check living goals
+      const goals = (typeof getUserGoals === 'function') ? getUserGoals() : [];
+      const goalNames = goals.map(g => `<em>${escapeHtml(g.title)}</em>`).join(', ');
+
+      if (split.allPastAndDone) {
+        // Late evening state: All meetings are done
+        appendBotBubble(`
+          <strong>${greeting}, ${escapeHtml(userName)}! ${emoji}</strong><br/><br/>
+          ${escapeHtml(split.pastSummaryText)} All meetings for today are done.<br/><br/>
+          📅 <em>${escapeHtml(explicitSyncCopy)}</em><br/><br/>
+          <strong>What would you like to do? Plan your evening, or plan your next day?</strong><br/>
+          Your active goals right now: ${goalNames}.
+        `, [
+          { label: `🌅 Plan next day ${tomorrowFormatted}`, action: () => processUserPrompt(`I want to plan for tomorrow`) },
+          { label: '🌙 Plan evening shutdown', action: () => openEveningQuestionModal() },
+          { label: '🎯 Review my 3 goals', action: () => processUserPrompt('Show my 3 living goals') }
+        ]);
       } else {
-        calendarContextMsg = `<br/><br/>🔗 <em>Tip: You can add your Google or Outlook calendar in <a href="profile.html" style="color:var(--accent-blue); font-weight:600;">Profile Settings</a> to automatically lock meetings as non-negotiable anchors!</em>`;
-      }
+        // Normal state: Upcoming meetings exist or early in day
+        const meetingLine = split.upcoming.length > 0
+          ? `You have <strong>${split.upcoming.length} upcoming meetings</strong> remaining today.<br/>`
+          : `You have <strong>0 remaining meetings</strong> today—a wide open canvas.<br/>`;
 
-      let lunchMsg = '';
-      if (userProfile.lunchTime) {
-        lunchMsg = ` Your set lunch anchor is reserved around <strong>${escapeHtml(userProfile.lunchTime)}</strong>.`;
+        appendBotBubble(`
+          <strong>${greeting}, ${escapeHtml(userName)}! ${emoji}</strong><br/><br/>
+          📅 <em>${escapeHtml(explicitSyncCopy)}</em><br/>
+          ${meetingLine}<br/>
+          <strong>Which of your goals does today move forward?</strong><br/>
+          Your active goals: ${goalNames}.<br/><br/>
+          What focus priorities or tasks do you want to accomplish? You can plan for today, get ahead for tomorrow, or specify any target date (e.g. <em>"I want to plan for tomorrow"</em>).
+        `, [
+          { label: `Plan for tomorrow ${tomorrowFormatted}`, action: () => processUserPrompt("I want to plan for tomorrow") },
+          { label: `Deep work on ${goals[0] ? goals[0].title : 'Top 1 Priority'} (45m)`, action: () => processUserPrompt(`Deep work on ${goals[0] ? goals[0].title : 'Top 1 Priority'} 45m`) },
+          { label: 'Q4 strategic roadmap (45m)', action: () => processUserPrompt("Q4 strategic roadmap 45m") },
+          { label: 'Clear inbox zero (30m)', action: () => processUserPrompt("Clear inbox zero 30m") }
+        ]);
       }
-
-      appendBotBubble(`
-        <strong>Good day, ${escapeHtml(userName)}! ☀️</strong>${calendarContextMsg}${lunchMsg}<br/><br/>
-        What focus priorities, tasks, or agenda do you want to accomplish? You can plan for today, get ahead for tomorrow, or specify any target date (e.g. <em>"I want to plan for 6th February, tomorrow"</em>).
-      `, [
-        { label: 'Plan for tomorrow', action: () => processUserPrompt("I want to plan for tomorrow") },
-        { label: 'Deep work on Top 1 proposal (45m)', action: () => processUserPrompt("Deep work on Top 1 proposal 45m") },
-        { label: 'Q4 strategic roadmap (45m)', action: () => processUserPrompt("Q4 strategic roadmap 45m") },
-        { label: 'Clear inbox zero (30m)', action: () => processUserPrompt("Clear inbox zero 30m") }
-      ]);
 
       setupVoice();
     }
@@ -622,11 +667,19 @@
         }
 
         let calReport = '';
+        const tomorrowDateObj = new Date(now);
+        tomorrowDateObj.setDate(now.getDate() + 1);
+        const isPlanningTomorrow = planningTargetDate.toDateString() === tomorrowDateObj.toDateString();
+
         if (targetAnchors.length > 0) {
-          calReport = `I checked your calendar: found <strong>${targetAnchors.length} scheduled anchors</strong>:<br/>` +
+          calReport = `I checked your calendar for ${formatDayDate(planningTargetDate, true)}: found <strong>${targetAnchors.length} scheduled anchors</strong>:<br/>` +
             targetAnchors.map(a => `• <strong>${escapeHtml(a.title)}</strong> (${a.startTime}-${a.endTime || ''})`).join('<br/>');
         } else {
-          calReport = `I checked your calendar: <strong>Zero conflicting meetings</strong> on this date—a clean canvas for deep focus!`;
+          if (isPlanningTomorrow && typeof getTomorrowZeroMeetingsCopy === 'function') {
+            calReport = `<strong>${getTomorrowZeroMeetingsCopy(planningTargetDate)}</strong>`;
+          } else {
+            calReport = `You have <strong>0 meetings on ${formatDayDate(planningTargetDate, true)}</strong>—a clean canvas for deep focus!`;
+          }
         }
 
         // Try LLM for dynamic chatbot reply if available
@@ -829,6 +882,42 @@
 
     // Render Harvard Timebox with In-Place Editable Table & Verification Dialogue
     function renderScheduleCard(plan, targetDate = new Date(), llmGuidance = null, engineName = 'Local Smart Engine') {
+      const { items, dayAnchors, parsedTasks } = plan;
+
+      // Evaluate Living Goal Alignment
+      const goals = (typeof getUserGoals === 'function') ? getUserGoals() : [];
+      const userTasksOnly = items.filter(it => !it.isAnchor);
+      const goalAlign = (typeof evaluateGoalAlignment === 'function')
+        ? evaluateGoalAlignment(userTasksOnly, goals)
+        : { hasAlignment: true, topGoal: goals[0] };
+
+      let coachCallouts = '';
+      if (!goalAlign.hasAlignment && userTasksOnly.length > 0) {
+        coachCallouts += `
+          <div style="background: rgba(239, 68, 68, 0.08); border-left: 4px solid #ef4444; padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; font-size: 0.86rem; color: #991b1b;">
+            <strong>⚠️ Flow Guru Goal Check:</strong> This plan doesn't move any of your three goals (${goals.map(g=>escapeHtml(g.title)).join(', ')}). Is it the right thing today?
+          </div>
+        `;
+      }
+
+      // Check Peak Window Clash (9:00 - 12:00)
+      const peakClashes = items.filter(it => {
+        const sm = timeStrToMinutes(it.startTime);
+        return it.isAnchor && sm >= 540 && sm < 720;
+      });
+      if (peakClashes.length > 0) {
+        coachCallouts += `
+          <div style="background: rgba(245, 158, 11, 0.08); border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; font-size: 0.86rem; color: #92400e;">
+            <strong>🛑 Flow Guru Peak Pushback:</strong> '${escapeHtml(peakClashes[0].shortName)}' sits in your 9–12 peak. I'd move it to the 13:00–15:00 afternoon dip to protect your hardest thinking.
+          </div>
+        `;
+      } else if (goalAlign.topGoal) {
+        coachCallouts += `
+          <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid #10b981; padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; font-size: 0.86rem; color: #065f46;">
+            <strong>🎯 High-Leverage Recommendation:</strong> Shield 90 minutes in your 9–12 morning peak exclusively for <em>${escapeHtml(goalAlign.topGoal.title)}</em>.
+          </div>
+        `;
+      }
       const { items, dayAnchors, parsedTasks } = plan;
       currentExtractedSchedule = items;
       let totalMins = items.reduce((sum, it) => sum + it.duration, 0);
@@ -1243,5 +1332,57 @@
 
     document.addEventListener('DOMContentLoaded', initPlanner);
   </script>
+
+  <!-- Streamlined Evening Question Modal (One Beautiful Question) -->
+  <div class="side-drawer-backdrop" id="eveningQuestionModal" style="justify-content: center; align-items: center;" onclick="if(event.target.id==='eveningQuestionModal')this.classList.remove('open')">
+    <div class="dashboard-card" style="width: 100%; max-width: 500px; text-align: center; border-radius: 24px; padding: 32px 28px; box-shadow: var(--shadow-lg); animation: modalPop 0.2s ease;">
+      <span style="font-size: 2.4rem; display: block; margin-bottom: 12px;">🌙</span>
+      <h3 style="font-size: 1.35rem; color: var(--text-primary); margin: 0 0 8px 0; font-weight: 800;">
+        What's the one thing you'd regret not doing tomorrow?
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0 0 20px 0; line-height: 1.45;">
+        Lock in your primary victory now. Then close your laptop and let the mind rest.
+      </p>
+
+      <input type="text" id="eveningRegretInput" placeholder="e.g. Finalize Q4 Strategic Product Architecture" style="width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 0.95rem; font-family: inherit; box-sizing: border-box; margin-bottom: 20px;" />
+
+      <div style="display: flex; justify-content: center; gap: 10px;">
+        <button type="button" class="btn-secondary-launch" onclick="document.getElementById('eveningQuestionModal').classList.remove('open')">
+          Cancel
+        </button>
+        <button type="button" class="btn-primary-launch" onclick="submitEveningOneThing()" style="background: #7c3aed; color: #fff; font-weight: 700; padding: 10px 20px;">
+          ✓ Lock It In &amp; Close for Tonight
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openEveningQuestionModal() {
+      const m = document.getElementById('eveningQuestionModal');
+      if (m) {
+        m.classList.add('open');
+        const input = document.getElementById('eveningRegretInput');
+        if (input) {
+          input.value = localStorage.getItem('anchor_flow_tomorrow_top1') || '';
+          input.focus();
+        }
+      }
+    }
+    function submitEveningOneThing() {
+      const input = document.getElementById('eveningRegretInput');
+      if (input && input.value.trim()) {
+        if (typeof saveTomorrowTop1 === 'function') {
+          saveTomorrowTop1(input.value.trim());
+        } else {
+          localStorage.setItem('anchor_flow_tomorrow_top1', input.value.trim());
+        }
+      }
+      const m = document.getElementById('eveningQuestionModal');
+      if (m) m.classList.remove('open');
+      showAppToast('🌙 Locked in as tomorrow\'s Top 1 victory. Sleep well!');
+    }
+  </script>
+
 </body>
 </html>

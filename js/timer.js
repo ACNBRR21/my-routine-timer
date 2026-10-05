@@ -741,14 +741,73 @@ function advanceToNextStep() {
   }
 }
 
-function completeTimer() {
+function completeTimer(finishedEarly = false) {
+  if (!activeTimer) return;
   isRunning = false;
   clearInterval(timerInterval);
   playChime('done');
-  showToast(`🎉 "${activeTimer ? activeTimer.title : 'Timer'}" Completed!`);
+
+  // Calculate actual elapsed duration vs planned
+  const plannedSec = activeTimer.totalSeconds || 60;
+  let actualSec = plannedSec;
+  if (finishedEarly) {
+    actualSec = Math.max(60, plannedSec - secondsRemaining);
+  } else if (stepTotalSeconds > plannedSec) {
+    actualSec = stepTotalSeconds;
+  }
+
+  // Record session in Flow Guru execution history
+  let rec = null;
+  if (typeof recordExecutionSession === 'function') {
+    rec = recordExecutionSession({
+      title: activeTimer.title,
+      category: activeTimer.folder || 'work',
+      plannedSeconds: plannedSec,
+      actualSeconds: actualSec,
+      notes: finishedEarly ? 'Completed early via Done Early action' : 'Completed scheduled duration'
+    });
+  }
+
   secondsRemaining = 0;
   updatePlayerUI();
   renderTimersList();
+
+  if (rec && rec.insight) {
+    showToast(rec.insight, 4000);
+  } else {
+    showToast(`🎉 "${activeTimer.title}" Completed!`);
+  }
+}
+
+function finishTaskEarly() {
+  if (!activeTimer || isStopwatch) {
+    showToast('Start a timer first to track adherence!');
+    return;
+  }
+  completeTimer(true);
+}
+if (typeof window !== 'undefined') {
+  window.finishTaskEarly = finishTaskEarly;
+}
+
+function openInterstitialModal() {
+  const m = document.getElementById('interstitialResetModal');
+  if (m) m.classList.add('open');
+}
+if (typeof window !== 'undefined') {
+  window.openInterstitialModal = openInterstitialModal;
+}
+
+function completeInterstitialReset() {
+  const m = document.getElementById('interstitialResetModal');
+  if (m) m.classList.remove('open');
+  showToast('🧘 Attention residue dissolved. Ready for peak flow!');
+  if (timers.length > 0) {
+    startTimer(timers[0].id);
+  }
+}
+if (typeof window !== 'undefined') {
+  window.completeInterstitialReset = completeInterstitialReset;
 }
 
 function adjustActiveTime(deltaSeconds) {
@@ -1756,6 +1815,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (wNext) {
     wNext.onclick = advanceToNextStep;
   }
+
+  const wDone = document.getElementById('widgetDoneEarlyBtn');
+  if (wDone) wDone.onclick = finishTaskEarly;
+
+  const pDone = document.getElementById('playerDoneEarlyBtn');
+  if (pDone) pDone.onclick = finishTaskEarly;
 
   const wLap = document.getElementById('widgetLapBtn');
   if (wLap) {

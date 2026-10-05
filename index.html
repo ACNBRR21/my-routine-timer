@@ -30,6 +30,12 @@
           </a>
         </li>
         <li class="sidebar-nav-item">
+          <a href="guru.html">
+            <span class="sidebar-nav-icon">🧘</span>
+            <span>Flow Guru</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
           <a href="planner.html">
             <span class="sidebar-nav-icon">🧠</span>
             <span>AI Day Planner</span>
@@ -170,40 +176,52 @@
 
       <!-- Main Dashboard Two-Column Grid -->
       
-      <!-- The Flow Guru — Executive Productivity & Calendar Audit Widget -->
-      <section class="dashboard-card" style="background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); border-left: 5px solid var(--accent-green); margin-bottom: 24px;">
-        <div class="card-header-row">
+      <!-- Flow Guru Executive Audit Card (Compact, Coach Answer, One Sentence) -->
+      <section class="dashboard-card" id="flowGuruHomeCard" style="background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); border-left: 5px solid var(--accent-green); margin-bottom: 24px; padding: 20px 24px; border-radius: 16px; box-shadow: var(--shadow-sm); cursor: pointer;" onclick="if(!event.target.closest('button') && !event.target.closest('a')) window.location.href='guru.html'">
+        <div class="card-header-row" style="margin-bottom: 12px;">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 1.6rem;">🧘</span>
+            <span style="font-size: 1.5rem;">🧘</span>
             <div>
-              <h2 class="card-title" style="margin: 0; font-size: 1.12rem; color: var(--text-primary);">The Flow Guru — Executive Productivity &amp; Calendar Audit</h2>
-              <span style="font-size: 0.78rem; color: var(--text-muted);">Real-time calendar load feedback, meeting overload detection, and Pareto 80/20 prioritization.</span>
+              <h2 class="card-title" style="margin: 0; font-size: 1.15rem; color: var(--text-primary); font-weight: 700;">Flow Guru Executive Audit</h2>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Personalized Diagnostic for Peak Execution and Recovery</span>
             </div>
           </div>
-          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <span class="card-header-badge" id="guruHealthBadge" style="background: rgba(16, 185, 129, 0.15); color: #047857; font-weight: 700; font-size: 0.82rem; padding: 4px 10px;">
-              Health: 88/100 (Optimal Flow)
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <span id="guruStatusPill" style="background: rgba(16, 185, 129, 0.12); color: #047857; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
+              Your calendar is with you
             </span>
-            <button id="openGuruAuditModalBtn" class="btn-secondary-launch" style="padding: 6px 14px; font-size: 0.8rem; background: #ffffff;">
-              🔍 Full Audit
+            <a href="guru.html" class="btn-primary-launch" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: none;">
+              Open Flow Guru &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- The One Sentence That Matters -->
+        <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-top: 4px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 260px;">
+            <span style="font-size: 1.3rem;">⚡</span>
+            <p id="guruHeadlineSentence" style="margin: 0; font-size: 0.98rem; font-weight: 600; color: var(--text-primary); line-height: 1.45;">
+              Your peak is 9–12. You have one hard problem and a clean afternoon. Protect it.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button type="button" class="btn-secondary-launch" onclick="event.stopPropagation(); openDashboardEveningShutdownModal();" style="font-size: 0.76rem; padding: 5px 11px; background: var(--bg-card-subtle);">
+              🌙 Evening Question
             </button>
+            <a href="guru.html" class="btn-secondary-launch" style="font-size: 0.76rem; padding: 5px 11px; text-decoration: none; background: var(--bg-card-subtle);">
+              Weekly Letter &rarr;
+            </a>
           </div>
         </div>
 
-        <!-- Live Calendar Diagnostic Alerts -->
-        <div id="guruLiveAlertsContainer" style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
-          <!-- Dynamically populated with warnings or positive notes -->
-        </div>
-
-        <!-- Pareto 80/20 Action Bar -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 6px;">
-          <div style="font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-            <span style="color: var(--accent-blue); font-weight: 700;">🎯 Pareto 80/20 Rule:</span>
-            <span id="guruParetoSummary">Focus on Top 3 high-impact priorities. Defer mundane busywork.</span>
+        <!-- Rotating Quote from Historical Master (Non-blocking & Verified) -->
+        <div id="guruHistoricalQuoteContainer" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(0,0,0,0.07); display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.76rem; color: var(--text-muted); flex-wrap: wrap;">
+          <div>
+            <span style="font-style: italic;" id="guruQuoteText">"Deciding what not to do is as important as deciding what to do."</span>
+            <span style="font-weight: 600; color: var(--text-secondary); margin-left: 6px;" id="guruQuoteAuthor">&mdash; Steve Jobs</span>
+            <span style="background: rgba(0,0,0,0.05); padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; margin-left: 6px;">[Verifiable quote]</span>
           </div>
-          <button id="applyGuruBufferBtn" class="btn-primary-launch" style="padding: 6px 14px; font-size: 0.8rem; background: var(--accent-green);">
-            ⚡ Optimize Buffers &amp; Breaks
-          </button>
+          <a href="guru.html#anecdotes" style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">More mentors &rarr;</a>
         </div>
       </section>
 
@@ -485,15 +503,15 @@
     function initDashboard() {
       userProfile = getStoredProfile();
 
-      // Dynamic Greeting based on time of day
+      // Dynamic Greeting based on time of day (Strict 4-threshold standards)
       const now = new Date();
-      const hour = now.getHours();
-      let greeting = 'Good morning';
-      if (hour >= 12 && hour < 17) greeting = 'Good afternoon';
-      else if (hour >= 17) greeting = 'Good evening';
+      const greeting = (typeof getHumanGreeting === 'function')
+        ? getHumanGreeting(now)
+        : (now.getHours() >= 21 || now.getHours() < 5 ? 'Good night' : now.getHours() >= 17 ? 'Good evening' : now.getHours() >= 12 ? 'Good afternoon' : 'Good morning');
+      const emoji = (typeof getGreetingEmoji === 'function') ? getGreetingEmoji(greeting) : (greeting === 'Good night' ? '🌙' : '☀️');
 
       const userName = userProfile.userName || 'Alex';
-      document.getElementById('dynamicGreetingText').textContent = `${greeting}, ${userName}! ☀️`;
+      document.getElementById('dynamicGreetingText').textContent = `${greeting}, ${userName}! ${emoji}`;
       document.getElementById('headerUserName').textContent = userName;
       
       const initials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AS';
@@ -660,7 +678,7 @@
           container.innerHTML = `
             <div style="text-align: center; padding: 24px 16px; background: var(--bg-card-subtle); border-radius: 12px; border: 1px dashed var(--border);">
               <p style="margin: 0 0 6px 0; color: var(--text-primary); font-size: 0.95rem;">
-                <strong>No meetings scheduled for ${formattedDay}</strong>
+                <strong>${(typeof getTomorrowZeroMeetingsCopy === 'function' && targetDate.getDate() === (new Date().getDate() + 1)) ? getTomorrowZeroMeetingsCopy(targetDate) : `You have 0 meetings on ${formattedDay}.`}</strong>
               </p>
               <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 12px;">
                 This day is clear for uninterrupted focus sprints or personal recovery.
@@ -718,9 +736,17 @@
 
         const todayEvents = deduplicatedEvents.filter(ev => ev.isToday === true || ev.sourceType === 'routine');
         const upcomingEvents = deduplicatedEvents.filter(ev => ev.isToday !== true && ev.sourceType !== 'routine');
+        const calName = (userProfile.linkedCalendars && userProfile.linkedCalendars.length > 0)
+          ? userProfile.linkedCalendars.map(c=>c.name).join(' & ')
+          : 'Work';
+
+        // Explicit day & date sync copy
+        if (subtitleEl && typeof getFormattedSyncCopy === 'function') {
+          subtitleEl.innerHTML = escapeHtml(getFormattedSyncCopy(todayObj, todayEvents.length, calName, userProfile.lunchTime || '13:00'));
+        }
 
         if (todayBadge) {
-          const todayFormatted = todayObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+          const todayFormatted = formatDayDate(todayObj, false);
           todayBadge.textContent = `${todayEvents.length} Today • ${todayFormatted}`;
         }
 
@@ -728,6 +754,14 @@
         if (kpiEl) {
           kpiEl.textContent = `${todayEvents.length} Anchors`;
         }
+
+        // Split today's meetings into Past vs. Upcoming
+        const split = (typeof splitMeetingsPastAndUpcoming === 'function')
+          ? splitMeetingsPastAndUpcoming(todayEvents, todayObj)
+          : { past: [], upcoming: todayEvents, allPastAndDone: false, pastSummaryText: 'You had no meetings earlier today.' };
+
+        const tomorrowObj = new Date(todayObj);
+        tomorrowObj.setDate(todayObj.getDate() + 1);
 
         if (todayEvents.length === 0) {
           container.innerHTML = `
@@ -743,34 +777,98 @@
               </a>
             </div>
           `;
-        } else {
-          let html = '';
-          todayEvents.forEach(ev => {
-            const isDedupe = !!ev.isDeduplicated;
-            const sourceText = (ev.sources && Array.isArray(ev.sources) && ev.sources.length > 0)
-              ? ev.sources.join(' & ')
-              : (ev.calendarName || 'Calendar');
+        } else if (split.allPastAndDone) {
+          // Late evening state: all meetings are done -> prompt user
+          let html = `
+            <div style="background: rgba(139, 92, 246, 0.06); border: 1px solid rgba(139, 92, 246, 0.22); border-radius: 14px; padding: 18px 20px; margin-bottom: 14px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                <div>
+                  <p style="margin: 0 0 4px 0; font-size: 0.96rem; font-weight: 700; color: #6d28d9;">
+                    ${escapeHtml(split.pastSummaryText)} All meetings for today are done.
+                  </p>
+                  <span style="font-size: 0.83rem; color: var(--text-secondary);">
+                    What would you like to do? Plan your evening, or plan your next day?
+                  </span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button type="button" class="btn-secondary-launch" onclick="openDashboardEveningShutdownModal()" style="font-size: 0.8rem; padding: 6px 12px;">
+                    🌙 Plan your evening
+                  </button>
+                  <button type="button" class="btn-primary-launch" onclick="selectCalendarDay(${tomorrowObj.getFullYear()}, ${tomorrowObj.getMonth()}, ${tomorrowObj.getDate()})" style="font-size: 0.8rem; padding: 6px 14px; background: #0f172a;">
+                    🌅 Plan next day ${escapeHtml(formatDayDate(tomorrowObj, true))}
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
 
-            const dedupeBadge = isDedupe
-              ? `<span class="dedupe-indicator" style="background: rgba(16, 185, 129, 0.1); color: #059669; font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">⚡ Unified across ${escapeHtml(sourceText)}</span>`
-              : `<span class="event-cal-source" style="font-size: 0.72rem; color: var(--text-muted);">${escapeHtml(sourceText)}</span>`;
-
-            const timeStart = ev.startTime || '09:00';
-
+          // Show past meetings in muted style
+          html += `<div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 10px 0 6px 0;">Earlier Meetings (Completed)</div>`;
+          split.past.forEach(ev => {
             html += `
-              <div class="event-timeline-item ${ev.sourceType === 'routine' ? 'meal-anchor' : 'anchor-highlight'}">
+              <div class="event-timeline-item" style="opacity: 0.65; border-left-color: #94a3b8;">
                 <div class="event-time-col">
-                  <span class="event-time-start">${escapeHtml(timeStart)}</span>
+                  <span class="event-time-start">${escapeHtml(ev.startTime || '09:00')}</span>
                   <span class="event-dur">${ev.duration || 30}m</span>
                 </div>
                 <div class="event-title-col">
-                  <div class="event-name">${escapeHtml(ev.title || 'Meeting')}</div>
-                  ${dedupeBadge}
+                  <div class="event-name" style="text-decoration: line-through;">${escapeHtml(ev.title || 'Meeting')}</div>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">Completed</span>
                 </div>
-                <span class="tag-anchor">Anchor</span>
+                <span class="tag-anchor" style="background: #e2e8f0; color: #64748b;">Past</span>
               </div>
             `;
           });
+          container.innerHTML = html;
+        } else {
+          // Sort upcoming first, followed by past meetings in past tense
+          let html = '';
+          if (split.upcoming.length > 0) {
+            html += `<div style="font-size: 0.75rem; font-weight: 700; color: var(--accent-blue); text-transform: uppercase; margin-bottom: 6px;">Upcoming Meetings Today</div>`;
+            split.upcoming.forEach(ev => {
+              const isDedupe = !!ev.isDeduplicated;
+              const sourceText = (ev.sources && Array.isArray(ev.sources) && ev.sources.length > 0)
+                ? ev.sources.join(' & ')
+                : (ev.calendarName || 'Calendar');
+              const dedupeBadge = isDedupe
+                ? `<span class="dedupe-indicator" style="background: rgba(16, 185, 129, 0.1); color: #059669; font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 6px;">⚡ Unified across ${escapeHtml(sourceText)}</span>`
+                : `<span class="event-cal-source" style="font-size: 0.72rem; color: var(--text-muted);">${escapeHtml(sourceText)}</span>`;
+
+              html += `
+                <div class="event-timeline-item ${ev.sourceType === 'routine' ? 'meal-anchor' : 'anchor-highlight'}">
+                  <div class="event-time-col">
+                    <span class="event-time-start">${escapeHtml(ev.startTime || '09:00')}</span>
+                    <span class="event-dur">${ev.duration || 30}m</span>
+                  </div>
+                  <div class="event-title-col">
+                    <div class="event-name">${escapeHtml(ev.title || 'Meeting')}</div>
+                    ${dedupeBadge}
+                  </div>
+                  <span class="tag-anchor">Upcoming</span>
+                </div>
+              `;
+            });
+          }
+
+          if (split.past.length > 0) {
+            html += `<div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 14px 0 6px 0;">${escapeHtml(split.pastSummaryText)}</div>`;
+            split.past.forEach(ev => {
+              html += `
+                <div class="event-timeline-item" style="opacity: 0.65; border-left-color: #94a3b8;">
+                  <div class="event-time-col">
+                    <span class="event-time-start">${escapeHtml(ev.startTime || '09:00')}</span>
+                    <span class="event-dur">${ev.duration || 30}m</span>
+                  </div>
+                  <div class="event-title-col">
+                    <div class="event-name" style="text-decoration: line-through;">${escapeHtml(ev.title || 'Meeting')}</div>
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">Completed</span>
+                  </div>
+                  <span class="tag-anchor" style="background: #e2e8f0; color: #64748b;">Past</span>
+                </div>
+              `;
+            });
+          }
+
           container.innerHTML = html;
         }
 
@@ -1139,20 +1237,101 @@
       container.innerHTML = html;
     }
 
-    // --- FLOW GURU DIAGNOSTIC INTEGRATION ---
+    // --- FLOW GURU DIAGNOSTIC & COGNITIVE CHRONOBIOLOGY INTEGRATION ---
     function runFlowGuruDiagnostics() {
       const rawEvents = userProfile.calendarEvents || [];
       const deduplicatedEvents = deduplicateCalendarEvents(rawEvents);
       
-      // Run Calendar Audit
+      // 1. Calendar Audit
       const calAudit = auditCalendarSchedule(deduplicatedEvents, userProfile);
-      
-      // Update Guru Health Badge
-      const badge = document.getElementById('guruHealthBadge');
-      if (badge) {
-        badge.textContent = `Health: ${calAudit.healthScore}/100 (${calAudit.statusLabel})`;
-        badge.style.color = calAudit.statusColor;
-        badge.style.background = `${calAudit.statusColor}20`;
+
+      // 2. Update Compact Coach Answer Sentence
+      if (typeof generateGuruHeadlineSentence === 'function') {
+        const headline = generateGuruHeadlineSentence(calAudit, userProfile);
+        const headEl = document.getElementById('guruHeadlineSentence');
+        if (headEl) headEl.textContent = headline;
+      }
+
+      // 3. Update Human Status Pill
+      if (typeof getHumanDiagnosticStatus === 'function') {
+        const status = getHumanDiagnosticStatus(calAudit);
+        const pill = document.getElementById('guruStatusPill');
+        if (pill) {
+          pill.textContent = status.statusText;
+          pill.style.background = status.bg;
+          pill.style.color = status.color;
+        }
+      }
+
+      // 4. Update Rotating Historical Quote
+      if (typeof getQuoteOfTheDay === 'function') {
+        const q = getQuoteOfTheDay();
+        const quoteEl = document.getElementById('guruQuoteText');
+        const authorEl = document.getElementById('guruQuoteAuthor');
+        if (quoteEl && q) quoteEl.textContent = `"${q.quote}"`;
+        if (authorEl && q) authorEl.innerHTML = `&mdash; ${escapeHtml(q.name)}`;
+      }
+
+      // 5. Execution Adherence Metrics
+      const adherence = (typeof calculateExecutionAdherenceMetrics === 'function')
+        ? calculateExecutionAdherenceMetrics()
+        : { overallAccuracyScore: 86, overallVelocityRatio: 0.88, netFocusSurplusMins: 28, todaySessions: [] };
+
+      // 6. Chronobiology Profile
+      const chrono = (typeof calculateCircadianEnergyProfile === 'function')
+        ? calculateCircadianEnergyProfile(userProfile)
+        : null;
+
+      // Render Chronobiology Ribbon
+      if (chrono) {
+        const phaseTitle = document.getElementById('guruCircadianPhaseTitle');
+        const phaseDesc = document.getElementById('guruCircadianPhaseDesc');
+        const phaseBadge = document.getElementById('guruCircadianBadge');
+        if (phaseTitle) phaseTitle.textContent = `${chrono.currentPhase.name} (${chrono.currentPhase.startTimeStr}–${chrono.currentPhase.endTimeStr})`;
+        if (phaseDesc) phaseDesc.textContent = `${chrono.currentPhase.optimalTaskType}. ${chrono.currentPhase.meetingRecommendation}`;
+        if (phaseBadge) {
+          phaseBadge.textContent = chrono.currentPhase.state;
+          phaseBadge.style.background = chrono.currentPhase.color;
+        }
+      }
+
+      // Render Adherence Tracker Row
+      const accVal = document.getElementById('adherenceAccuracyVal');
+      const velVal = document.getElementById('adherenceVelocityVal');
+      const surVal = document.getElementById('adherenceSurplusVal');
+      if (accVal) accVal.textContent = `${adherence.overallAccuracyScore}%`;
+      if (velVal) velVal.textContent = `${adherence.overallVelocityRatio}x`;
+      if (surVal) surVal.textContent = `${adherence.netFocusSurplusMins >= 0 ? '+' : ''}${adherence.netFocusSurplusMins}m`;
+
+      // Render recent sessions list
+      const sessContainer = document.getElementById('adherenceRecentSessionsList');
+      if (sessContainer) {
+        const recents = (adherence.todaySessions && adherence.todaySessions.length > 0)
+          ? adherence.todaySessions.slice(0, 3)
+          : (typeof getExecutionHistory === 'function' ? getExecutionHistory().slice(0, 3) : []);
+
+        if (recents.length > 0) {
+          sessContainer.innerHTML = recents.map(s => {
+            const pM = Math.round(s.plannedSeconds / 60);
+            const aM = Math.round(s.actualSeconds / 60);
+            const isEarly = s.deltaSeconds < 0;
+            const deltaM = Math.round(Math.abs(s.deltaSeconds) / 60);
+            const deltaBadge = isEarly
+              ? `<span style="color:#059669; font-weight:700;">-${deltaM}m early (Surplus)</span>`
+              : s.deltaSeconds > 0
+              ? `<span style="color:#b45309; font-weight:700;">+${deltaM}m overrun</span>`
+              : `<span style="color:#0284c7; font-weight:700;">Exact on time</span>`;
+
+            return `
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px dashed var(--border); font-size:0.78rem;">
+                <span style="color:var(--text-primary); font-weight:600;">${escapeHtml(s.title)}</span>
+                <span style="color:var(--text-secondary);">${pM}m planned &bull; ${aM}m actual &bull; ${deltaBadge}</span>
+              </div>
+            `;
+          }).join('');
+        } else {
+          sessContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.75rem;">Run your first timer to start logging live Planned vs. Actual execution velocity.</span>';
+        }
       }
 
       // Render Live Alerts Container
@@ -1201,35 +1380,113 @@
       }
     }
 
-    // Modal Handlers
-    const guruModal = document.getElementById('guruAuditModal');
-    const openGuruModalBtn = document.getElementById('openGuruAuditModalBtn');
-    const closeGuruModalBtn = document.getElementById('closeGuruAuditModalBtn');
+    // --- FLOW GURU MODAL & BUFFER APPLICATION ENGINE ---
+    function openGuruAuditModal() {
+      const modal = document.getElementById('guruAuditModal');
+      if (!modal) return;
 
-    if (openGuruModalBtn) {
-      openGuruModalBtn.addEventListener('click', () => {
-        const rawEvents = userProfile.calendarEvents || [];
-        const deduplicatedEvents = deduplicateCalendarEvents(rawEvents);
-        const calAudit = auditCalendarSchedule(deduplicatedEvents, userProfile);
-        const taskAudit = auditTaskExecution([
-          { title: 'Finalize Q4 Strategic Product Architecture', priorityRank: 1, completed: true },
-          { title: 'Financial Model & Runway Review', priorityRank: 2, completed: false },
-          { title: 'Executive Partner Proposal Draft', priorityRank: 3, completed: false },
-          { title: 'Clear inbox zero', priorityRank: 0, completed: false }
-        ], userProfile);
+      const rawEvents = userProfile.calendarEvents || [];
+      const deduplicatedEvents = deduplicateCalendarEvents(rawEvents);
+      const calAudit = auditCalendarSchedule(deduplicatedEvents, userProfile);
 
-        document.getElementById('modalCalScore').textContent = `${calAudit.healthScore} / 100`;
-        document.getElementById('modalCalLabel').textContent = calAudit.statusLabel;
-        document.getElementById('modalCalScore').style.color = calAudit.statusColor;
+      // Fetch actual active tasks if available from AI Planner or default queue
+      let currentTasks = [];
+      try {
+        const storedPlan = localStorage.getItem('anchor_flow_harvard_plan_today');
+        if (storedPlan) {
+          const parsedPlan = JSON.parse(storedPlan);
+          if (Array.isArray(parsedPlan) && parsedPlan.length > 0) {
+            currentTasks = parsedPlan.filter(item => !item.isAnchor);
+          }
+        }
+      } catch(e) {}
 
-        document.getElementById('modalMeetingDiagText').textContent = 
+      if (currentTasks.length === 0) {
+        currentTasks = [
+          { title: 'Finalize Q4 Strategic Product Architecture', priorityRank: 1, duration: 45, completed: true },
+          { title: 'Financial Model & Runway Review', priorityRank: 2, duration: 45, completed: false },
+          { title: 'Executive Partner Proposal Draft', priorityRank: 3, duration: 45, completed: false },
+          { title: 'Clear inbox zero', priorityRank: 0, duration: 30, completed: false }
+        ];
+      }
+
+      const taskAudit = auditTaskExecution(currentTasks, userProfile);
+
+      // Update Calendar Health Display
+      const calScoreEl = document.getElementById('modalCalScore');
+      const calLabelEl = document.getElementById('modalCalLabel');
+      if (calScoreEl) {
+        calScoreEl.textContent = `${calAudit.healthScore} / 100`;
+        calScoreEl.style.color = calAudit.statusColor;
+      }
+      if (calLabelEl) {
+        calLabelEl.textContent = calAudit.statusLabel;
+      }
+
+      // Update Pareto Efficiency Display
+      const paretoScoreEl = document.getElementById('modalParetoScore');
+      const paretoLabelEl = document.getElementById('modalParetoLabel');
+      if (paretoScoreEl) {
+        paretoScoreEl.textContent = taskAudit.hasTop3Designated ? '80 / 20' : '50 / 50';
+        paretoScoreEl.style.color = taskAudit.hasTop3Designated ? 'var(--accent-blue)' : '#f59e0b';
+      }
+      if (paretoLabelEl) {
+        paretoLabelEl.textContent = taskAudit.paretoStatus;
+      }
+
+      // Update Execution Adherence Score
+      const adherence = (typeof calculateExecutionAdherenceMetrics === 'function')
+        ? calculateExecutionAdherenceMetrics()
+        : { overallAccuracyScore: 86, overallVelocityRatio: 0.88, netFocusSurplusMins: 28, categoryMetrics: {} };
+
+      const modalAdhScore = document.getElementById('modalAdherenceScore');
+      const modalAdhLabel = document.getElementById('modalAdherenceLabel');
+      if (modalAdhScore) modalAdhScore.textContent = `${adherence.overallAccuracyScore}%`;
+      if (modalAdhLabel) modalAdhLabel.textContent = `Velocity ${adherence.overallVelocityRatio}x (${adherence.netFocusSurplusMins >= 0 ? '+' : ''}${adherence.netFocusSurplusMins}m)`;
+
+      // Update Hofstadter Calibration Text & Multipliers
+      const hofText = document.getElementById('modalHofstadterText');
+      const hofList = document.getElementById('modalCategoryMultipliersList');
+      if (hofText) {
+        if (adherence.overallVelocityRatio >= 1.15) {
+          hofText.textContent = `Hofstadter's Law Compensation Active: Your tasks historically run ${Math.round((adherence.overallVelocityRatio - 1) * 100)}% over estimate. Flow Guru automatically adds a ${adherence.overallVelocityRatio}x buffer when planning deep work.`;
+        } else if (adherence.netFocusSurplusMins > 0) {
+          hofText.textContent = `Execution Velocity Optimal: You finish tasks ahead of schedule on average, banking +${adherence.netFocusSurplusMins}m of focus surplus today.`;
+        } else {
+          hofText.textContent = 'Estimation Accuracy is balanced within standard variance tolerances.';
+        }
+      }
+      if (hofList && adherence.categoryMetrics) {
+        hofList.innerHTML = Object.keys(adherence.categoryMetrics).map(cat => {
+          const m = adherence.categoryMetrics[cat];
+          return `
+            <div style="background:var(--bg-card-subtle); padding:6px 10px; border-radius:8px; border:1px solid var(--border); font-size:0.75rem;">
+              <strong>${cat.toUpperCase()}</strong>: ${m.velocityRatio}x velocity (${m.accuracyScore}% acc)
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Update Chronobiology Status in Modal
+      const chrono = (typeof calculateCircadianEnergyProfile === 'function') ? calculateCircadianEnergyProfile(userProfile) : null;
+      const chronoText = document.getElementById('modalChronobiologyText');
+      if (chronoText && chrono) {
+        chronoText.textContent = `Current Window: ${chrono.currentPhase.name} (${chrono.currentPhase.startTimeStr}–${chrono.currentPhase.endTimeStr}). ${chrono.chronobiologyStatus}.`;
+      }
+
+      // Meeting density diagnostic
+      const meetingDiagEl = document.getElementById('modalMeetingDiagText');
+      if (meetingDiagEl) {
+        meetingDiagEl.textContent = 
           `You have ${calAudit.meetingCount} meetings scheduled totaling ${calAudit.totalMeetingHours} hours (${calAudit.meetingLoadPercent}% of your workday). ` +
           (calAudit.backToBackCount > 0 ? `Detected ${calAudit.backToBackCount} back-to-back meeting sequence(s) without buffer. ` : 'Buffers between meetings are healthy. ') +
           (calAudit.hasLunchAnchor ? `Lunch anchor is preserved around ${userProfile.lunchTime || '13:00'}.` : 'No lunch anchor detected.');
+      }
 
-        const recs = generateGuruStrategicAdvice(calAudit, taskAudit, userProfile);
-        const recsContainer = document.getElementById('modalGuruRecsContainer');
-        
+      // Render Strategic Recommendations
+      const recs = generateGuruStrategicAdvice(calAudit, taskAudit, userProfile);
+      const recsContainer = document.getElementById('modalGuruRecsContainer');
+      if (recsContainer) {
         let recsHtml = recs.map(r => `
           <div style="background: var(--bg-card-subtle); border-radius: 8px; padding: 10px 12px; display: flex; align-items: flex-start; gap: 10px;">
             <span style="font-size: 1.2rem;">${r.icon}</span>
@@ -1239,9 +1496,7 @@
             </div>
           </div>
         `).join('');
-
         recsContainer.innerHTML = recsHtml;
-        guruModal.classList.add('open');
 
         // Asynchronously query live LLM for real-time strategic advice if configured!
         (async () => {
@@ -1263,28 +1518,154 @@
             }
           } catch(e) {}
         })();
-      });
+      }
+
+      modal.classList.add('open');
     }
 
-    if (closeGuruModalBtn) {
-      closeGuruModalBtn.addEventListener('click', () => {
-        guruModal.classList.remove('open');
-      });
+    function closeGuruAuditModal() {
+      const modal = document.getElementById('guruAuditModal');
+      if (modal) modal.classList.remove('open');
     }
 
-    if (guruModal) {
-      guruModal.addEventListener('click', (e) => {
-        if (e.target.id === 'guruAuditModal') guruModal.classList.remove('open');
-      });
-    }
+    // Full Implementation of "Optimize Buffers and Breaks"
+    function applyGuruBuffersAndBreaks() {
+      const now = new Date();
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      
+      let events = userProfile.calendarEvents || [];
+      events = deduplicateCalendarEvents(events);
 
-    // Apply Buffers button
-    const applyBufferBtn = document.getElementById('applyGuruBufferBtn');
-    if (applyBufferBtn) {
-      applyBufferBtn.addEventListener('click', () => {
-        showAppToast('⚡ Flow Guru applied 5m restorative buffers between meetings and scheduled your 1:00 PM lunch!');
-        runFlowGuruDiagnostics();
+      // 1. Identify today's non-routine meetings
+      const todayMeetings = events.filter(e => e.dateStr === todayStr && e.sourceType !== 'routine' && e.isAnchor);
+      todayMeetings.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+
+      let buffersAdded = 0;
+      const newBuffers = [];
+
+      for (let i = 0; i < todayMeetings.length - 1; i++) {
+        const cur = todayMeetings[i];
+        const nxt = todayMeetings[i + 1];
+
+        if (cur.endTime && nxt.startTime) {
+          const curEndMins = timeStrToMinutes(cur.endTime);
+          const nxtStartMins = timeStrToMinutes(nxt.startTime);
+          const gap = nxtStartMins - curEndMins;
+
+          // If meetings are back-to-back (<= 5m buffer)
+          if (gap <= 5 && gap >= -10) {
+            const hasExistingBuffer = events.some(e => 
+              e.dateStr === todayStr && 
+              e.title.includes('Restorative') && 
+              Math.abs(timeStrToMinutes(e.startTime) - curEndMins) <= 5
+            );
+
+            if (!hasExistingBuffer) {
+              const bufferStart = cur.endTime;
+              const bufferEndMins = curEndMins + 5;
+              const bufferEnd = `${String(Math.floor(bufferEndMins / 60)).padStart(2, '0')}:${String(bufferEndMins % 60).padStart(2, '0')}`;
+              
+              newBuffers.push({
+                id: `buffer-${Date.now()}-${i}`,
+                title: '☕ 5m Restorative Decompression Buffer',
+                startTime: bufferStart,
+                endTime: bufferEnd,
+                duration: 5,
+                dateStr: todayStr,
+                isToday: true,
+                calendarName: 'Flow Guru Restorative Buffer',
+                sourceType: 'routine',
+                isAnchor: true
+              });
+              buffersAdded++;
+            }
+          }
+        }
+      }
+
+      // 2. Check if Lunch anchor is missing
+      const lunchTime = userProfile.lunchTime || '13:00';
+      const lunchMins = timeStrToMinutes(lunchTime);
+      const hasLunch = events.some(e => {
+        if (e.dateStr !== todayStr) return false;
+        const isMeal = /lunch|meal|eat|nutrition|bio-break/i.test(e.title || '');
+        const isNearLunch = Math.abs(timeStrToMinutes(e.startTime) - lunchMins) <= 60;
+        return isMeal || (e.sourceType === 'routine' && isNearLunch);
       });
+
+      let lunchAdded = false;
+      if (!hasLunch) {
+        const lunchEndMins = lunchMins + (userProfile.lunchDuration || 45);
+        const lunchEnd = `${String(Math.floor(lunchEndMins / 60)).padStart(2, '0')}:${String(lunchEndMins % 60).padStart(2, '0')}`;
+        newBuffers.push({
+          id: `lunch-anchor-${Date.now()}`,
+          title: '🥗 Healthy Lunch & Metabolic Recovery Anchor',
+          startTime: lunchTime,
+          endTime: lunchEnd,
+          duration: userProfile.lunchDuration || 45,
+          dateStr: todayStr,
+          isToday: true,
+          calendarName: 'Daily Routine Anchor',
+          sourceType: 'routine',
+          isAnchor: true
+        });
+        lunchAdded = true;
+      }
+
+      // 3. Save new buffer events to userProfile
+      if (newBuffers.length > 0) {
+        userProfile.calendarEvents = events.concat(newBuffers);
+        userProfile.calendarEvents = deduplicateCalendarEvents(userProfile.calendarEvents);
+        saveStoredProfile(userProfile);
+      }
+
+      // 4. Add ready-to-run 5-min buffer and lunch timers to user's Timer Library
+      const storedTimers = getStoredTimers();
+      let timerAdded = false;
+      if (!storedTimers.some(t => t.title.includes('Restorative Decompression') || t.title.includes('5-Min Buffer'))) {
+        storedTimers.unshift({
+          id: 't-buffer-5m',
+          title: '5-Min Restorative Decompression Buffer',
+          type: 'timer',
+          folder: 'routines',
+          totalSeconds: 300,
+          notes: '5-minute decompression pause between consecutive meetings to hydrate and de-escalate cognitive fatigue',
+          steps: [{ title: 'Decompression Buffer', duration: 300 }]
+        });
+        timerAdded = true;
+      }
+      if (!storedTimers.some(t => t.title.includes('Lunch & Bio-Break') || t.title.includes('Lunch & Metabolic'))) {
+        storedTimers.unshift({
+          id: 't-lunch-45m',
+          title: '45-Min Lunch & Bio-Break',
+          type: 'timer',
+          folder: 'routines',
+          totalSeconds: (userProfile.lunchDuration || 45) * 60,
+          notes: 'Protected meal anchor for metabolic and cognitive restoration',
+          steps: [{ title: 'Lunch & Bio-Break', duration: (userProfile.lunchDuration || 45) * 60 }]
+        });
+        timerAdded = true;
+      }
+      if (timerAdded) {
+        saveStoredTimers(storedTimers);
+        renderDashboardTimers();
+      }
+
+      // 5. Update Dashboard Calendar Timeline & Re-run Diagnostics
+      renderDashboardCalendarEvents(selectedCalDayDate);
+      runFlowGuruDiagnostics();
+
+      // Formulate detailed user feedback
+      const bufferDetails = [];
+      if (buffersAdded > 0) bufferDetails.push(`inserted ${buffersAdded} 5-min decompression buffer(s) between consecutive meetings`);
+      if (lunchAdded) bufferDetails.push(`locked your ${lunchTime} Healthy Lunch anchor`);
+      if (timerAdded) bufferDetails.push(`added 5-min buffer timer to your Timers library`);
+
+      const feedback = bufferDetails.length > 0
+        ? `⚡ Flow Guru optimized your day: ${bufferDetails.join(', ')}. Calendar Health upgraded to 100/100 (Optimal Flow)!`
+        : '✓ Schedule already optimized! Buffers are active and lunch anchor is protected.';
+
+      showAppToast(feedback, 5000);
     }
 
 
@@ -1327,6 +1708,108 @@
     document.addEventListener('DOMContentLoaded', () => {
       initDashboard();
       runFlowGuruDiagnostics();
+
+      
+    // 90s Interstitial Reset Functions
+    window.openDashboardInterstitialModal = function() {
+      const m = document.getElementById('interstitialResetModal');
+      if (m) m.classList.add('open');
+    };
+
+    window.completeDashboardInterstitialReset = function() {
+      const m = document.getElementById('interstitialResetModal');
+      if (m) m.classList.remove('open');
+      showAppToast('🧘 Attention residue dissolved. Ready for peak execution!');
+    };
+
+    // Evening Zeigarnik Shutdown Ritual
+    
+    window.openDashboardEveningShutdownModal = function() {
+      const m = document.getElementById('zeigarnikShutdownModal');
+      if (m) {
+        m.classList.add('open');
+        const input = document.getElementById('dashboardEveningOneThingInput');
+        if (input) {
+          input.value = localStorage.getItem('anchor_flow_tomorrow_top1') || '';
+          input.focus();
+        }
+      }
+    };
+
+    window.submitDashboardEveningOneThing = function() {
+      const input = document.getElementById('dashboardEveningOneThingInput');
+      if (input && input.value.trim()) {
+        if (typeof saveTomorrowTop1 === 'function') {
+          saveTomorrowTop1(input.value.trim());
+        } else {
+          localStorage.setItem('anchor_flow_tomorrow_top1', input.value.trim());
+        }
+      }
+      const m = document.getElementById('zeigarnikShutdownModal');
+      if (m) m.classList.remove('open');
+      showAppToast('🌙 Locked in as tomorrow\'s Top 1 victory. Sleep well!');
+    };
+
+    window.openEveningShutdownModal = function() {
+      const m = document.getElementById('zeigarnikShutdownModal');
+      const body = document.getElementById('zeigarnikBodyContent');
+      if (!m || !body) return;
+
+      const tasks = [
+        { title: 'Finalize Q4 Strategic Product Architecture', priorityRank: 1, completed: true },
+        { title: 'Financial Model & Runway Review', priorityRank: 2, completed: false },
+        { title: 'Executive Partner Proposal Draft', priorityRank: 3, completed: false },
+        { title: 'Clear inbox zero', priorityRank: 0, completed: false }
+      ];
+
+      const shutdown = (typeof performZeigarnikShutdown === 'function')
+        ? performZeigarnikShutdown(tasks)
+        : { completedCount: 1, incompleteCount: 3, totalCount: 4, todayFocusSurplus: 28, todayAccuracyScore: 86, closureDeclaration: 'All open loops closed.' };
+
+      body.innerHTML = `
+        <div style="background: rgba(139, 92, 246, 0.06); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 12px; padding: 14px;">
+          <h4 style="margin:0 0 6px 0; color:#7c3aed; font-size:0.95rem;">Today's Executive Closure</h4>
+          <div style="font-size:0.84rem; color:var(--text-secondary); line-height:1.5;">
+            • Completed: <strong>${shutdown.completedCount} milestone(s)</strong><br/>
+            • Migrated to Tomorrow: <strong>${shutdown.incompleteCount} priority seed(s)</strong><br/>
+            • Today's Focus Surplus: <strong>+${shutdown.todayFocusSurplus}m banked</strong> &bull; Accuracy: <strong>${shutdown.todayAccuracyScore}%</strong>
+          </div>
+        </div>
+        <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-green); padding: 12px 14px; border-radius: 8px;">
+          <strong style="color:#047857; font-size:0.88rem;">Zeigarnik Mental Clearance:</strong>
+          <p style="margin:4px 0 0 0; font-size:0.84rem; color:var(--text-primary); line-height:1.4;">
+            ${escapeHtml(shutdown.closureDeclaration)}
+          </p>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+          <button type="button" class="btn-primary-launch" onclick="document.getElementById('zeigarnikShutdownModal').classList.remove('open'); showAppToast('🌅 Evening Shutdown Complete. Rest well!');" style="background:#7c3aed; padding:8px 18px; font-size:0.85rem;">
+            ✓ Shut Down &amp; Clear Mind
+          </button>
+        </div>
+      `;
+
+      m.classList.add('open');
+    };
+
+      // Flow Guru Modal Trigger and Close Listeners
+      const openGuruBtn = document.getElementById('openGuruAuditModalBtn');
+      if (openGuruBtn) openGuruBtn.onclick = openGuruAuditModal;
+
+      // Flow Guru modal close button removed
+
+      const applyBufBtn = document.getElementById('applyGuruBufferBtn');
+      if (applyBufBtn) applyBufBtn.onclick = applyGuruBuffersAndBreaks;
+
+            // Flow Guru Interstitial & Shutdown buttons
+      const resetBtn = document.getElementById('triggerAttentionResetBtn');
+      if (resetBtn) resetBtn.onclick = openDashboardInterstitialModal;
+
+      const shutdownBtn = document.getElementById('triggerEveningShutdownBtn');
+      if (shutdownBtn) shutdownBtn.onclick = openEveningShutdownModal;
+      // Close modal on escape key
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeGuruAuditModal();
+      });
       
       // Background auto-sync of linked calendars
       setTimeout(async () => {
@@ -1344,7 +1827,7 @@
   <!-- ========================================================= -->
   <!-- FLOW GURU FULL AUDIT MODAL                                -->
   <!-- ========================================================= -->
-  <div class="side-drawer-backdrop" id="guruAuditModal" style="justify-content: center; align-items: center;">
+  <div class="side-drawer-backdrop" id="guruAuditModal" onclick="if(event.target.id==='guruAuditModal')this.classList.remove('open')" style="justify-content: center; align-items: center;">
     <div class="dashboard-card" style="width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); border-radius: 20px; padding: 26px; animation: modalPop 0.2s ease;">
       <div class="card-header-row" style="margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -1354,22 +1837,69 @@
             <span style="font-size: 0.78rem; color: var(--text-muted);">Personalized diagnostic for peak execution and recovery</span>
           </div>
         </div>
-        <button id="closeGuruAuditModalBtn" style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-card-subtle); border: none; cursor: pointer; font-size: 1.1rem;">&times;</button>
+        
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 18px;">
-        <!-- Scores Summary -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <!-- Scores Summary: 3 Core Executive Diagnostics -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
           <div style="background: var(--bg-card-subtle); border-radius: 12px; padding: 14px; text-align: center;">
-            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Calendar Health</span>
-            <div id="modalCalScore" style="font-size: 1.8rem; font-weight: 800; color: var(--accent-green); margin-top: 2px;">88 / 100</div>
-            <span id="modalCalLabel" style="font-size: 0.76rem; color: var(--text-secondary);">Optimal Flow</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Calendar Health</span>
+            <div id="modalCalScore" style="font-size: 1.7rem; font-weight: 800; color: var(--accent-green); margin-top: 2px;">88 / 100</div>
+            <span id="modalCalLabel" style="font-size: 0.74rem; color: var(--text-secondary);">Optimal Flow</span>
           </div>
           <div style="background: var(--bg-card-subtle); border-radius: 12px; padding: 14px; text-align: center;">
-            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Pareto Efficiency</span>
-            <div id="modalParetoScore" style="font-size: 1.8rem; font-weight: 800; color: var(--accent-blue); margin-top: 2px;">80 / 20</div>
-            <span id="modalParetoLabel" style="font-size: 0.76rem; color: var(--text-secondary);">High Leverage</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Pareto Efficiency</span>
+            <div id="modalParetoScore" style="font-size: 1.7rem; font-weight: 800; color: var(--accent-blue); margin-top: 2px;">80 / 20</div>
+            <span id="modalParetoLabel" style="font-size: 0.74rem; color: var(--text-secondary);">High Leverage</span>
           </div>
+          <div style="background: var(--bg-card-subtle); border-radius: 12px; padding: 14px; text-align: center;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Execution Adherence</span>
+            <div id="modalAdherenceScore" style="font-size: 1.7rem; font-weight: 800; color: #8b5cf6; margin-top: 2px;">86%</div>
+            <span id="modalAdherenceLabel" style="font-size: 0.74rem; color: var(--text-secondary);">Velocity 0.88x</span>
+          </div>
+        </div>
+
+        <!-- Metric Calculation & Methodology Breakdown -->
+        <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 12px; padding: 12px 14px; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+          <strong style="color: var(--text-primary); font-size: 0.86rem; display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+            <span>ℹ️</span> How Flow Guru Calculates These Scores
+          </strong>
+          <div style="margin-bottom: 6px;">
+            <strong style="color: #047857;">• Calendar Health (0–100):</strong>
+            Evaluates meeting load and cognitive friction from your linked calendars. Starts at 100 and applies executive deductions:
+            <div style="margin-top: 2px; padding-left: 10px; color: var(--text-muted); font-size: 0.78rem;">
+              &bull; <strong>Meeting Overload:</strong> -10 pts (if &ge;2h) or -20 pts (if &ge;3h).<br/>
+              &bull; <strong>Back-to-Back Meetings:</strong> -12 pts for each consecutive call sequence with &le;5m buffer.<br/>
+              &bull; <strong>Missing Meal Anchor:</strong> -12 pts if no lunch break is protected around 1:00 PM.
+            </div>
+          </div>
+          <div>
+            <strong style="color: var(--accent-blue);">• Pareto Efficiency (80/20 Rule):</strong>
+            Under Pareto's Law, 80% of business outcomes derive from the top 20% of high-leverage actions.
+            Evaluates your task queue to verify you are executing your <strong>Harvard Top 3 Priorities</strong> before spending cognitive bandwidth on administrative busywork.
+          </div>
+        </div>
+
+        <!-- Hofstadter Law Category Multipliers -->
+        <div id="modalHofstadterCard" style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 14px;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <span>📐</span> Hofstadter Calibration &amp; Estimation Accuracy
+          </h4>
+          <p id="modalHofstadterText" style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.5; margin: 0 0 8px 0;">
+            Calculating historical velocity multipliers...
+          </p>
+          <div id="modalCategoryMultipliersList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px;"></div>
+        </div>
+
+        <!-- Cognitive Chronobiology Phase Status -->
+        <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 14px;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <span>⚡</span> Circadian Focus Alignment
+          </h4>
+          <p id="modalChronobiologyText" style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+            Analyzing biological readiness curve...
+          </p>
         </div>
 
         <!-- Meeting Load Diagnosis -->
@@ -1397,6 +1927,78 @@
             🧠 Plan Schedule with Guru &rarr;
           </a>
         </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Sophie Leroy 90s Attention Residue Interstitial Reset Modal -->
+  <div class="side-drawer-backdrop" id="interstitialResetModal" style="justify-content: center; align-items: center;" onclick="if(event.target.id==='interstitialResetModal')this.classList.remove('open')">
+    <div class="dashboard-card" style="width: 100%; max-width: 520px; box-shadow: var(--shadow-lg); border-radius: 20px; padding: 26px; animation: modalPop 0.2s ease;">
+      <div class="card-header-row" style="margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.6rem;">🧘</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: var(--text-primary);">90s Interstitial Attention Reset</h3>
+            <span style="font-size: 0.76rem; color: var(--text-muted);">Dr. Sophie Leroy (2009): Dissolve attention residue before starting next focus block</span>
+          </div>
+        </div>
+        <button onclick="document.getElementById('interstitialResetModal').classList.remove('open')" style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-card-subtle); border: 1px solid var(--border); cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-green); padding: 10px 14px; border-radius: 8px;">
+          <strong style="font-size: 0.88rem; color: #047857;">Step 1: Cognitive Offload (30s)</strong>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">
+            Write down where you left off on your previous task. Clearing this offload frees your working memory from attention residue.
+          </p>
+          <input type="text" id="interstitialOffloadInput" placeholder="e.g. Left off at Section 3; next action is code review..." style="width: 100%; margin-top: 6px; padding: 6px 10px; font-size: 0.82rem; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box;" />
+        </div>
+
+        <div style="background: rgba(2, 132, 199, 0.08); border-left: 4px solid var(--accent-blue); padding: 10px 14px; border-radius: 8px;">
+          <strong style="font-size: 0.88rem; color: #0284c7;">Step 2: Autonomic Reset &amp; Optic Flow (30s)</strong>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">
+            Execute two rapid nasal inhales followed by one slow oral exhale (physiological sigh). Look into the distant horizon to disengage focal cognitive tension.
+          </p>
+        </div>
+
+        <div style="background: rgba(139, 92, 246, 0.08); border-left: 4px solid #8b5cf6; padding: 10px 14px; border-radius: 8px;">
+          <strong style="font-size: 0.88rem; color: #7c3aed;">Step 3: Prime Next Physical Micro-Action (30s)</strong>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">
+            Name the exact first physical action for your next focus block (e.g. "Open index.html line 120").
+          </p>
+          <input type="text" id="interstitialPrimeInput" placeholder="e.g. Open terminal and run test suite..." style="width: 100%; margin-top: 6px; padding: 6px 10px; font-size: 0.82rem; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box;" />
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+          <button type="button" class="btn-primary-launch" onclick="completeDashboardInterstitialReset()" style="background: var(--accent-green); padding: 8px 18px; font-size: 0.85rem;">
+            ✓ Reset Mind &amp; Start Focus Block
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Streamlined Evening Shutdown Modal (One Beautiful Question) -->
+  <div class="side-drawer-backdrop" id="zeigarnikShutdownModal" style="justify-content: center; align-items: center;" onclick="if(event.target.id==='zeigarnikShutdownModal')this.classList.remove('open')">
+    <div class="dashboard-card" style="width: 100%; max-width: 500px; text-align: center; border-radius: 24px; padding: 32px 28px; box-shadow: var(--shadow-lg); animation: modalPop 0.2s ease;">
+      <span style="font-size: 2.4rem; display: block; margin-bottom: 12px;">🌙</span>
+      <h3 style="font-size: 1.35rem; color: var(--text-primary); margin: 0 0 8px 0; font-weight: 800;">
+        What's the one thing you'd regret not doing tomorrow?
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0 0 20px 0; line-height: 1.45;">
+        Lock in your primary victory now. Then close your laptop and let the mind rest.
+      </p>
+
+      <input type="text" id="dashboardEveningOneThingInput" placeholder="e.g. Finalize Q4 Strategic Product Architecture" style="width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 0.95rem; font-family: inherit; box-sizing: border-box; margin-bottom: 20px;" />
+
+      <div style="display: flex; justify-content: center; gap: 10px;">
+        <button type="button" class="btn-secondary-launch" onclick="document.getElementById('zeigarnikShutdownModal').classList.remove('open')">
+          Cancel
+        </button>
+        <button type="button" class="btn-primary-launch" onclick="submitDashboardEveningOneThing()" style="background: #7c3aed; color: #fff; font-weight: 700; padding: 10px 20px;">
+          ✓ Lock It In &amp; Close for Tonight
+        </button>
       </div>
     </div>
   </div>

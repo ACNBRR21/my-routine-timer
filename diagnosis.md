@@ -269,3 +269,111 @@
   * **Dynamic Weekdays Strip (`renderWeekdaysStrip()`):** Dynamically computes dates for the current week (Monday through Sunday) based on `displayMonthDate`. It dynamically highlights today's column (`.today`) and calculates actual focus hours from `userProfile.calendarEvents` (displaying `--` when free, rather than arbitrary fake numbers).
   * **Event Bubbling Guard:** Added `if (e.target.closest('button')) return;` on desktop timer cards so edit and delete actions execute cleanly without starting playback.
   * **Automated Verification:** Verified every single button and interactive flow via `test_all_user_buttons.js` (31/31 passed) and the full system audit `comprehensive_system_audit.js` (35/35 passed).
+
+---
+
+### 22. Flow Guru Executive Audit: Close Button Fix, Score Breakdown & Real Buffer Optimization (`index.html` / `js/flow-guru.js`)
+* **Problem:** 
+  1. In the Flow Guru Executive Audit modal (`guruAuditModal`) on the dashboard, clicking the circular "X" button in the upper right produced no action.
+  2. The two score boxes (**Calendar Health** and **Pareto Efficiency**) appeared static or unexplained.
+  3. Clicking **"⚡ Optimize Buffers & Breaks"** only displayed a toast message claiming *"Flow Guru applied 5-minute restorative breaks"* without actually inserting breaks into the schedule or timers.
+* **Root Cause Analysis:**
+  1. **Premature Script Execution on Close Button:** In `index.html`, the modal's `<button id="closeGuruAuditModalBtn">` was located at line 1357, *after* the main inline `<script>` tag. When lines 1205–1207 queried `document.getElementById('closeGuruAuditModalBtn')`, it returned `null`, preventing the event listener from ever being bound.
+  2. **Static Pareto Display:** While `auditCalendarSchedule` calculated live calendar health scores, `modalParetoScore` and `modalParetoLabel` had static mock markup that was not dynamically connected to the user's active tasks or Harvard Timebox schedule.
+  3. **Superficial Buffer Handler:** The button handler for `#applyGuruBufferBtn` only triggered a UI toast notification without modifying `calendarEvents`, schedule timelines, or timer storage.
+* **Resolution:**
+  1. **Guaranteed Modal Dismissal:**
+     * Added an inline `onclick="document.getElementById('guruAuditModal').classList.remove('open')"` directly on `#closeGuruAuditModalBtn`.
+     * Added backdrop click-outside dismiss on `.side-drawer-backdrop`.
+     * Bound event listeners inside `DOMContentLoaded` and added an Escape key listener (`Escape` dismisses the modal).
+  2. **Transparent Diagnostic Scoring & Educational Breakdown:**
+     * Added a dedicated diagnostic methodology card directly beneath the scores in the modal explaining the exact calculations:
+       * **Calendar Health (0–100):** Evaluates real-time meeting density from linked Google/Outlook calendars. Starts at 100, penalizing meeting overload (>2h: -10 pts, >3h: -20 pts), back-to-back calls without buffer (-12 pts each), and missing lunch anchors (-12 pts).
+       * **Pareto Efficiency (80/20 Rule):** Evaluates whether daily focus is anchored around high-leverage Top 1–3 priorities (Harvard Timebox) versus low-impact administrative busywork.
+     * Connected `#modalParetoScore` and `#modalParetoLabel` to live task data from `localStorage.getItem('anchor_flow_harvard_plan_today')`.
+  3. **Real Schedule & Timer Buffer Optimization:**
+     * When **"⚡ Optimize Buffers & Breaks"** is clicked, `applyGuruBuffersAndBreaks()` executes:
+       1. **Schedule Timeline Insertion:** Scans today's meetings for consecutive calls with &le;5m gap and physically inserts a `☕ 5m Restorative Decompression Buffer` event between them into `userProfile.calendarEvents`.
+       2. **Lunch Protection:** Checks if lunch is scheduled around 1:00 PM; if missing, physically inserts a `🥗 Healthy Lunch & Metabolic Recovery Anchor` at 13:00.
+       3. **Timer Library Additions:** Adds a `"5-Min Restorative Decompression Buffer"` timer and `"45-Min Lunch & Bio-Break"` timer to `anchor_flow_timers`.
+       4. **Score Upgrades:** Re-renders the dashboard timeline and recalculates Calendar Health, upgrading the score to **100/100 (Optimal Flow)** with comprehensive user feedback.
+
+---
+
+---
+
+### 23. Flow Guru Cognitive Execution Architecture & Chronobiology Adherence Suite
+* **Motivation & Academic Foundation:**
+  To transcend basic timer clocks and superficial checklists, Flow Guru was re-architected into an intelligent, neurobiology-grounded executive copilot synthesizing breakthrough research from:
+  1. **Daniel Kahneman & Amos Tversky (1979) / Roger Buehler et al. (1994) — The Planning Fallacy & Hofstadter's Law:** Humans systematically underestimate task completion times by 20% to 50% due to optimism bias. Flow Guru counters this with automated historical velocity tracking and self-calibrating duration multipliers.
+  2. **Dr. Sophie Leroy (2009, 2020) — Attention Residue Theory:** Transitioning between tasks without cognitive closure leaves "attentional residue" in the prefrontal cortex, degrading working memory and executive control by up to 40%. Flow Guru introduces a 90-second Interstitial Reset protocol.
+  3. **Nathaniel Kleitman / Dr. Andrew Huberman — Basic Rest-Activity Cycle (BRAC) & Circadian Chronobiology:** Mental acuity follows biological ultradian rhythms (~90–120 minute cycles) modulated by dopamine, cortisol, and adenosine. Flow Guru dynamically computes 4 distinct biological execution phases tailored to the user's wake time.
+  4. **Roy Baumeister & E.J. Masicampo (2011) / Bluma Zeigarnik (1927) — Zeigarnik Effect & Executive Closure:** Incomplete goals intrude upon subconscious thought and undermine restorative sleep. Creating specific plans for unfulfilled goals suspends cognitive intrusive thoughts.
+
+* **Key Implementations:**
+  1. **Planned vs. Actual Execution Adherence & Velocity Engine (js/flow-guru.js):**
+     * Tracks exact duration deltas (delta t = T_actual - T_planned), Velocity Ratios (V = T_actual / T_planned), and Estimation Accuracy (1 - |delta t| / T_planned).
+     * Instant user feedback on timer completion:
+       * **High Velocity (V < 0.95):** Calculates Focus Surplus (+minutes banked).
+       * **On Time (0.95 <= V <= 1.05):** Congratulates exceptional estimation calibration.
+       * **Overrun (V > 1.05):** Formulates Hofstadter buffer suggestions.
+     * Computes category-specific velocity multipliers (e.g., Deep Work, Writing, Coding, Admin) to prevent future scheduling compression.
+  2. **Timer Integration with 1-Click Early Completion (timer.html / js/timer.js):**
+     * Added **"Done Early"** action buttons to both the Right Panel Insight Widget and the Fullscreen Active Player.
+     * Captures true elapsed seconds upon manual completion, calculates velocity ratio, logs to anchor_flow_execution_history, and displays instant surplus toast notifications.
+  3. **Cognitive Chronobiology Energy Ribbon & Meeting Clashes (index.html):**
+     * Displays real-time biological state based on user wake time:
+       * *Phase 1: Morning Analytical Peak (Wake + 1.5h to 4.5h)* — Protected for Harvard Top 1 Deep Work.
+       * *Phase 2: Post-Prandial Refractory Dip (Wake + 5.5h to 7.5h)* — Low-friction admin, metabolic lunch recovery, walking breaks.
+       * *Phase 3: Afternoon Synthesis Surge (Wake + 8.5h to 11.0h)* — High coordination, Top 2/3 tasks, design reviews.
+       * *Phase 4: Wind-Down & Sleep Architecture (Wake + 12.5h to 16.0h)* — Cognitive disengagement and evening closure.
+     * Automatically cross-checks imported calendar events and alerts when meetings clash with the Morning Analytical Peak.
+  4. **Sophie Leroy 90s Attention Residue Interstitial Reset (#interstitialResetModal):**
+     * Accessible directly from the Focus Cockpit hero card in timer.html and the Chronobiology Ribbon in index.html.
+     * 3-step cognitive purge: 30s Task Offload & State Capture, 30s Double Inhale Physiological Sigh, 30s Micro-Action Priming.
+  5. **Baumeister & Zeigarnik Evening Executive Shutdown Ritual (#zeigarnikShutdownModal):**
+     * Review today's executed focus sessions and banked surplus.
+     * Brain-dump unfinished loops and assign tomorrow's provisional Top 1 anchor.
+     * Explicit mental closure affirmation to silence evening cognitive anxiety.
+
+---
+
+### 24. Flow Guru Reframe: The Living Mentor & Executive Coach Architecture
+* **Motivation & Strategic Vision:**
+  Following direct executive feedback, Flow Guru was fundamentally reframed from a passive audit report into an active, opinionated mentor. The philosophy rests on 8 foundational axioms:
+  1. *The dashboard is the answer, not the data:* Replaced multi-card clutter with a single actionable sentence: *"Your peak is 9–12. You have one hard problem and a clean afternoon. Protect it."*
+  2. *Goals must be alive:* Onboarding answers become a persistent lens through which every task is evaluated. Unaligned tasks trigger a gentle whisper: *"This doesn't move any of your three goals. Is it the right thing today?"*
+  3. *The Weekly Letter:* Every Sunday night, Flow Guru composes a three-paragraph letter detailing what you protected, what slipped, and one provocative question worth sitting with.
+  4. *Kill the numbers where they don't help:* Replaced raw metrics like "Calendar Health: 72/100" with human assessments like *"Your calendar is fighting you."* The underlying math remains active under an optional one-click toggle.
+  5. *The Guru has opinions:* When a user attempts to schedule calls during biological peak hours, Flow Guru pushes back: *"This sits in your 9–12 peak. I'd move it."*
+  6. *Onboarding is a conversation, not a form:* Created a five-question, one-by-one dialogue with a warm coffee-shop tone, explaining *why* each question matters.
+  7. *Protect, don't nag:* Shields peak analytical blocks, suppresses notification noise, and proactively injects restorative decompression buffers.
+  8. *One thing, done beautifully:* Replaced the complex multi-field evening shutdown with a single question: *"What's the one thing you'd regret not doing tomorrow?"*
+
+* **Key Deliverables & Changes:**
+  1. **Home Page Executive Audit Card (`index.html`):**
+     - Completely removed the unfunctional circular "X" button.
+     - Fixed the tall-card problem by consolidating all in-depth charts into the dedicated `guru.html` page.
+     - Reduced card to title, subtitle, human flow status pill, one-line answer sentence, and prominent **"Open Flow Guru →"** button.
+     - Embedded verified rotating quotes from historical masters of time-blocking with explicit `[Verifiable quote]` attribution.
+  2. **Dedicated Flow Guru Page (`guru.html` & `flow-guru.html`):**
+     - Crafted responsive, modern UI inspired by the PeopleFlow reference design (clean rounded cards, soft pastel badges, pill navigation, and smooth SVG 30-day Flow Quality curve).
+     - Integrated The Weekly Letter, 30-day directional trends ("Trend, Not Tally"), Living Goals with streak trackers, and Goal-Tied Suggestions.
+     - Local history storage under `anchor_flow_guru_history` retaining 30+ days of audits with confirmation-gated "Clear History" action.
+  3. **Conversational Onboarding Dialogue:**
+     - 5 sequential, warm prompts capturing Goals, Habits/Rhythms, Friction Points, Planning Preferences, and Victory Definitions.
+     - Saves progressively to `localStorage` (`anchor_flow_onboarding_answers`).
+     - Accessible on first run and on-demand via "Get to know me again" in `profile.html` and `guru.html`.
+  4. **Goal-Aware Day Planning & Coach Pushback (`planner.html` / `js/flow-guru.js`):**
+     - Cross-references user tasks against living goals, highlighting misalignment.
+     - Warns against meeting scheduling during the 9–12 morning peak.
+     - Suggests high-leverage 90m blocks for the primary goal.
+     - Streamlined evening shutdown asking: *"What's the one thing you'd regret not doing tomorrow?"*
+  5. **All Day Planner Time Logic & Threshold Compliance:**
+     - Strict 4-threshold greetings: 5:00–11:59 AM (**Good morning**), 12:00–4:59 PM (**Good afternoon**), 5:00–8:59 PM (**Good evening**), 9:00 PM–4:59 AM (**Good night**). Never "Good day."
+     - Splits today's meetings into Past vs. Upcoming; upcoming sorted first; past summarized in past tense (*"You had four meetings today."*).
+     - Prompts users in late evening when all meetings are complete: *"What would you like to do? Plan your evening, or plan your next day?"*
+     - Explicit day/date summaries (e.g., *"You have 0 meetings tomorrow, [Tue, Oct 6]."* and *"For tomorrow, [Tue, Oct 6]: Automatically synchronized..."*).
+  6. **Historical Mentors Dataset & Cache:**
+     - Curated verified quotes and practice anecdotes for Napoleon, Musk, Franklin, Jobs, Churchill, Einstein, Gates, Darwin, and Angelou.
+     - Aggressively cached in `localStorage` (`af_quotes_anecdotes_cache`) with non-blocking graceful fallback.

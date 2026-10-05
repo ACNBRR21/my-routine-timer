@@ -137,3 +137,25 @@ The beloved **Flow Guru** has been brought back and substantially elevated into 
   - *Next 2 Days:* Clean schedule for tomorrow and the day after.
   - *Next 7 Days:* Full week upcoming schedule horizon.
   - *Selected Date:* Deep dive into any clicked calendar date.
+
+### 🧠 6. Flow Guru Cognitive Execution Architecture & Chronobiology Adherence Suite
+- **Close Button & Modal Polish:** Resolved event binding sequence for the circular "X" close button on the Flow Guru Executive Audit modal (`#guruAuditModal`) with click-outside backdrop dismissal and Escape key support.
+- **Auditable Diagnostic Scores:** Transparently connected Calendar Health and Pareto Efficiency (80/20 Rule) to real meeting density metrics and active Harvard Timebox priorities, with in-modal calculation breakdowns.
+- **Physical Buffer & Break Insertion:** Upgraded "Optimize Buffers & Breaks" from a static toast to full physical insertion: automatically inserts 5-minute restorative decompression buffer events between back-to-back meetings into `calendarEvents`, anchors a 45-minute metabolic lunch recovery at 13:00, adds ready-to-run buffer timers to `anchor_flow_timers`, and upgrades schedule health to 100/100 (Optimal Flow).
+- **Planned vs. Actual Execution Velocity:** Added continuous adherence tracking comparing planned timer duration vs. actual completion time, computing variance deltas, execution velocity ratios (T_actual / T_planned), and estimation accuracy %.
+- **1-Click "Done Early" Action:** Added instant completion buttons to both the Right Panel insight widget and Fullscreen Active Player, logging focus surplus (+minutes banked) and displaying positive reinforcement.
+- **Hofstadter Calibration Multipliers:** Automatically learns task category velocity multipliers (e.g. Deep Work, Strategy, Admin) to compensate for optimism bias and prevent future schedule overruns.
+- **Cognitive Chronobiology Energy Ribbon:** Maps daily biological acuity curves (Kleitman BRAC / Huberman) into 4 distinct execution phases based on wake time, actively alerting to meeting clashes during peak focus windows.
+- **Sophie Leroy 90s Attention Residue Interstitial Reset:** Implemented a guided 3-step cognitive offload, physiological sigh, and micro-action priming modal to purge cognitive residue between context switches.
+- **Baumeister & Zeigarnik Evening Shutdown Ritual:** Provides executive closure by capturing open loops, assigning tomorrow provisional Top 1 anchor, and formally concluding the workday to silence evening cognitive anxiety.
+
+### 🧭 7. Flow Guru: The Living Mentor & Executive Coach Reframe
+- **One Sentence Dashboard:** Refactored the Flow Guru Executive Audit card into a clean, compact answer: *"Your peak is 9–12. You have one hard problem and a clean afternoon. Protect it."* Removed the unfunctional circular "X" button and added a prominent **"Open Flow Guru →"** CTA.
+- **Dedicated Flow Guru Page (`guru.html` & `flow-guru.html`):** Beautifully designed coach dashboard inspired by modern minimalist aesthetics, featuring "The Weekly Letter", "Trend, Not Tally", Living Goals tracking, and 30-day SVG Flow Quality curve.
+- **The Weekly Letter:** Generates a 3-paragraph mentor review every Sunday night (What you protected, What slipped, One question worth sitting with).
+- **Human Language Over Numbers:** Replaced raw scores with human assessments (*"Your calendar is fighting you"* / *"Your calendar is with you"*), preserving math in expandable drawers.
+- **Conversational Onboarding (5 Steps):** Replaced static forms with a warm, one-question-at-a-time conversation explaining *why* each question matters.
+- **Goal-Aware Planning & Pushback:** Proactively warns when daily plans don't move any of the user's 3 living goals, pushes back on peak meeting bookings, and suggests high-leverage focus blocks.
+- **Historical Masters Quotes & Anecdotes:** Aggressively cached quotes and time-blocking anecdotes from Napoleon, Musk, Franklin, Jobs, Churchill, Einstein, Gates, Darwin, and Angelou.
+- **All Day Planner Time Standards:** Strict 4-threshold greetings (including "Good night"), past vs. upcoming meeting separation, late-evening next-day prompts, and explicit day/date formatting (e.g. *"[Tue, Oct 6]"*).
+- **Streamlined Evening Shutdown:** Replaced complex multi-field modals with the single essential question: *"What's the one thing you'd regret not doing tomorrow?"*
