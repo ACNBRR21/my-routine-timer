@@ -489,10 +489,17 @@
       container.innerHTML = html;
     }
 
-    window.refreshDashboardEvents = function() {
+    window.refreshDashboardEvents = async function() {
+      showAppToast('⏳ Syncing live calendars from web...');
+      const res = await syncLiveCalendar();
       userProfile = getStoredProfile();
       renderDashboardCalendarEvents();
-      showAppToast('Refreshed & deduplicated calendar events!');
+      runFlowGuruDiagnostics();
+      if (res.success) {
+        showAppToast(`✅ ${res.message}`);
+      } else {
+        showAppToast(`ℹ️ Refreshed cached calendar events.`);
+      }
     };
 
     // Render Stored Timers with Direct Deletion!
@@ -694,6 +701,17 @@
     document.addEventListener('DOMContentLoaded', () => {
       initDashboard();
       runFlowGuruDiagnostics();
+      
+      // Background auto-sync of linked calendars
+      setTimeout(async () => {
+        if (userProfile.linkedCalendars && userProfile.linkedCalendars.length > 0) {
+          console.log('Initiating background calendar sync...');
+          await syncLiveCalendar();
+          userProfile = getStoredProfile();
+          renderDashboardCalendarEvents();
+          runFlowGuruDiagnostics();
+        }
+      }, 800);
     });
   </script>
 

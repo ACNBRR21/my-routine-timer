@@ -150,6 +150,14 @@
             + Link This Calendar
           </button>
         </div>
+      
+        <!-- Direct iCal Text Paste / Fallback Sync Option -->
+        <div style="margin-top: 14px; text-align: right;">
+          <button id="openPasteIcalModalBtn" class="btn-secondary-launch" style="font-size: 0.8rem; padding: 6px 14px;">
+            📋 Paste Raw iCal Text (Direct Sync)
+          </button>
+        </div>
+
       </section>
 
       <!-- Section 3: Daily Routine & Meal Timings -->
@@ -416,8 +424,16 @@
       }
     };
 
-    window.testSyncCalendar = function(id) {
-      showAppToast('Calendar synced! All meetings updated and deduplicated.');
+    window.testSyncCalendar = async function(id) {
+      showAppToast('⏳ Fetching live calendar feed & syncing...');
+      const res = await syncLiveCalendar(id);
+      currentProfile = getStoredProfile();
+      renderLinkedCalendars();
+      if (res.success) {
+        showAppToast(`✅ ${res.message}`);
+      } else {
+        showAppToast(`⚠️ ${res.message}`);
+      }
     };
 
     // Add New Calendar
@@ -448,7 +464,18 @@
       document.getElementById('newCalName').value = '';
       document.getElementById('newCalUrl').value = '';
       renderLinkedCalendars();
-      showAppToast(`Linked "${name}" successfully!`);
+      showAppToast(`Linking "${name}" & fetching live meetings...`);
+
+      // Immediately trigger live sync for newly added calendar!
+      syncLiveCalendar(newCal.id).then(res => {
+        currentProfile = getStoredProfile();
+        renderLinkedCalendars();
+        if (res.success) {
+          showAppToast(`✅ ${res.message}`);
+        } else {
+          showAppToast(`Calendar link saved. Tip: You can also paste iCal text below.`);
+        }
+      });
     });
 
     // Save All Profile Changes
@@ -519,7 +546,64 @@
       }
     });
 
+    
+    // Paste iCal Modal logic
+    const pasteModal = document.getElementById('pasteIcalModal');
+    const openPasteBtn = document.getElementById('openPasteIcalModalBtn');
+    const closePasteBtn = document.getElementById('closePasteIcalBtn');
+    const parseRawBtn = document.getElementById('parseRawIcalBtn');
+
+    if (openPasteBtn) {
+      openPasteBtn.addEventListener('click', () => pasteModal.classList.add('open'));
+    }
+    if (closePasteBtn) {
+      closePasteBtn.addEventListener('click', () => pasteModal.classList.remove('open'));
+    }
+    if (parseRawBtn) {
+      parseRawBtn.addEventListener('click', () => {
+        const text = document.getElementById('rawIcalTextArea').value.trim();
+        if (!text || !text.includes('BEGIN:VCALENDAR')) {
+          alert('Please paste valid iCalendar text containing BEGIN:VCALENDAR.');
+          return;
+        }
+        const parsed = parseIcsTextToEvents(text, 'Manual iCal Sync', 'manual');
+        if (parsed.length > 0) {
+          const profile = getStoredProfile();
+          const routineAnchors = (profile.calendarEvents || []).filter(e => e.sourceType === 'routine');
+          profile.calendarEvents = routineAnchors.concat(parsed);
+          profile.calendarEvents = deduplicateCalendarEvents(profile.calendarEvents);
+          saveStoredProfile(profile);
+          pasteModal.classList.remove('open');
+          populateProfileForm();
+          showAppToast(`✅ Successfully parsed and synced ${parsed.length} meetings!`);
+        } else {
+          alert('No active events found in the pasted text.');
+        }
+      });
+    }
+
+
     document.addEventListener('DOMContentLoaded', populateProfileForm);
   </script>
+
+  <!-- Direct iCal Paste Modal -->
+  <div class="side-drawer-backdrop" id="pasteIcalModal" style="justify-content: center; align-items: center;">
+    <div class="dashboard-card" style="width: 100%; max-width: 540px; box-shadow: var(--shadow-lg); border-radius: 18px; padding: 22px;">
+      <div class="card-header-row" style="margin-bottom: 12px;">
+        <h3 style="margin: 0; font-size: 1.1rem; color: var(--text-primary);">📋 Direct iCal Feed Sync</h3>
+        <button id="closePasteIcalBtn" style="background:none; border:none; font-size: 1.2rem; cursor:pointer;">&times;</button>
+      </div>
+      <p style="font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 12px;">
+        If your network or browser blocks cross-origin requests, paste your calendar's raw <code>.ics</code> text content here. Anchor &amp; Flow will parse and deduplicate all events instantly.
+      </p>
+      <textarea id="rawIcalTextArea" rows="6" class="form-input-text" style="width: 100%; font-family: monospace; font-size: 0.8rem; margin-bottom: 14px;" placeholder="Paste BEGIN:VCALENDAR ... END:VCALENDAR text here..."></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button id="parseRawIcalBtn" class="btn-primary-launch" style="font-size: 0.85rem; padding: 8px 16px;">
+          Parse &amp; Sync Events
+        </button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
