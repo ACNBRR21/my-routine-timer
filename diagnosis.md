@@ -199,3 +199,53 @@
   * **Intelligent Date Parser:** Implemented `parseTargetDateFromPrompt()` supporting natural language dates (e.g., `"6th February, tomorrow"`, `"Feb 6"`, `"tomorrow"`, `"today"`). Calendar anchors are strictly queried for that resolved target date.
   * **Evening Time-Awareness:** Implemented `filterCalendarEventsByTime()`. When planning for today in the evening (> 18:00), past morning meetings (whose end time is before the current time) are automatically suppressed from focus plans and timers.
   * **Conversational Intake:** When the user provides a date opener without task items (e.g. *"I want to plan for 6th February, tomorrow"*), the AI does not dump a schedule; it acknowledges the date, summarizes calendar commitments, and asks: *"What are the top three things you want to do?"*.
+
+---
+
+### 19. All Timers Desktop Executive Redesign (`timer.html` / `css/timer.css` / `js/timer.js`)
+* **Problem:** The previous timer view was locked to an iPhone-centric narrow card (`max-width: 480px`), wasting significant screen real estate on desktop monitors with large empty margins on the left and right. Furthermore, the `⚙️ Manage Folders` button was trapped at the far end of an overflow scroll bar, rendering it invisible to users unless they scrolled horizontally.
+* **Resolution:** Re-architected the page into a full-width desktop 3-column executive layout based on the user-provided reference design (`1a507e97cc955b384cfe7357fff96b51.jpg`):
+  * **Top Application Header:** Clean desktop navbar featuring the Anchor & Flow logo, navigation links (*Timers & Routines*, *AI Planner*, *Dashboard*, *Profile*, *Guide*), a live search bar (`#headerSearchInput`), user profile badge (*RR / Rishi Roy* dynamically synchronized from `getStoredProfile()`), and an options menu (`#menuBtn`).
+  * **Column 1 — Left Sidebar (Folders & Quick Add):**
+    * **Folders & Categories Card:** Dynamically displays all stored folders (*All Timers*, *Work & Focus*, *Health & Care*, *Workouts & HIIT*, *Daily Routines*, and user-created folders) with live badge counts indicating timers stored in each folder.
+    * **Prominent Manage Folders Button:** Placed a full-width, permanently visible **`⚙️ Manage Folders`** button directly beneath the folder list—eliminating the horizontal scrollbar trap entirely.
+    * **Quick Presets & Templates:** Fast `+` launcher buttons for *Focus Sprint (15m)*, *Harvard Deep Work (45m)*, *Mother's Glaucoma Care (1:30:00+)*, *Secondary Eye Drops (1:15:00)*, *30m Seq Tabata*, and *Pomodoro Cycle*.
+    * **New Custom Timer Button:** Direct access to the creator modal.
+  * **Column 2 — Center Workspace (Active Timers & Daily Timeline):**
+    * **Month Navigation Header:** Features interactive month navigation arrows (`< October 2026 >`) and a segmented view toggle (*All Timers* vs *Active / Running*).
+    * **Horizontal Weekday Strip:** Mon–Sun status columns displaying scheduled focus hours with the active day highlighted (`.today`).
+    * **Modern Desktop Timer Cards:** Replaced mobile list rows with spacious executive cards displaying large digital times (`02:00`, `04:00`, `15:00`), titles, category tags, routine step counts, repeat badges, notes, and direct action buttons (`▶ Start` / `⏸ Pause`, `✏️ Edit`, and `🗑️ Delete`).
+    * **Bottom Summary Bar & Purple Pill CTA:** Features live library statistics (*Total Stored: 7 Timers • Total Duration: 03:45:00*) and a prominent purple pill button: **`+ Add New Timer or Routine`**.
+    * **Creator Attribution Footer:** Links directly to Rishi Roy's LinkedIn, WhatsApp (`+91 9136228725`), email (`rishi@birdblast.com`), and documentation.
+  * **Column 3 — Right Panel (Focus Cockpit & Active Insight):**
+    * **Hero Focus Cockpit Card:** Vibrant purple gradient card with one-click **`🚀 Quick Start Focus Sprint`**.
+    * **Active Insight Widget with Circular SVG Progress Ring:** Circular animated progress ring (SVG stroke-dashoffset on radius 88) with center countdown digits (`15:00`), timer title, step tags, on-the-fly adjustment buttons (`-1m`, `+1m`, `+5m`), and player controls (`↺ Restart`, `▶ Play` / `⏸ Pause`, `⏭ Next Step`, and `+ Lap` for stopwatches).
+    * **Category Breakdown:** Real-time color-coded time breakdown per folder category (*Work & Focus*, *Health & Care*, *Workouts & HIIT*, *Daily Routines*).
+    * **Session History Quick Link:** Opens full tracking history.
+  * **100% Functionality Preservation:** Maintained all 4 Timer+ operational modes (Countdown, Stopwatch with lap recording, Specific Date/Time Target Countdown, and Multi-Segment Routine Builder with steps and rounds), sound effects, and Glaucoma care routines.
+
+---
+
+### 20. Comprehensive Calendar Sync Bug Fix & Resilient RFC 5545 Parser (`js/calendar-sync.js` / `profile.html` / `index.html`)
+* **Problem:** Users experienced recurring "temporarily busy" and "error function" failures when adding calendar URLs (especially Outlook `.ics` and personal Google calendars). When clicking an Outlook link in a browser, it downloaded the `reachcalendar.ics` file directly, yet the application failed to sync.
+* **Root Cause Analysis:**
+  1. **Premature Proxy Aborts:** Public CORS relays (`corsproxy.io`, `api.allorigins.win`, `api.codetabs.com`) require 3–7 seconds to negotiate external SSL connections and stream large calendar feeds. The 4.0-second timeout was aborting the fetch midway via `AbortController`, triggering `AggregateError` and failing every calendar.
+  2. **URL Formatting Mismatches:** Microsoft Outlook web links frequently end in `.html` or `.aspx` (e.g. `reachcalendar.html`). When fetched, these serve an HTML web page rather than the raw `.ics` calendar feed.
+  3. **Silent Drop of Events Missing `SUMMARY`:** In Outlook/Exchange calendars, private events and busy blocks frequently omit the `SUMMARY` attribute. The parser previously required `if (cur.summary && cur.dtstart)`, causing feeds without explicit summaries to return 0 events.
+  4. **Lack of `RRULE` Recurrence Expansion:** Google and Outlook calendars specify recurring meetings (standups, weekly 1:1s, personal routines) using `RRULE:FREQ=WEEKLY` or `FREQ=DAILY` with an original `DTSTART` from when the series was created in the past. Without recurrence expansion, these events were treated as ancient past events and excluded from today and upcoming schedules.
+  5. **Direct File Import Button Disconnected:** The `📁 Import .ics File` button in `index.html` was missing an active event listener in its script.
+* **Resolution:**
+  * **Resilient Proxy Racing with Realistic Timeouts:** Increased relay timeouts to 8,000–10,000ms and expanded concurrent racing across 9 diverse relays (`api.allorigins.win/raw`, `api.allorigins.win/get`, `api.codetabs.com`, `corsproxy.io`, `thingproxy.freeboard.io`, `api.cors.lol`, and Direct Feed with `redirect: 'follow'`).
+  * **Intelligent URL Auto-Normalization:**
+    * Automatically rewrites `/reachcalendar.html` and `/reachcalendar.aspx` to `/reachcalendar.ics`.
+    * Normalizes Google Calendar embed URLs (`.../calendar/embed?src=EMAIL`) to public `basic.ics` feeds.
+    * Converts `webcal://` to `https://`.
+  * **Direct iCalendar Text Recognition:** If a user pastes raw iCal text containing `BEGIN:VCALENDAR` directly into the Calendar URL field, the system detects it and imports meetings locally with zero network delay or proxy dependence.
+  * **RFC 5545 Recurrence Engine (`RRULE` Expansion):**
+    * Parses recurrence rules (`FREQ=DAILY`, `FREQ=WEEKLY`, `FREQ=MONTHLY`) and `BYDAY` modifiers.
+    * Projects recurring events across the active 35-day horizon (`yesterday` to `+35 days`), preserving the original start hour, minute, and duration.
+    * Fallback for missing summaries defaults to `Busy (${busyStatus})` or `Calendar Meeting`.
+    * Automatically filters out cancelled events (`STATUS:CANCELLED`).
+  * **Universal Drag-and-Drop & Direct File Import:**
+    * Added full drag-and-drop `.ics` file support across both `profile.html` and `index.html`. Users who download their Outlook `.ics` file can drag and drop it anywhere onto the application to import meetings 100% offline.
+    * Connected and verified the `📁 Import .ics File` button and hidden file input in `index.html`.

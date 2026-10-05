@@ -848,19 +848,64 @@
       }
     });
 
-    // Add New Calendar
+    // Add New Calendar with Instant iCal Detection & URL Auto-Normalization
     document.getElementById('addCalendarBtn').addEventListener('click', () => {
       const name = document.getElementById('newCalName').value.trim() || 'My Calendar';
-      const url = document.getElementById('newCalUrl').value.trim();
+      let url = document.getElementById('newCalUrl').value.trim();
       const type = document.getElementById('newCalType').value;
 
       if (!url) {
-        alert('Please enter a valid iCal or webcal URL.');
+        alert('Please enter a valid iCal or webcal URL, or paste raw iCalendar text.');
         return;
       }
 
+      const newCalId = 'cal-' + Date.now();
+
+      // Case 1: Direct iCalendar text pasted into the URL input
+      if (url.includes('BEGIN:VCALENDAR')) {
+        const parsed = parseIcsTextToEvents(url, name, type, newCalId);
+        if (parsed.length > 0) {
+          const directCal = {
+            id: newCalId,
+            name: name,
+            url: 'Direct iCalendar Input',
+            type: type,
+            color: type === 'outlook' ? '#0078d4' : type === 'google' ? '#34a853' : '#8b5cf6',
+            enabled: true,
+            syncStatus: 'success',
+            eventCount: parsed.length,
+            lastSync: new Date().toISOString()
+          };
+          currentProfile.linkedCalendars = currentProfile.linkedCalendars || [];
+          currentProfile.linkedCalendars.push(directCal);
+
+          const routineAnchors = (currentProfile.calendarEvents || []).filter(ev => ev.sourceType === 'routine');
+          const otherEvents = (currentProfile.calendarEvents || []).filter(ev => ev.sourceType !== 'routine');
+          currentProfile.calendarEvents = routineAnchors.concat(otherEvents).concat(parsed);
+          currentProfile.calendarEvents = deduplicateCalendarEvents(currentProfile.calendarEvents);
+
+          saveStoredProfile(currentProfile);
+          document.getElementById('newCalName').value = '';
+          document.getElementById('newCalUrl').value = '';
+          renderLinkedCalendars();
+          renderProfileSyncedMeetings();
+          showAppToast(`✅ Successfully imported ${parsed.length} meetings from iCal data!`);
+          return;
+        }
+      }
+
+      // Case 2: URL Auto-Normalization
+      if (url.includes('/reachcalendar.html')) {
+        url = url.replace('/reachcalendar.html', '/reachcalendar.ics');
+      } else if (url.includes('/reachcalendar.aspx')) {
+        url = url.replace('/reachcalendar.aspx', '/reachcalendar.ics');
+      }
+      if (url.startsWith('webcal://')) {
+        url = 'https://' + url.substring(9);
+      }
+
       const newCal = {
-        id: 'cal-' + Date.now(),
+        id: newCalId,
         name: name,
         url: url,
         type: type,
@@ -885,12 +930,61 @@
         renderLinkedCalendars();
         renderProfileSyncedMeetings();
         hideSyncProgressWithSuccess(res.message);
-        if (res.success) {
+        if (res.success && res.syncedCount > 0) {
           showAppToast(`✅ ${res.message}`);
         } else {
-          showAppToast(`Calendar link saved. Tip: You can also paste raw iCal text below.`);
+          showAppToast(`⚠️ ${res.message}`);
         }
+      }).catch(err => {
+        showAppToast(`⚠️ Sync failed: ${err.message}. You can upload the .ics file directly below!`);
       });
+    });
+
+    // Drag-and-drop .ics file onto Profile
+    window.addEventListener('dragover', (e) => e.preventDefault());
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const files = e.dataTransfer && e.dataTransfer.files;
+      if (files && files.length > 0) {
+        const file = files[0];
+        if (file.name.toLowerCase().endsWith('.ics') || (file.type && file.type.includes('calendar'))) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const content = evt.target.result;
+            if (content && content.includes('BEGIN:VCALENDAR')) {
+              const calName = file.name.replace(/\.ics$/i, '') || 'Imported Calendar';
+              const newCalId = 'cal-' + Date.now();
+              const parsed = parseIcsTextToEvents(content, calName, 'outlook', newCalId);
+              if (parsed.length > 0) {
+                const newCal = {
+                  id: newCalId,
+                  name: calName,
+                  url: 'file://' + file.name,
+                  type: 'outlook',
+                  color: '#0078d4',
+                  enabled: true,
+                  syncStatus: 'success',
+                  eventCount: parsed.length,
+                  lastSync: new Date().toISOString()
+                };
+                currentProfile.linkedCalendars = currentProfile.linkedCalendars || [];
+                currentProfile.linkedCalendars.push(newCal);
+
+                const routineAnchors = (currentProfile.calendarEvents || []).filter(ev => ev.sourceType === 'routine');
+                const otherEvents = (currentProfile.calendarEvents || []).filter(ev => ev.sourceType !== 'routine');
+                currentProfile.calendarEvents = routineAnchors.concat(otherEvents).concat(parsed);
+                currentProfile.calendarEvents = deduplicateCalendarEvents(currentProfile.calendarEvents);
+
+                saveStoredProfile(currentProfile);
+                renderLinkedCalendars();
+                renderProfileSyncedMeetings();
+                showAppToast(`✅ Imported ${parsed.length} meetings from ${file.name}!`);
+              }
+            }
+          };
+          reader.readAsText(file);
+        }
+      }
     });
 
     // Listen for cross-tab calendar sync events

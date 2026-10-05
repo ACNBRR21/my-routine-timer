@@ -295,28 +295,41 @@
     }
 
     function renderFolderBar() {
-      const bar = document.getElementById('folderScrollBar');
-      if (!bar) return;
-      const folders = getStoredFolders();
-      let html = '';
-      folders.forEach(f => {
-        const isActive = f.id === currentFilter;
-        html += `<button class="folder-pill ${isActive ? 'active' : ''}" data-folder="${f.id}">${f.icon ? f.icon + ' ' : ''}${escapeHtml(f.name)}</button>`;
-      });
-      html += `<button class="btn-manage-folders" id="openManageFoldersBarBtn" type="button" title="Add or delete custom folders">⚙️ Manage Folders</button>`;
-      bar.innerHTML = html;
+      // 1. Render in Desktop Left Sidebar
+      const sidebarContainer = document.getElementById('sidebarFoldersList');
+      if (sidebarContainer) {
+        const folders = getStoredFolders();
+        sidebarContainer.innerHTML = folders.map(f => {
+          const count = f.id === 'all' 
+            ? timers.length 
+            : timers.filter(t => t.folder === f.id).length;
+          const isActive = f.id === currentFilter;
+          return `
+            <div class="sidebar-folder-row ${isActive ? 'active' : ''}" data-folder="${f.id}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span>${f.icon || '📁'}</span>
+                <span>${escapeHtml(f.name)}</span>
+              </div>
+              <span class="folder-count-badge">${count}</span>
+            </div>
+          `;
+        }).join('');
 
-      bar.querySelectorAll('.folder-pill').forEach(pill => {
-        pill.addEventListener('click', () => {
-          bar.querySelectorAll('.folder-pill').forEach(p => p.classList.remove('active'));
-          pill.classList.add('active');
-          currentFilter = pill.getAttribute('data-folder');
-          renderTimersList();
+        sidebarContainer.querySelectorAll('.sidebar-folder-row').forEach(row => {
+          row.addEventListener('click', () => {
+            sidebarContainer.querySelectorAll('.sidebar-folder-row').forEach(r => r.classList.remove('active'));
+            row.classList.add('active');
+            currentFilter = row.getAttribute('data-folder');
+            renderTimersList();
+          });
         });
-      });
+      }
 
-      const mgmtBtn = document.getElementById('openManageFoldersBarBtn');
-      if (mgmtBtn) mgmtBtn.addEventListener('click', openManageFoldersModal);
+      // 2. Wire Sidebar Manage Folders button
+      const sidebarMgmtBtn = document.getElementById('sidebarManageFoldersBtn');
+      if (sidebarMgmtBtn) {
+        sidebarMgmtBtn.onclick = openManageFoldersModal;
+      }
     }
 
     function renderFolderSelectOptions() {
@@ -475,63 +488,110 @@
       setTimeout(() => toast.classList.remove('show'), 2600);
     }
 
-    // --- 4. RENDER TIMERS LIST (Screenshot 1 Layout) ---
+    // --- 4. RENDER TIMERS LIST (Executive 3-Column Desktop Layout) ---
     function renderTimersList() {
       const container = document.getElementById('timersList');
-      const subtitle = document.getElementById('timerCountSubtitle');
+      if (!container) return;
+
+      const searchInp = document.getElementById('headerSearchInput');
+      const searchVal = searchInp ? searchInp.value.trim().toLowerCase() : '';
 
       let filtered = timers.filter(t => {
+        // Search query filter
+        if (searchVal) {
+          const matchTitle = (t.title || '').toLowerCase().includes(searchVal);
+          const matchNotes = (t.notes || '').toLowerCase().includes(searchVal);
+          const matchFolder = (t.folder || '').toLowerCase().includes(searchVal);
+          const matchSteps = (t.steps || []).some(s => (s.title || '').toLowerCase().includes(searchVal));
+          if (!matchTitle && !matchNotes && !matchFolder && !matchSteps) return false;
+        }
+
+        // Folder filter
         if (currentFilter !== 'all' && t.folder !== currentFilter) return false;
+
+        // Segment filter
         if (currentSegment === 'active') {
           return activeTimer && activeTimer.id === t.id && isRunning;
         }
         return true;
       });
 
-      subtitle.textContent = `${filtered.length} Timer${filtered.length === 1 ? '' : 's'} Stored`;
+      // Update Center Summary Bar
+      const summaryBar = document.getElementById('centerTotalFocusSummary');
+      if (summaryBar) {
+        const totalDurationSec = filtered.reduce((acc, cur) => acc + (cur.totalSeconds || 0), 0);
+        summaryBar.innerHTML = `Total Stored: <strong>${filtered.length} Timer${filtered.length === 1 ? '' : 's'}</strong> &bull; Total Duration: <strong>${formatTime(totalDurationSec)}</strong>`;
+      }
+
+      const countSub = document.getElementById('timerCountSubtitle');
+      if (countSub) {
+        countSub.textContent = `${filtered.length} Timer${filtered.length === 1 ? '' : 's'} Stored`;
+      }
 
       if (filtered.length === 0) {
         container.innerHTML = `
-          <div style="text-align: center; padding: 48px 20px; color: var(--text-secondary);">
+          <div style="text-align: center; padding: 48px 20px; background: #ffffff; border: 1px dashed var(--border-color); border-radius: 14px; margin-top: 10px;">
             <div style="font-size: 2.5rem; margin-bottom: 8px;">⏱️</div>
-            <p style="font-weight: 600;">No timers in this view</p>
-            <p style="font-size: 0.85rem; margin-top: 4px;">Tap the '+' button below to add your first timer or routine.</p>
+            <strong style="font-size: 1.05rem; color: var(--text-main);">No timers in this view</strong>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;">
+              ${searchVal ? `No results matching "${escapeHtml(searchVal)}". Clear search to view all.` : 'Click "+ Add New Timer or Routine" below to create your first executive timer.'}
+            </p>
           </div>
         `;
+        updateRightPanelAnalytics();
         return;
       }
 
       let html = '';
       filtered.forEach(t => {
         const isCurrentlyActive = activeTimer && activeTimer.id === t.id && isRunning;
-        const iconSpan = t.icon ? `<span class="timer-icon-badge">${t.icon}</span>` : '';
-        const typeBadge = t.type === 'routine'
-          ? `<span class="timer-tag-type routine">Routine (${t.steps ? t.steps.length : 1} Steps)</span>`
-          : '';
-        const activeBadge = isCurrentlyActive
-          ? `<span class="timer-tag-type active-now">Running</span>`
+        const icon = t.icon || (t.type === 'routine' ? '🗂' : t.type === 'stopwatch' ? '⏲' : '⏱');
+        
+        let typeLabel = 'Target Timer';
+        let typeClass = 'timer-tag';
+        if (t.type === 'routine') {
+          typeLabel = `Routine (${t.steps ? t.steps.length : 1} Steps)`;
+          typeClass = 'timer-tag routine';
+        } else if (t.type === 'stopwatch') {
+          typeLabel = 'Stopwatch (Count-Up)';
+          typeClass = 'timer-tag stopwatch';
+        } else if (t.type === 'countdown') {
+          typeLabel = 'Target Date Countdown';
+        }
+
+        const activeTag = isCurrentlyActive 
+          ? `<span class="timer-tag" style="background:#10b981; color:#fff; font-weight:700;">● Running Now</span>` 
           : '';
 
-        const playBtnClass = isCurrentlyActive ? 'timer-play-btn running' : 'timer-play-btn';
-        const playBtnIcon = isCurrentlyActive ? '⏸' : '▶';
+        const playText = isCurrentlyActive ? '⏸ Pause' : '▶ Start';
 
         html += `
-          <div class="timer-card-row" data-id="${t.id}">
-            <div class="timer-info">
-              <div class="timer-label-row">
-                ${iconSpan}
-                <span>${escapeHtml(t.title)}</span>
-                ${typeBadge}
-                ${activeBadge}
+          <div class="timer-card-desktop ${isCurrentlyActive ? 'active-glow' : ''}" data-id="${t.id}">
+            <div class="timer-card-left">
+              <div class="timer-card-time">${formatTime(t.totalSeconds)}</div>
+              <div class="timer-card-info">
+                <div class="timer-card-title">
+                  <span style="margin-right: 4px;">${icon}</span>
+                  ${escapeHtml(t.title)}
+                </div>
+                <div class="timer-card-tags">
+                  <span class="${typeClass}">${typeLabel}</span>
+                  <span class="timer-tag">📁 ${escapeHtml(t.folder || 'work')}</span>
+                  ${t.repeats && t.repeats > 1 ? `<span class="timer-tag">🔁 ${t.repeats}x</span>` : ''}
+                  ${activeTag}
+                </div>
+                ${t.notes ? `<div class="timer-card-notes">${escapeHtml(t.notes)}</div>` : ''}
               </div>
-              <div class="timer-duration-display">${formatTime(t.totalSeconds)}</div>
-              ${t.notes ? `<div class="timer-sub-steps">${escapeHtml(t.notes)}</div>` : ''}
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <button class="${playBtnClass}" data-id="${t.id}" title="${isCurrentlyActive ? 'Pause' : 'Start'} Timer">
-                ${playBtnIcon}
+
+            <div class="timer-card-actions">
+              <button class="btn-play-pill ${isCurrentlyActive ? 'running' : ''}" data-id="${t.id}" title="${isCurrentlyActive ? 'Pause' : 'Start'} Timer">
+                ${playText}
               </button>
-              <button class="timer-delete-btn" data-id="${t.id}" title="Delete unused timer from history">
+              <button class="btn-card-icon edit timer-edit-btn" data-id="${t.id}" title="Edit Timer / Routine">
+                ✏️
+              </button>
+              <button class="btn-card-icon delete timer-delete-btn" data-id="${t.id}" title="Delete Timer">
                 🗑️
               </button>
             </div>
@@ -541,22 +601,33 @@
 
       container.innerHTML = html;
 
-      // Attach Delete handlers (ability to delete unused older timers)
+      // Attach Delete handlers
       container.querySelectorAll('.timer-delete-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           const id = btn.getAttribute('data-id');
-          if (confirm('Delete this timer from your stored history?')) {
+          if (confirm('Delete this timer from your stored library?')) {
             timers = timers.filter(t => t.id !== id);
             saveTimersToStorage();
             renderTimersList();
-            showToast('Deleted timer from history');
+            renderFolderBar();
+            showToast('Deleted timer from library');
           }
         });
       });
 
+      // Attach Edit handlers
+      container.querySelectorAll('.timer-edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          const t = timers.find(item => item.id === id);
+          if (t) openCustomModal(t);
+        });
+      });
+
       // Attach Play/Pause handlers
-      container.querySelectorAll('.timer-play-btn').forEach(btn => {
+      container.querySelectorAll('.btn-play-pill').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           const id = btn.getAttribute('data-id');
@@ -564,13 +635,37 @@
         });
       });
 
-      // Clicking row opens execution player
-      container.querySelectorAll('.timer-card-row').forEach(row => {
-        row.addEventListener('click', () => {
-          const id = row.getAttribute('data-id');
-          openActivePlayer(id);
+      // Clicking card activates timer
+      container.querySelectorAll('.timer-card-desktop').forEach(card => {
+        card.addEventListener('click', () => {
+          const id = card.getAttribute('data-id');
+          handlePlayTimerClick(id);
         });
       });
+
+      updateRightPanelAnalytics();
+    }
+
+    function updateRightPanelAnalytics() {
+      const breakdownContainer = document.getElementById('categoryBreakdownList');
+      if (!breakdownContainer) return;
+
+      const folders = getStoredFolders().filter(f => f.id !== 'all');
+      let html = '';
+      const colors = ['#8b5cf6', '#ec4899', '#0284c7', '#10b981', '#f59e0b', '#3b82f6'];
+
+      folders.forEach((f, idx) => {
+        const folderTimers = timers.filter(t => t.folder === f.id);
+        const sec = folderTimers.reduce((sum, t) => sum + (t.totalSeconds || 0), 0);
+        const col = colors[idx % colors.length];
+        html += `
+          <div class="breakdown-row">
+            <span class="breakdown-label"><span class="dot-color" style="background:${col};"></span> ${escapeHtml(f.name)}</span>
+            <span class="breakdown-val">${formatTime(sec)}</span>
+          </div>
+        `;
+      });
+      breakdownContainer.innerHTML = html;
     }
 
     // --- 5. TIMER EXECUTION ENGINE ---
@@ -815,6 +910,50 @@
       } else {
         ringFill.style.strokeDashoffset = 0;
       }
+
+      // Synchronize Right Column Focus Insight Widget
+      const wDigits = document.getElementById('widgetDigits');
+      const wSubLabel = document.getElementById('widgetSubLabel');
+      const wStepTag = document.getElementById('widgetStepTag');
+      const wRingFill = document.getElementById('widgetRingFill');
+      const wPlayBtn = document.getElementById('widgetPlayPauseBtn');
+
+      if (wDigits) {
+        if (isStopwatch) {
+          wDigits.textContent = formatTime(stopwatchElapsed);
+          if (wSubLabel) wSubLabel.textContent = activeTimer.title;
+          if (wStepTag) wStepTag.textContent = `${isRunning ? '● Running' : '❚❚ Paused'} (Stopwatch)`;
+        } else if (activeTimer.type === 'countdown' && activeTimer.targetDate) {
+          const targetMs = new Date(activeTimer.targetDate).getTime();
+          const diff = Math.round((targetMs - Date.now()) / 1000);
+          wDigits.textContent = (diff >= 0 ? '' : '+') + formatTime(Math.abs(diff));
+          if (wSubLabel) wSubLabel.textContent = activeTimer.title;
+          if (wStepTag) wStepTag.textContent = diff >= 0 ? 'Target Countdown' : 'Past Target';
+        } else {
+          wDigits.textContent = formatTime(secondsRemaining);
+          const steps = activeTimer.steps && activeTimer.steps.length > 0 ? activeTimer.steps : [{ title: activeTimer.title, duration: activeTimer.totalSeconds }];
+          const currentStep = steps[currentStepIndex] || steps[0];
+          if (wSubLabel) wSubLabel.textContent = currentStep.title || activeTimer.title;
+          if (wStepTag) wStepTag.textContent = `${isRunning ? '● Running' : '❚❚ Paused'} (${formatTime(stepTotalSeconds)})`;
+        }
+      }
+
+      if (wPlayBtn) {
+        wPlayBtn.textContent = isRunning ? '⏸' : '▶';
+        if (isRunning) wPlayBtn.classList.remove('paused');
+        else wPlayBtn.classList.add('paused');
+      }
+
+      if (wRingFill) {
+        const wCircumference = 2 * Math.PI * 88; // r=88 -> ~552.92
+        if (!isStopwatch && stepTotalSeconds > 0) {
+          const wFrac = Math.max(0, Math.min(1, secondsRemaining / stepTotalSeconds));
+          const wOffset = wCircumference * (1 - wFrac);
+          wRingFill.style.strokeDashoffset = wOffset;
+        } else {
+          wRingFill.style.strokeDashoffset = 0;
+        }
+      }
     }
 
     // --- 7. "ADD TIMER" SHEET & TEMPLATES (Screenshots 2 & 3) ---
@@ -973,6 +1112,158 @@
       renderTimersList();
       setupQuickTimers();
       setupTemplates();
+
+      // Synchronize User Header Badge from Profile
+      try {
+        const prof = (typeof getStoredProfile === 'function') ? getStoredProfile() : null;
+        if (prof) {
+          const avatarEl = document.getElementById('headerAvatar');
+          const nameEl = document.getElementById('headerUserName');
+          if (nameEl && prof.userName) nameEl.textContent = prof.userName;
+          if (avatarEl && prof.userName) {
+            const initials = prof.userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            avatarEl.textContent = initials || 'RR';
+          }
+        }
+      } catch(e) {}
+
+      // Month Navigation Controls in Center Header
+      let displayMonthDate = new Date(2026, 9, 5); // October 2026
+      const monthTitleEl = document.getElementById('centerMonthTitle');
+      const prevMonthBtn = document.getElementById('btnPrevMonth');
+      const nextMonthBtn = document.getElementById('btnNextMonth');
+
+      function updateMonthHeader() {
+        if (monthTitleEl) {
+          monthTitleEl.textContent = displayMonthDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+        }
+      }
+
+      if (prevMonthBtn) {
+        prevMonthBtn.onclick = () => {
+          displayMonthDate.setMonth(displayMonthDate.getMonth() - 1);
+          updateMonthHeader();
+        };
+      }
+      if (nextMonthBtn) {
+        nextMonthBtn.onclick = () => {
+          displayMonthDate.setMonth(displayMonthDate.getMonth() + 1);
+          updateMonthHeader();
+        };
+      }
+
+      // Weekday strip interaction
+      document.querySelectorAll('.weekday-col').forEach(col => {
+        col.addEventListener('click', () => {
+          document.querySelectorAll('.weekday-col').forEach(c => c.classList.remove('today'));
+          col.classList.add('today');
+          const dayName = col.querySelector('.weekday-name')?.textContent || 'Day';
+          showToast(`Filtered schedule for ${dayName}`);
+        });
+      });
+
+      // Segment controls (All Timers vs Active)
+      const segAll = document.getElementById('segAllBtn');
+      const segAct = document.getElementById('segActiveBtn');
+      if (segAll && segAct) {
+        segAll.onclick = () => {
+          segAll.classList.add('active');
+          segAct.classList.remove('active');
+          currentSegment = 'all';
+          renderTimersList();
+        };
+        segAct.onclick = () => {
+          segAct.classList.add('active');
+          segAll.classList.remove('active');
+          currentSegment = 'active';
+          renderTimersList();
+        };
+      }
+
+
+      // Desktop Quick Preset Buttons
+      const q15 = document.getElementById('quickTimer15');
+      if (q15) q15.onclick = () => saveAndLaunchRoutine({ id: 't-15m', title: 'Focus Sprint', totalSeconds: 900, type: 'timer', folder: 'work', steps: [{ title: 'Focus Sprint', duration: 900 }] });
+      
+      const q45 = document.getElementById('quickTimer45');
+      if (q45) q45.onclick = () => saveAndLaunchRoutine({ id: 't-45m', title: 'Harvard Deep Work', totalSeconds: 2700, type: 'timer', folder: 'work', steps: [{ title: 'Harvard Deep Work', duration: 2700 }] });
+
+      const q90 = document.getElementById('quickTimer90');
+      if (q90) q90.onclick = () => saveAndLaunchRoutine({ id: 't-90m', title: 'Eye Drops (Glaucoma Care)', icon: '🧴', totalSeconds: 5400, type: 'timer', folder: 'health', steps: [{ title: 'Eye Drops Care', duration: 5400 }] });
+
+      const q75 = document.getElementById('quickTimer75');
+      if (q75) q75.onclick = () => saveAndLaunchRoutine({ id: 't-75m', title: 'Secondary Eye Drops', icon: '🧴', totalSeconds: 4500, type: 'timer', folder: 'health', steps: [{ title: 'Secondary Eye Drops', duration: 4500 }] });
+
+      const qTab = document.getElementById('quickTabata');
+      if (qTab) qTab.onclick = () => {
+        const tab = timers.find(t => t.title.includes('Seq Tabata'));
+        if (tab) handlePlayTimerClick(tab.id);
+      };
+
+      const qPom = document.getElementById('quickPomodoro');
+      if (qPom) qPom.onclick = () => {
+        const pom = {
+          id: 'pom-' + Date.now(),
+          title: 'Pomodoro Focus Cycle',
+          type: 'routine',
+          folder: 'work',
+          totalSeconds: 30 * 60,
+          steps: [
+            { title: 'Work Sprint', duration: 25 * 60, notes: 'Focus block' },
+            { title: 'Restorative Break', duration: 5 * 60, notes: 'Stand up, hydrate' }
+          ]
+        };
+        saveAndLaunchRoutine(pom);
+      };
+
+      // Header search input live filtering
+      const searchInp = document.getElementById('headerSearchInput');
+      if (searchInp) {
+        searchInp.addEventListener('input', () => renderTimersList());
+      }
+
+      // Add Buttons in sidebar and center
+      const sAdd = document.getElementById('sidebarAddTimerBtn');
+      if (sAdd) sAdd.onclick = openAddSheet;
+      const cAdd = document.getElementById('centerAddTimerBtn');
+      if (cAdd) cAdd.onclick = openAddSheet;
+      const heroBtn = document.getElementById('heroQuickLaunchBtn');
+      if (heroBtn) heroBtn.onclick = () => {
+        if (timers.length > 0) handlePlayTimerClick(timers[0].id);
+      };
+
+      // Right Widget Controls
+      const wPlay = document.getElementById('widgetPlayPauseBtn');
+      if (wPlay) wPlay.onclick = () => {
+        if (!activeTimer && timers.length > 0) {
+          handlePlayTimerClick(timers[0].id);
+        } else {
+          handlePlayPause();
+        }
+      };
+      const wReset = document.getElementById('widgetResetBtn');
+      if (wReset) wReset.onclick = handleReset;
+      const wNext = document.getElementById('widgetNextBtn');
+      if (wNext) wNext.onclick = handleNext;
+      const wLap = document.getElementById('widgetLapBtn');
+      if (wLap) wLap.onclick = () => {
+        const lBtn = document.getElementById('playerLapBtn');
+        if (lBtn) lBtn.click();
+      };
+      const wM1 = document.getElementById('widgetMinus1m');
+      if (wM1) wM1.onclick = () => adjustActiveTime(-60);
+      const wP1 = document.getElementById('widgetPlus1m');
+      if (wP1) wP1.onclick = () => adjustActiveTime(60);
+      const wP5 = document.getElementById('widgetPlus5m');
+      if (wP5) wP5.onclick = () => adjustActiveTime(300);
+
+      // Open fullscreen player
+      const openFullBtn = document.getElementById('openActivePlayerModalBtn');
+      if (openFullBtn) openFullBtn.onclick = () => {
+        const scr = document.getElementById('activePlayerScreen');
+        if (scr) scr.classList.add('open');
+      };
+
 
       // Check for ?load= query parameter to auto-start routine from AI Planner
       const urlParams = new URLSearchParams(window.location.search);
@@ -1239,7 +1530,10 @@
       if (btnPlus5m) btnPlus5m.onclick = () => adjustActiveTime(300);
 
       // Player Controls
-      document.getElementById('minimizePlayerBtn').addEventListener('click', closeActivePlayer);
+      const minBtn = document.getElementById('playerMinimizeBtn') || document.getElementById('minimizePlayerBtn');
+      if (minBtn) minBtn.addEventListener('click', closeActivePlayer);
+      const closeCustomX = document.getElementById('closeCustomModalBtn');
+      if (closeCustomX) closeCustomX.addEventListener('click', () => document.getElementById('customTimerModal').classList.remove('open'));
       document.getElementById('playerPlayPauseBtn').addEventListener('click', () => {
         if (isRunning) {
           pauseActiveTimer();

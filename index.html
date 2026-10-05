@@ -895,6 +895,106 @@
       }
     };
 
+    
+    // Direct .ics File Import in Dashboard
+    const dashIcsInput = document.getElementById('dashIcsFileInput');
+    const dashIcsBtn = document.getElementById('dashTriggerIcsBtn');
+    if (dashIcsBtn && dashIcsInput) {
+      document.getElementById("dashTriggerIcsBtn").onclick = () => dashIcsInput.click();
+      dashIcsInput.onchange = (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const content = evt.target.result;
+          if (!content || !content.includes('BEGIN:VCALENDAR')) {
+            alert('The selected file does not appear to be a valid iCalendar (.ics) file.');
+            return;
+          }
+          const calName = file.name.replace(/\.ics$/i, '') || 'Imported Calendar';
+          const newCalId = 'cal-' + Date.now();
+          const parsed = parseIcsTextToEvents(content, calName, 'outlook', newCalId);
+          if (parsed.length > 0) {
+            const newCal = {
+              id: newCalId,
+              name: calName,
+              url: 'file://' + file.name,
+              type: 'outlook',
+              color: '#0078d4',
+              enabled: true,
+              syncStatus: 'success',
+              eventCount: parsed.length,
+              lastSync: new Date().toISOString()
+            };
+            userProfile.linkedCalendars = userProfile.linkedCalendars || [];
+            userProfile.linkedCalendars.push(newCal);
+
+            const routineAnchors = (userProfile.calendarEvents || []).filter(ev => ev.sourceType === 'routine');
+            const otherEvents = (userProfile.calendarEvents || []).filter(ev => ev.sourceType !== 'routine');
+            userProfile.calendarEvents = routineAnchors.concat(otherEvents).concat(parsed);
+            userProfile.calendarEvents = deduplicateCalendarEvents(userProfile.calendarEvents);
+
+            saveStoredProfile(userProfile);
+            renderDashboardCalendarEvents();
+            renderMiniCalendar();
+            renderUpcomingSchedulePanel();
+            showAppToast(`✅ Imported ${parsed.length} meetings from ${file.name}!`);
+          } else {
+            alert('No active events found in the uploaded .ics file.');
+          }
+        };
+        reader.readAsText(file);
+      };
+    }
+
+    // Drag-and-drop .ics file onto Dashboard
+    window.addEventListener('dragover', (e) => e.preventDefault());
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const files = e.dataTransfer && e.dataTransfer.files;
+      if (files && files.length > 0) {
+        const file = files[0];
+        if (file.name.toLowerCase().endsWith('.ics') || (file.type && file.type.includes('calendar'))) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const content = evt.target.result;
+            if (content && content.includes('BEGIN:VCALENDAR')) {
+              const calName = file.name.replace(/\.ics$/i, '') || 'Imported Calendar';
+              const newCalId = 'cal-' + Date.now();
+              const parsed = parseIcsTextToEvents(content, calName, 'outlook', newCalId);
+              if (parsed.length > 0) {
+                const newCal = {
+                  id: newCalId,
+                  name: calName,
+                  url: 'file://' + file.name,
+                  type: 'outlook',
+                  color: '#0078d4',
+                  enabled: true,
+                  syncStatus: 'success',
+                  eventCount: parsed.length,
+                  lastSync: new Date().toISOString()
+                };
+                userProfile.linkedCalendars = userProfile.linkedCalendars || [];
+                userProfile.linkedCalendars.push(newCal);
+
+                const routineAnchors = (userProfile.calendarEvents || []).filter(ev => ev.sourceType === 'routine');
+                const otherEvents = (userProfile.calendarEvents || []).filter(ev => ev.sourceType !== 'routine');
+                userProfile.calendarEvents = routineAnchors.concat(otherEvents).concat(parsed);
+                userProfile.calendarEvents = deduplicateCalendarEvents(userProfile.calendarEvents);
+
+                saveStoredProfile(userProfile);
+                renderDashboardCalendarEvents();
+                renderMiniCalendar();
+                renderUpcomingSchedulePanel();
+                showAppToast(`✅ Imported ${parsed.length} meetings from ${file.name}!`);
+              }
+            }
+          };
+          reader.readAsText(file);
+        }
+      }
+    });
+
     // Mini Calendar Render (Accurate Month Layout, Clickable Days, Event Dots)
     function renderMiniCalendar() {
       const grid = document.getElementById('miniCalGrid');

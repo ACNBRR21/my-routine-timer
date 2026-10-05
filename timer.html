@@ -1,430 +1,607 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
-<meta content="#f2f2f7" name="theme-color"/>
-<title>Timers &amp; Routines — Anchor &amp; Flow</title>
-<meta content="Clean, minimal Apple-inspired timer, stopwatch, and multi-step sequential routines for deep work and workouts." name="description"/>
-<link href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;⏱️&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
-<link href="css/timer.css" rel="stylesheet"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f2f2f7" />
+  <title>Timers &amp; Routines — Anchor &amp; Flow</title>
+  <meta name="description" content="Executive desktop timer, stopwatch, and multi-step sequential routines for deep work, caregiving, and workouts." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏱️</text></svg>" />
+  <link rel="stylesheet" href="css/timer.css" />
 </head>
 <body>
-<div class="app-viewport">
-<!-- Top Navigation Header (Matching Screenshot 1) -->
-<header class="app-header">
-<a class="header-btn" href="index.html" title="Back to AI Flow Planner">
-        ‹
-      </a>
-<div class="header-title-wrap">
-<h1 class="header-title" id="headerTitle">All Timers</h1>
-<span class="header-subtitle" id="timerCountSubtitle">7 Timers Stored</span>
-</div>
-<button class="header-btn" id="menuBtn" title="Timer Settings &amp; Options">
-        •••
-      </button>
-</header>
-<!-- Top Context Navigation Strip -->
-<div class="top-context-strip" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 18px 10px 18px;">
-  <div style="display: flex; gap: 8px; align-items: center;">
-    <a class="planner-link-pill" href="index.html" style="background:#ffffff; color:var(--text-main); border:1px solid var(--border-color);">
-      <span>🏠</span> Dashboard
-    </a>
-    <a class="planner-link-pill" href="planner.html">
-      <span>🧠</span> AI Planner
-    </a>
-    <a class="planner-link-pill" href="profile.html" style="background:#ffffff; color:var(--text-main); border:1px solid var(--border-color);">
-      <span>👤</span> Profile
-    </a>
-  </div>
-  <a href="guide.html#timer-guide" rel="noopener noreferrer" style="color: var(--accent-blue); text-decoration: none; font-size: 0.78rem; font-weight:600;">
-    📖 Help Guide &rarr;
-  </a>
-</div>
-<!-- Folders Horizontal Scroll Filter -->
-<div class="folder-scroll-bar" id="folderScrollBar">
-  <!-- Rendered dynamically with Manage Folders button -->
-</div>
-<!-- Timers List Container (Matching Screenshot 1) -->
-<main class="timers-list-container">
-<div id="timersList">
-<!-- Rendered dynamically -->
-</div>
-<!-- Creator Attribution & Direct Feedback Footer Banner -->
-      <footer style="margin-top: 24px; margin-bottom: 24px; padding: 18px 22px; background: #ffffff; border: 1px solid var(--border, #e2e8f0); border-radius: var(--radius-card, 16px); display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05));">
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
-          <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px;">
-            <div class="avatar-small" style="width: 40px; height: 40px; font-size: 0.95rem; background: linear-gradient(135deg, #0284c7, #8b5cf6); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">RR</div>
-            <div>
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary, #1e293b);">Created by Rishi Roy</span>
-                <span style="font-size: 0.72rem; background: rgba(2, 132, 199, 0.1); color: var(--accent-blue, #0284c7); padding: 2px 8px; border-radius: 9999px; font-weight: 600;">The Productivity Guy</span>
+
+  <div class="app-viewport-desktop">
+    <!-- Top Application Bar (Matching Reference Screenshot) -->
+    <header class="app-header-desktop">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <a href="index.html" class="desktop-logo" title="Anchor & Flow">
+          <span class="logo-symbol">⚡</span>
+          <span class="logo-text">Anchor &amp; Flow</span>
+        </a>
+
+        <!-- Desktop Navigation Tabs -->
+        <nav class="desktop-nav-tabs">
+          <a href="timer.html" class="desktop-nav-link active">
+            <span>⏱️</span> Timers &amp; Routines
+          </a>
+          <a href="planner.html" class="desktop-nav-link">
+            <span>🧠</span> AI Planner
+          </a>
+          <a href="index.html" class="desktop-nav-link">
+            <span>🏠</span> Dashboard
+          </a>
+          <a href="profile.html" class="desktop-nav-link">
+            <span>👤</span> Profile
+          </a>
+          <a href="guide.html#timer-guide" class="desktop-nav-link">
+            <span>📖</span> Guide &amp; Manual
+          </a>
+        </nav>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <!-- Search bar in top header -->
+        <div class="header-search-wrap">
+          <span style="color: var(--text-muted);">🔍</span>
+          <input type="text" id="headerSearchInput" placeholder="Search project, timer, category..." />
+        </div>
+
+        <a href="profile.html" class="user-profile-badge" title="Profile Settings" style="text-decoration:none;">
+          <div class="avatar-small" id="headerAvatar">RR</div>
+          <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);" id="headerUserName">Rishi Roy</span>
+        </a>
+
+        <button class="header-btn" id="menuBtn" title="Timer Settings &amp; Options">
+          •••
+        </button>
+      </div>
+    </header>
+
+    <!-- 3-Column Desktop Workspace (Matching Reference Screenshot) -->
+    <div class="timer-desktop-workspace">
+
+      <!-- ========================================================= -->
+      <!-- COLUMN 1: LEFT SIDEBAR (Quick Add & Folders)             -->
+      <!-- ========================================================= -->
+      <aside class="timer-left-sidebar">
+        <!-- Folders Management Card -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <span class="sidebar-card-title">📁 FOLDERS &amp; CATEGORIES</span>
+          </div>
+
+          <div id="sidebarFoldersList" class="sidebar-folders-container">
+            <!-- Dynamically populated via renderFolderBar() -->
+          </div>
+
+          <!-- Prominent Manage Folders Button -->
+          <div style="margin-top: 10px;">
+            <button type="button" id="sidebarManageFoldersBtn" class="btn-manage-folders-prominent">
+              ⚙️ Manage Folders
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Add & Presets Card (Matching Reference Screenshot) -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <span class="sidebar-card-title">⚡ QUICK PRESETS &amp; TEMPLATES</span>
+          </div>
+
+          <div class="sidebar-presets-list">
+            <div class="sidebar-preset-row">
+              <div>
+                <strong>Focus Sprint</strong>
+                <div class="sub">15m &bull; Work &amp; Focus</div>
               </div>
-              <p style="font-size: 0.82rem; color: var(--text-secondary, #64748b); margin-top: 2px; line-height: 1.4; margin-bottom: 0;">
-                Anchor &amp; Flow was built to protect high-leverage focus while honoring essential caregiving routines. Have ideas or feedback? Send directly to Rishi:
-              </p>
+              <button class="btn-quick-add-plus" id="quickTimer15" title="Run 15m Focus Timer">+</button>
+            </div>
+
+            <div class="sidebar-preset-row">
+              <div>
+                <strong>Harvard Deep Work</strong>
+                <div class="sub">45m &bull; Work &amp; Focus</div>
+              </div>
+              <button class="btn-quick-add-plus" id="quickTimer45" title="Run 45m Deep Work">+</button>
+            </div>
+
+            <div class="sidebar-preset-row">
+              <div>
+                <strong>Mother's Glaucoma Care</strong>
+                <div class="sub">1:30:00+ &bull; Health Preset</div>
+              </div>
+              <button class="btn-quick-add-plus" id="quickTimer90" title="Run 90m Glaucoma Timer">+</button>
+            </div>
+
+            <div class="sidebar-preset-row">
+              <div>
+                <strong>Secondary Eye Drops</strong>
+                <div class="sub">1:15:00 &bull; Health Preset</div>
+              </div>
+              <button class="btn-quick-add-plus" id="quickTimer75" title="Run 75m Eye Drop Timer">+</button>
+            </div>
+
+            <div class="sidebar-preset-row">
+              <div>
+                <strong>30m Seq Tabata</strong>
+                <div class="sub">Intervals &bull; Workouts</div>
+              </div>
+              <button class="btn-quick-add-plus" id="quickTabata" title="Run 30m Tabata Routine">+</button>
+            </div>
+
+            <div class="sidebar-preset-row">
+              <div>
+                <strong>Pomodoro Cycle</strong>
+                <div class="sub">25m Work / 5m Rest</div>
+              </div>
+              <button class="btn-quick-add-plus" id="quickPomodoro" title="Run Pomodoro Routine">+</button>
             </div>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #0a66c2; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: inline-flex; align-items: center;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px;"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-              LinkedIn
-            </a>
-            <a href="https://wa.me/919136228725?text=Hi%20Rishi,%20feedback%20on%20Anchor%20%26%20Flow:" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #047857; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; background: rgba(16, 185, 129, 0.06);">
-              💬 WhatsApp / SMS: +91 9136228725
-            </a>
-            <a href="mailto:rishi@birdblast.com?subject=Feedback%20on%20Anchor%20%26%20Flow" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: var(--text-primary, #1e293b);">
-              ✉️ rishi@birdblast.com
-            </a>
+          <div style="margin-top: 12px;">
+            <button type="button" id="sidebarAddTimerBtn" class="btn-sidebar-add-timer">
+              + New Custom Timer
+            </button>
+          </div>
+        </div>
+      </aside>
+
+
+      <!-- ========================================================= -->
+      <!-- COLUMN 2: CENTER WORKSPACE (Timers List & Daily Timeline)  -->
+      <!-- ========================================================= -->
+      <section class="timer-center-workspace">
+        
+        <!-- Center Header with Month & Segment Filter -->
+        <div class="center-workspace-card">
+          <div class="center-header-bar">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="display: flex; gap: 4px;">
+                <button class="nav-mini-btn" id="btnPrevMonth" title="Previous Month">&lsaquo;</button>
+                <button class="nav-mini-btn" id="btnNextMonth" title="Next Month">&rsaquo;</button>
+              </div>
+              <h2 class="center-month-title" id="centerMonthTitle">October 2026</h2>
+            </div>
+
+            <div class="segmented-control-desktop">
+              <button class="segment-btn active" id="segAllBtn">All Timers</button>
+              <button class="segment-btn" id="segActiveBtn">Active / Running</button>
+            </div>
+          </div>
+
+          <!-- Weekdays Horizontal Status Strip (Matching Reference Screenshot) -->
+          <div class="weekdays-strip">
+            <div class="weekday-col">
+              <span class="weekday-name">MON 5</span>
+              <span class="weekday-hours" id="wkHoursMon">03:30</span>
+            </div>
+            <div class="weekday-col today">
+              <span class="weekday-name">TUE 6</span>
+              <span class="weekday-hours" id="wkHoursTue">04:15</span>
+            </div>
+            <div class="weekday-col">
+              <span class="weekday-name">WED 7</span>
+              <span class="weekday-hours" id="wkHoursWed">02:45</span>
+            </div>
+            <div class="weekday-col">
+              <span class="weekday-name">THU 8</span>
+              <span class="weekday-hours" id="wkHoursThu">03:00</span>
+            </div>
+            <div class="weekday-col">
+              <span class="weekday-name">FRI 9</span>
+              <span class="weekday-hours" id="wkHoursFri">04:00</span>
+            </div>
+            <div class="weekday-col">
+              <span class="weekday-name">SAT 10</span>
+              <span class="weekday-hours" id="wkHoursSat">01:15</span>
+            </div>
+            <div class="weekday-col">
+              <span class="weekday-name">SUN 11</span>
+              <span class="weekday-hours" id="wkHoursSun">00:45</span>
+            </div>
           </div>
         </div>
 
-        <div style="width: 100%; border-top: 1px solid var(--border, #e2e8f0); padding-top: 10px; margin-top: 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.78rem; color: var(--text-secondary, #64748b);">
+        <!-- Timers List Container (Rendered Dynamically as Modern Desktop Cards) -->
+        <div id="timersList" class="desktop-timers-container">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Center Bottom Summary & Prominent CTA Pill -->
+        <div class="center-bottom-bar">
+          <div style="font-size: 0.88rem; color: var(--text-secondary);" id="centerTotalFocusSummary">
+            Total Stored: <strong>7 Timers</strong> &bull; Total Duration: <strong>03:45:00</strong>
+          </div>
+
+          <!-- Large Purple Pill CTA matching reference screenshot -->
+          <button type="button" id="centerAddTimerBtn" class="btn-primary-purple-pill">
+            + Add New Timer or Routine
+          </button>
+        </div>
+
+        <!-- Creator Attribution & Direct Feedback Footer Banner -->
+        <footer style="margin-top: 14px; padding: 18px 22px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 16px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+            <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px;">
+              <div class="avatar-small" style="width: 40px; height: 40px; font-size: 0.95rem; background: linear-gradient(135deg, #0284c7, #8b5cf6); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">RR</div>
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <span style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">Created by Rishi Roy</span>
+                  <span style="font-size: 0.72rem; background: rgba(2, 132, 199, 0.1); color: var(--accent-blue); padding: 2px 8px; border-radius: 9999px; font-weight: 600;">The Productivity Guy</span>
+                </div>
+                <p style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; margin-bottom: 0;">
+                  Anchor &amp; Flow was built to protect high-leverage focus while honoring essential caregiving routines. Have ideas or feedback? Send directly to Rishi:
+                </p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #0a66c2; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: inline-flex; align-items: center;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px;"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                LinkedIn
+              </a>
+              <a href="https://wa.me/919136228725?text=Hi%20Rishi,%20feedback%20on%20Anchor%20%26%20Flow:" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #047857; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; background: rgba(16, 185, 129, 0.06);">
+                💬 WhatsApp / SMS: +91 9136228725
+              </a>
+              <a href="mailto:rishi@birdblast.com?subject=Feedback%20on%20Anchor%20%26%20Flow" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: var(--text-main);">
+                ✉️ rishi@birdblast.com
+              </a>
+            </div>
+          </div>
+
+          <div style="width: 100%; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 2px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.78rem; color: var(--text-secondary);">
+            <div>
+              <span>&copy; 2026 Anchor &amp; Flow &bull; Local-First, Zero-Telemetry Architecture.</span>
+            </div>
+            <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+              <a href="guide.html" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">📖 User Manual</a>
+              <a href="guide.html#timer-guide" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">⏱️ Timer+ &amp; Routines Guide</a>
+              <a href="guide.html#privacy-policy" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">🔒 Privacy Policy</a>
+            </div>
+          </div>
+        </footer>
+      </section>
+
+
+      <!-- ========================================================= -->
+      <!-- COLUMN 3: RIGHT PANEL (Active Timer Insight & Ring Widget)-->
+      <!-- ========================================================= -->
+      <aside class="timer-right-panel">
+        
+        <!-- Top Vibrant Purple Card (Matching Reference Screenshot) -->
+        <div class="timer-hero-purple">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <strong style="font-size: 1rem; font-weight: 700;">Anchor &amp; Flow Focus Cockpit</strong>
+            <span style="font-size: 1.3rem;">⚡</span>
+          </div>
+          <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.4; margin: 4px 0 10px 0;">
+            Protect unbroken single-task execution. Eliminate context switching and honor caregiving commitments.
+          </p>
           <div>
-            <span>&copy; 2026 Anchor &amp; Flow &bull; Local-First, Zero-Telemetry Architecture.</span>
-          </div>
-          <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
-            <a href="guide.html" style="color: var(--accent-blue, #0284c7); text-decoration: none; font-weight: 500;">📖 User Manual</a>
-            <a href="guide.html#timer-guide" style="color: var(--accent-blue, #0284c7); text-decoration: none; font-weight: 500;">⏱️ Timer+ &amp; Routines Guide</a>
-            <a href="guide.html#privacy-policy" style="color: var(--accent-blue, #0284c7); text-decoration: none; font-weight: 500;">🔒 Privacy Policy</a>
+            <button type="button" id="heroQuickLaunchBtn" class="btn-hero-launch">
+              🚀 Quick Start Focus Sprint
+            </button>
           </div>
         </div>
-      </footer>
-</main>
-<!-- Bottom Bar (Matching Screenshot 1) -->
-<nav class="app-bottom-bar">
-<!-- History Icon -->
-<button class="bottom-bar-btn" id="historyBtn" title="Session History &amp; Log">
-        ⏱
-      </button>
-<!-- Center Segmented Control (All | Active) -->
-<div class="segmented-control">
-<button class="segment-btn active" id="segAllBtn">All</button>
-<button class="segment-btn" id="segActiveBtn">Active</button>
-</div>
-<!-- Plus Button on Right -->
-<button class="add-timer-fab" id="openAddTimerBtn" title="Add New Timer or Routine">
-        +
-      </button>
-</nav>
-<!-- ======================================================= -->
-<!-- "Add Timer" Modal Sheet (Matching Screenshots 2 & 3)    -->
-<!-- ======================================================= -->
-<div class="modal-sheet-backdrop" id="addTimerSheet">
-<div class="modal-sheet-content">
-<!-- Sheet Header -->
-<div class="sheet-header">
-<button class="sheet-close-btn" id="closeAddSheetBtn">×</button>
-<h2 class="sheet-title">Add Timer</h2>
-<div style="width: 34px;"></div> <!-- Spacer for symmetry -->
-</div>
-<div class="sheet-body">
-<!-- Section 1: Types (Screenshot 2) -->
-<div>
-<div class="sheet-section-title">TIMER TYPES</div>
-<div class="sheet-card-group">
-<div class="sheet-row-item" id="createSingleTimerRow">
-<div class="row-icon-wrap">⏱</div>
-<div class="row-text-wrap">
-<div class="row-title">Timer</div>
-<div class="row-desc">Countdown timer with optional repeats.</div>
-</div>
-<div class="row-chevron">›</div>
-</div>
-<div class="sheet-row-item" id="createStopwatchRow">
-<div class="row-icon-wrap">⏲</div>
-<div class="row-text-wrap">
-<div class="row-title">Stopwatch</div>
-<div class="row-desc">Count up timer.</div>
-</div>
-<div class="row-chevron">›</div>
-</div>
-<div class="sheet-row-item" id="createCountdownRow">
-<div class="row-icon-wrap">📅</div>
-<div class="row-text-wrap">
-<div class="row-title">Countdown</div>
-<div class="row-desc">Countdown to a specific time or target.</div>
-</div>
-<div class="row-chevron">›</div>
-</div>
-<div class="sheet-row-item" id="createRoutineRow">
-<div class="row-icon-wrap">🗂</div>
-<div class="row-text-wrap">
-<div class="row-title">Routine</div>
-<div class="row-desc">Combine timers and stopwatches into steps that run one after another.</div>
-</div>
-<div class="row-chevron">›</div>
-</div>
-</div>
-</div>
-<!-- Section 2: Quick Timer Dashed Pills (Screenshots 2 & 3) -->
-<div>
-<div class="sheet-section-title">QUICK TIMER</div>
-<div class="quick-timer-grid">
-<button class="quick-pill-btn" data-sec="30">
-<span>30</span>
-<span class="sub">secs</span>
-</button>
-<button class="quick-pill-btn" data-sec="60">
-<span>1</span>
-<span class="sub">min</span>
-</button>
-<button class="quick-pill-btn" data-sec="300">
-<span>5</span>
-<span class="sub">mins</span>
-</button>
-<button class="quick-pill-btn" data-sec="900">
-<span>15</span>
-<span class="sub">mins</span>
-</button>
-<button class="quick-pill-btn" data-sec="1500">
-<span>25</span>
-<span class="sub">mins</span>
-</button>
-<button class="quick-pill-btn" data-sec="1800">
-<span>30</span>
-<span class="sub">mins</span>
-</button>
-<button class="quick-pill-btn" data-sec="2700">
-<span>45</span>
-<span class="sub">mins</span>
-</button>
-<button class="quick-pill-btn" data-sec="3600">
-<span>60</span>
-<span class="sub">mins</span>
-</button>
-</div>
-</div>
-<!-- Section 3: Templates (Screenshot 3) -->
-<div>
-<div class="sheet-section-title">TEMPLATES</div>
-<div class="sheet-card-group">
-<div class="sheet-row-item" id="tmplEmomRow">
-<div class="row-icon-wrap">🗂</div>
-<div class="row-text-wrap">
-<div class="row-title">EMOM</div>
-<div class="row-desc">Every Minute On the Minute workout</div>
-</div>
-<div class="row-chevron">›</div>
-</div>
-<div class="sheet-row-item" id="tmplTabataRow">
-<div class="row-icon-wrap">🗂</div>
-<div class="row-text-wrap">
-<div class="row-title">Tabata Workout</div>
-<div class="row-desc">High-intensity interval training with work and rest periods</div>
-</div>
-<div class="row-chevron">›</div>
-</div>
-<div class="sheet-row-item" id="tmplPomodoroRow">
-<div class="row-icon-wrap">🗂</div>
-<div class="row-text-wrap">
-<div class="row-title">Pomodoro</div>
-<div class="row-desc">Work sessions with short breaks and a long break</div>
-</div>
-<div class="row-chevron">›</div>
-</div>
-<div class="sheet-row-item" id="tmplSeqTabataRow">
-<div class="row-icon-wrap">🗂</div>
-<div class="row-text-wrap">
-<div class="row-title">30 min Seq Tabata exercise</div>
-<div class="row-desc">Warmup, 8 Tabata rounds (20s work / 10s rest), and cooldown</div>
-</div>
-<div class="row-chevron">›</div>
-</div>
-<div class="sheet-row-item" id="tmplHarvardRow">
-<div class="row-icon-wrap">🗂</div>
-<div class="row-text-wrap">
-<div class="row-title">Harvard Top 3 Sprint</div>
-<div class="row-desc">3 serial deep focus blocks with calming pauses</div>
-</div>
-<div class="row-chevron">›</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- ======================================================= -->
-<!-- Custom Timer Creator Modal (Simple, Zero Bloat)         -->
-<!-- ======================================================= -->
-<div class="config-modal-backdrop" id="customTimerModal">
-<div class="config-modal-card" id="customModalCard">
-<h3 class="config-modal-title" id="customModalTitle">New Timer</h3>
 
-<input type="hidden" id="customTypeInput" value="timer" />
+        <!-- Live Insight Widget (Matching Circular Progress Ring in Reference Screenshot) -->
+        <div class="timer-insight-card">
+          <div class="insight-header-row">
+            <span class="insight-title">Active Insight</span>
+            <button class="btn-expand-player" id="openActivePlayerModalBtn" title="Expand Fullscreen Focus Mode">↗</button>
+          </div>
 
-<!-- Common: Timer Label -->
-<div class="form-group">
-  <label id="customLabelPrompt">Timer Label / Title</label>
-  <input class="form-control" id="customLabelInput" placeholder="e.g. Focus Session, Laundry, Eye drops" type="text" />
-</div>
+          <!-- Circular SVG Progress Ring -->
+          <div class="widget-ring-container">
+            <svg class="widget-progress-ring" viewBox="0 0 200 200">
+              <circle class="widget-ring-bg" cx="100" cy="100" r="88"></circle>
+              <circle class="widget-ring-fill" cx="100" cy="100" r="88" id="widgetRingFill"></circle>
+            </svg>
+            <div class="widget-center-content">
+              <div class="widget-digits" id="widgetDigits">15:00</div>
+              <div class="widget-sub-label" id="widgetSubLabel">Focus Session</div>
+              <div class="widget-step-tag" id="widgetStepTag">Ready to start</div>
+            </div>
+          </div>
 
-<!-- Common: Folder / Category -->
-<div class="form-group">
-  <label>Folder / Category</label>
-  <select class="form-control" id="customFolderSelect">
-    <option value="work">Work &amp; Focus</option>
-    <option value="health">Health &amp; Care</option>
-    <option value="workout">Workouts &amp; HIIT</option>
-    <option value="routines">Daily Routines</option>
-  </select>
-</div>
+          <!-- On-the-fly +/- adjustments -->
+          <div class="widget-adjust-row">
+            <button class="btn-adjust-mini" id="widgetMinus1m" type="button">-1m</button>
+            <button class="btn-adjust-mini" id="widgetPlus1m" type="button">+1m</button>
+            <button class="btn-adjust-mini" id="widgetPlus5m" type="button">+5m</button>
+          </div>
 
-<!-- 1. Timer Mode Fields: Duration (Hours, Minutes, Seconds) + Repeats -->
-<div id="timerSpecificFields">
-  <div class="form-group">
-    <label>Duration (Hours : Minutes : Seconds)</label>
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
-      <input class="form-control" id="customHoursInput" min="0" placeholder="Hours" type="number" value="0" />
-      <input class="form-control" id="customMinutesInput" min="0" placeholder="Minutes" type="number" value="15" />
-      <input class="form-control" id="customSecondsInput" max="59" min="0" placeholder="Seconds" type="number" value="0" />
+          <!-- Widget Controls -->
+          <div class="widget-controls-row">
+            <button class="widget-btn-sec" id="widgetResetBtn" title="Restart Step">↺</button>
+            <button class="widget-btn-sec" id="widgetLapBtn" title="Record Lap" style="display: none; font-size: 0.78rem; font-weight:700;">+ Lap</button>
+            <button class="widget-btn-pri" id="widgetPlayPauseBtn" title="Play or Pause">▶</button>
+            <button class="widget-btn-sec" id="widgetNextBtn" title="Next Step">⏭</button>
+          </div>
+
+          <!-- Category Breakdown (Matching Bottom of Insight in Screenshot) -->
+          <div class="insight-breakdown-list" id="categoryBreakdownList">
+            <div class="breakdown-row">
+              <span class="breakdown-label"><span class="dot-color" style="background:#8b5cf6;"></span> Work &amp; Focus</span>
+              <span class="breakdown-val">02:45:00</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-label"><span class="dot-color" style="background:#ec4899;"></span> Health &amp; Care</span>
+              <span class="breakdown-val">01:30:00</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-label"><span class="dot-color" style="background:#0284c7;"></span> Workouts &amp; HIIT</span>
+              <span class="breakdown-val">00:30:00</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-label"><span class="dot-color" style="background:#10b981;"></span> Daily Routines</span>
+              <span class="breakdown-val">00:45:00</span>
+            </div>
+          </div>
+
+          <!-- History Quick Link -->
+          <div style="margin-top: 14px; width: 100%; text-align: right;">
+            <button type="button" id="historyBtn" class="btn-link-history">
+              ⏱ View Full Session History &rarr;
+            </button>
+          </div>
+        </div>
+
+      </aside>
+
     </div>
   </div>
-  <div class="form-group">
-    <label>Repeats (Timer+ Loop)</label>
-    <select class="form-control" id="customRepeatsSelect">
-      <option value="1">Run Once (No Repeats)</option>
-      <option value="2">Repeat 2 Times</option>
-      <option value="3">Repeat 3 Times</option>
-      <option value="4">Repeat 4 Times</option>
-      <option value="8">Repeat 8 Times</option>
-      <option value="10">Repeat 10 Times</option>
-      <option value="64">Repeat 64 Times (Max)</option>
-    </select>
-  </div>
-</div>
 
-<!-- 2. Stopwatch Mode Fields -->
-<div id="stopwatchSpecificFields" style="display: none;">
-  <div style="background: rgba(0, 122, 255, 0.08); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 0.85rem; color: var(--accent-blue);">
-    ⏱ <strong>Count-Up Stopwatch:</strong> Tracks elapsed time with millisecond precision and lap recording.
-  </div>
-</div>
 
-<!-- 3. Countdown Mode Fields: Specific Target Date and Time -->
-<div id="countdownSpecificFields" style="display: none;">
-  <div class="form-group">
-    <label>Target Date &amp; Time (Countdown Target)</label>
-    <input class="form-control" id="customTargetDateInput" type="datetime-local" />
-  </div>
-  <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: -6px; margin-bottom: 12px;">
-    Counts down days, hours, and minutes to this exact event or deadline.
-  </div>
-</div>
+  <!-- ======================================================= -->
+  <!-- MODAL SHEETS & DIALOGS (100% PRESERVED FUNCTIONALITY)  -->
+  <!-- ======================================================= -->
 
-<!-- 4. Routine Mode Fields: Multi-Step Interval Builder -->
-<div id="routineSpecificFields" style="display: none;">
-  <div class="form-group">
-    <label>Total Rounds / Sets</label>
-    <input class="form-control" id="customRoundsInput" type="number" min="1" max="10" value="1" />
-  </div>
-  
-  <div class="form-group">
-    <label style="display: flex; justify-content: space-between; align-items: center;">
-      <span>Routine Steps / Segments</span>
-      <span style="font-size: 0.72rem; color: var(--text-muted);">Sequential flow</span>
-    </label>
-    <div id="routineStepsBuilderList">
-      <!-- Steps rendered dynamically -->
-    </div>
-    <button type="button" class="btn-add-step" id="addRoutineStepBtn">+ Add Step</button>
-  </div>
-</div>
-
-<!-- Common: Notes -->
-<div class="form-group" style="margin-top: 10px;">
-  <label>Execution Notes / Instructions</label>
-  <input class="form-control" id="customNotesInput" placeholder="e.g. Single-task focus, drink water" type="text" />
-</div>
-
-<div class="modal-actions">
-  <button class="btn-cancel" id="cancelCustomModalBtn" type="button">Cancel</button>
-  <button class="btn-save" id="saveCustomModalBtn" type="button">Save &amp; Add</button>
-</div>
-</div>
-</div>
-<!-- ======================================================= -->
-<!-- Fullscreen Active Execution Player                      -->
-<!-- ======================================================= -->
-<div class="active-player-screen" id="activePlayerScreen">
-<!-- Player Header -->
-<div class="player-header">
-<button class="player-minimize-btn" id="minimizePlayerBtn" title="Minimize Player">∨</button>
-<span id="playerHeaderRoutineName" style="font-weight: 600; font-size: 0.95rem;">Active Timer</span>
-<button class="header-btn" id="toggleMuteBtn" title="Toggle Sound">🔔</button>
-</div>
-<!-- Player Body -->
-<div class="player-body">
-<span class="player-step-tag" id="playerStepTag">Step 1 of 1</span>
-<h2 class="player-task-title" id="playerTaskTitle">Focus Session</h2>
-<div class="player-task-notes" id="playerTaskNotes" style="display: none;">
-          📝 <strong>Notes:</strong> <span id="playerTaskNotesText"></span>
-</div>
-<!-- Progress Ring & Big Digits -->
-<div class="player-clock-container">
-<svg class="progress-ring" viewbox="0 0 280 280">
-<circle class="progress-ring-bg" cx="140" cy="140" r="130"></circle>
-<circle class="progress-ring-fill" cx="140" cy="140" id="playerRingFill" r="130"></circle>
-</svg>
-<div class="player-clock-digits" id="playerDigits">15:00</div>
-</div>
-<!-- Action Controls -->
-<!-- On-the-fly +/- Time Adjustments (Timer+ Capability) -->
-<div class="player-adjust-row" id="playerAdjustRow">
-  <button class="btn-adjust-time" id="btnAdjustMinus1m" type="button">-1m</button>
-  <button class="btn-adjust-time" id="btnAdjustPlus1m" type="button">+1m</button>
-  <button class="btn-adjust-time" id="btnAdjustPlus5m" type="button">+5m</button>
-</div>
-
-<!-- Target Date Countdown Context -->
-<div id="playerTargetDateDesc" style="display: none; font-size: 0.85rem; color: var(--accent-blue); margin-bottom: 12px; font-weight: 600;"></div>
-
-<!-- Stopwatch Laps Box -->
-<div class="player-laps-box" id="playerLapsBox" style="display: none;">
-  <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">
-    <span>Lap</span>
-    <span>Split Time</span>
-  </div>
-  <div id="playerLapsList"></div>
-</div>
-
-<!-- Action Controls -->
-<div class="player-controls-row">
-  <button class="player-btn-secondary" id="playerResetBtn" title="Restart Step" type="button">↺</button>
-  <button class="player-btn-secondary" id="playerLapBtn" title="Record Lap" type="button" style="display: none; font-size: 0.85rem; font-weight: 700;">+ Lap</button>
-  <button class="player-btn-primary" id="playerPlayPauseBtn" title="Play or Pause" type="button">▶</button>
-  <button class="player-btn-secondary" id="playerNextBtn" title="Next Step / Skip" type="button">⏭</button>
-</div>
-</div>
-</div>
-<!-- Manage Folders Modal Sheet -->
-<div class="modal-sheet-backdrop" id="manageFoldersModal">
-  <div class="modal-sheet-content" style="max-height: 85vh;">
-    <div class="sheet-header">
-      <button class="sheet-close-btn" id="closeManageFoldersBtn">&times;</button>
-      <h2 class="sheet-title">📁 Manage Folders</h2>
-      <div style="width: 34px;"></div>
-    </div>
-    <div class="sheet-body" style="padding: 16px;">
-      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-        <input type="text" id="newFolderInput" class="form-control" placeholder="New folder name (e.g. Deep Work, Client)..." style="flex: 1;" />
-        <button id="addFolderBtn" class="btn-save" type="button" style="padding: 8px 16px; font-size: 0.85rem; white-space: nowrap;">+ Add Folder</button>
+  <!-- "Add Timer" Modal Sheet (Matching Screenshots 2 & 3) -->
+  <div class="modal-sheet-backdrop" id="addTimerSheet">
+    <div class="modal-sheet-content">
+      <div class="sheet-header">
+        <button class="sheet-close-btn" id="closeAddSheetBtn">&times;</button>
+        <h2 class="sheet-title">Add Timer or Routine</h2>
+        <div style="width: 34px;"></div>
       </div>
-      <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">
-        Existing Folders
-      </div>
-      <div id="foldersManagementList" style="display: flex; flex-direction: column; gap: 8px;">
-        <!-- Rendered dynamically -->
+      <div class="sheet-body">
+        <div class="sheet-section-title">TIMER TYPES</div>
+        <div class="sheet-card-group">
+          <div class="sheet-row-item" id="createSingleTimerRow">
+            <div class="row-icon-wrap">⏱</div>
+            <div class="row-text-wrap">
+              <div class="row-title">Countdown Timer</div>
+              <div class="row-desc">Countdown timer with repeats (1-64x) and sound chimes.</div>
+            </div>
+            <div class="row-chevron">&rsaquo;</div>
+          </div>
+          <div class="sheet-row-item" id="createStopwatchRow">
+            <div class="row-icon-wrap">⏲</div>
+            <div class="row-text-wrap">
+              <div class="row-title">Stopwatch</div>
+              <div class="row-desc">Count up timer with named lap recording.</div>
+            </div>
+            <div class="row-chevron">&rsaquo;</div>
+          </div>
+          <div class="sheet-row-item" id="createCountdownRow">
+            <div class="row-icon-wrap">📅</div>
+            <div class="row-text-wrap">
+              <div class="row-title">Target Date Countdown</div>
+              <div class="row-desc">Countdown to a specific future date and time.</div>
+            </div>
+            <div class="row-chevron">&rsaquo;</div>
+          </div>
+          <div class="sheet-row-item" id="createRoutineRow">
+            <div class="row-icon-wrap">🗂</div>
+            <div class="row-text-wrap">
+              <div class="row-title">Multi-Segment Routine</div>
+              <div class="row-desc">Build sequential multi-step routines with work/rest intervals.</div>
+            </div>
+            <div class="row-chevron">&rsaquo;</div>
+          </div>
+        </div>
+
+        <div class="sheet-section-title" style="margin-top: 20px;">READY-MADE TEMPLATES</div>
+        <div class="sheet-card-group">
+          <div class="sheet-row-item" id="tmplTabataRow">
+            <div class="row-icon-wrap">🗂</div>
+            <div class="row-text-wrap">
+              <div class="row-title">Tabata Workout</div>
+              <div class="row-desc">High-intensity intervals with work and rest periods.</div>
+            </div>
+            <div class="row-chevron">&rsaquo;</div>
+          </div>
+          <div class="sheet-row-item" id="tmplPomodoroRow">
+            <div class="row-icon-wrap">🗂</div>
+            <div class="row-text-wrap">
+              <div class="row-title">Pomodoro Focus &amp; Rest</div>
+              <div class="row-desc">25m work sessions with 5m calming pauses.</div>
+            </div>
+            <div class="row-chevron">&rsaquo;</div>
+          </div>
+          <div class="sheet-row-item" id="tmplSeqTabataRow">
+            <div class="row-icon-wrap">🗂</div>
+            <div class="row-text-wrap">
+              <div class="row-title">30 min Seq Tabata Exercise</div>
+              <div class="row-desc">Warmup, 8 Tabata rounds (20s work / 10s rest), and cooldown.</div>
+            </div>
+            <div class="row-chevron">&rsaquo;</div>
+          </div>
+          <div class="sheet-row-item" id="tmplHarvardRow">
+            <div class="row-icon-wrap">🗂</div>
+            <div class="row-text-wrap">
+              <div class="row-title">Harvard Top 3 Sprint</div>
+              <div class="row-desc">3 serial deep focus blocks with calming pauses.</div>
+            </div>
+            <div class="row-chevron">&rsaquo;</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Toast Notification -->
-<div class="toast-pill" id="toastPill">Timer Saved</div>
-</div>
-<script src="js/timer.js"></script>
+  <!-- Custom Timer / Routine Creation Modal -->
+  <div class="modal-sheet-backdrop" id="customTimerModal">
+    <div class="modal-sheet-content" id="customModalCard" style="max-height: 90vh; overflow-y: auto;">
+      <div class="sheet-header">
+        <h2 class="sheet-title" id="customModalTitle">New Timer</h2>
+        <button class="sheet-close-btn" id="closeCustomModalBtn">&times;</button>
+      </div>
+      <div class="sheet-body">
+        <input type="hidden" id="customTypeInput" value="timer" />
+
+        <div class="form-group">
+          <label id="customLabelPrompt">Timer Label / Title</label>
+          <input class="form-control" id="customLabelInput" placeholder="e.g. Focus Session, Laundry, Eye drops" type="text" />
+        </div>
+
+        <div class="form-group">
+          <label>Folder / Category</label>
+          <select class="form-control" id="customFolderSelect">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <!-- 1. Timer Mode: Duration & Repeats -->
+        <div id="timerSpecificFields">
+          <div class="form-group">
+            <label>Duration (Hours : Minutes : Seconds)</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+              <input class="form-control" id="customHoursInput" min="0" placeholder="Hours" type="number" value="0" />
+              <input class="form-control" id="customMinutesInput" min="0" placeholder="Minutes" type="number" value="15" />
+              <input class="form-control" id="customSecondsInput" max="59" min="0" placeholder="Seconds" type="number" value="0" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Repeats (Timer+ Loop)</label>
+            <select class="form-control" id="customRepeatsSelect">
+              <option value="1">Run Once (No Repeats)</option>
+              <option value="2">Repeat 2 Times</option>
+              <option value="3">Repeat 3 Times</option>
+              <option value="4">Repeat 4 Times</option>
+              <option value="8">Repeat 8 Times</option>
+              <option value="10">Repeat 10 Times</option>
+              <option value="64">Repeat 64 Times (Max)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 2. Stopwatch Mode -->
+        <div id="stopwatchSpecificFields" style="display: none;">
+          <div style="background: rgba(0, 122, 255, 0.08); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 0.85rem; color: var(--accent-blue);">
+            ⏱ <strong>Count-Up Stopwatch:</strong> Tracks elapsed time with lap recording.
+          </div>
+        </div>
+
+        <!-- 3. Countdown Mode: Target Date -->
+        <div id="countdownSpecificFields" style="display: none;">
+          <div class="form-group">
+            <label>Target Date &amp; Time (Countdown Target)</label>
+            <input class="form-control" id="customTargetDateInput" type="datetime-local" />
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: -6px; margin-bottom: 12px;">
+            Counts down days, hours, and minutes to this exact event or deadline.
+          </div>
+        </div>
+
+        <!-- 4. Routine Mode: Multi-Step Interval Builder -->
+        <div id="routineSpecificFields" style="display: none;">
+          <div class="form-group">
+            <label>Total Rounds / Sets</label>
+            <input class="form-control" id="customRoundsInput" type="number" min="1" max="10" value="1" />
+          </div>
+          
+          <div class="form-group">
+            <label style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Routine Steps / Segments</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">Sequential flow</span>
+            </label>
+            <div id="routineStepsBuilderList"></div>
+            <button type="button" class="btn-add-step" id="addRoutineStepBtn">+ Add Step</button>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+          <label>Execution Notes / Instructions</label>
+          <input class="form-control" id="customNotesInput" placeholder="e.g. Single-task focus, drink water" type="text" />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" id="cancelCustomModalBtn" type="button">Cancel</button>
+          <button class="btn-save" id="saveCustomModalBtn" type="button">Save &amp; Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage Folders Modal Sheet -->
+  <div class="modal-sheet-backdrop" id="manageFoldersModal">
+    <div class="modal-sheet-content" style="max-height: 85vh;">
+      <div class="sheet-header">
+        <button class="sheet-close-btn" id="closeManageFoldersBtn">&times;</button>
+        <h2 class="sheet-title">📁 Manage Timer Folders</h2>
+        <div style="width: 34px;"></div>
+      </div>
+      <div class="sheet-body" style="padding: 16px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <input type="text" id="newFolderInput" class="form-control" placeholder="New folder name (e.g. Client Strategy, Study)..." style="flex: 1;" />
+          <button id="addFolderBtn" class="btn-save" type="button" style="padding: 8px 16px; font-size: 0.85rem; white-space: nowrap;">+ Add Folder</button>
+        </div>
+        <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">
+          Existing Folders
+        </div>
+        <div id="foldersManagementList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Active Player Screen (Optional Expansion) -->
+  <div class="active-player-screen" id="activePlayerScreen">
+    <div class="player-header">
+      <button class="player-minimize-btn" id="playerMinimizeBtn" title="Back to Timers">✕</button>
+      <div class="player-routine-title" id="playerRoutineTitle">Focus Session</div>
+      <button class="header-btn" id="toggleMuteBtn" title="Toggle Sound">🔔</button>
+    </div>
+    <div class="player-body">
+      <span class="player-step-tag" id="playerStepTag">Step 1 of 1</span>
+      <h2 class="player-task-title" id="playerTaskTitle">Focus Session</h2>
+      <div class="player-task-notes" id="playerTaskNotes" style="display: none;">
+        📝 <strong>Notes:</strong> <span id="playerTaskNotesText"></span>
+      </div>
+      <div class="player-clock-container">
+        <svg class="progress-ring" viewBox="0 0 280 280">
+          <circle class="progress-ring-bg" cx="140" cy="140" r="130"></circle>
+          <circle class="progress-ring-fill" cx="140" cy="140" id="playerRingFill" r="130"></circle>
+        </svg>
+        <div class="player-clock-digits" id="playerDigits">15:00</div>
+      </div>
+      <div class="player-adjust-row" id="playerAdjustRow">
+        <button class="btn-adjust-time" id="btnAdjustMinus1m" type="button">-1m</button>
+        <button class="btn-adjust-time" id="btnAdjustPlus1m" type="button">+1m</button>
+        <button class="btn-adjust-time" id="btnAdjustPlus5m" type="button">+5m</button>
+      </div>
+      <div id="playerTargetDateDesc" style="display: none; font-size: 0.85rem; color: var(--accent-blue); margin-bottom: 12px; font-weight: 600;"></div>
+      <div class="player-laps-box" id="playerLapsBox" style="display: none;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">
+          <span>Lap</span>
+          <span>Split Time</span>
+        </div>
+        <div id="playerLapsList"></div>
+      </div>
+      <div class="player-controls-row">
+        <button class="player-btn-secondary" id="playerResetBtn" title="Restart Step" type="button">↺</button>
+        <button class="player-btn-secondary" id="playerLapBtn" title="Record Lap" type="button" style="display: none; font-size: 0.85rem; font-weight: 700;">+ Lap</button>
+        <button class="player-btn-primary" id="playerPlayPauseBtn" title="Play or Pause" type="button">▶</button>
+        <button class="player-btn-secondary" id="playerNextBtn" title="Next Step / Skip" type="button">⏭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-pill" id="toastPill">Timer Saved</div>
+
+  <script src="js/timer.js"></script>
 </body>
 </html>

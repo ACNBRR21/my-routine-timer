@@ -466,109 +466,6 @@ function showAppToast(msg, duration = 3000) {
 // LIVE CALENDAR SYNC & MULTI-PROXY RFC 5545 PARSER ENGINE
 // =========================================================
 
-// Parses raw iCalendar (RFC 5545) text into structured meeting objects
-function parseIcsTextToEvents(icsText, calendarName, sourceType, calendarId = null) {
-  if (!icsText || typeof icsText !== 'string') return [];
-
-  // 1. Line unfolding (RFC 5545 section 3.1)
-  const unfolded = icsText.replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '');
-  const lines = unfolded.split(/\r\n|\r|\n/);
-
-  const rawEvents = [];
-  let inEvent = false;
-  let cur = {};
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (line === 'BEGIN:VEVENT') {
-      inEvent = true;
-      cur = {};
-    } else if (line === 'END:VEVENT') {
-      if (cur.summary && cur.dtstart) {
-        rawEvents.push(cur);
-      }
-      inEvent = false;
-    } else if (inEvent) {
-      const colonIdx = line.indexOf(':');
-      if (colonIdx > -1) {
-        const propPart = line.substring(0, colonIdx).trim().toUpperCase();
-        const valPart = line.substring(colonIdx + 1).trim();
-
-        if (propPart === 'SUMMARY' || propPart.startsWith('SUMMARY;')) {
-          cur.summary = valPart.replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\n/g, ' ').trim();
-        } else if (propPart === 'DTSTART' || propPart.startsWith('DTSTART;')) {
-          cur.dtstart = valPart;
-        } else if (propPart === 'DTEND' || propPart.startsWith('DTEND;')) {
-          cur.dtend = valPart;
-        } else if (propPart === 'LOCATION' || propPart.startsWith('LOCATION;')) {
-          cur.location = valPart.replace(/\\,/g, ',').replace(/\\;/g, ';').trim();
-        } else if (propPart === 'DESCRIPTION' || propPart.startsWith('DESCRIPTION;')) {
-          cur.description = valPart.replace(/\\,/g, ',').replace(/\\;/g, ';').trim();
-        }
-      }
-    }
-  }
-
-  // 2. Parse Date-Times into Local Time
-  const now = new Date();
-  const todayY = now.getFullYear();
-  const todayM = now.getMonth();
-  const todayD = now.getDate();
-  const startOfToday = new Date(todayY, todayM, todayD).getTime();
-  const todayStr = `${todayY}-${String(todayM + 1).padStart(2, '0')}-${String(todayD).padStart(2, '0')}`;
-
-  const parsedEvents = [];
-
-  rawEvents.forEach((ev, idx) => {
-    const startObj = parseIcsDateString(ev.dtstart);
-    const endObj = parseIcsDateString(ev.dtend) || new Date(startObj.getTime() + 30 * 60000);
-
-    const evY = startObj.getFullYear();
-    const evM = startObj.getMonth();
-    const evD = startObj.getDate();
-    const evDateStr = `${evY}-${String(evM + 1).padStart(2, '0')}-${String(evD).padStart(2, '0')}`;
-
-    const startOfEvDay = new Date(evY, evM, evD).getTime();
-    const daysFromToday = Math.round((startOfEvDay - startOfToday) / 86400000);
-
-    const isToday = (evDateStr === todayStr);
-    const isFuture = (startObj.getTime() >= now.getTime() - 4 * 3600000);
-
-    let relativeDay = 'Today';
-    if (daysFromToday === 1) relativeDay = 'Tomorrow';
-    else if (daysFromToday === 2) relativeDay = 'In 2 days';
-    else if (daysFromToday > 2 && daysFromToday <= 7) relativeDay = startObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-    else if (daysFromToday < 0) relativeDay = 'Past';
-    else relativeDay = startObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-
-    const durMins = Math.max(15, Math.round((endObj.getTime() - startObj.getTime()) / 60000));
-    const startTimeStr = `${String(startObj.getHours()).padStart(2, '0')}:${String(startObj.getMinutes()).padStart(2, '0')}`;
-    const endTimeStr = `${String(endObj.getHours()).padStart(2, '0')}:${String(endObj.getMinutes()).padStart(2, '0')}`;
-
-    parsedEvents.push({
-      id: `live-ev-${idx + 1}-${Date.now()}`,
-      calendarId: calendarId || null,
-      title: ev.summary || 'Calendar Meeting',
-      startTime: startTimeStr,
-      endTime: endTimeStr,
-      duration: durMins,
-      dateStr: evDateStr,
-      dateFormatted: startObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }),
-      daysFromToday: daysFromToday,
-      relativeDay: relativeDay,
-      isToday: isToday,
-      isFuture: isFuture,
-      calendarName: calendarName || 'Google Calendar',
-      sourceType: sourceType || 'google',
-      isAnchor: true,
-      timestamp: startObj.getTime()
-    });
-  });
-
-  return parsedEvents;
-}
-
-// Parses ICS date strings like "20261005T093000Z" (UTC) or "20261005T140000" (Local)
 function parseIcsDateString(str) {
   if (!str) return new Date();
   const clean = String(str).trim().replace(/^.*:/, '').replace(/[^0-9TZ]/g, '');
@@ -608,22 +505,207 @@ function parseIcsDateString(str) {
   return new Date();
 }
 
+// Parses raw iCalendar (RFC 5545) text into structured meeting objects with RRULE recurrence expansion
+function parseIcsTextToEvents(icsText, calendarName, sourceType, calendarId = null) {
+  if (!icsText || typeof icsText !== 'string') return [];
+
+  // 1. Line unfolding (RFC 5545 section 3.1)
+  const unfolded = icsText.replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '');
+  const lines = unfolded.split(/\r\n|\r|\n/);
+
+  const rawEvents = [];
+  let inEvent = false;
+  let cur = {};
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line === 'BEGIN:VEVENT') {
+      inEvent = true;
+      cur = {};
+    } else if (line === 'END:VEVENT') {
+      if (cur.dtstart && cur.status !== 'CANCELLED') {
+        if (!cur.summary || !cur.summary.trim()) {
+          cur.summary = cur.busyStatus ? `Busy (${cur.busyStatus})` : 'Calendar Meeting';
+        }
+        rawEvents.push(cur);
+      }
+      inEvent = false;
+    } else if (inEvent) {
+      const colonIdx = line.indexOf(':');
+      if (colonIdx > -1) {
+        const propPart = line.substring(0, colonIdx).trim().toUpperCase();
+        const valPart = line.substring(colonIdx + 1).trim();
+
+        if (propPart === 'SUMMARY' || propPart.startsWith('SUMMARY;')) {
+          cur.summary = valPart.replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\n/g, ' ').trim();
+        } else if (propPart === 'DTSTART' || propPart.startsWith('DTSTART;')) {
+          cur.dtstart = valPart;
+        } else if (propPart === 'DTEND' || propPart.startsWith('DTEND;')) {
+          cur.dtend = valPart;
+        } else if (propPart === 'RRULE' || propPart.startsWith('RRULE;')) {
+          cur.rrule = valPart;
+        } else if (propPart === 'STATUS' || propPart.startsWith('STATUS;')) {
+          cur.status = valPart.toUpperCase();
+        } else if (propPart === 'LOCATION' || propPart.startsWith('LOCATION;')) {
+          cur.location = valPart.replace(/\\,/g, ',').replace(/\\;/g, ';').trim();
+        } else if (propPart === 'DESCRIPTION' || propPart.startsWith('DESCRIPTION;')) {
+          cur.description = valPart.replace(/\\,/g, ',').replace(/\\;/g, ';').trim();
+        } else if (propPart === 'X-MICROSOFT-CDO-BUSYSTATUS') {
+          cur.busyStatus = valPart;
+        }
+      }
+    }
+  }
+
+  // 2. Parse Date-Times into Local Time and expand recurring occurrences
+  const now = new Date();
+  const todayY = now.getFullYear();
+  const todayM = now.getMonth();
+  const todayD = now.getDate();
+  const startOfToday = new Date(todayY, todayM, todayD).getTime();
+  const todayStr = `${todayY}-${String(todayM + 1).padStart(2, '0')}-${String(todayD).padStart(2, '0')}`;
+
+  const parsedEvents = [];
+  const DAYS_LOOKAHEAD = 35; // Project recurring events up to 35 days ahead
+
+  rawEvents.forEach((ev, idx) => {
+    const startObj = parseIcsDateString(ev.dtstart);
+    const endObj = parseIcsDateString(ev.dtend) || new Date(startObj.getTime() + 30 * 60000);
+    const durMins = Math.max(15, Math.round((endObj.getTime() - startObj.getTime()) / 60000));
+
+    const occurrences = [];
+
+    if (ev.rrule) {
+      // Expand recurring event across current window
+      const rruleUpper = ev.rrule.toUpperCase();
+      const isDaily = rruleUpper.includes('FREQ=DAILY');
+      const isWeekly = rruleUpper.includes('FREQ=WEEKLY');
+      const isMonthly = rruleUpper.includes('FREQ=MONTHLY');
+
+      // Check BYDAY (e.g. BYDAY=MO,TU,WE,TH,FR)
+      const byDayMatch = rruleUpper.match(/BYDAY=([A-Z,]+)/);
+      const byDays = byDayMatch ? byDayMatch[1].split(',') : null;
+      const dayMap = { 'SU': 0, 'MO': 1, 'TU': 2, 'WE': 3, 'TH': 4, 'FR': 5, 'SA': 6 };
+
+      // Iterate through dates from yesterday to +35 days
+      for (let offset = -1; offset <= DAYS_LOOKAHEAD; offset++) {
+        const checkDate = new Date(todayY, todayM, todayD + offset);
+        const dayOfWeek = checkDate.getDay();
+
+        let matches = false;
+        if (isDaily) {
+          matches = true;
+        } else if (isWeekly) {
+          if (byDays && byDays.length > 0) {
+            matches = byDays.some(code => dayMap[code] === dayOfWeek);
+          } else {
+            matches = (dayOfWeek === startObj.getDay());
+          }
+        } else if (isMonthly) {
+          matches = (checkDate.getDate() === startObj.getDate());
+        }
+
+        if (matches) {
+          const occStart = new Date(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate(), startObj.getHours(), startObj.getMinutes(), 0);
+          const occEnd = new Date(occStart.getTime() + durMins * 60000);
+          occurrences.push({ start: occStart, end: occEnd });
+        }
+      }
+    }
+
+    // Always include original event if no occurrences generated
+    if (occurrences.length === 0) {
+      occurrences.push({ start: startObj, end: endObj });
+    }
+
+    occurrences.forEach((occ, oIdx) => {
+      const evY = occ.start.getFullYear();
+      const evM = occ.start.getMonth();
+      const evD = occ.start.getDate();
+      const evDateStr = `${evY}-${String(evM + 1).padStart(2, '0')}-${String(evD).padStart(2, '0')}`;
+
+      const startOfEvDay = new Date(evY, evM, evD).getTime();
+      const daysFromToday = Math.round((startOfEvDay - startOfToday) / 86400000);
+
+      const isToday = (evDateStr === todayStr);
+      const isFuture = (occ.start.getTime() >= now.getTime() - 4 * 3600000);
+
+      let relativeDay = 'Today';
+      if (daysFromToday === 1) relativeDay = 'Tomorrow';
+      else if (daysFromToday === 2) relativeDay = 'In 2 days';
+      else if (daysFromToday > 2 && daysFromToday <= 7) relativeDay = occ.start.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+      else if (daysFromToday < 0) relativeDay = 'Past';
+      else relativeDay = occ.start.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+
+      const startTimeStr = `${String(occ.start.getHours()).padStart(2, '0')}:${String(occ.start.getMinutes()).padStart(2, '0')}`;
+      const endTimeStr = `${String(occ.end.getHours()).padStart(2, '0')}:${String(occ.end.getMinutes()).padStart(2, '0')}`;
+
+      parsedEvents.push({
+        id: `live-ev-${idx + 1}-${oIdx}-${Date.now()}`,
+        calendarId: calendarId || null,
+        title: ev.summary || 'Calendar Meeting',
+        startTime: startTimeStr,
+        endTime: endTimeStr,
+        duration: durMins,
+        dateStr: evDateStr,
+        dateFormatted: occ.start.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }),
+        daysFromToday: daysFromToday,
+        relativeDay: relativeDay,
+        isToday: isToday,
+        isFuture: isFuture,
+        calendarName: calendarName || 'Calendar',
+        sourceType: sourceType || 'google',
+        isAnchor: true,
+        timestamp: occ.start.getTime()
+      });
+    });
+  });
+
+  return parsedEvents;
+}
+
 // High-Speed Multi-Strategy Live Calendar Fetcher (Fast Parallel Racing & CORS-Resilient)
 async function fetchCalendarFromUrl(calendarUrl, onProgress = null) {
   if (!calendarUrl) throw new Error('No calendar URL provided.');
 
   let cleanUrl = calendarUrl.trim();
+
+  // If raw iCal text was pasted directly into the URL input
+  if (cleanUrl.includes('BEGIN:VCALENDAR')) {
+    if (typeof onProgress === 'function') {
+      onProgress({ stage: 'feed_downloaded', percent: 80, message: 'Detected direct iCalendar data feed...' });
+    }
+    return cleanUrl;
+  }
+
+  // Automatic Normalization of Outlook, Google, and Webcal URLs
   if (cleanUrl.startsWith('webcal://')) {
     cleanUrl = 'https://' + cleanUrl.substring(9);
   } else if (cleanUrl.startsWith('http://') && (cleanUrl.includes('google.com') || cleanUrl.includes('office.com') || cleanUrl.includes('outlook.'))) {
     cleanUrl = 'https://' + cleanUrl.substring(7);
   }
 
+  // Convert Outlook web view links (.html / .aspx) to the raw .ics feed
+  if (cleanUrl.includes('/reachcalendar.html')) {
+    cleanUrl = cleanUrl.replace('/reachcalendar.html', '/reachcalendar.ics');
+  } else if (cleanUrl.includes('/reachcalendar.aspx')) {
+    cleanUrl = cleanUrl.replace('/reachcalendar.aspx', '/reachcalendar.ics');
+  }
+
+  // Convert Google Calendar embed links to public basic.ics feed
+  if (cleanUrl.includes('calendar.google.com/calendar/embed')) {
+    const urlObj = new URL(cleanUrl);
+    const src = urlObj.searchParams.get('src');
+    if (src) {
+      cleanUrl = `https://calendar.google.com/calendar/ical/${encodeURIComponent(src)}/public/basic.ics`;
+    }
+  }
+
   if (typeof onProgress === 'function') {
     onProgress({
       stage: 'attempting_strategy',
       percent: 20,
-      message: 'Connecting via high-speed calendar relays...'
+      message: 'Connecting to calendar via fast relays...'
     });
   }
 
@@ -636,40 +718,40 @@ async function fetchCalendarFromUrl(calendarUrl, onProgress = null) {
     const workerUrl = userProxy.includes('?') 
       ? `${userProxy}&proxyUrl=${encodeURIComponent(cleanUrl)}`
       : `${userProxy}?proxyUrl=${encodeURIComponent(cleanUrl)}`;
-    endpoints.push({ name: 'Cloudflare Worker Relay', url: workerUrl, timeout: 4500, isJson: false });
+    endpoints.push({ name: 'Cloudflare Worker Relay', url: workerUrl, timeout: 8000, isJson: false });
   }
 
-  // Default Worker Relay
-  endpoints.push({
-    name: 'Default Worker Relay',
-    url: `https://anchor-flow-proxy.rishi-roy.workers.dev?proxyUrl=${encodeURIComponent(cleanUrl)}`,
-    timeout: 5000
-  });
-
-  // 2. High-speed public CORS proxies with correct URL formatting & JSON unwrap
+  // High-speed public CORS proxies (race simultaneously with realistic timeouts)
   endpoints.push(
-    // Raw URL CORSProxy (crucial for Outlook/Office365 which block encoded %2F slashes with HTTP 404.11)
-    { name: 'CORSProxy (Direct)', url: `https://corsproxy.io/?${cleanUrl}`, timeout: 3500 },
-    // Encoded CORSProxy
-    { name: 'CORSProxy (Encoded)', url: `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`, timeout: 3500 },
-    // AllOrigins GET JSON endpoint (unwraps json.contents to prevent raw mime-type blockage)
-    { name: 'AllOrigins (JSON)', url: `https://api.allorigins.win/get?url=${encodeURIComponent(cleanUrl)}`, timeout: 4000, isJson: true },
-    // CodeTabs proxy
-    { name: 'CodeTabs', url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(cleanUrl)}`, timeout: 3800 },
-    // AllOrigins Raw fallback
-    { name: 'AllOrigins (Raw)', url: `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`, timeout: 4000 },
-    // Direct Feed (successful in Electron desktop apps or CORS-enabled endpoints)
-    { name: 'Direct Feed', url: cleanUrl, timeout: 2500 }
+    // AllOrigins Raw (fastest for raw iCal streams)
+    { name: 'AllOrigins (Raw)', url: `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`, timeout: 9000 },
+    // CodeTabs proxy (unencoded quest format)
+    { name: 'CodeTabs (Direct)', url: `https://api.codetabs.com/v1/proxy?quest=${cleanUrl}`, timeout: 8000 },
+    // CodeTabs proxy (encoded quest format)
+    { name: 'CodeTabs (Encoded)', url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(cleanUrl)}`, timeout: 8000 },
+    // AllOrigins JSON wrapper endpoint (unwraps json.contents)
+    { name: 'AllOrigins (JSON)', url: `https://api.allorigins.win/get?url=${encodeURIComponent(cleanUrl)}`, timeout: 10000, isJson: true },
+    // ThingProxy
+    { name: 'ThingProxy', url: `https://thingproxy.freeboard.io/fetch/${cleanUrl}`, timeout: 8000 },
+    // CORSProxy with query param format
+    { name: 'CORSProxy', url: `https://corsproxy.io/?url=${encodeURIComponent(cleanUrl)}`, timeout: 8000 },
+    // CORSProxy direct url format
+    { name: 'CORSProxy (Direct)', url: `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`, timeout: 8000 },
+    // Cors.lol
+    { name: 'CorsLol', url: `https://api.cors.lol/?url=${encodeURIComponent(cleanUrl)}`, timeout: 8000 },
+    // Direct Feed (Local / CORS-enabled / Electron)
+    { name: 'Direct Feed', url: cleanUrl, timeout: 5000 }
   );
 
   async function fetchEndpoint(ep) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), ep.timeout || 4000);
+    const timeoutId = setTimeout(() => controller.abort(), ep.timeout || 8000);
 
     try {
       const response = await fetch(ep.url, {
         method: 'GET',
         headers: { 'Accept': 'text/calendar, text/plain, application/json, */*' },
+        redirect: 'follow',
         signal: controller.signal
       });
       clearTimeout(timeoutId);
@@ -700,18 +782,18 @@ async function fetchCalendarFromUrl(calendarUrl, onProgress = null) {
     }
   }
 
-  // 1. Race the top 3 proxies in parallel for sub-2s responses!
+  // Race ALL proxy relays concurrently in parallel!
   try {
     if (typeof onProgress === 'function') {
       onProgress({
         stage: 'attempting_strategy',
         percent: 35,
-        message: 'Querying fast relays in parallel...'
+        message: `Racing ${endpoints.length} relays in parallel...`
       });
     }
 
-    const fastRace = endpoints.slice(0, 3).map(ep => fetchEndpoint(ep));
-    const winner = await Promise.any(fastRace);
+    const allRaces = endpoints.map(ep => fetchEndpoint(ep));
+    const winner = await Promise.any(allRaces);
 
     if (typeof onProgress === 'function') {
       onProgress({
@@ -724,24 +806,8 @@ async function fetchCalendarFromUrl(calendarUrl, onProgress = null) {
     }
     return winner.text;
   } catch (raceErr) {
-    // 2. Sequential quick fallback on remaining endpoints
-    for (let i = 3; i < endpoints.length; i++) {
-      const ep = endpoints[i];
-      try {
-        if (typeof onProgress === 'function') {
-          onProgress({
-            stage: 'attempting_strategy',
-            percent: 50 + (i * 10),
-            message: `Retrying with ${ep.name}...`
-          });
-        }
-        const res = await fetchEndpoint(ep);
-        return res.text;
-      } catch (fallbackErr) {}
-    }
+    throw new Error('Could not connect to calendar relays. If your link downloads an .ics file, simply click "Upload .ics File" below for instant offline sync!');
   }
-
-  throw new Error('Could not fetch calendar feed due to network or CORS restrictions. You can also paste iCal text directly.');
 }
 
 // Sync single calendar or all linked calendars, deduplicating and updating user profile
