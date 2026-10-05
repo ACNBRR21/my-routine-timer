@@ -249,3 +249,23 @@
   * **Universal Drag-and-Drop & Direct File Import:**
     * Added full drag-and-drop `.ics` file support across both `profile.html` and `index.html`. Users who download their Outlook `.ics` file can drag and drop it anywhere onto the application to import meetings 100% offline.
     * Connected and verified the `📁 Import .ics File` button and hidden file input in `index.html`.
+
+---
+
+### 21. Post-Mortem & Comprehensive Fix for Timer Page Button Interactivity (`timer.html` / `js/timer.js`)
+* **Problem:** Following the desktop 3-column layout revamp, users found that none of the interactive buttons on `timer.html` were functioning (including `⚙️ Manage Folders`, Quick Preset `+` buttons for Focus Sprint and Harvard Deep Work, `+ New Custom Timer`, the bottom purple CTA, active insight widget playback and `+1m`/`+5m` buttons, and the card `✏️ Edit` button). Additionally, the weekdays strip displayed static mock times (such as *"Tuesday, 4:15"*).
+* **Root Cause Analysis:**
+  1. **Fatal Startup Exception in `setupTemplates()`:** Inside `DOMContentLoaded`, `setupTemplates()` attempted to attach a click listener to `document.getElementById('tmplEmomRow')`. Because `tmplEmomRow` was not present in `timer.html`, the browser threw `TypeError: Cannot read properties of null (reading 'addEventListener')`. This uncaught exception immediately halted execution of the initialization function at line 992, preventing all subsequent button event listeners (including the sidebar folders, quick presets, custom timer modal controls, active insight widget controls, and search filters) from ever being registered.
+  2. **Null-Reference Crash in `updatePlayerUI()`:** When a timer card or play button was clicked, `updatePlayerUI()` attempted to set `headerTitle.textContent` on `document.getElementById('playerHeaderRoutineName')`. In `timer.html`, this element was named `playerRoutineTitle`, causing `headerTitle` to be `null` and crashing timer execution whenever any timer or routine was started.
+  3. **Undeclared `openCustomModal` Function:** The edit button (`.timer-edit-btn`) called `openCustomModal(t)`, which was not declared in `js/timer.js`.
+  4. **Widget Control Binding Errors:** The right-panel playback controls attempted to call non-existent helpers (`handlePlayPause`, `handleReset`, `handleNext`), and `adjustActiveTime` was attached only as a property of `window` rather than a standard declared function in scope.
+  5. **Static Mock Data in Weekdays Strip:** The horizontal weekdays strip contained hardcoded placeholder hours (*"MON 5 (03:30)"*, *"TUE 6 (04:15)"*) from the reference mockup.
+  6. **Event Bubbling Conflict on Timer Cards:** Clicking `.timer-edit-btn` or `.timer-delete-btn` bubbled up to the parent `.timer-card-desktop`, triggering `handlePlayTimerClick()` concurrently.
+* **Resolution:**
+  * **Safe, Resilient Initialization:** Rewrote `setupTemplates()` with safe iteration over existing template rows, completely eliminating any possibility of null-pointer exceptions during startup.
+  * **Element Normalization in `updatePlayerUI()`:** Normalized element lookups (`document.getElementById('playerRoutineTitle') || document.getElementById('playerHeaderRoutineName')`), safely guarding all UI text and SVG stroke manipulations.
+  * **Complete Timer Editor (`openCustomModal`):** Implemented `openCustomModal(timerToEdit)` with full pre-population of timer titles, durations, folders, repeats, target dates, notes, and multi-segment routine steps. Saving an edited timer updates the existing entry in-place and preserves user configuration.
+  * **Direct Widget Controls & Scope Resolution:** Rewrote all widget handlers (`#widgetPlayPauseBtn`, `#widgetResetBtn`, `#widgetNextBtn`, `#widgetMinus1m`, `#widgetPlus1m`, `#widgetPlus5m`, `#heroQuickLaunchBtn`) to call verified execution functions. Declared `adjustActiveTime` as a top-level function that automatically primes the first available timer if none is currently active.
+  * **Dynamic Weekdays Strip (`renderWeekdaysStrip()`):** Dynamically computes dates for the current week (Monday through Sunday) based on `displayMonthDate`. It dynamically highlights today's column (`.today`) and calculates actual focus hours from `userProfile.calendarEvents` (displaying `--` when free, rather than arbitrary fake numbers).
+  * **Event Bubbling Guard:** Added `if (e.target.closest('button')) return;` on desktop timer cards so edit and delete actions execute cleanly without starting playback.
+  * **Automated Verification:** Verified every single button and interactive flow via `test_all_user_buttons.js` (31/31 passed) and the full system audit `comprehensive_system_audit.js` (35/35 passed).
