@@ -242,6 +242,7 @@
 
   <!-- SCRIPTS -->
   <script src="js/calendar-sync.js"></script>
+  <script src="js/flow-guru.js"></script>
   <script>
     let userProfile = getStoredProfile();
     const chatContainer = document.getElementById('plannerChatMessages');
@@ -495,8 +496,33 @@
         `;
       });
 
+      // Run Flow Guru Audits
+      const calAudit = auditCalendarSchedule(deduplicateCalendarEvents(userProfile.calendarEvents || []), userProfile);
+      const taskAudit = auditTaskExecution(items, userProfile);
+      const guruRecs = generateGuruStrategicAdvice(calAudit, taskAudit, userProfile);
+
+      let guruFeedbackHtml = `
+        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1.2rem;">🧘</span>
+              <strong style="font-size: 0.92rem; color: #065f46;">Flow Guru Strategic Feedback:</strong>
+            </div>
+            <span style="font-size: 0.74rem; background: rgba(16, 185, 129, 0.2); color: #047857; padding: 2px 8px; border-radius: 9999px; font-weight: 700;">
+              Health: ${calAudit.healthScore}/100 &bull; ${calAudit.statusLabel}
+            </span>
+          </div>
+          <div style="font-size: 0.84rem; color: #1e293b; line-height: 1.45;">
+            &bull; <strong>Calendar Feedback:</strong> ${calAudit.meetingCount} meetings (${calAudit.totalMeetingHours}h). ${calAudit.warnings.length > 0 ? calAudit.warnings.map(w => w.message).join(' ') : 'Calendar load is balanced.'}<br/>
+            &bull; <strong>Pareto 80/20 Law:</strong> ${taskAudit.paretoAdvice}<br/>
+            &bull; <strong>Restorative Anchor:</strong> ${calAudit.hasLunchAnchor ? `Lunch anchor secured around ${userProfile.lunchTime || '13:00'}.` : 'No lunch anchor detected — schedule time for nutrition!'}
+          </div>
+        </div>
+      `;
+
       const card = `
         <div class="schedule-review-wrap">
+          ${guruFeedbackHtml}
           <div class="schedule-review-header">
             <div>
               <h3 style="font-size:1.05rem; color:var(--text-primary); margin:0;">📋 Harvard Timebox Schedule</h3>

@@ -14,6 +14,12 @@
 **Rishi Roy** is an entrepreneur, technology leader, and productivity bio-architect.
 
 * 🔗 **LinkedIn Profile:** [https://www.linkedin.com/in/rishiroy/](https://www.linkedin.com/in/rishiroy/)
+
+* 💬 **Direct Feedback & Inquiries:**
+  * **WhatsApp / SMS:** [+91 9136228725](https://wa.me/919136228725?text=Hi%20Rishi,%20feedback%20on%20Anchor%20%26%20Flow:)
+  * **Email:** [rishi@birdblast.com](mailto:rishi@birdblast.com?subject=Feedback%20on%20Anchor%20%26%20Flow)
+  * **LinkedIn:** [https://www.linkedin.com/in/rishiroy/](https://www.linkedin.com/in/rishiroy/)
+
 * ⚡ **The Dual Origin Story of Anchor & Flow:**
   1. **Executive Work Velocity:** Practicing serial tasking (as used by Napoleon and Elon Musk) to eliminate context switching and focus completely on the Top 3 daily priorities without wasting time on mundane tasks.
   2. **Caring for His Mother's Glaucoma:** Anchor & Flow was also born out of a deeply personal necessity—to help manage the strict, exact medication intervals for his mother's glaucoma eye drops (represented by the preset `🧴 Eye drops` timers). This caregiving journey inspired Rishi's newly published book on overcoming glaucoma care routines and circadian health.

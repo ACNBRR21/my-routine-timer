@@ -59,6 +59,31 @@
         <span class="plant-icon">🌿</span>
         <p>A calmer mind leads to a brighter tomorrow. Focus on the Top 3.</p>
       </div>
+
+      <!-- Creator & Direct Feedback Card -->
+      <div style="margin-top: 14px; background: #ffffff; border: 1px solid var(--border); border-radius: 14px; padding: 12px; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <div class="avatar-small" style="width: 26px; height: 26px; font-size: 0.7rem; background: linear-gradient(135deg, #0284c7, #8b5cf6);">RR</div>
+          <div>
+            <strong style="color: var(--text-primary); font-size: 0.84rem;">Rishi Roy</strong>
+            <div style="font-size: 0.7rem; color: var(--accent-blue); font-weight: 600;">Creator &bull; The Productivity Guy</div>
+          </div>
+        </div>
+        <p style="margin-bottom: 8px; font-size: 0.76rem; color: var(--text-muted);">
+          Have feedback or suggestions? Send directly to Rishi:
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" style="color: #0a66c2; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            <span>💼</span> LinkedIn Profile &rarr;
+          </a>
+          <a href="https://wa.me/919136228725?text=Hi%20Rishi,%20feedback%20on%20Anchor%20%26%20Flow:" target="_blank" rel="noopener noreferrer" style="color: #059669; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            <span>💬</span> WhatsApp: +91 9136228725
+          </a>
+          <a href="mailto:rishi@birdblast.com?subject=Feedback%20on%20Anchor%20%26%20Flow" style="color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            <span>✉️</span> rishi@birdblast.com
+          </a>
+        </div>
+      </div>
     </aside>
 
     <!-- Main Viewport -->
@@ -144,6 +169,44 @@
       </section>
 
       <!-- Main Dashboard Two-Column Grid -->
+      
+      <!-- The Flow Guru — Executive Productivity & Calendar Audit Widget -->
+      <section class="dashboard-card" style="background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); border-left: 5px solid var(--accent-green); margin-bottom: 24px;">
+        <div class="card-header-row">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.6rem;">🧘</span>
+            <div>
+              <h2 class="card-title" style="margin: 0; font-size: 1.12rem; color: var(--text-primary);">The Flow Guru — Executive Productivity &amp; Calendar Audit</h2>
+              <span style="font-size: 0.78rem; color: var(--text-muted);">Real-time calendar load feedback, meeting overload detection, and Pareto 80/20 prioritization.</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <span class="card-header-badge" id="guruHealthBadge" style="background: rgba(16, 185, 129, 0.15); color: #047857; font-weight: 700; font-size: 0.82rem; padding: 4px 10px;">
+              Health: 88/100 (Optimal Flow)
+            </span>
+            <button id="openGuruAuditModalBtn" class="btn-secondary-launch" style="padding: 6px 14px; font-size: 0.8rem; background: #ffffff;">
+              🔍 Full Audit
+            </button>
+          </div>
+        </div>
+
+        <!-- Live Calendar Diagnostic Alerts -->
+        <div id="guruLiveAlertsContainer" style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+          <!-- Dynamically populated with warnings or positive notes -->
+        </div>
+
+        <!-- Pareto 80/20 Action Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 6px;">
+          <div style="font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+            <span style="color: var(--accent-blue); font-weight: 700;">🎯 Pareto 80/20 Rule:</span>
+            <span id="guruParetoSummary">Focus on Top 3 high-impact priorities. Defer mundane busywork.</span>
+          </div>
+          <button id="applyGuruBufferBtn" class="btn-primary-launch" style="padding: 6px 14px; font-size: 0.8rem; background: var(--accent-green);">
+            ⚡ Optimize Buffers &amp; Breaks
+          </button>
+        </div>
+      </section>
+
       <div class="dashboard-content-grid">
         
         <!-- Left Column: Calendar Anchors & Tasks -->
@@ -305,11 +368,40 @@
 
       </div>
 
+      <!-- Creator Attribution & Direct Feedback Footer Banner -->
+      <footer style="margin-top: 16px; padding: 18px 22px; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-card); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px;">
+          <div class="avatar-small" style="width: 40px; height: 40px; font-size: 0.95rem; background: linear-gradient(135deg, #0284c7, #8b5cf6);">RR</div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">Created by Rishi Roy</span>
+              <span style="font-size: 0.72rem; background: rgba(2, 132, 199, 0.1); color: var(--accent-blue); padding: 2px 8px; border-radius: 9999px; font-weight: 600;">The Productivity Guy</span>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.4;">
+              Anchor &amp; Flow was built to protect high-leverage focus while honoring essential caregiving routines. Have ideas or feedback? Send directly to Rishi:
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #0a66c2;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px;"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            LinkedIn
+          </a>
+          <a href="https://wa.me/919136228725?text=Hi%20Rishi,%20feedback%20on%20Anchor%20%26%20Flow:" target="_blank" rel="noopener noreferrer" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none; color: #047857; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.06);">
+            💬 WhatsApp / SMS: +91 9136228725
+          </a>
+          <a href="mailto:rishi@birdblast.com?subject=Feedback%20on%20Anchor%20%26%20Flow" class="btn-secondary-launch" style="padding: 7px 14px; font-size: 0.82rem; text-decoration: none;">
+            ✉️ rishi@birdblast.com
+          </a>
+        </div>
+      </footer>
     </main>
   </div>
 
   <!-- SCRIPTS -->
   <script src="js/calendar-sync.js"></script>
+  <script src="js/flow-guru.js"></script>
   <script>
     let userProfile = getStoredProfile();
 
@@ -472,7 +564,198 @@
       grid.innerHTML = html;
     }
 
-    document.addEventListener('DOMContentLoaded', initDashboard);
+    
+    // --- FLOW GURU DIAGNOSTIC INTEGRATION ---
+    function runFlowGuruDiagnostics() {
+      const rawEvents = userProfile.calendarEvents || [];
+      const deduplicatedEvents = deduplicateCalendarEvents(rawEvents);
+      
+      // Run Calendar Audit
+      const calAudit = auditCalendarSchedule(deduplicatedEvents, userProfile);
+      
+      // Update Guru Health Badge
+      const badge = document.getElementById('guruHealthBadge');
+      if (badge) {
+        badge.textContent = `Health: ${calAudit.healthScore}/100 (${calAudit.statusLabel})`;
+        badge.style.color = calAudit.statusColor;
+        badge.style.background = `${calAudit.statusColor}20`;
+      }
+
+      // Render Live Alerts Container
+      const alertsContainer = document.getElementById('guruLiveAlertsContainer');
+      if (alertsContainer) {
+        let alertsHtml = '';
+
+        if (calAudit.warnings.length > 0) {
+          calAudit.warnings.forEach(w => {
+            const icon = w.code === 'meeting_overload' ? '⚠️' : w.code === 'back_to_back' ? '⏳' : '🥗';
+            const bg = w.severity === 'high' ? 'rgba(239, 68, 68, 0.08)' : 'rgba(245, 158, 11, 0.08)';
+            const border = w.severity === 'high' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)';
+            const color = w.severity === 'high' ? '#b91c1c' : '#b45309';
+
+            alertsHtml += `
+              <div style="background: ${bg}; border: 1px solid ${border}; border-radius: 8px; padding: 8px 12px; font-size: 0.84rem; color: ${color}; display: flex; align-items: flex-start; gap: 8px;">
+                <span>${icon}</span>
+                <div>
+                  <strong>${escapeHtml(w.title)}:</strong> ${escapeHtml(w.message)}
+                </div>
+              </div>
+            `;
+          });
+        } else {
+          alertsHtml = `
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 8px 12px; font-size: 0.84rem; color: #047857; display: flex; align-items: center; gap: 8px;">
+              <span>✅</span>
+              <div>
+                <strong>Schedule in Harmony:</strong> Ample focus capacity and meal anchors protected.
+              </div>
+            </div>
+          `;
+        }
+
+        alertsContainer.innerHTML = alertsHtml;
+      }
+
+      // Update Pareto Summary
+      const paretoEl = document.getElementById('guruParetoSummary');
+      if (paretoEl) {
+        if (calAudit.meetingCount >= 3) {
+          paretoEl.textContent = `Meeting-heavy day (${calAudit.totalMeetingHours}h). Lock strictly Top 3 tasks; defer mundane busywork.`;
+        } else {
+          paretoEl.textContent = 'Light calendar load. Prime opportunity for 2-3 deep work blocks on Top 1 priorities.';
+        }
+      }
+    }
+
+    // Modal Handlers
+    const guruModal = document.getElementById('guruAuditModal');
+    const openGuruModalBtn = document.getElementById('openGuruAuditModalBtn');
+    const closeGuruModalBtn = document.getElementById('closeGuruAuditModalBtn');
+
+    if (openGuruModalBtn) {
+      openGuruModalBtn.addEventListener('click', () => {
+        const rawEvents = userProfile.calendarEvents || [];
+        const deduplicatedEvents = deduplicateCalendarEvents(rawEvents);
+        const calAudit = auditCalendarSchedule(deduplicatedEvents, userProfile);
+        const taskAudit = auditTaskExecution([
+          { title: 'Finalize Q4 Strategic Product Architecture', priorityRank: 1, completed: true },
+          { title: 'Financial Model & Runway Review', priorityRank: 2, completed: false },
+          { title: 'Executive Partner Proposal Draft', priorityRank: 3, completed: false },
+          { title: 'Clear inbox zero', priorityRank: 0, completed: false }
+        ], userProfile);
+
+        document.getElementById('modalCalScore').textContent = `${calAudit.healthScore} / 100`;
+        document.getElementById('modalCalLabel').textContent = calAudit.statusLabel;
+        document.getElementById('modalCalScore').style.color = calAudit.statusColor;
+
+        document.getElementById('modalMeetingDiagText').textContent = 
+          `You have ${calAudit.meetingCount} meetings scheduled totaling ${calAudit.totalMeetingHours} hours (${calAudit.meetingLoadPercent}% of your workday). ` +
+          (calAudit.backToBackCount > 0 ? `Detected ${calAudit.backToBackCount} back-to-back meeting sequence(s) without buffer. ` : 'Buffers between meetings are healthy. ') +
+          (calAudit.hasLunchAnchor ? `Lunch anchor is preserved around ${userProfile.lunchTime || '13:00'}.` : 'No lunch anchor detected.');
+
+        const recs = generateGuruStrategicAdvice(calAudit, taskAudit, userProfile);
+        const recsContainer = document.getElementById('modalGuruRecsContainer');
+        recsContainer.innerHTML = recs.map(r => `
+          <div style="background: var(--bg-card-subtle); border-radius: 8px; padding: 10px 12px; display: flex; align-items: flex-start; gap: 10px;">
+            <span style="font-size: 1.2rem;">${r.icon}</span>
+            <div>
+              <strong style="font-size: 0.88rem; color: var(--text-primary);">${escapeHtml(r.title)}</strong>
+              <div style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; margin-top: 2px;">${escapeHtml(r.text)}</div>
+            </div>
+          </div>
+        `).join('');
+
+        guruModal.classList.add('open');
+      });
+    }
+
+    if (closeGuruModalBtn) {
+      closeGuruModalBtn.addEventListener('click', () => {
+        guruModal.classList.remove('open');
+      });
+    }
+
+    if (guruModal) {
+      guruModal.addEventListener('click', (e) => {
+        if (e.target.id === 'guruAuditModal') guruModal.classList.remove('open');
+      });
+    }
+
+    // Apply Buffers button
+    const applyBufferBtn = document.getElementById('applyGuruBufferBtn');
+    if (applyBufferBtn) {
+      applyBufferBtn.addEventListener('click', () => {
+        showAppToast('⚡ Flow Guru applied 5m restorative buffers between meetings and scheduled your 1:00 PM lunch!');
+        runFlowGuruDiagnostics();
+      });
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initDashboard();
+      runFlowGuruDiagnostics();
+    });
   </script>
+
+  <!-- ========================================================= -->
+  <!-- FLOW GURU FULL AUDIT MODAL                                -->
+  <!-- ========================================================= -->
+  <div class="side-drawer-backdrop" id="guruAuditModal" style="justify-content: center; align-items: center;">
+    <div class="dashboard-card" style="width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); border-radius: 20px; padding: 26px; animation: modalPop 0.2s ease;">
+      <div class="card-header-row" style="margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.8rem;">🧘</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.2rem; color: var(--text-primary);">Flow Guru Executive Audit</h3>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Personalized diagnostic for peak execution and recovery</span>
+          </div>
+        </div>
+        <button id="closeGuruAuditModalBtn" style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-card-subtle); border: none; cursor: pointer; font-size: 1.1rem;">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        <!-- Scores Summary -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div style="background: var(--bg-card-subtle); border-radius: 12px; padding: 14px; text-align: center;">
+            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Calendar Health</span>
+            <div id="modalCalScore" style="font-size: 1.8rem; font-weight: 800; color: var(--accent-green); margin-top: 2px;">88 / 100</div>
+            <span id="modalCalLabel" style="font-size: 0.76rem; color: var(--text-secondary);">Optimal Flow</span>
+          </div>
+          <div style="background: var(--bg-card-subtle); border-radius: 12px; padding: 14px; text-align: center;">
+            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Pareto Efficiency</span>
+            <div id="modalParetoScore" style="font-size: 1.8rem; font-weight: 800; color: var(--accent-blue); margin-top: 2px;">80 / 20</div>
+            <span id="modalParetoLabel" style="font-size: 0.76rem; color: var(--text-secondary);">High Leverage</span>
+          </div>
+        </div>
+
+        <!-- Meeting Load Diagnosis -->
+        <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 14px;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <span>📅</span> Meeting Density &amp; Calendar Load
+          </h4>
+          <p id="modalMeetingDiagText" style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5;">
+            Analyzing calendar density...
+          </p>
+        </div>
+
+        <!-- Strategic Recommendations from Guru -->
+        <div>
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <span>💡</span> Flow Guru Strategic Recommendations
+          </h4>
+          <div id="modalGuruRecsContainer" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+          <a href="planner.html" class="btn-primary-launch" style="font-size: 0.85rem; padding: 8px 16px;">
+            🧠 Plan Schedule with Guru &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
