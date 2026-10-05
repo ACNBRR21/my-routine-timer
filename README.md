@@ -21,6 +21,42 @@
 * 🍏 **Apple Minimalist Philosophy:** Designed with pristine white canvas aesthetics (`#f5f5f7` / `#ffffff`), high-contrast typography, large touch targets, hands-free voice typing, and strict adherence to Pareto's 80/20 law.
 
 
+## 🌟 Major Overhaul: Executive Dashboard & Live Calendar Linking
+
+Anchor & Flow has been elevated into an **Executive Productivity & Bio-Rhythm Dashboard**, directly incorporating modern design patterns from Calmly and Taskly with Apple-grade minimalism:
+
+### 1. 🏠 Executive Dashboard Homepage (`index.html`)
+* **Personalized Greeting & KPI Metrics:** Dynamic time-of-day greeting (Good morning / afternoon / evening) with real-time stats: *Focus Time Today*, *Active Anchors*, *Tasks Completed*, and *Habit Streak*.
+* **Today's Focus Hero Card:** Daily anchor reminder with 1-click focus sprint launch.
+* **Intelligent Multi-Calendar Deduplication Widget:** Displays today's timeline synchronized across all linked calendars. If the same meeting appears on both Outlook and Google Calendar, Anchor & Flow intelligently merges them into **one clean entry** with a `⚡ Unified across Outlook & Google` badge.
+* **Stored Timers & Routines Widget with Deletion:** 1-click launch for regular focus blocks (`15m Sprint`, `22m Focus`, `30m Seq Tabata`, `Pomodoro 25m`, and `🧴 Eye drops 1:30:00+`). Includes direct `🗑️` delete buttons to remove older, unused timers from your library.
+* **Mini Calendar Widget & Daily Wellness Anchors:** Visual month calendar alongside your set daily rhythms (Work start, Breakfast, Lunch at 1:00 PM, Eye drops, Sleep target).
+* **High-Impact Quick Action CTAs:** Instant buttons to **`🧠 Plan My Day (AI Agent)`** and **`⏱️ Launch Timer`**.
+
+### 2. 👤 Overview & Profile Management Page (`profile.html`)
+* **Personal Identity:** Edit your name, what you work on typically (e.g. Product Strategist, Entrepreneur), and focus goals.
+* **Live Calendar Link Manager (No File Uploads!):** Add, test, and manage Google Calendar secret iCal links, Microsoft Outlook Web ICS links, and Apple iCloud Webcal URLs. No tedious file re-uploading required.
+* **Daily Routine & Meal Anchors:** Configure your typical work start, breakfast, lunch time (e.g. 1:00 PM / 45m), and dinner times so the AI Day Planner automatically weaves focus blocks around your life.
+* **Timer History Cleaner:** View all stored timers and delete unused older ones with 1 click.
+* **Data Privacy & Backup:** Download clean `user_preferences.txt` and `user_preferences.json`, import backups, or reset data.
+
+### 3. 🧠 Dedicated AI Day Planner (`planner.html`)
+* Full-screen conversational planning interface with hands-free **Voice-Based Typing (`🎙️`)**.
+* Automatically pulls deduplicated calendar anchors from your linked calendar URLs.
+* Deconstructs your agenda into **Harvard Timebox Top 3 priorities** and serial single-task blocks with non-repeating execution notes.
+* 1-click **`🚀 Launch in Timer`** to start execution.
+
+### 4. 📖 Master Guide & Calendar Sharing Tutorial (`guide.html`)
+* Completely rebuilt in the **Apple / Calmly Light Minimalist Theme** (eliminating the old dark look).
+* Visual step-by-step guides for obtaining and pasting calendar share links:
+  - *Google Calendar Secret iCal format*
+  - *Microsoft Outlook Web ICS link*
+  - *Apple iCloud Public Calendar Webcal link*
+* Explains the **Intelligent Multi-Calendar Deduplication Algorithm**.
+* Explains the **Harvard Timeboxing & Serial Tasking Methodology** (Napoleon & Musk).
+* Details **Rishi Roy's personal story and his newly launched book on his mother's glaucoma care**.
+
+
 ## 🚀 Product Overhaul: Multi-Page Architecture & Apple-Inspired Simplicity
 
 In response to user feedback regarding complexity and overloaded single-page interfaces, Anchor & Flow has been completely overhauled into a streamlined, multi-page architecture governed by Pareto's 80/20 Law and Apple Design Thinking:

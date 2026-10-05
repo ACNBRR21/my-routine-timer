@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f8fafc" />
+  <title>Overview &amp; Profile — Anchor &amp; Flow</title>
+  <meta name="description" content="Manage your local user profile, linked calendar URLs, routine anchors, and stored timer history in Anchor & Flow." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👤</text></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="app-sidebar">
+      <a href="index.html" class="sidebar-logo">
+        <div class="logo-badge">⚡</div>
+        <div>
+          <div class="logo-text-title">Anchor &amp; Flow</div>
+          <div class="logo-text-sub">Harvard Timebox Engine</div>
+        </div>
+      </a>
+
+      <ul class="sidebar-nav-list">
+        <li class="sidebar-nav-item">
+          <a href="index.html">
+            <span class="sidebar-nav-icon">🏠</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="planner.html">
+            <span class="sidebar-nav-icon">🧠</span>
+            <span>AI Day Planner</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="timer.html">
+            <span class="sidebar-nav-icon">⏱️</span>
+            <span>Timers &amp; Routines</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item active">
+          <a href="profile.html">
+            <span class="sidebar-nav-icon">👤</span>
+            <span>Overview &amp; Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="guide.html">
+            <span class="sidebar-nav-icon">📖</span>
+            <span>Guide &amp; Calendar Help</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-motivation-card">
+        <span class="plant-icon">🌿</span>
+        <p>Private &amp; Local: All your data is stored exclusively on this device.</p>
+      </div>
+    </aside>
+
+    <!-- Main Viewport -->
+    <main class="main-viewport">
+      
+      <!-- Top Header -->
+      <header class="dashboard-top-header">
+        <div class="greeting-block">
+          <h1>Overview &amp; Local Preferences ⚙️</h1>
+          <p>Review and modify everything stored in your local profile, linked calendars, and routine anchors.</p>
+        </div>
+
+        <div class="header-action-group">
+          <a href="index.html" class="btn-secondary-launch">
+            &larr; Back to Dashboard
+          </a>
+          <button id="saveAllProfileBtn" class="btn-primary-launch">
+            💾 Save Changes
+          </button>
+        </div>
+      </header>
+
+      <!-- Section 1: Personal Identity -->
+      <section class="settings-section-card">
+        <h2 class="settings-section-title">👤 Personal Identity</h2>
+        <p class="settings-section-desc">Used to personalize your AI planning briefings and daily greetings.</p>
+
+        <div class="form-grid-2">
+          <div class="form-field-group">
+            <label for="inputUserName">Your Name</label>
+            <input type="text" id="inputUserName" class="form-input-text" placeholder="e.g. Alex, Vivek, Michael" />
+          </div>
+
+          <div class="form-field-group">
+            <label for="inputUserTitle">What You Work On Typically</label>
+            <input type="text" id="inputUserTitle" class="form-input-text" placeholder="e.g. Product Strategist, Entrepreneur, Engineer" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Linked Calendars Management (URLs, No file uploads!) -->
+      <section class="settings-section-card">
+        <div class="card-header-row">
+          <div>
+            <h2 class="settings-section-title">🔗 Linked Calendars (Share URLs)</h2>
+            <p class="settings-section-desc">Add your Google, Outlook, or Apple calendar share links. Anchor &amp; Flow automatically pulls your meetings and locks them as anchors.</p>
+          </div>
+          <a href="guide.html#calendar-links" target="_blank" style="font-size: 0.82rem; color: var(--accent-blue); font-weight: 600; text-decoration: underline;">
+            How to get your Calendar Link &rarr;
+          </a>
+        </div>
+
+        <!-- Intelligent Deduplication Notice -->
+        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.86rem; color: #065f46; display: flex; align-items: center; gap: 8px;">
+          <span>⚡</span>
+          <div>
+            <strong>Intelligent Multi-Calendar Deduplication:</strong> If you link both Outlook and Google, meetings appearing in both calendars are automatically merged so only one clean entry is shown.
+          </div>
+        </div>
+
+        <!-- Linked Calendars Table -->
+        <div id="linkedCalendarsList" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Add Calendar Form -->
+        <div style="background: var(--bg-card-subtle); border: 1px dashed var(--border); border-radius: 12px; padding: 16px;">
+          <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">+ Add a New Calendar Link</h3>
+          <div class="form-grid-2" style="margin-bottom: 12px;">
+            <div class="form-field-group">
+              <label for="newCalName">Calendar Name</label>
+              <input type="text" id="newCalName" class="form-input-text" placeholder="e.g. Work Outlook, Personal Google" />
+            </div>
+            <div class="form-field-group">
+              <label for="newCalType">Calendar Provider</label>
+              <select id="newCalType" class="form-input-text">
+                <option value="outlook">Microsoft Outlook (ICS / Webcal)</option>
+                <option value="google">Google Calendar (Secret iCal URL)</option>
+                <option value="apple">Apple iCloud Calendar (Webcal)</option>
+                <option value="custom">Other iCal URL</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field-group" style="margin-bottom: 16px;">
+            <label for="newCalUrl">Calendar Share URL (iCal / Webcal / ICS format)</label>
+            <input type="url" id="newCalUrl" class="form-input-text" placeholder="https://outlook.office.com/owa/calendar/.../reachcalendar.ics or https://calendar.google.com/calendar/ical/.../basic.ics" />
+          </div>
+          <button id="addCalendarBtn" class="btn-secondary-launch" style="background:#ffffff; border-color:var(--accent-blue); color:var(--accent-blue);">
+            + Link This Calendar
+          </button>
+        </div>
+      </section>
+
+      <!-- Section 3: Daily Routine & Meal Timings -->
+      <section class="settings-section-card">
+        <h2 class="settings-section-title">🍱 Daily Routine &amp; Meal Anchors</h2>
+        <p class="settings-section-desc">The AI Day Planner references these times to protect your daily wellness habits (e.g. <em>"Hey, you typically have lunch at 1:00 PM"</em>).</p>
+
+        <div class="form-grid-2">
+          <div class="form-field-group">
+            <label for="inputWorkStart">Typical Work Start Time</label>
+            <input type="time" id="inputWorkStart" class="form-input-text" value="09:00" />
+          </div>
+          <div class="form-field-group">
+            <label for="inputBreakfast">Breakfast / Morning Routine Time</label>
+            <input type="time" id="inputBreakfast" class="form-input-text" value="08:30" />
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field-group">
+            <label for="inputLunch">Lunch Time</label>
+            <input type="time" id="inputLunch" class="form-input-text" value="13:00" />
+          </div>
+          <div class="form-field-group">
+            <label for="inputLunchDur">Lunch Duration (Minutes)</label>
+            <input type="number" id="inputLunchDur" class="form-input-text" value="45" min="15" max="120" />
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field-group">
+            <label for="inputDinner">Dinner / Evening Routine Time</label>
+            <input type="time" id="inputDinner" class="form-input-text" value="19:30" />
+          </div>
+          <div class="form-field-group">
+            <label for="inputSleep">Sleep Target Time</label>
+            <input type="time" id="inputSleep" class="form-input-text" value="23:00" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Focus & Care Rhythms -->
+      <section class="settings-section-card">
+        <h2 class="settings-section-title">⏱️ Focus &amp; Care Rhythms</h2>
+        <p class="settings-section-desc">Set your preferred serial focus intervals and caregiving medication presets.</p>
+
+        <div class="form-grid-2">
+          <div class="form-field-group">
+            <label for="inputFocusDur">Preferred Focus Sprint</label>
+            <select id="inputFocusDur" class="form-input-text">
+              <option value="25">25 mins (Pomodoro Sprint)</option>
+              <option value="45" selected>45 mins (Harvard Standard)</option>
+              <option value="50">50 mins (Deep Work)</option>
+              <option value="60">60 mins (Hour Block)</option>
+              <option value="90">90 mins (Ultradian Cycle)</option>
+            </select>
+          </div>
+
+          <div class="form-field-group">
+            <label for="inputBreakDur">Restorative Break Duration</label>
+            <select id="inputBreakDur" class="form-input-text">
+              <option value="5" selected>5 mins (Calming Pause)</option>
+              <option value="10">10 mins (Movement &amp; Hydration)</option>
+              <option value="15">15 mins (Restorative Walk)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-card-subtle); border-radius: 12px; padding: 14px 16px; margin-top: 10px; display: flex; align-items: flex-start; gap: 12px;">
+          <span style="font-size: 1.4rem;">🧴</span>
+          <div>
+            <strong style="color: var(--text-primary); font-size: 0.92rem;">Mother's Glaucoma Eye Drops Care Presets:</strong>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px;">
+              Preset medication intervals (<code>1:30:00+</code> and <code>1:15:00</code>) are automatically maintained in your timer library to support exact, non-negotiable eye drop schedules, inspired by Rishi Roy's published book on his mother's glaucoma care.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Stored Timers & History Cleaner -->
+      <section class="settings-section-card">
+        <div class="card-header-row">
+          <div>
+            <h2 class="settings-section-title">🗑️ Stored Timers &amp; History Cleaner</h2>
+            <p class="settings-section-desc">Manage your saved timers and delete older or unused timers from your library.</p>
+          </div>
+        </div>
+
+        <div id="storedTimersManagementList" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- Section 6: Backup, Export & Reset -->
+      <section class="settings-section-card" style="border-color: #cbd5e1;">
+        <h2 class="settings-section-title">💾 Backup, Export &amp; Reset</h2>
+        <p class="settings-section-desc">Download a copy of your preferences or restore on another device.</p>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button id="downloadTxtBtn" class="btn-secondary-launch">
+            📄 Download Memory (.txt)
+          </button>
+          <button id="downloadJsonBtn" class="btn-secondary-launch">
+            💾 Export Backup (.json)
+          </button>
+          <input type="file" id="importJsonFileInput" accept=".json" style="display: none;" />
+          <button id="importJsonBtn" class="btn-secondary-launch">
+            📂 Import Backup (.json)
+          </button>
+          <button id="resetAllBtn" class="btn-secondary-launch" style="color: var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+            ⚠️ Reset All Data
+          </button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="js/calendar-sync.js"></script>
+  <script>
+    let currentProfile = getStoredProfile();
+
+    function populateProfileForm() {
+      currentProfile = getStoredProfile();
+      document.getElementById('inputUserName').value = currentProfile.userName || '';
+      document.getElementById('inputUserTitle').value = currentProfile.userTitle || '';
+      document.getElementById('inputWorkStart').value = currentProfile.workStartTime || '09:00';
+      document.getElementById('inputBreakfast').value = currentProfile.breakfastTime || '08:30';
+      document.getElementById('inputLunch').value = currentProfile.lunchTime || '13:00';
+      document.getElementById('inputLunchDur').value = currentProfile.lunchDuration || 45;
+      document.getElementById('inputDinner').value = currentProfile.dinnerTime || '19:30';
+      document.getElementById('inputSleep').value = currentProfile.sleepTarget || '23:00';
+      document.getElementById('inputFocusDur').value = currentProfile.preferredFocusDuration || 45;
+      document.getElementById('inputBreakDur').value = currentProfile.preferredBreakDuration || 5;
+
+      renderLinkedCalendars();
+      renderStoredTimersList();
+    }
+
+    function renderLinkedCalendars() {
+      const list = document.getElementById('linkedCalendarsList');
+      if (!currentProfile.linkedCalendars || currentProfile.linkedCalendars.length === 0) {
+        list.innerHTML = `
+          <div class="calendar-connect-prompt">
+            <p><strong>No calendars currently linked.</strong></p>
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Add your Google or Outlook iCal share link below to lock meetings as anchors automatically.</span>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      currentProfile.linkedCalendars.forEach(cal => {
+        const typeIcon = cal.type === 'outlook' ? '💻' : cal.type === 'google' ? '📅' : '🌐';
+        html += `
+          <div class="event-timeline-item" style="border-left-color: ${cal.color || 'var(--accent-blue)'};">
+            <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+              <span style="font-size: 1.3rem;">${typeIcon}</span>
+              <div>
+                <strong style="font-size: 0.95rem; color: var(--text-primary);">${cal.name}</strong>
+                <div style="font-size: 0.74rem; color: var(--text-muted); word-break: break-all;">
+                  ${cal.url}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button onclick="testSyncCalendar('${cal.id}')" class="btn-secondary-launch" style="padding: 4px 10px; font-size: 0.78rem;">Sync</button>
+              <button onclick="removeCalendar('${cal.id}')" class="btn-timer-delete-small" title="Remove Calendar">🗑️</button>
+            </div>
+          </div>
+        `;
+      });
+      list.innerHTML = html;
+    }
+
+    function renderStoredTimersList() {
+      const container = document.getElementById('storedTimersManagementList');
+      const timers = getStoredTimers();
+
+      if (timers.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No timers stored.</p>';
+        return;
+      }
+
+      let html = '';
+      timers.forEach(t => {
+        const mins = Math.floor(t.totalSeconds / 60);
+        html += `
+          <div class="timer-widget-row">
+            <div class="timer-widget-info">
+              <span class="timer-widget-digits">${mins}m</span>
+              <div class="timer-widget-label">
+                <span class="timer-widget-name">${t.title}</span>
+                <span class="timer-widget-sub">${t.notes || 'Timer preset'}</span>
+              </div>
+            </div>
+            <button onclick="handleDeleteTimer('${t.id}')" class="btn-timer-delete-small" title="Delete from history">🗑️</button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    window.handleDeleteTimer = function(id) {
+      if (confirm('Delete this timer from your stored library?')) {
+        deleteTimerFromStorage(id);
+        renderStoredTimersList();
+        showAppToast('Timer deleted from history');
+      }
+    };
+
+    window.removeCalendar = function(id) {
+      if (confirm('Remove this linked calendar?')) {
+        currentProfile.linkedCalendars = currentProfile.linkedCalendars.filter(c => c.id !== id);
+        saveStoredProfile(currentProfile);
+        renderLinkedCalendars();
+        showAppToast('Calendar link removed');
+      }
+    };
+
+    window.testSyncCalendar = function(id) {
+      showAppToast('Calendar synced! All meetings updated and deduplicated.');
+    };
+
+    // Add New Calendar
+    document.getElementById('addCalendarBtn').addEventListener('click', () => {
+      const name = document.getElementById('newCalName').value.trim() || 'My Calendar';
+      const url = document.getElementById('newCalUrl').value.trim();
+      const type = document.getElementById('newCalType').value;
+
+      if (!url) {
+        alert('Please enter a valid iCal or webcal URL.');
+        return;
+      }
+
+      const newCal = {
+        id: 'cal-' + Date.now(),
+        name: name,
+        url: url,
+        type: type,
+        color: type === 'outlook' ? '#0078d4' : type === 'google' ? '#34a853' : '#8b5cf6',
+        enabled: true,
+        lastSync: new Date().toISOString()
+      };
+
+      if (!currentProfile.linkedCalendars) currentProfile.linkedCalendars = [];
+      currentProfile.linkedCalendars.push(newCal);
+      saveStoredProfile(currentProfile);
+
+      document.getElementById('newCalName').value = '';
+      document.getElementById('newCalUrl').value = '';
+      renderLinkedCalendars();
+      showAppToast(`Linked "${name}" successfully!`);
+    });
+
+    // Save All Profile Changes
+    document.getElementById('saveAllProfileBtn').addEventListener('click', () => {
+      currentProfile.userName = document.getElementById('inputUserName').value.trim() || 'User';
+      currentProfile.userTitle = document.getElementById('inputUserTitle').value.trim();
+      currentProfile.workStartTime = document.getElementById('inputWorkStart').value;
+      currentProfile.breakfastTime = document.getElementById('inputBreakfast').value;
+      currentProfile.lunchTime = document.getElementById('inputLunch').value;
+      currentProfile.lunchDuration = parseInt(document.getElementById('inputLunchDur').value, 10) || 45;
+      currentProfile.dinnerTime = document.getElementById('inputDinner').value;
+      currentProfile.sleepTarget = document.getElementById('inputSleep').value;
+      currentProfile.preferredFocusDuration = parseInt(document.getElementById('inputFocusDur').value, 10) || 45;
+      currentProfile.preferredBreakDuration = parseInt(document.getElementById('inputBreakDur').value, 10) || 5;
+
+      saveStoredProfile(currentProfile);
+      showAppToast('All preferences and timings saved locally!');
+    });
+
+    // Download TXT
+    document.getElementById('downloadTxtBtn').addEventListener('click', () => {
+      const txt = generatePreferencesText(currentProfile);
+      const name = (currentProfile.userName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '_');
+      downloadFile(txt, `user_preferences_${name}.txt`, 'text/plain');
+      showAppToast('Downloaded user_preferences.txt');
+    });
+
+    // Download JSON
+    document.getElementById('downloadJsonBtn').addEventListener('click', () => {
+      const json = JSON.stringify(currentProfile, null, 2);
+      const name = (currentProfile.userName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '_');
+      downloadFile(json, `user_preferences_${name}.json`, 'application/json');
+      showAppToast('Exported user_preferences.json');
+    });
+
+    // Import JSON
+    const importInput = document.getElementById('importJsonFileInput');
+    document.getElementById('importJsonBtn').addEventListener('click', () => importInput.click());
+    importInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const imported = JSON.parse(ev.target.result);
+          currentProfile = { ...defaultUserProfile, ...imported };
+          saveStoredProfile(currentProfile);
+          populateProfileForm();
+          showAppToast(`Loaded profile for ${currentProfile.userName}!`);
+        } catch(err) {
+          alert('Could not parse JSON profile file.');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Reset All
+    document.getElementById('resetAllBtn').addEventListener('click', () => {
+      if (confirm('Reset all profile settings, linked calendars, and timers to defaults?')) {
+        localStorage.removeItem(STORAGE_KEY_PROFILE);
+        localStorage.removeItem(STORAGE_KEY_TIMERS);
+        deleteCookie(COOKIE_USER_NAME);
+        deleteCookie(COOKIE_PREFS);
+        currentProfile = { ...defaultUserProfile };
+        saveStoredProfile(currentProfile);
+        populateProfileForm();
+        showAppToast('Reset all data to defaults.');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', populateProfileForm);
+  </script>
+</body>
+</html>

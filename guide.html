@@ -1,772 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#090d16" />
-  <title>Master Guide — The Anchor & Flow System</title>
-  <meta name="description" content="Comprehensive guide to the Anchor & Flow Harvard Timeboxing methodology and chronological workflow timer." />
-  <meta property="og:title" content="Master Guide — Anchor & Flow System" />
-  <meta property="og:description" content="Learn how to master Harvard Timeboxing, protect calendar anchors, and optimize workflow velocity." />
-  <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://acnbrr21.github.io/my-routine-timer/guide.html" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏱️</text></svg>" />
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏱️</text></svg>" />
+  <meta name="theme-color" content="#f8fafc" />
+  <title>Master Guide &amp; Calendar Help — Anchor &amp; Flow</title>
+  <meta name="description" content="Comprehensive guide to linking Google, Outlook, and Apple calendars via URL, multi-calendar deduplication, Harvard Timeboxing, and custom timer rhythms." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
   <style>
-    :root {
-      --bg-primary: #090d16;
-      --bg-surface: #131b2e;
-      --bg-card: #1c2740;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-hover: #0ea5e9;
-      --success: #22c55e;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --purple: #a855f7;
-      --border: #24324f;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-primary);
-      color: var(--text-main);
-      line-height: 1.65;
-      padding: 30px 16px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .guide-container {
-      width: 100%;
-      max-width: 860px;
-      display: flex;
-      flex-direction: column;
-      gap: 32px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; }
-    h2 { font-size: 1.35rem; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
-    h3 { font-size: 1.05rem; font-weight: 600; color: var(--text-main); margin: 16px 0 6px; }
-    p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 12px; }
-
-    .nav-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 600;
-      transition: all 0.15s ease;
-    }
-    .nav-btn:hover { background: var(--border); color: #fff; }
-
-    .card {
-      background: var(--bg-surface);
+    .guide-step-box {
+      background: var(--bg-card-subtle);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 24px;
+      padding: 20px;
+      margin-bottom: 18px;
     }
-
-    code, pre {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.86rem;
-    }
-
-    code {
-      background: rgba(15, 23, 42, 0.7);
-      color: var(--accent);
-      padding: 2px 6px;
-      border-radius: 4px;
-      border: 1px solid rgba(56, 189, 248, 0.2);
-    }
-
-    pre {
-      background: #0b1120;
-      color: #e2e8f0;
-      padding: 16px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      overflow-x: auto;
-      margin: 12px 0 16px;
-      line-height: 1.45;
-    }
-
-    ul, ol {
-      margin-left: 20px;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 14px;
-    }
-    li { margin-bottom: 6px; }
-
-    .formula-box {
-      background: rgba(56, 189, 248, 0.08);
-      border-left: 4px solid var(--accent);
-      padding: 14px 18px;
-      border-radius: 0 8px 8px 0;
-      margin: 14px 0;
-      color: var(--text-main);
-    }
-
-    .badge-example {
-      display: inline-block;
-      font-size: 0.75rem;
+    .guide-step-box h3 {
+      font-size: 1.1rem;
       font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .badge-anchor { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
-    .badge-flow { background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid var(--accent); }
-  
-    /* Persistent Sticky Mini-Timer Bar */
-    .zen-sticky-bar {
-      position: sticky;
-      top: 12px;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(19, 27, 46, 0.95);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--accent);
-      border-radius: 12px;
-      padding: 10px 18px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
-      flex-wrap: wrap;
-      gap: 12px;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-
-    .zen-sticky-bar.alert-mode {
-      border-color: var(--danger);
-      background: rgba(239, 68, 68, 0.15);
-      animation: alert-flash 1s infinite alternate ease-in-out;
-    }
-
-    .zen-bar-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      overflow: hidden;
-    }
-
-    .pulse-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse-ring 2s infinite;
-      flex-shrink: 0;
-    }
-
-    .zen-task-title {
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 280px;
-    }
-
-    .zen-bar-center {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 1.65rem;
-      font-weight: 700;
-      color: var(--text-main);
-      letter-spacing: 1px;
-    }
-
-    .zen-bar-right {
+      color: var(--text-primary);
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
     }
-
-    .btn-nudge {
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      font-weight: 700;
-      padding: 5px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.8rem;
+    .guide-step-box ol {
+      padding-left: 20px;
+      line-height: 1.65;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
     }
-    .btn-nudge:hover {
-      background: var(--accent);
-      color: #090d16;
+    .guide-step-box li {
+      margin-bottom: 6px;
     }
-    .btn-warning { background-color: var(--warning); color: #090d16; font-weight: 700; border: none; }
-    .btn-warning:hover { background-color: #d97706; }
-    .btn-next { background-color: var(--danger); color: #fff; font-weight: 700; border: none; }
-    .btn-next:hover { background-color: #dc2626; }
-
-    @keyframes pulse-ring {
-      0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); }
-      70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+    .guide-callout {
+      background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      font-size: 0.9rem;
+      color: #065f46;
+      line-height: 1.5;
     }
-
-    @keyframes alert-flash {
-      0% { opacity: 1; transform: scale(1); text-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
-      100% { opacity: 0.35; transform: scale(1.01); text-shadow: 0 0 25px rgba(239, 68, 68, 0.8); }
-    }
-
-    @media (max-width: 640px) {
-      .zen-sticky-bar {
-        padding: 8px 12px;
-        gap: 8px;
-        top: 6px;
-      }
-      .zen-bar-left {
-        max-width: 50%;
-      }
-      .zen-task-title {
-        max-width: 140px;
-        font-size: 0.82rem;
-      }
-      .zen-bar-center {
-        font-size: 1.25rem;
-      }
-      .zen-bar-right {
-        gap: 4px;
-      }
-      .zen-bar-right .btn, .zen-bar-right .nav-btn, .zen-bar-right .back-btn {
-        padding: 4px 8px !important;
-        font-size: 0.74rem !important;
-      }
-    }
-
   </style>
 </head>
 <body>
-  <div class="guide-container">
-
-    <!-- Persistent Sticky Mini-Timer Bar (Synced with Live Cockpit Timer) -->
-    <div class="zen-sticky-bar" id="zenStickyBar">
-      <div class="zen-bar-left">
-        <span class="pulse-dot"></span>
-        <div>
-          <div class="zen-task-title" id="zenBarTaskTitle">Loading Active Task...</div>
-          <span style="font-size: 0.72rem; color: var(--text-muted);" id="zenBarRoutineName">Routine</span>
-        </div>
-      </div>
-      <div class="zen-bar-center" id="zenBarClock">00:00</div>
-      <div class="zen-bar-right">
-        <button type="button" class="btn btn-nudge add" id="zenBarAdd5Btn" title="Add 5 minutes to current task">+5m</button>
-        <button type="button" class="btn btn-warning btn-sm" id="zenBarPauseBtn">Start</button>
-        <button type="button" class="btn btn-next btn-sm" id="zenBarNextBtn">Next</button>
-        <a href="index.html" class="nav-btn" style="padding: 6px 12px; font-size: 0.82rem; background: var(--accent); color: #090d16; font-weight: 700; text-decoration: none;">&larr; Return to Cockpit</a>
-      </div>
-    </div>
-
-    <header>
-      <div>
-        <h1>The Anchor & Flow Method</h1>
-        <p>A First-Principles Guide to Dynamic Scheduling, Outlook Ingestion, and Execution Auditing</p>
-      </div>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <a href="index.html" class="nav-btn">&larr; 🧠 AI Daily Planner</a>
-        <a href="timer.html" class="nav-btn" style="border-color: var(--accent); color: var(--accent);">⏱️ All Timers</a>
-      </div>
-    </header>
-
-    <!-- Section 0: Meet the Creator -->
-    <section class="card" style="border: 1px solid rgba(56, 189, 248, 0.35); background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);">
-      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #0284c7, #4f46e5); color: #fff; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">RR</div>
-          <div>
-            <h2 style="margin: 0; font-size: 1.2rem; color: #fff;">Created by Rishi Roy</h2>
-            <span style="font-size: 0.8rem; color: #38bdf8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">The Productivity Guy • Productivity as Bio-Architecture</span>
-          </div>
-        </div>
-        <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 6px; background: #0a66c2; color: #fff; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">
-          Connect on LinkedIn ↗
-        </a>
-      </div>
-      <p style="color: #cbd5e1; line-height: 1.6; margin: 0 0 10px 0;">
-        <strong>"Productivity is more than task completion; it is personal bio-architecture."</strong> As someone obsessed with workflow optimization and high-leverage tools, I created Anchor &amp; Flow to bridge the gap between intense cognitive output and restorative daily routines. True productivity must enhance professional execution while actively protecting physical health, circadian rhythm, and mental clarity.
-      </p>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <span style="font-size: 0.75rem; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #7dd3fc; padding: 3px 8px; border-radius: 4px;">⚡ Deep Work Optimization</span>
-        <span style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; padding: 3px 8px; border-radius: 4px;">🧘 Healthy Restorative Routines</span>
-        <span style="font-size: 0.75rem; background: rgba(129, 140, 248, 0.15); border: 1px solid rgba(129, 140, 248, 0.3); color: #c7d2fe; padding: 3px 8px; border-radius: 4px;">⏱ Harvard Timeboxing Architecture</span>
-      </div>
-    </section>
-
+  <div class="app-container">
     
-    <!-- Section: Step-by-Step Calendar Export Guide -->
-    <section class="card" id="calendar-export" style="border-left: 4px solid var(--accent); scroll-margin-top: 24px;">
-      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
-        <h2>📅 How to Export Your Calendar (.ics)</h2>
-        <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 0.8rem; font-weight: 600; padding: 4px 10px; border-radius: 9999px; border: 1px solid rgba(56, 189, 248, 0.3);">
-          Zero-Manual Entry
-        </span>
-      </div>
-      <p style="color: var(--text-muted); margin-bottom: 20px;">
-        The Anchor &amp; Flow AI agent accepts standard iCalendar (<code>.ics</code>) files or text agenda exports from any major calendar client. Once uploaded, your fixed meetings, doctor appointments, and meal breaks are automatically locked as immutable <strong>Anchor Events</strong>, allowing the AI to safely timebox your flexible deep-work sprints around them.
-      </p>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
-        <!-- Outlook Web / Microsoft 365 -->
-        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-            <span style="font-size: 1.3rem;">🌐</span>
-            <h3 style="font-size: 1.05rem; color: #fff;">Outlook Web (Office 365)</h3>
-          </div>
-          <ol style="padding-left: 18px; color: #cbd5e1; font-size: 0.9rem; line-height: 1.6;">
-            <li>Open <a href="https://outlook.office.com/calendar" target="_blank" style="color: var(--accent);">Outlook on the Web</a>.</li>
-            <li>Click the <strong>⚙️ Settings</strong> icon (top-right).</li>
-            <li>Navigate to <strong>Calendar</strong> &rarr; <strong>Shared calendars</strong>.</li>
-            <li>Under <em>Publish a calendar</em>, choose your primary calendar and select <em>"Can view all details"</em>.</li>
-            <li>Click <strong>Publish</strong>, then click the <strong>ICS link</strong> and download the <code>.ics</code> file.</li>
-            <li>Drag &amp; drop the file directly into the <strong>Anchor &amp; Flow AI Planner</strong>!</li>
-          </ol>
-        </div>
-
-        <!-- Outlook Desktop -->
-        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-            <span style="font-size: 1.3rem;">💻</span>
-            <h3 style="font-size: 1.05rem; color: #fff;">Outlook Desktop (Windows &amp; Mac)</h3>
-          </div>
-          <ol style="padding-left: 18px; color: #cbd5e1; font-size: 0.9rem; line-height: 1.6;">
-            <li>In the Outlook desktop app, switch to the <strong>Calendar view</strong>.</li>
-            <li>Go to <strong>File</strong> (top menu) &rarr; <strong>Save Calendar</strong>.</li>
-            <li>Under <em>Date Range</em>, select <strong>Today</strong> or <strong>Tomorrow</strong>.</li>
-            <li>Save as an <strong>iCalendar Format (*.ics)</strong> file on your computer.</li>
-            <li>Click the <strong>📎 Upload Calendar</strong> button in Anchor &amp; Flow to import your meetings instantly.</li>
-          </ol>
-        </div>
-
-        <!-- Google Calendar -->
-        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-            <span style="font-size: 1.3rem;">📅</span>
-            <h3 style="font-size: 1.05rem; color: #fff;">Google Calendar</h3>
-          </div>
-          <ol style="padding-left: 18px; color: #cbd5e1; font-size: 0.9rem; line-height: 1.6;">
-            <li>Open <a href="https://calendar.google.com" target="_blank" style="color: var(--accent);">Google Calendar</a> on your computer.</li>
-            <li>Click the <strong>⚙️ Settings menu</strong> &rarr; <strong>Settings</strong>.</li>
-            <li>On the left panel, click <strong>Import &amp; export</strong> &rarr; <strong>Export</strong>.</li>
-            <li>Extract the downloaded <code>.zip</code> archive to get your <code>.ics</code> file.</li>
-            <li>Drop the <code>.ics</code> file right into Anchor &amp; Flow.</li>
-          </ol>
-        </div>
-      </div>
-
-      <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 12px;">
-        <span style="font-size: 1.2rem; flex-shrink: 0;">💡</span>
-        <div style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.5;">
-          <strong style="color: #6ee7b7;">No .ics file available?</strong> No problem! You can simply type or paste your meetings directly into the chat (e.g. <em>"10:00 Team Sync 30m, 13:00 Lunch 45m"</em>), or tell the Flow Agent your anchor times during your daily onboarding chat.
-        </div>
-      </div>
-    </section>
-
-
-    <!-- Section 1: Philosophy -->
-    <section class="card">
-      <h2>1. The Problem with Conventional Timers</h2>
-      <p>Traditional productivity tools enforce one of two broken models:</p>
-      <ul>
-        <li><strong>Rigid Calendar Blocks:</strong> You schedule your day down to 15-minute slots. A single phone call or delayed meeting pushes every task off schedule, inducing guilt and anxiety.</li>
-        <li><strong>Abstract Stopwatches (Floating Timers):</strong> A simple Pomodoro timer measures duration (e.g., 25 mins) in a vacuum. It has no awareness that you have an immovable client call at 2:00 PM, leading to collisions.</li>
-      </ul>
-      <p><strong>The Solution: "Anchor & Flow"</strong> divides your workday into two entities:</p>
-      <ol>
-        <li><span class="badge-example badge-anchor">Hard Anchors</span>: Non-negotiable wall-clock commitments (client syncs, webinars, standups).</li>
-        <li><span class="badge-example badge-flow">Fluid Flow</span>: Flexible tasks, deep work sessions, and health habits (squats, hydration) that dynamically flow through the open time windows between your anchors.</li>
-      </ol>
-    </section>
-
-    <!-- Section 2: Conversational Timeboxing via DeepSeek -->
-    <section class="card">
-      <h2>2. Conversational Timeboxing with Multi-Tier AI (OpenAI & DeepSeek)</h2>
-      <p>Instead of manual scheduling or cumbersome CSV spreadsheets, <strong>Anchor & Flow</strong> features a conversational AI assistant powered by OpenAI (Option 1) with an automatic DeepSeek fallback (Option 2).</p>
-
-      <h3>Simple, Time-Aware AI Onboarding:</h3>
-      <ol>
-        <li><strong>Time-Aware Day Planning:</strong> If it's before 12:00 PM, the assistant asks if you want to <em>"Plan the Day"</em>. If it's after 12:00 PM, it asks if you want to <em>"Plan the Rest of the Day"</em>. You are prompted: <em>"Please fill in all the tasks that you want to do, and with their analysis of what time they want."</em></li>
-        <li><strong>Productivity Guru Break Opt-In (Full User Control):</strong> The assistant asks <em>"Would you like me to fill in small breaks to enhance productivity?"</em> backed by science-based recovery quotes. By default, <strong>no breaks are inserted</strong> unless you explicitly choose to opt in.</li>
-        <li><strong>Next Few Tasks & Single Task Modes:</strong> Need a fast sprint or a single timer? Choose <em>"Simple Timer for Next Few Tasks"</em> (2–4 tasks) or <em>"Single Timer for a Single Task"</em> with one-tap duration pills and instant launch.</li>
-        <li><strong>Clear, Widened Duration Box:</strong> The review table features expanded duration boxes cleanly displaying durations of 100+ minutes (e.g. 120m, 180m, 240m) with full editing and reordering.</li>
-      </ol>
-    </section>
-<!-- Section 3: Timer Mechanics -->
-    <section class="card">
-      <h2>3. The Execution Engine in Practice</h2>
-      <ul>
-        <li><strong>The "One-Second Reality Check" (🎯):</strong> Most timers assume that when 00:00 is reached, the task is finished. Anchor & Flow introduces a frictionless confirmation prompt: <em>"Did you finish this task?"</em> (<code>[✓ Completed]</code> vs <code>[↺ Incomplete]</code>).</li>
-        <li><strong>Rollover Memory & Queue (↺):</strong> If a task is marked incomplete, you can extend by <code>+5m</code>/<code>+10m</code> or park it. Parked tasks are saved into your private browser storage with remaining time calculated, and automatically offered as priority carryover in your next AI planning session.</li>
-        <li><strong>60-Second Calming Pause (🧘):</strong> Rather than jolting from one task into the next, the timer introduces a mindful 60-second transition breather between flow tasks. You can extend it with <code>+1m</code> / <code>+5m</code> or begin your next task immediately when ready.</li>
-        <li><strong>Open Buffer & Gap Filling (⚡):</strong> Finished early before a meeting? The cockpit enters a serene free time countdown and highlights upcoming smaller tasks from your routine that fit comfortably within the remaining minutes. Tapping any chip pulls it forward to execute immediately.</li>
-        <li><strong>Anchor Auto-Convene & Preemption:</strong> Hard calendar meetings start punctually on their scheduled wall-clock minute with an Apple harmonic chime. Any running task is paused with an option to <strong>Resume After Meeting</strong> or mark <strong>No, Task is Finished</strong>.</li>
-        <li><strong>Flow Guru Productivity Audit (✦):</strong> Open the slide-over dashboard to review your velocity ratio, anchor shield discipline, and personalized pacing tips for tomorrow.</li>
-
-        <li><strong>Dynamic Wall-Clock Start Times:</strong> Upon loading, every milestone immediately displays its projected start time in sleek monospace typography (e.g., <code>10:15</code>). Flow tasks slide forward if earlier tasks overrun or pull forward when finished early, while Calendar Anchors remain anchored to their exact wall-clock time.</li>
-        <li><strong>Open Buffer / Free Time:</strong> When preceding tasks finish ahead of an upcoming meeting, the cockpit smoothly transitions into a serene, calming buffer countdown. If a meeting convenes early, tap <strong>Start Meeting Early ⏩</strong> to override manually.</li>
-        <li><strong>Anchor Auto-Convene & Preemption:</strong> When the computer clock hits an upcoming anchor's scheduled start, the meeting starts automatically with an Apple harmonic chime. Any overrunning flow task is stopped immediately (logged as <code>Cutoff by Anchor</code>), and a prompt asks: <em>"Previous task was stopped. Would you like to resume it after the meeting?"</em> with options to <strong>Resume After Meeting</strong> or <strong>No, Task is Finished</strong>. Any anchor tasks scheduled earlier in the day (in the past) are automatically marked complete and skipped with <code>0m</code> consumed in the current working block.</li>
-        <li><strong>Calendar Anchor Radar:</strong> The application continuously monitors your computer's clock. When an anchor approaches, the radar bar displays: <code>📅 Next Anchor: Executive Sync at 14:30 (in 12m)</code>.</li>
-        <li><strong>Overtime Count-Up:</strong> When a task reaches <code>00:00</code>, the timer does not abruptly reset. It flashes red, sounds a gentle harmonic alert, and counts <em>upwards</em> (<code>+00:01</code>, <code>+00:02</code>) to measure actual task overrun.</li>
-        <li><strong>Mid-Task Time Extension:</strong> If you realize a task needs more time—even while the alarm is ringing—tap <code>+5m</code>, <code>+10m</code>, or <code>+30m</code>. The alarm silences immediately, and the countdown resumes with the extended budget.</li>
-        <li><strong>Finish Early (⏩):</strong> Completed a 30-minute block in 18 minutes? Tap <strong>Finish Early ⏩</strong>. The timer records the exact elapsed wall-clock seconds and immediately fires up the next step.</li>
-        <li><strong>Zen Focus Mode (⊙):</strong> Tap the Zen button or press <code>Z</code> to strip away all peripheral checklists, tables, and settings, leaving only the task at hand and the timer clock.</li>
-      </ul>
-    </section>
-
-    <!-- Section 4: Data-Driven Continuous Improvement -->
-    <section class="card">
-      <h2>4. Auditing Your Estimation Velocity (The Secret to Productivity)</h2>
-      <p>Most productivity systems fail because they do not track the <em>Planning Fallacy</em>—the cognitive bias where humans consistently underestimate the time required to complete work.</p>
-
-      <p>At the end of your day, click <strong>Export CSV</strong>. You receive an audit file formatted as:</p>
-      <pre>Routine,Task Name,Type,Scheduled Anchor,Actual Start Time,Actual End Time,Target Duration,Time Added,Actual Elapsed,Variance,Status
-Work Day,Deep Work,Fluid Flow,,11:04:12,11:58:30,3000,600,3258,+258,Overtime
-Work Day,Client Review,Calendar Meeting,14:30,14:30:05,14:58:12,1800,0,1687,-113,Finished Early</pre>
-
-      <div class="formula-box">
-        <strong>The Key Calibration Metric: The Estimation Multiplier</strong><br />
-        2599	ext{Estimation Multiplier} = rac{	ext{Actual Elapsed (Secs)}}{	ext{Initial Target Duration (Secs)}}2599
-      </div>
-
-      <h3>How to Use This in Excel or Google Sheets:</h3>
-      <ol>
-        <li><strong>Calculate Your Personal Task Multiplier:</strong> In your spreadsheet, add a column: <code>=Actual_Elapsed / Target_Duration</code>.
-          <ul>
-            <li>If your multiplier is <code>1.35</code>, you routinely take 35% longer than you think. In future schedules, automatically multiply your initial estimates by <code>1.35</code>.</li>
-          </ul>
-        </li>
-        <li><strong>Analyze Category Variance:</strong> Group by <code>Parent Task</code> or <code>Routine</code> using a Pivot Table. You will often find that technical writing has a <code>1.4x</code> multiplier while administrative tasks sit at <code>0.9x</code>.</li>
-        <li><strong>Identify Transition Friction:</strong> Compare the <code>Actual End Time</code> of Task $ with the <code>Actual Start Time</code> of Task +1$. Gaps greater than 5 minutes reveal hidden leakage (context switching, tab-surfing, or distraction).</li>
-      </ol>
-    </section>
-  
-    <!-- Downloadable CSV Template & Format Specifications -->
-    <section class="guide-card" id="csv-template">
-      <h2>📥 Downloadable CSV Template & Schema</h2>
-      <p>While the AI Planner allows you to paste natural language plans, you can also import custom schedules using standard CSV spreadsheets.</p>
-      
-      <div style="margin: 18px 0; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-        <a href="sample_schedule_template.csv" download="sample_schedule_template.csv" class="btn" style="background: var(--accent); color: #090d16; font-weight: 700; text-decoration: none; padding: 11px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.92rem;">
-          📥 Download Sample CSV Template (sample_schedule_template.csv)
-        </a>
-        <a href="csv-tools.html" style="color: var(--accent); text-decoration: none; font-size: 0.88rem; font-weight: 600;">Open CSV Tools Page &rarr;</a>
-      </div>
-
-      <h3>CSV Column Specifications:</h3>
-      <table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.88rem; text-align: left;">
-        <thead>
-          <tr style="background: var(--bg-card); color: var(--text-main);">
-            <th style="padding: 10px; border: 1px solid var(--border); width: 15%;">Column</th>
-            <th style="padding: 10px; border: 1px solid var(--border); width: 15%;">Status</th>
-            <th style="padding: 10px; border: 1px solid var(--border);">Description & Example</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="padding: 10px; border: 1px solid var(--border); font-weight: 600;">Routine</td>
-            <td style="padding: 10px; border: 1px solid var(--border); color: var(--accent);">Required</td>
-            <td style="padding: 10px; border: 1px solid var(--border);">The routine grouping name (e.g., <code>Morning Block</code>, <code>Afternoon Flow</code>, <code>Evening Routine</code>).</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px; border: 1px solid var(--border); font-weight: 600;">Task Name</td>
-            <td style="padding: 10px; border: 1px solid var(--border); color: var(--accent);">Required</td>
-            <td style="padding: 10px; border: 1px solid var(--border);">Short action title. Prepend <code>★ [Top Priority]</code> to highlight vital Harvard priorities.</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px; border: 1px solid var(--border); font-weight: 600;">Duration (Mins)</td>
-            <td style="padding: 10px; border: 1px solid var(--border); color: var(--accent);">Required</td>
-            <td style="padding: 10px; border: 1px solid var(--border);">Duration in minutes (e.g. <code>5</code>, <code>25</code>, <code>50</code>). Use <code>0</code> for group header milestones.</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px; border: 1px solid var(--border); font-weight: 600;">Parent Task</td>
-            <td style="padding: 10px; border: 1px solid var(--border); color: var(--text-muted);">Optional</td>
-            <td style="padding: 10px; border: 1px solid var(--border);">Project or category tag (e.g., <code>Product</code>, <code>Operations</code>).</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px; border: 1px solid var(--border); font-weight: 600;">Scheduled Start</td>
-            <td style="padding: 10px; border: 1px solid var(--border); color: var(--warning);">For Anchors</td>
-            <td style="padding: 10px; border: 1px solid var(--border);">24-hour clock time (e.g. <code>10:00</code>, <code>14:30</code>). Designates an immutable calendar meeting. Leave empty for flexible tasks.</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px; border: 1px solid var(--border); font-weight: 600;">Notes</td>
-            <td style="padding: 10px; border: 1px solid var(--border); color: var(--text-muted);">Optional</td>
-            <td style="padding: 10px; border: 1px solid var(--border);">Explanation notes, instructions, or sub-tasks. Displayed with word wrapping in the cockpit.</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>Sample CSV Raw Format:</h3>
-      <pre style="background: var(--bg-card); padding: 14px; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; font-size: 0.82rem; color: #cbd5e1; line-height: 1.5;"><code>Routine,Task Name,Duration (Mins),Parent Task,Scheduled Start,Notes
-Morning Block,Morning Setup & Intentions,0,,,Kick off the morning with clear intentions
-Morning Block,★ [Top Priority] Deep Strategic Focus,50,Deep Work,,"Ruthless focus on highest-leverage initiative"
-Morning Block,Team Standup Sync,30,Operations,10:00,"Team alignment and blockers"
-Morning Block,Inbox Zero & Slack Triage,20,Comms,,"Batch communication processing"
-Morning Block,Hydrate & Posture Reset,5,Wellness,,"Drink water and stretch"
-Afternoon Flow,Client Strategy Call,30,Client Anchor,14:30,"Quarterly roadmap presentation"
-Evening Routine,Daily Debrief & Log,15,Wrap Up,,"Log completion metrics into Flow Guru"</code></pre>
-    </section>
-
-    <!-- Support, Inquiries & Feedback -->
-    <section class="guide-card" style="border-left: 4px solid var(--accent);" id="support">
-      <h2>📬 Support, Inquiries & Feedback</h2>
-      <p>Anchor & Flow is designed to bring ruthless clarity, momentum, and mindful calibration to daily execution.</p>
-      <p style="margin-top: 10px;">
-        If you have questions, encounter an edge case, or have suggestions to make the tool more effective:
-      </p>
-      <div style="margin-top: 14px; padding: 14px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+    <!-- Left Navigation Sidebar -->
+    <aside class="app-sidebar">
+      <a href="index.html" class="sidebar-logo">
+        <div class="logo-badge">⚡</div>
         <div>
-          <div style="font-weight: 700; color: var(--text-main);">Creator & Support Contact</div>
-          <div style="font-size: 0.88rem; color: var(--text-muted);">Rishi Roy</div>
+          <div class="logo-text-title">Anchor &amp; Flow</div>
+          <div class="logo-text-sub">Harvard Timebox Engine</div>
         </div>
-        <a href="mailto:rishi.roy@insead.edu?subject=Anchor%20%26%20Flow%20Feedback" style="background: var(--accent); color: #090d16; font-weight: 700; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.88rem;">
-          ✉️ rishi.roy@insead.edu
-        </a>
-      </div>
-    </section>
+      </a>
 
+      <ul class="sidebar-nav-list">
+        <li class="sidebar-nav-item">
+          <a href="index.html">
+            <span class="sidebar-nav-icon">🏠</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="planner.html">
+            <span class="sidebar-nav-icon">🧠</span>
+            <span>AI Day Planner</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="timer.html">
+            <span class="sidebar-nav-icon">⏱️</span>
+            <span>Timers &amp; Routines</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="profile.html">
+            <span class="sidebar-nav-icon">👤</span>
+            <span>Overview &amp; Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item active">
+          <a href="guide.html">
+            <span class="sidebar-nav-icon">📖</span>
+            <span>Guide &amp; Calendar Help</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-motivation-card">
+        <span class="plant-icon">🌿</span>
+        <p>Simple by design. Built on Apple Human Interface &amp; Pareto's 80/20 Law.</p>
+      </div>
+    </aside>
+
+    <!-- Main Viewport -->
+    <main class="main-viewport">
+      
+      <!-- Top Header -->
+      <header class="dashboard-top-header">
+        <div class="greeting-block">
+          <h1>Master Guide &amp; Calendar Help 📖</h1>
+          <p>Learn how to connect calendar share URLs, master multi-calendar deduplication, and execute Harvard Timeboxing.</p>
+        </div>
+
+        <div class="header-action-group">
+          <a href="profile.html" class="btn-primary-launch">
+            🔗 Link Your Calendars
+          </a>
+          <a href="index.html" class="btn-secondary-launch">
+            &larr; Back to Dashboard
+          </a>
+        </div>
+      </header>
+
+      <!-- Section: Calendar Links Sharing Tutorial -->
+      <section class="settings-section-card" id="calendar-links">
+        <div class="card-header-row">
+          <div>
+            <h2 class="settings-section-title">🔗 How to Share &amp; Link Your Calendar URLs</h2>
+            <p class="settings-section-desc">Anchor &amp; Flow connects directly to your calendar share links (iCal / Webcal / ICS). No manual file uploading needed!</p>
+          </div>
+          <span class="badge-deduped">Zero-File Upload</span>
+        </div>
+
+        <div class="guide-callout">
+          <strong>⚡ Why Share Links instead of File Uploads?</strong><br />
+          File uploads are static and become outdated within hours. By linking your Google or Outlook iCal share URL, Anchor &amp; Flow pulls your live schedule and locks your meetings as immutable <strong>Anchor Events</strong> without you ever having to re-upload files.
+        </div>
+
+        <!-- Google Calendar Step-by-Step -->
+        <div class="guide-step-box">
+          <h3>📅 Google Calendar — Getting Your Secret iCal URL</h3>
+          <ol>
+            <li>Open <a href="https://calendar.google.com" target="_blank" style="color:var(--accent-blue); font-weight:600;">Google Calendar</a> on your desktop browser.</li>
+            <li>On the left panel, find <strong>"My calendars"</strong>, hover over your primary calendar, and click the <strong>three dots (&bull;&bull;&bull;) &rarr; Settings and sharing</strong>.</li>
+            <li>Scroll down to the <strong>"Integrate calendar"</strong> section.</li>
+            <li>Find the box labeled <strong>"Secret address in iCal format"</strong> (or public address if your calendar is public).</li>
+            <li>Click the copy button to copy the <code>https://calendar.google.com/calendar/ical/.../basic.ics</code> URL.</li>
+            <li>In Anchor &amp; Flow, go to <strong><a href="profile.html" style="color:var(--accent-blue); font-weight:600;">Overview &amp; Profile</a></strong> &rarr; click <strong>+ Add Calendar Link</strong> &rarr; paste the URL and click <strong>Link This Calendar</strong>!</li>
+          </ol>
+        </div>
+
+        <!-- Microsoft Outlook Web Step-by-Step -->
+        <div class="guide-step-box">
+          <h3>💻 Microsoft Outlook on the Web (Office 365 / Outlook.com)</h3>
+          <ol>
+            <li>Open <a href="https://outlook.office.com/calendar" target="_blank" style="color:var(--accent-blue); font-weight:600;">Outlook on the Web</a>.</li>
+            <li>Click the <strong>⚙️ Settings (gear)</strong> icon in the top-right corner.</li>
+            <li>Navigate to <strong>Calendar</strong> &rarr; <strong>Shared calendars</strong>.</li>
+            <li>Under <strong>"Publish a calendar"</strong>, select your primary calendar and choose <em>"Can view all details"</em>.</li>
+            <li>Click <strong>Publish</strong>. Outlook will display an HTML link and an <strong>ICS link</strong>.</li>
+            <li>Click and copy the <strong>ICS link</strong> (starts with <code>https://outlook.office.com/owa/calendar/.../reachcalendar.ics</code>).</li>
+            <li>Paste this link into <a href="profile.html" style="color:var(--accent-blue); font-weight:600;">Overview &amp; Profile</a> in Anchor &amp; Flow!</li>
+          </ol>
+        </div>
+
+        <!-- Apple iCloud Calendar Step-by-Step -->
+        <div class="guide-step-box">
+          <h3>🍏 Apple iCloud Calendar (Webcal URL)</h3>
+          <ol>
+            <li>Open the <strong>Calendar app</strong> on your Mac (or visit <a href="https://www.icloud.com/calendar" target="_blank" style="color:var(--accent-blue);">iCloud.com</a>).</li>
+            <li>Hover over the calendar in the sidebar and click the <strong>share icon</strong> (or right-click &rarr; <em>Share Calendar</em>).</li>
+            <li>Check the box for <strong>Public Calendar</strong>.</li>
+            <li>Copy the generated Webcal share URL (starts with <code>webcal://p...-caldav.icloud.com/...</code>).</li>
+            <li>Paste into Anchor &amp; Flow &rarr; your events will sync automatically!</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- Section: Intelligent Multi-Calendar Deduplication -->
+      <section class="settings-section-card" id="deduplication">
+        <h2 class="settings-section-title">⚡ Intelligent Multi-Calendar Deduplication</h2>
+        <p class="settings-section-desc">How Anchor &amp; Flow solves the "double meeting" headache when you link both work and personal calendars.</p>
+
+        <p style="font-size:0.92rem; color:var(--text-secondary); line-height:1.6; margin-bottom:12px;">
+          Many professionals have their work meetings forwarded to their personal calendar, or are invited to the same client call on both Outlook and Google Calendar. In traditional apps, this creates ugly duplicates, showing the exact same meeting twice side-by-side.
+        </p>
+
+        <div style="background:var(--bg-card-subtle); border-radius:12px; padding:16px; margin-bottom:16px;">
+          <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-primary); margin-bottom:6px;">How Anchor &amp; Flow Deduplicates:</h4>
+          <ul style="padding-left:20px; font-size:0.88rem; color:var(--text-secondary); line-height:1.6;">
+            <li><strong>Signature Matching:</strong> Our local engine analyzes the meeting title and start time across all linked calendars.</li>
+            <li><strong>Intelligent Merging:</strong> If an <em>"Executive Sprint Sync"</em> at 10:00 AM appears on both your Work Outlook and Personal Google calendars, Anchor &amp; Flow unifies them into <strong>one clean card</strong>.</li>
+            <li><strong>Clear Attribution:</strong> The meeting card displays a badge: <code>⚡ Unified across Work Outlook &amp; Personal Google</code>, keeping your dashboard pristine.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Section: The Harvard Timeboxing & Serial Tasking Methodology -->
+      <section class="settings-section-card" id="methodology">
+        <h2 class="settings-section-title">🎯 Harvard Timeboxing &amp; Serial Tasking</h2>
+        <p class="settings-section-desc">The science of high-leverage execution used by Napoleon, Elon Musk, and top performers.</p>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px;">
+          <div style="background:var(--bg-card-subtle); border-radius:12px; padding:16px;">
+            <h4 style="color:var(--accent-blue); font-size:0.95rem; font-weight:700; margin-bottom:6px;">1. The Harvard Rule of 3</h4>
+            <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.5;">
+              Identify no more than three high-leverage tasks for the day (Top 1, Top 2, Top 3). Once these three are done, your day is a definitive victory.
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card-subtle); border-radius:12px; padding:16px;">
+            <h4 style="color:var(--accent-purple); font-size:0.95rem; font-weight:700; margin-bottom:6px;">2. Serial Single-Tasking</h4>
+            <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.5;">
+              Multitasking degrades cognitive performance by up to 40%. Serial tasking demands 100% focus on one milestone until the timer chimes, followed by an intentional calming pause.
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card-subtle); border-radius:12px; padding:16px;">
+            <h4 style="color:var(--accent-green); font-size:0.95rem; font-weight:700; margin-bottom:6px;">3. Anchor vs. Flow Blocks</h4>
+            <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.5;">
+              Meetings and essential health rituals are immutable <em>Anchors</em>. Deep work, writing, and review blocks are flexible <em>Flows</em> packed tightly around them.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Rishi Roy Story & Glaucoma Care Routine -->
+      <section class="settings-section-card" id="story">
+        <h2 class="settings-section-title">👨‍💻 About Rishi Roy &amp; The Glaucoma Care Book Origin</h2>
+        <p class="settings-section-desc">Why Anchor &amp; Flow was created and the personal story behind the eye drop timers.</p>
+
+        <p style="font-size:0.92rem; color:var(--text-secondary); line-height:1.6; margin-bottom:12px;">
+          Anchor &amp; Flow was conceived by <strong>Rishi Roy</strong> (<em>The Productivity Guy</em> &bull; <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" style="color:var(--accent-blue); font-weight:600;">LinkedIn Profile</a>) to solve two real challenges:
+        </p>
+
+        <div class="guide-callout" style="background:#fff7ed; border-color:rgba(249,115,22,0.3); color:#9a3412;">
+          <strong>The Mother's Glaucoma Eye Drops Routine:</strong><br />
+          Beyond executive focus, this timer was built to manage strict, non-negotiable medication intervals for Rishi's mother's glaucoma care (represented by the preset <code>🧴 Eye drops 1:30:00+</code> and <code>1:15:00</code> timers). Missing an eye drop window causes irreversible optic pressure spikes. This caregiving journey inspired Rishi's newly published book on glaucoma routines, bio-rhythms, and caregiving discipline.
+        </div>
+
+        <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.5;">
+          True productivity is not churning through meaningless tickets; it is personal bio-architecture that honors both your highest professional ambitions and the health of those you love.
+        </p>
+      </section>
+
+    </main>
   </div>
 
-  <script>
-    (function () {
-      const STORAGE_KEY_ROUTINES = 'anchor_flow_routines_v3';
-      const STORAGE_KEY_ACTIVE = 'anchor_flow_active_running_v3';
-
-      const zenStickyBar = document.getElementById('zenStickyBar');
-      const zenBarTaskTitle = document.getElementById('zenBarTaskTitle');
-      const zenBarRoutineName = document.getElementById('zenBarRoutineName');
-      const zenBarClock = document.getElementById('zenBarClock');
-      const zenBarAdd5Btn = document.getElementById('zenBarAdd5Btn');
-      const zenBarPauseBtn = document.getElementById('zenBarPauseBtn');
-      const zenBarNextBtn = document.getElementById('zenBarNextBtn');
-
-      if (!zenStickyBar) return;
-
-      function formatMMSS(secs) {
-        secs = Math.max(0, Math.floor(secs));
-        const m = Math.floor(secs / 60);
-        const s = secs % 60;
-        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-      }
-
-      function getActiveState() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY_ROUTINES);
-          if (!raw) return null;
-          const routines = JSON.parse(raw);
-          let activeName = localStorage.getItem(STORAGE_KEY_ACTIVE);
-          if (!activeName || !routines[activeName]) {
-            const keys = Object.keys(routines);
-            if (keys.length > 0) activeName = keys[0];
-            else return null;
-          }
-          return { routines, activeName, state: routines[activeName] };
-        } catch (e) {
-          return null;
-        }
-      }
-
-      function saveState(data) {
-        try {
-          localStorage.setItem(STORAGE_KEY_ROUTINES, JSON.stringify(data.routines));
-          localStorage.setItem(STORAGE_KEY_ACTIVE, data.activeName);
-        } catch (e) {
-          console.warn('Could not save state:', e);
-        }
-      }
-
-      function syncTimerDisplay() {
-        const data = getActiveState();
-        if (!data || !data.state) {
-          zenBarTaskTitle.textContent = '⏱️ Timer Ready';
-          zenBarRoutineName.textContent = 'No Schedule Loaded';
-          zenBarClock.textContent = '00:00';
-          zenStickyBar.classList.remove('alert-mode');
-          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Start';
-          return;
-        }
-
-        const state = data.state;
-        const now = Date.now();
-        const lastTick = state.lastTickTime || now;
-        const elapsedSecs = Math.max(0, Math.floor((now - lastTick) / 1000));
-
-        // Advance live time if running
-        if (elapsedSecs >= 1 && (state.timerState === 'running' || state.timerState === 'calming_pause')) {
-          state.lastTickTime = now;
-          if (state.timerState === 'calming_pause') {
-            if (state.remainingSeconds > elapsedSecs) {
-              state.remainingSeconds -= elapsedSecs;
-            } else {
-              state.remainingSeconds = 0;
-            }
-          } else if (state.timerState === 'running') {
-            state.elapsedSeconds = (state.elapsedSeconds || 0) + elapsedSecs;
-            if (state.remainingSeconds > elapsedSecs) {
-              state.remainingSeconds -= elapsedSecs;
-            } else {
-              const extra = elapsedSecs - state.remainingSeconds;
-              state.remainingSeconds = 0;
-              state.timerState = 'alarm_overtime';
-              state.overtimeSeconds = (state.overtimeSeconds || 0) + extra;
-            }
-          }
-          saveState(data);
-        } else if (elapsedSecs >= 1 && state.timerState === 'alarm_overtime') {
-          state.lastTickTime = now;
-          state.elapsedSeconds = (state.elapsedSeconds || 0) + elapsedSecs;
-          state.overtimeSeconds = (state.overtimeSeconds || 0) + elapsedSecs;
-          saveState(data);
-        }
-
-        const currentTask = (state.tasks && state.actionableTaskIndices && state.actionableTaskIndices.length > 0 && state.currentActionableStep < state.actionableTaskIndices.length)
-          ? state.tasks[state.actionableTaskIndices[state.currentActionableStep]]
-          : null;
-
-        if (!currentTask) {
-          zenBarTaskTitle.textContent = state.timerState === 'completed' ? '🎉 Routine Completed' : 'No Active Task';
-          zenBarRoutineName.textContent = state.name || 'Routine';
-          zenBarClock.textContent = '00:00';
-          zenStickyBar.classList.remove('alert-mode');
-          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Start';
-          return;
-        }
-
-        if (state.timerState === 'calming_pause') {
-          zenBarTaskTitle.textContent = '🧘 Calming Pause';
-          zenBarRoutineName.textContent = state.name || 'Routine';
-          zenBarClock.textContent = formatMMSS(state.remainingSeconds || 0);
-          zenStickyBar.classList.remove('alert-mode');
-          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Skip Pause';
-          return;
-        }
-
-        if (state.timerState === 'free_time') {
-          zenBarTaskTitle.textContent = '🌿 Free Time Buffer';
-          zenBarRoutineName.textContent = state.name || 'Routine';
-          zenBarClock.textContent = formatMMSS(state.remainingSeconds || 0);
-          zenStickyBar.classList.remove('alert-mode');
-          if (zenBarPauseBtn) zenBarPauseBtn.textContent = 'Pause';
-          return;
-        }
-
-        zenBarTaskTitle.textContent = currentTask.name;
-        zenBarRoutineName.textContent = state.name || 'Routine';
-
-        if (state.timerState === 'alarm_overtime') {
-          zenBarClock.textContent = `+${formatMMSS(state.overtimeSeconds || 0)}`;
-          zenStickyBar.classList.add('alert-mode');
-        } else {
-          zenBarClock.textContent = formatMMSS(state.remainingSeconds || 0);
-          zenStickyBar.classList.remove('alert-mode');
-        }
-
-        if (zenBarPauseBtn) {
-          zenBarPauseBtn.textContent = (state.timerState === 'running' || state.timerState === 'alarm_overtime') ? 'Pause' : 'Start';
-        }
-      }
-
-      if (zenBarAdd5Btn) {
-        zenBarAdd5Btn.addEventListener('click', () => {
-          const data = getActiveState();
-          if (!data || !data.state) return;
-          const state = data.state;
-          state.remainingSeconds = (state.remainingSeconds || 0) + 300;
-          state.extendedSeconds = (state.extendedSeconds || 0) + 300;
-          if (state.timerState === 'alarm_overtime') {
-            state.timerState = 'running';
-            state.overtimeSeconds = 0;
-          }
-          state.lastTickTime = Date.now();
-          saveState(data);
-          syncTimerDisplay();
-        });
-      }
-
-      if (zenBarPauseBtn) {
-        zenBarPauseBtn.addEventListener('click', () => {
-          const data = getActiveState();
-          if (!data || !data.state) return;
-          const state = data.state;
-          if (state.timerState === 'running' || state.timerState === 'alarm_overtime') {
-            state.timerState = 'paused';
-          } else {
-            state.timerState = 'running';
-          }
-          state.lastTickTime = Date.now();
-          saveState(data);
-          syncTimerDisplay();
-        });
-      }
-
-      if (zenBarNextBtn) {
-        zenBarNextBtn.addEventListener('click', () => {
-          const data = getActiveState();
-          if (!data || !data.state) return;
-          const state = data.state;
-          if (!state.actionableTaskIndices || state.actionableTaskIndices.length === 0) return;
-
-          const currTaskIdx = state.actionableTaskIndices[state.currentActionableStep];
-          if (state.tasks[currTaskIdx]) {
-            state.tasks[currTaskIdx].status = 'completed';
-          }
-
-          state.currentActionableStep = (state.currentActionableStep || 0) + 1;
-          if (state.currentActionableStep < state.actionableTaskIndices.length) {
-            const nextTaskIdx = state.actionableTaskIndices[state.currentActionableStep];
-            const nextTask = state.tasks[nextTaskIdx];
-            nextTask.status = 'active';
-            state.remainingSeconds = nextTask.durationSecs || 0;
-            state.overtimeSeconds = 0;
-            state.elapsedSeconds = 0;
-            state.extendedSeconds = 0;
-            state.timerState = 'running';
-          } else {
-            state.timerState = 'completed';
-            state.remainingSeconds = 0;
-            state.overtimeSeconds = 0;
-          }
-          state.lastTickTime = Date.now();
-          saveState(data);
-          syncTimerDisplay();
-        });
-      }
-
-      syncTimerDisplay();
-      setInterval(syncTimerDisplay, 1000);
-
-      window.addEventListener('storage', (e) => {
-        if (e.key === STORAGE_KEY_ROUTINES || e.key === STORAGE_KEY_ACTIVE) {
-          syncTimerDisplay();
-        }
-      });
-    })();
-  </script>
-
+  <script src="js/calendar-sync.js"></script>
 </body>
 </html>

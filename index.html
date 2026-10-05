@@ -3,189 +3,476 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#f5f5f7" />
-  <title>Anchor &amp; Flow — AI Harvard Timebox Planner</title>
-  <meta name="description" content="Minimalist Harvard Timeblocking AI Agent for serial tasking and calendar anchor protection by Rishi Roy." />
+  <meta name="theme-color" content="#f8fafc" />
+  <title>Dashboard — Anchor &amp; Flow Executive System</title>
+  <meta name="description" content="Executive productivity and wellness dashboard with multi-calendar deduplication, Harvard Timeblocking, and custom timer rhythms." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div class="main-wrapper">
+  <div class="app-container">
     
-    <!-- Top Navigation Bar (Clean & Uncluttered) -->
-    <header class="top-navbar">
-      <div class="brand-group">
-        <span class="brand-logo">⚡ Anchor &amp; Flow</span>
-        <span class="brand-tagline">Harvard Timeboxing &bull; Serial Tasking</span>
-      </div>
-
-      <div class="nav-actions">
-        <!-- BOLD PROMINENT TIMER CTA (Requested by User) -->
-        <a href="timer.html" class="bold-timer-cta">
-          ⏱️ Just Use Timer &rarr;
-        </a>
-        <button class="minimal-nav-btn" id="openHelpDrawerBtn" title="How to Export Calendar &amp; Help">
-          📖 Help
-        </button>
-      </div>
-    </header>
-
-    <!-- Minimal Rishi Roy Banner with Link to Origin Story & Glaucoma Book -->
-    <section class="creator-mini-banner">
-      <div class="mini-banner-left">
-        <div class="mini-avatar">RR</div>
-        <div class="mini-quote">
-          <strong>A note from Rishi Roy (The Productivity Guy):</strong>
-          <span>&ldquo;Plan the previous evening, lock your anchors, and focus on the Top 3 priorities with zero multitasking.&rdquo;</span>
+    <!-- Left Navigation Sidebar -->
+    <aside class="app-sidebar">
+      <a href="index.html" class="sidebar-logo">
+        <div class="logo-badge">⚡</div>
+        <div>
+          <div class="logo-text-title">Anchor &amp; Flow</div>
+          <div class="logo-text-sub">Harvard Timebox Engine</div>
         </div>
+      </a>
+
+      <ul class="sidebar-nav-list">
+        <li class="sidebar-nav-item active">
+          <a href="index.html">
+            <span class="sidebar-nav-icon">🏠</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="planner.html">
+            <span class="sidebar-nav-icon">🧠</span>
+            <span>AI Day Planner</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="timer.html">
+            <span class="sidebar-nav-icon">⏱️</span>
+            <span>Timers &amp; Routines</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="profile.html">
+            <span class="sidebar-nav-icon">👤</span>
+            <span>Overview &amp; Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="guide.html">
+            <span class="sidebar-nav-icon">📖</span>
+            <span>Guide &amp; Calendar Help</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-motivation-card">
+        <span class="plant-icon">🌿</span>
+        <p>A calmer mind leads to a brighter tomorrow. Focus on the Top 3.</p>
       </div>
-      <button class="story-link-btn" id="openStoryModalBtn">
-        Our Story &amp; Book Origin &rarr;
-      </button>
-    </section>
+    </aside>
 
-    <!-- User Memory & Profile Status (Single-Line, Minimal) -->
-    <div class="user-status-strip">
-      <div class="user-status-info">
-        <span class="status-dot"></span>
-        <span id="profileStatusText">Awaiting your name</span>
-      </div>
-      <div class="user-status-actions">
-        <button id="downloadMemoryTxtBtn" class="status-action-link" style="display: none;">📄 Download Memory (.txt)</button>
-        <button id="resetProfileBtn" class="status-action-link" style="display: none;">Reset</button>
-      </div>
-    </div>
-
-    <!-- Big Spacious Chat Box (Hero Interface) -->
-    <main class="chat-hero-container">
-      <div class="chat-header">
-        <div class="agent-status-wrap">
-          <span class="agent-title">Flow Planning Agent</span>
-          <span class="agent-sub">Harvard Timebox Engine</span>
-        </div>
-        <button id="clearChatBtn" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;">
-          Clear
-        </button>
-      </div>
-
-      <!-- Messages Stream -->
-      <div class="chat-body" id="chatBody">
-        <!-- Rendered dynamically -->
-      </div>
-
-      <!-- Spacious Input Bar with Voice Typing & Large Textarea -->
-      <div class="chat-input-bar">
-        <input type="file" id="calendarFileInput" accept=".ics,.txt,.pdf" />
-        
-        <!-- Calendar File Upload -->
-        <button class="icon-action-btn" id="uploadCalendarBtn" title="Upload Outlook or Google Calendar (.ics)">
-          📎
-        </button>
-
-        <!-- Voice-based Typing Microphone -->
-        <button class="icon-action-btn" id="voiceTypingBtn" title="Voice Typing (Speech-to-Text)">
-          🎙️
-        </button>
-
-        <!-- Big Multi-Line Auto-Expanding Textarea -->
-        <textarea class="chat-textarea" id="chatInputField" rows="1" placeholder="Type your name, speak your tasks, or drop your .ics calendar file here..."></textarea>
-
-        <!-- Apple Send Button -->
-        <button class="chat-send-btn" id="sendBtn" title="Send or Plan">
-          &uarr;
-        </button>
-      </div>
-    </main>
-
-  </div>
-
-  <!-- ========================================================= -->
-  <!-- "OUR STORY & GLAUCOMA BOOK" MODAL                         -->
-  <!-- ========================================================= -->
-  <div class="story-modal-backdrop" id="storyModal">
-    <div class="story-modal-card">
-      <div class="story-modal-header">
-        <h3 class="story-modal-title">About the Creator &amp; Story</h3>
-        <button class="story-modal-close" id="closeStoryModalBtn">&times;</button>
-      </div>
-
-      <div class="story-body">
-        <p>
-          <strong>Anchor &amp; Flow</strong> was conceived and created by <strong>Rishi Roy</strong> (<em>The Productivity Guy</em> &bull; <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">LinkedIn Profile</a>).
-        </p>
-
-        <div class="story-highlight-box">
-          <strong>The Dual Mission Behind Anchor &amp; Flow:</strong><br />
-          1. <strong>Executive Work Velocity:</strong> Practicing serial tasking (as used by Napoleon and Elon Musk) to eliminate mundane busywork and channel complete focus into the <strong>Top 3 daily priorities</strong>.<br /><br />
-          2. <strong>Caring for My Mother’s Glaucoma:</strong> This timer was also built out of a deeply personal necessity—to help manage the strict, exact medication intervals for my mother’s glaucoma eye drops. This caregiving journey inspired my newly published book on overcoming glaucoma care routines.
+    <!-- Main Viewport -->
+    <main class="main-viewport">
+      
+      <!-- Top Header -->
+      <header class="dashboard-top-header">
+        <div class="greeting-block">
+          <h1 id="dynamicGreetingText">Good morning, Alex! ☀️</h1>
+          <p id="dynamicGreetingSub">Here is what is happening with your calendar anchors and focus time today.</p>
         </div>
 
-        <p>
-          In Anchor &amp; Flow, your immutable meetings and vital health anchors (like eye drops, medications, or meals) are locked with precision, while the Flow Agent packs your high-impact work into serial single-task blocks.
-        </p>
+        <div class="header-action-group">
+          <!-- Launch AI Planner CTA -->
+          <a href="planner.html" class="btn-primary-launch" title="Plan your schedule with AI">
+            🧠 Plan My Day (AI Agent)
+          </a>
 
-        <div style="margin-top: 8px;">
-          <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; background:#0a66c2; color:#fff; text-decoration:none; padding:8px 16px; border-radius:8px; font-weight:600; font-size:0.85rem;">
-            Connect with Rishi Roy on LinkedIn &rarr;
+          <!-- Quick Timer Launch -->
+          <a href="timer.html" class="btn-secondary-launch" title="Launch Apple-style timer">
+            ⏱️ Launch Timer
+          </a>
+
+          <!-- Profile Badge -->
+          <a href="profile.html" class="user-profile-badge" title="Manage your local profile">
+            <div class="avatar-small" id="headerAvatar">AS</div>
+            <span style="font-size: 0.85rem; font-weight: 600;" id="headerUserName">Alex</span>
           </a>
         </div>
+      </header>
+
+      <!-- Today's Reminder / Focus Hero Card (Calmly inspired) -->
+      <section class="hero-reminder-banner">
+        <div class="reminder-content">
+          <span class="reminder-badge">Today's Anchor &bull; Harvard Rule of 3</span>
+          <h2 class="reminder-heading">Serial tasking: Complete focus on one milestone before moving to the next.</h2>
+          <p class="reminder-sub">Your immovable meetings are protected. The Flow Agent reserves your peak cognitive energy for what truly moves the needle.</p>
+        </div>
+        <div>
+          <a href="timer.html" class="reminder-action-btn">
+            ▶ Start 45m Focus Sprint
+          </a>
+        </div>
+      </section>
+
+      <!-- Metric KPI Cards (Taskly / Emily inspired) -->
+      <section class="metrics-grid-4">
+        <div class="metric-card">
+          <div class="metric-icon-box blue">⏱️</div>
+          <div class="metric-info">
+            <span class="metric-label">Focus Time Today</span>
+            <span class="metric-value">2.5h</span>
+            <span class="metric-trend">&uarr; +1.2h from yesterday</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon-box purple">🔒</div>
+          <div class="metric-info">
+            <span class="metric-label">Active Anchors</span>
+            <span class="metric-value" id="kpiAnchorsCount">4 Meetings</span>
+            <span class="metric-trend" style="color:var(--accent-purple);">⚡ Deduplicated</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon-box green">✅</div>
+          <div class="metric-info">
+            <span class="metric-label">Tasks Completed</span>
+            <span class="metric-value">16 / 24</span>
+            <span class="metric-trend">&uarr; 67% on track</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon-box peach">🔥</div>
+          <div class="metric-info">
+            <span class="metric-label">Routine Streak</span>
+            <span class="metric-value">12 Days</span>
+            <span class="metric-trend">Optimal Bio-Rhythm</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Dashboard Two-Column Grid -->
+      <div class="dashboard-content-grid">
+        
+        <!-- Left Column: Calendar Anchors & Tasks -->
+        <div class="grid-col-left">
+          
+          <!-- Today's Calendar & Important Meetings Widget -->
+          <section class="dashboard-card">
+            <div class="card-header-row">
+              <h2 class="card-title">
+                <span>📅</span>
+                <span>Today's Calendar &amp; Important Meetings</span>
+              </h2>
+              <span class="card-header-badge badge-deduped" id="dedupeStatusBadge">
+                ⚡ Deduplication Active
+              </span>
+            </div>
+
+            <!-- Deduplication Notice -->
+            <p style="font-size: 0.83rem; color: var(--text-muted); margin-top: -6px;">
+              Automatically synchronized from your linked calendar URLs. If a meeting appears on both Outlook and Google, it is unified into one clean entry.
+            </p>
+
+            <!-- Events Timeline List -->
+            <div class="calendar-events-list" id="dashboardEventsList">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+              <a href="profile.html" style="font-size: 0.84rem; color: var(--accent-blue); font-weight: 600; text-decoration: none;">
+                + Link or Manage Calendars &rarr;
+              </a>
+              <button onclick="refreshDashboardEvents()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;">
+                🔄 Refresh Sync
+              </button>
+            </div>
+          </section>
+
+          <!-- Harvard Top-3 Tasks Widget -->
+          <section class="dashboard-card">
+            <div class="card-header-row">
+              <h2 class="card-title">
+                <span>🎯</span>
+                <span>Priority Tasks &amp; Focus Queue</span>
+              </h2>
+              <a href="planner.html" style="font-size: 0.82rem; color: var(--accent-blue); font-weight: 600; text-decoration: none;">
+                Plan with AI &rarr;
+              </a>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;" id="tasksChecklistContainer">
+              <div class="event-timeline-item" style="border-left-color: var(--danger); background: #fff5f5;">
+                <input type="checkbox" style="width: 18px; height: 18px; accent-color: var(--accent-blue);" />
+                <div style="flex:1; padding: 0 10px;">
+                  <strong style="font-size: 0.92rem; color: var(--text-primary);">Top 1: Finalize Q4 Strategic Product Architecture</strong>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">45 mins &bull; Single-task focus with zero notifications</div>
+                </div>
+                <span class="tag-top-priority">Top 1</span>
+              </div>
+
+              <div class="event-timeline-item" style="border-left-color: var(--warning); background: #fffbeb;">
+                <input type="checkbox" style="width: 18px; height: 18px; accent-color: var(--accent-blue);" />
+                <div style="flex:1; padding: 0 10px;">
+                  <strong style="font-size: 0.92rem; color: var(--text-primary);">Top 2: Financial Model &amp; Runway Review</strong>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">45 mins &bull; Verify cost projections and margin targets</div>
+                </div>
+                <span class="tag-top-priority" style="background:rgba(245,158,11,0.15); color:var(--warning);">Top 2</span>
+              </div>
+
+              <div class="event-timeline-item" style="border-left-color: var(--accent-blue);">
+                <input type="checkbox" style="width: 18px; height: 18px; accent-color: var(--accent-blue);" />
+                <div style="flex:1; padding: 0 10px;">
+                  <strong style="font-size: 0.92rem; color: var(--text-primary);">Top 3: Executive Partner Proposal Draft</strong>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">30 mins &bull; Complete agreement terms summary</div>
+                </div>
+                <span class="tag-task">Top 3</span>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Right Column: Calendar Widget & Regular Timers -->
+        <div class="grid-col-right">
+          
+          <!-- Mini Calendar Widget -->
+          <div class="mini-calendar-widget" style="margin-bottom: 24px;">
+            <div class="mini-cal-header">
+              <span class="mini-cal-month" id="miniCalMonthHeader">October 2026</span>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Today highlighted</span>
+            </div>
+            <div class="mini-cal-grid" id="miniCalGrid">
+              <!-- Dynamically generated days -->
+            </div>
+          </div>
+
+          <!-- Stored Timers & Routines (with Delete functionality!) -->
+          <section class="dashboard-card">
+            <div class="card-header-row">
+              <h2 class="card-title">
+                <span>⏱️</span>
+                <span>Active &amp; Stored Timers</span>
+              </h2>
+              <a href="timer.html" style="font-size: 0.82rem; color: var(--accent-blue); font-weight: 600; text-decoration: none;">
+                All Timers &rarr;
+              </a>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: -6px;">
+              Tap ▶ to launch immediately. You can delete older unused timers from history anytime.
+            </p>
+
+            <div class="timers-widget-list" id="dashboardTimersList">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <div style="margin-top: 6px; text-align: center;">
+              <a href="timer.html" class="btn-secondary-launch" style="width: 100%; justify-content: center;">
+                + Create New Timer or Routine
+              </a>
+            </div>
+          </section>
+
+          <!-- Daily Wellness & Set Anchors -->
+          <section class="dashboard-card">
+            <div class="card-header-row">
+              <h2 class="card-title">
+                <span>🧘</span>
+                <span>Daily Wellness Timings</span>
+              </h2>
+              <a href="profile.html" style="font-size: 0.82rem; color: var(--accent-blue); font-weight: 600; text-decoration: none;">
+                Edit &rarr;
+              </a>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.88rem; padding: 6px 0; border-bottom: 1px solid var(--border-subtle);">
+                <span style="color: var(--text-secondary);">☀️ Work Start:</span>
+                <strong id="dispWorkStart">09:00 AM</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.88rem; padding: 6px 0; border-bottom: 1px solid var(--border-subtle);">
+                <span style="color: var(--text-secondary);">🍳 Breakfast Time:</span>
+                <strong id="dispBreakfast">08:30 AM</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.88rem; padding: 6px 0; border-bottom: 1px solid var(--border-subtle);">
+                <span style="color: var(--text-secondary);">🍱 Lunch Time:</span>
+                <strong id="dispLunch">01:00 PM (45m)</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.88rem; padding: 6px 0; border-bottom: 1px solid var(--border-subtle);">
+                <span style="color: var(--text-secondary);">🧴 Eye Drops (Glaucoma Care):</span>
+                <strong>1:30:00+ Interval</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.88rem; padding: 6px 0;">
+                <span style="color: var(--text-secondary);">🌙 Sleep Target:</span>
+                <strong id="dispSleep">11:00 PM</strong>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
       </div>
-    </div>
+
+    </main>
   </div>
-
-  <!-- ========================================================= -->
-  <!-- SLIDE-OUT SIDE HELP DRAWER                                -->
-  <!-- ========================================================= -->
-  <div class="side-drawer-backdrop" id="helpDrawer">
-    <div class="side-drawer-content">
-      <div class="drawer-header">
-        <h3 style="font-size: 1rem; font-weight: 700;">📅 Calendar Export &amp; Help</h3>
-        <button class="story-modal-close" id="closeHelpDrawerBtn">&times;</button>
-      </div>
-
-      <div class="drawer-body">
-        <div style="background: var(--accent-soft); border: 1px solid rgba(0, 113, 227, 0.2); border-radius: 8px; padding: 12px; font-size: 0.85rem; color: var(--text-primary);">
-          💡 <strong>How It Works:</strong> Drop your <code>.ics</code> file right into the chat or click 📎. Anchor &amp; Flow locks meetings as fixed anchors and schedules your focus tasks around them.
-        </div>
-
-        <div class="guide-step-card">
-          <h4>🌐 Outlook Web (Office 365)</h4>
-          <ol>
-            <li>Go to <a href="https://outlook.office.com/calendar" target="_blank" style="color:var(--accent);">Outlook on the Web</a>.</li>
-            <li>Click <strong>⚙️ Settings</strong> &rarr; <strong>Calendar</strong> &rarr; <strong>Shared calendars</strong>.</li>
-            <li>Under <em>Publish a calendar</em>, choose your primary calendar.</li>
-            <li>Download the <strong>ICS file</strong> and drop it into the chat!</li>
-          </ol>
-        </div>
-
-        <div class="guide-step-card">
-          <h4>💻 Outlook Desktop (Windows / Mac)</h4>
-          <ol>
-            <li>In the Outlook app, go to <strong>Calendar</strong>.</li>
-            <li>Click <strong>File</strong> &rarr; <strong>Save Calendar</strong>.</li>
-            <li>Select <em>Today</em> or <em>Tomorrow</em>, save as <strong>.ics</strong>, and drop it here!</li>
-          </ol>
-        </div>
-
-        <div class="guide-step-card">
-          <h4>📅 Google Calendar</h4>
-          <ol>
-            <li>Open Google Calendar &rarr; click <strong>⚙️ Settings</strong>.</li>
-            <li>Click <strong>Import &amp; export</strong> &rarr; <strong>Export</strong>.</li>
-            <li>Extract the <code>.ics</code> file from the zip and drop it in!</li>
-          </ol>
-        </div>
-
-        <a href="guide.html#calendar-export" target="_blank" style="color: var(--accent); font-weight: 600; text-decoration: underline; text-align: center; margin-top: 10px;">
-          View Full Visual Master Guide &rarr;
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast-pill" id="toastPill"></div>
 
   <!-- SCRIPTS -->
-  <script src="js/planner.js"></script>
+  <script src="js/calendar-sync.js"></script>
+  <script>
+    let userProfile = getStoredProfile();
+
+    function initDashboard() {
+      userProfile = getStoredProfile();
+
+      // Dynamic Greeting based on time of day
+      const now = new Date();
+      const hour = now.getHours();
+      let greeting = 'Good morning';
+      if (hour >= 12 && hour < 17) greeting = 'Good afternoon';
+      else if (hour >= 17) greeting = 'Good evening';
+
+      const userName = userProfile.userName || 'Alex';
+      document.getElementById('dynamicGreetingText').textContent = `${greeting}, ${userName}! ☀️`;
+      document.getElementById('headerUserName').textContent = userName;
+      
+      const initials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AS';
+      document.getElementById('headerAvatar').textContent = initials;
+
+      // Update Wellness Display
+      document.getElementById('dispWorkStart').textContent = formatClockDisplay(userProfile.workStartTime || '09:00');
+      document.getElementById('dispBreakfast').textContent = formatClockDisplay(userProfile.breakfastTime || '08:30');
+      document.getElementById('dispLunch').textContent = `${formatClockDisplay(userProfile.lunchTime || '13:00')} (${userProfile.lunchDuration || 45}m)`;
+      document.getElementById('dispSleep').textContent = formatClockDisplay(userProfile.sleepTarget || '23:00');
+
+      renderDashboardCalendarEvents();
+      renderDashboardTimers();
+      renderMiniCalendar();
+    }
+
+    function formatClockDisplay(timeStr) {
+      if (!timeStr) return '--:--';
+      const parts = timeStr.split(':');
+      let h = parseInt(parts[0], 10);
+      const m = parts[1] || '00';
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return `${h}:${m} ${ampm}`;
+    }
+
+    // Render Calendar Anchors with Live Intelligent Deduplication!
+    function renderDashboardCalendarEvents() {
+      const container = document.getElementById('dashboardEventsList');
+      const rawEvents = userProfile.calendarEvents || [];
+
+      // Run Intelligent Deduplication Engine!
+      const deduplicatedEvents = deduplicateCalendarEvents(rawEvents);
+      document.getElementById('kpiAnchorsCount').textContent = `${deduplicatedEvents.length} Anchors`;
+
+      if (deduplicatedEvents.length === 0) {
+        container.innerHTML = `
+          <div class="calendar-connect-prompt">
+            <p><strong>No meetings found for today.</strong></p>
+            <a href="profile.html" class="btn-secondary-launch" style="padding: 6px 14px; font-size: 0.8rem;">
+              + Link Your Calendar Share URL
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      deduplicatedEvents.forEach(ev => {
+        const isDedupe = ev.isDeduplicated;
+        const dedupeBadge = isDedupe
+          ? `<span class="dedupe-indicator">⚡ Unified across ${escapeHtml(ev.sources.join(' & '))}</span>`
+          : `<span class="event-cal-source">${escapeHtml(ev.calendarName || 'Calendar')}</span>`;
+
+        html += `
+          <div class="event-timeline-item ${ev.sourceType === 'routine' ? 'meal-anchor' : 'anchor-highlight'}">
+            <div class="event-time-col">
+              <span class="event-time-start">${ev.startTime}</span>
+              <span class="event-dur">${ev.duration}m</span>
+            </div>
+            <div class="event-title-col">
+              <div class="event-name">${escapeHtml(ev.title)}</div>
+              ${dedupeBadge}
+            </div>
+            <span class="tag-anchor">Anchor</span>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    window.refreshDashboardEvents = function() {
+      userProfile = getStoredProfile();
+      renderDashboardCalendarEvents();
+      showAppToast('Refreshed & deduplicated calendar events!');
+    };
+
+    // Render Stored Timers with Direct Deletion!
+    function renderDashboardTimers() {
+      const container = document.getElementById('dashboardTimersList');
+      const timers = getStoredTimers();
+
+      if (timers.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No timers stored.</p>';
+        return;
+      }
+
+      let html = '';
+      // Show top 4 timers
+      timers.slice(0, 5).forEach(t => {
+        const mins = Math.floor(t.totalSeconds / 60);
+        html += `
+          <div class="timer-widget-row">
+            <div class="timer-widget-info">
+              <span class="timer-widget-digits">${mins}m</span>
+              <div class="timer-widget-label">
+                <span class="timer-widget-name">${escapeHtml(t.title)}</span>
+                <span class="timer-widget-sub">${escapeHtml(t.notes || 'Timer')}</span>
+              </div>
+            </div>
+            <div class="timer-widget-actions">
+              <button onclick="launchTimer('${t.id}')" class="btn-timer-play-small" title="Start Timer">▶</button>
+              <button onclick="deleteTimerFromDashboard('${t.id}')" class="btn-timer-delete-small" title="Delete from history">🗑️</button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    window.launchTimer = function(id) {
+      window.location.href = `timer.html?start=${id}`;
+    };
+
+    window.deleteTimerFromDashboard = function(id) {
+      if (confirm('Delete this timer from your stored history?')) {
+        deleteTimerFromStorage(id);
+        renderDashboardTimers();
+        showAppToast('Timer deleted from history');
+      }
+    };
+
+    // Mini Calendar Render
+    function renderMiniCalendar() {
+      const grid = document.getElementById('miniCalGrid');
+      const d = new Date();
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      document.getElementById('miniCalMonthHeader').textContent = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+
+      const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+      let html = '';
+      daysOfWeek.forEach(dow => {
+        html += `<div class="mini-cal-day-header">${dow}</div>`;
+      });
+
+      const today = d.getDate();
+      for (let day = 1; day <= 31; day++) {
+        const isToday = day === today ? 'today' : '';
+        const hasAnchor = (day === today || day === today + 1 || day === 15) ? 'has-anchor' : '';
+        html += `<div class="mini-cal-cell ${isToday} ${hasAnchor}">${day}</div>`;
+      }
+
+      grid.innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
 </body>
 </html>

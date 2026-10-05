@@ -250,14 +250,33 @@
               <div class="timer-duration-display">${formatTime(t.totalSeconds)}</div>
               ${t.notes ? `<div class="timer-sub-steps">${escapeHtml(t.notes)}</div>` : ''}
             </div>
-            <button class="${playBtnClass}" data-id="${t.id}" title="${isCurrentlyActive ? 'Pause' : 'Start'} Timer">
-              ${playBtnIcon}
-            </button>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button class="${playBtnClass}" data-id="${t.id}" title="${isCurrentlyActive ? 'Pause' : 'Start'} Timer">
+                ${playBtnIcon}
+              </button>
+              <button class="timer-delete-btn" data-id="${t.id}" title="Delete unused timer from history">
+                🗑️
+              </button>
+            </div>
           </div>
         `;
       });
 
       container.innerHTML = html;
+
+      // Attach Delete handlers (ability to delete unused older timers)
+      container.querySelectorAll('.timer-delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          if (confirm('Delete this timer from your stored history?')) {
+            timers = timers.filter(t => t.id !== id);
+            saveTimersToStorage();
+            renderTimersList();
+            showToast('Deleted timer from history');
+          }
+        });
+      });
 
       // Attach Play/Pause handlers
       container.querySelectorAll('.timer-play-btn').forEach(btn => {
