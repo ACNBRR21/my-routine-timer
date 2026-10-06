@@ -369,16 +369,138 @@ function updateTask(id, updates) {
   return null;
 }
 
-function deleteTask(id) {
+const undoStack = [];
+
+function getUndoHistory() {
+  return [...undoStack];
+}
+
+function archiveTask(id) {
+  const data = getGoalsHierarchy();
+  const task = data.tasks.find(t => t.id === id);
+  if (task) {
+    const prevStatus = task.status;
+    undoStack.push({ action: 'archive', task: JSON.parse(JSON.stringify(task)), prevStatus });
+    task.status = 'archived';
+    task.archivedAt = new Date().toISOString();
+    saveGoalsHierarchy(data);
+    return { success: true, task };
+  }
+  return { success: false, error: 'Task not found' };
+}
+
+function unarchiveTask(id) {
+  const data = getGoalsHierarchy();
+  const task = data.tasks.find(t => t.id === id);
+  if (task) {
+    undoStack.push({ action: 'unarchive', task: JSON.parse(JSON.stringify(task)) });
+    task.status = 'todo';
+    task.archivedAt = null;
+    saveGoalsHierarchy(data);
+    return { success: true, task };
+  }
+  return { success: false, error: 'Task not found' };
+}
+
+function deleteTask(id, soft = true) {
+  const data = getGoalsHierarchy();
+  const task = data.tasks.find(t => t.id === id);
+  if (task) {
+    undoStack.push({ action: 'delete', task: JSON.parse(JSON.stringify(task)), soft });
+    if (soft) {
+      task.isDeleted = true;
+      task.deletedAt = new Date().toISOString();
+    } else {
+      data.tasks = data.tasks.filter(t => t.id !== id);
+    }
+    saveGoalsHierarchy(data);
+    return { success: true, task };
+  }
+  return { success: false, error: 'Task not found' };
+}
+
+function undeleteTask(id) {
+  const data = getGoalsHierarchy();
+  const task = data.tasks.find(t => t.id === id);
+  if (task) {
+    undoStack.push({ action: 'undelete', task: JSON.parse(JSON.stringify(task)) });
+    task.isDeleted = false;
+    task.deletedAt = null;
+    saveGoalsHierarchy(data);
+    return { success: true, task };
+  }
+  return { success: false, error: 'Task not found' };
+}
+
+function permanentDeleteTask(id) {
   const data = getGoalsHierarchy();
   data.tasks = data.tasks.filter(t => t.id !== id);
   saveGoalsHierarchy(data);
+  return { success: true };
+}
+
+function undoLastHierarchyAction() {
+  if (undoStack.length === 0) {
+    return { success: false, message: 'Nothing to undo' };
+  }
+  const entry = undoStack.pop();
+  const data = getGoalsHierarchy();
+
+  if (entry.action === 'delete') {
+    let task = data.tasks.find(t => t.id === entry.task.id);
+    if (task) {
+      task.isDeleted = false;
+      task.deletedAt = null;
+    } else {
+      entry.task.isDeleted = false;
+      entry.task.deletedAt = null;
+      data.tasks.push(entry.task);
+    }
+    saveGoalsHierarchy(data);
+    return { success: true, message: `Restored deleted task "${entry.task.title}"`, type: 'undelete', task: entry.task };
+  } else if (entry.action === 'archive') {
+    const task = data.tasks.find(t => t.id === entry.task.id);
+    if (task) {
+      task.status = entry.prevStatus || 'todo';
+      task.archivedAt = null;
+      saveGoalsHierarchy(data);
+      return { success: true, message: `Unarchived task "${entry.task.title}"`, type: 'unarchive', task };
+    }
+  } else if (entry.action === 'unarchive') {
+    const task = data.tasks.find(t => t.id === entry.task.id);
+    if (task) {
+      task.status = 'archived';
+      task.archivedAt = new Date().toISOString();
+      saveGoalsHierarchy(data);
+      return { success: true, message: `Archived task "${entry.task.title}"`, type: 'archive', task };
+    }
+  } else if (entry.action === 'undelete') {
+    const task = data.tasks.find(t => t.id === entry.task.id);
+    if (task) {
+      task.isDeleted = true;
+      task.deletedAt = new Date().toISOString();
+      saveGoalsHierarchy(data);
+      return { success: true, message: `Re-deleted task "${entry.task.title}"`, type: 'delete', task };
+    }
+  } else if (entry.action === 'toggle') {
+    const task = data.tasks.find(t => t.id === entry.task.id);
+    if (task) {
+      task.status = entry.prevStatus;
+      task.completedAt = entry.prevCompletedAt;
+      saveGoalsHierarchy(data);
+      return { success: true, message: `Reverted status for "${entry.task.title}"`, type: 'toggle', task };
+    }
+  }
+
+  return { success: false, message: 'Could not undo action' };
 }
 
 function toggleTaskStatus(id) {
   const data = getGoalsHierarchy();
   const task = data.tasks.find(t => t.id === id);
   if (task) {
+    const prevStatus = task.status;
+    const prevCompletedAt = task.completedAt;
     if (task.status === 'done') {
       task.status = 'todo';
       task.completedAt = null;
@@ -386,6 +508,7 @@ function toggleTaskStatus(id) {
       task.status = 'done';
       task.completedAt = new Date().toISOString();
     }
+    undoStack.push({ action: 'toggle', task: JSON.parse(JSON.stringify(task)), prevStatus, prevCompletedAt });
     saveGoalsHierarchy(data);
 
     // Auto-sync to Google Sheet if configured
@@ -906,18 +1029,22 @@ function getHierarchyAnalytics() {
   const data = getGoalsHierarchy();
   const now = new Date();
 
-  // 1. Task Completion Stats
-  const totalTasks = data.tasks.length;
-  const completedTasks = data.tasks.filter(t => t.status === 'done').length;
-  const inProgressTasks = data.tasks.filter(t => t.status === 'in_progress').length;
-  const todoTasks = data.tasks.filter(t => t.status === 'todo').length;
+  // 1. Task Completion Stats (Excluding deleted tasks)
+  const nonDeletedTasks = data.tasks.filter(t => !t.isDeleted);
+  const activeAndDoneTasks = nonDeletedTasks.filter(t => t.status !== 'archived');
+  const totalTasks = activeAndDoneTasks.length;
+  const completedTasks = activeAndDoneTasks.filter(t => t.status === 'done').length;
+  const inProgressTasks = activeAndDoneTasks.filter(t => t.status === 'in_progress').length;
+  const todoTasks = activeAndDoneTasks.filter(t => t.status === 'todo').length;
+  const archivedTasks = nonDeletedTasks.filter(t => t.status === 'archived').length;
+  const deletedTasks = data.tasks.filter(t => t.isDeleted).length;
   const taskCompletionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-  const totalDurationMins = data.tasks.reduce((s, t) => s + (t.predictedDuration || 15), 0);
-  const completedDurationMins = data.tasks.filter(t => t.status === 'done').reduce((s, t) => s + (t.predictedDuration || 15), 0);
+  const totalDurationMins = activeAndDoneTasks.reduce((s, t) => s + (t.predictedDuration || 15), 0);
+  const completedDurationMins = activeAndDoneTasks.filter(t => t.status === 'done').reduce((s, t) => s + (t.predictedDuration || 15), 0);
 
   // 2. Project Progress & Target Date Adherence
   const projectSummaries = data.projects.map(p => {
-    const pTasks = data.tasks.filter(t => t.projectId === p.id);
+    const pTasks = data.tasks.filter(t => !t.isDeleted && t.status !== "archived" && t.projectId === p.id);
     const pDone = pTasks.filter(t => t.status === 'done').length;
     const pRate = pTasks.length > 0 ? Math.round((pDone / pTasks.length) * 100) : 0;
     const isCompleted = p.status === 'completed' || (pTasks.length > 0 && pDone === pTasks.length);
@@ -966,7 +1093,7 @@ function getHierarchyAnalytics() {
   const goalSummaries = data.goals.map(g => {
     const childProjects = projectSummaries.filter(p => p.goalId === g.id);
     const childProjectIds = childProjects.map(p => p.id);
-    const gTasks = data.tasks.filter(t => childProjectIds.includes(t.projectId));
+    const gTasks = data.tasks.filter(t => !t.isDeleted && t.status !== "archived" && childProjectIds.includes(t.projectId));
     const gDone = gTasks.filter(t => t.status === 'done').length;
     const gRate = gTasks.length > 0 ? Math.round((gDone / gTasks.length) * 100) : 0;
 
@@ -1037,6 +1164,8 @@ function getHierarchyAnalytics() {
       completed: completedTasks,
       inProgress: inProgressTasks,
       todo: todoTasks,
+      archived: archivedTasks,
+      deleted: deletedTasks,
       completionRate: taskCompletionRate,
       totalDurationMins,
       completedDurationMins
@@ -1082,6 +1211,12 @@ if (typeof window !== 'undefined') {
   window.addTask = addTask;
   window.updateTask = updateTask;
   window.deleteTask = deleteTask;
+  window.archiveTask = archiveTask;
+  window.unarchiveTask = unarchiveTask;
+  window.undeleteTask = undeleteTask;
+  window.permanentDeleteTask = permanentDeleteTask;
+  window.undoLastHierarchyAction = undoLastHierarchyAction;
+  window.getUndoHistory = getUndoHistory;
   window.toggleTaskStatus = toggleTaskStatus;
   window.completeTaskFromTimer = completeTaskFromTimer;
   window.predictTaskDuration = predictTaskDuration;
@@ -1111,6 +1246,12 @@ if (typeof module !== 'undefined' && module.exports) {
     addTask,
     updateTask,
     deleteTask,
+    archiveTask,
+    unarchiveTask,
+    undeleteTask,
+    permanentDeleteTask,
+    undoLastHierarchyAction,
+    getUndoHistory,
     toggleTaskStatus,
     completeTaskFromTimer,
     predictTaskDuration,

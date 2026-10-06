@@ -353,6 +353,42 @@
       max-width: 520px;
       box-shadow: var(--shadow-lg);
     }
+    /* Undo Toast Banner */
+    .undo-toast-pill {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 9999;
+      font-size: 0.86rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      animation: slideUpToast 0.2s ease;
+    }
+    .btn-undo-toast {
+      background: #3b82f6;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .btn-undo-toast:hover {
+      background: #2563eb;
+    }
+    @keyframes slideUpToast {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -581,10 +617,16 @@
             </div>
 
             <div style="display: flex; gap: 8px; align-items: center;">
+              <button type="button" class="btn-secondary-launch" id="btnTasksUndo" onclick="handleUndoAction()" style="display: none; padding: 5px 10px; font-size: 0.78rem;" title="Undo last action">
+                ↩️ Undo
+              </button>
+
               <select id="statusFilterSelect" class="form-control" style="width: auto; padding: 6px 10px; font-size: 0.8rem;" onchange="renderTasksTable()">
-                <option value="all">All Statuses</option>
-                <option value="pending" selected>Active / To Do</option>
-                <option value="done">Completed</option>
+                <option value="pending" selected>Active Tasks</option>
+                <option value="done">Completed Tasks</option>
+                <option value="archived">📦 Archived Tasks</option>
+                <option value="deleted">🗑️ Trash / Deleted Tasks</option>
+                <option value="all">All Tasks</option>
               </select>
 
               <select id="priorityFilterSelect" class="form-control" style="width: auto; padding: 6px 10px; font-size: 0.8rem;" onchange="renderTasksTable()">
@@ -808,6 +850,7 @@
       populateProjectSelects();
       renderGoalsTree();
       renderTasksTable();
+      updateUndoBtnVisibility();
     }
 
     function renderKPIs() {
@@ -1028,6 +1071,7 @@
       }
       renderGoalsTree();
       renderTasksTable();
+      updateUndoBtnVisibility();
     }
 
     function filterByGoal(goalId) {
@@ -1039,6 +1083,7 @@
       }
       currentFilterProjectId = `goal-${goalId}`;
       renderTasksTable();
+      updateUndoBtnVisibility();
     }
 
     function renderTasksTable() {
@@ -1058,9 +1103,15 @@
       }
 
       if (statusFilter === 'pending') {
-        filtered = filtered.filter(t => t.status !== 'done');
+        filtered = filtered.filter(t => !t.isDeleted && t.status !== 'done' && t.status !== 'archived');
       } else if (statusFilter === 'done') {
-        filtered = filtered.filter(t => t.status === 'done');
+        filtered = filtered.filter(t => !t.isDeleted && t.status === 'done');
+      } else if (statusFilter === 'archived') {
+        filtered = filtered.filter(t => !t.isDeleted && t.status === 'archived');
+      } else if (statusFilter === 'deleted') {
+        filtered = filtered.filter(t => t.isDeleted === true);
+      } else if (statusFilter === 'all') {
+        filtered = filtered.filter(t => !t.isDeleted);
       }
 
       if (priorityFilter !== 'all') {
@@ -1069,19 +1120,25 @@
 
       tbody.innerHTML = '';
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">No matching tasks found. Add a task above to get started!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">No matching tasks found in this view.</td></tr>`;
         return;
       }
 
       filtered.forEach(t => {
         const proj = data.projects.find(p => p.id === t.projectId) || { title: 'Miscellaneous', color: '#64748b' };
         const isDone = t.status === 'done';
+        const isArchived = t.status === 'archived';
+        const isDeleted = !!t.isDeleted;
 
         // Format Completed-By Date
         let dateHtml = '';
         if (isDone) {
           const finishedDateStr = t.completedAt ? t.completedAt.split('T')[0] : 'Done';
           dateHtml = `<span style="color:#059669; font-weight:700; font-size:0.75rem;">✓ ${finishedDateStr}</span>`;
+        } else if (isArchived) {
+          dateHtml = `<span style="color:#64748b; font-size:0.75rem; font-style:italic;">Archived</span>`;
+        } else if (isDeleted) {
+          dateHtml = `<span style="color:#dc2626; font-size:0.75rem; font-style:italic;">In Trash</span>`;
         } else if (t.completedByDate) {
           const now = new Date();
           const target = new Date(t.completedByDate);
@@ -1096,25 +1153,56 @@
         // Format Bottleneck
         let bottleneckHtml = '';
         if (t.bottleneck && t.bottleneck.trim() && t.bottleneck.toLowerCase() !== 'none') {
-          bottleneckHtml = `<div style="font-size:0.74rem; color:#92400e; background:#fef3c7; border:1px solid #fde68a; border-radius:6px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px;"><span>⚠️</span> ${t.bottleneck}</div>`;
+          bottleneckHtml = `<div style="font-size:0.74rem; color:#92400e; background:#fef3c7; border:1px solid #fde68a; border-radius:6px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px;"><span>⚠️</span> ${escapeHtml(t.bottleneck)}</div>`;
         } else {
           bottleneckHtml = `<span style="color:#94a3b8; font-size:0.74rem;">None</span>`;
         }
 
+        // Actions based on state
+        let actionsHtml = '';
+        if (isDeleted) {
+          actionsHtml = `
+            <button onclick="handleUndeleteTask('${t.id}')" class="btn-plan-today" style="background:#059669;" title="Restore task from Trash">
+              ♻️ Undelete
+            </button>
+            <button onclick="handlePermanentDeleteTask('${t.id}')" style="background: none; border: none; cursor: pointer; color: #dc2626; margin-left: 6px; font-size: 0.75rem; font-weight: 700;" title="Permanently Delete">
+              Delete Forever
+            </button>
+          `;
+        } else if (isArchived) {
+          actionsHtml = `
+            <button onclick="handleUnarchiveTask('${t.id}')" class="btn-plan-today" style="background:#0284c7;" title="Restore task to active">
+              📦 Unarchive
+            </button>
+            <button onclick="handleDeleteTask('${t.id}')" style="background: none; border: none; cursor: pointer; color: var(--text-muted); margin-left: 6px; font-size: 0.9rem;" title="Move to Trash / Delete">&times;</button>
+          `;
+        } else {
+          actionsHtml = `
+            <a href="timer.html?task=${encodeURIComponent(t.title)}&dur=${t.predictedDuration}&taskId=${t.id}" class="btn-plan-today" style="background:linear-gradient(135deg, #7c3aed, #4f46e5);" title="Start focused timer for this task">
+              ⏱️ Timer
+            </a>
+            <a href="planner.html?task=${encodeURIComponent(t.title)}&dur=${t.predictedDuration}" class="btn-plan-today" style="background:#0f172a; margin-left:4px;" title="Add to AI Day Planner">
+              🧠 Plan
+            </a>
+            <button onclick="handleArchiveTask('${t.id}')" style="background: none; border: none; cursor: pointer; color: var(--text-muted); margin-left: 6px; font-size: 0.85rem;" title="Archive Task">📦</button>
+            <button onclick="handleDeleteTask('${t.id}')" style="background: none; border: none; cursor: pointer; color: var(--text-muted); margin-left: 4px; font-size: 0.9rem;" title="Move to Trash / Delete">&times;</button>
+          `;
+        }
+
         tbody.innerHTML += `
-          <tr class="${isDone ? 'task-done' : ''}">
+          <tr class="${isDone ? 'task-done' : ''} ${isArchived ? 'task-archived' : ''} ${isDeleted ? 'task-deleted' : ''}">
             <td>
               <button type="button" class="status-check-btn ${isDone ? 'checked' : ''}" onclick="handleToggleStatus('${t.id}')" title="${isDone ? 'Mark Todo' : 'Mark Done'}">
                 ${isDone ? '✓' : ''}
               </button>
             </td>
             <td>
-              <strong style="color: var(--text-primary); font-size: 0.92rem;">${t.title}</strong>
-              ${t.notes ? `<div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 2px;">${t.notes}</div>` : ''}
+              <strong style="color: var(--text-primary); font-size: 0.92rem;">${escapeHtml(t.title)}</strong>
+              ${t.notes ? `<div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 2px;">${escapeHtml(t.notes)}</div>` : ''}
             </td>
             <td>
               <span style="font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: rgba(0,0,0,0.04); color: ${proj.color}; display: inline-flex; align-items: center; gap: 4px;">
-                <span class="project-dot" style="background: ${proj.color};"></span> ${proj.title}
+                <span class="project-dot" style="background: ${proj.color};"></span> ${escapeHtml(proj.title)}
               </span>
             </td>
             <td>
@@ -1132,27 +1220,94 @@
               ${bottleneckHtml}
             </td>
             <td style="text-align: right;">
-              <a href="timer.html?task=${encodeURIComponent(t.title)}&dur=${t.predictedDuration}&taskId=${t.id}" class="btn-plan-today" style="background:linear-gradient(135deg, #7c3aed, #4f46e5);" title="Start focused timer for this task">
-                ⏱️ Timer
-              </a>
-              <a href="planner.html?task=${encodeURIComponent(t.title)}&dur=${t.predictedDuration}" class="btn-plan-today" style="background:#0f172a; margin-left:4px;" title="Add to AI Day Planner">
-                🧠 Plan
-              </a>
-              <button onclick="handleDeleteTask('${t.id}')" style="background: none; border: none; cursor: pointer; color: var(--text-muted); margin-left: 6px; font-size: 0.9rem;" title="Delete Task">&times;</button>
+              ${actionsHtml}
             </td>
           </tr>
         `;
       });
     }
 
+    let undoToastTimeout = null;
+    function showUndoToast(msg) {
+      const t = document.getElementById('tasksUndoToast');
+      if (!t) return;
+      t.innerHTML = `<span>${msg}</span> <button type="button" class="btn-undo-toast" onclick="handleUndoAction()">↩️ Undo</button>`;
+      t.style.display = 'flex';
+      if (undoToastTimeout) clearTimeout(undoToastTimeout);
+      undoToastTimeout = setTimeout(() => {
+        t.style.display = 'none';
+      }, 6000);
+    }
+
+    function updateUndoBtnVisibility() {
+      const btn = document.getElementById('btnTasksUndo');
+      const history = (typeof getUndoHistory === 'function') ? getUndoHistory() : [];
+      if (btn) {
+        btn.style.display = history.length > 0 ? 'inline-flex' : 'none';
+      }
+    }
+
     function handleToggleStatus(id) {
-      toggleTaskStatus(id);
+      const task = toggleTaskStatus(id);
+      if (task) {
+        showUndoToast(`✓ Task "${task.title}" status updated.`);
+        updateUndoBtnVisibility();
+      }
       initTasksPage();
     }
 
+    function handleArchiveTask(id) {
+      const res = archiveTask(id);
+      if (res && res.success) {
+        showUndoToast(`📦 Task "${res.task.title}" archived.`);
+        updateUndoBtnVisibility();
+        initTasksPage();
+      }
+    }
+
+    function handleUnarchiveTask(id) {
+      const res = unarchiveTask(id);
+      if (res && res.success) {
+        showUndoToast(`✓ Task "${res.task.title}" restored to Active.`);
+        updateUndoBtnVisibility();
+        initTasksPage();
+      }
+    }
+
     function handleDeleteTask(id) {
-      deleteTask(id);
-      initTasksPage();
+      const res = deleteTask(id, true);
+      if (res && res.success) {
+        showUndoToast(`🗑️ Task "${res.task.title}" moved to Trash.`);
+        updateUndoBtnVisibility();
+        initTasksPage();
+      }
+    }
+
+    function handleUndeleteTask(id) {
+      const res = undeleteTask(id);
+      if (res && res.success) {
+        showUndoToast(`♻️ Task "${res.task.title}" restored from Trash.`);
+        updateUndoBtnVisibility();
+        initTasksPage();
+      }
+    }
+
+    function handlePermanentDeleteTask(id) {
+      if (confirm('Permanently delete this task? This cannot be undone.')) {
+        permanentDeleteTask(id);
+        initTasksPage();
+      }
+    }
+
+    function handleUndoAction() {
+      const res = undoLastHierarchyAction();
+      if (res && res.success) {
+        showUndoToast(`↩️ ${res.message}`);
+        updateUndoBtnVisibility();
+        initTasksPage();
+      } else {
+        alert(res ? res.message : 'Nothing to undo');
+      }
     }
 
     // Modal Handlers
@@ -1328,5 +1483,7 @@
       }
     }
   </script>
+  <!-- Floating Undo Toast Notification -->
+  <div id="tasksUndoToast" class="undo-toast-pill" style="display: none;"></div>
 </body>
 </html>

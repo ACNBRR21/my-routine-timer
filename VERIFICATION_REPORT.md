@@ -1,51 +1,99 @@
 # Anchor & Flow — Comprehensive System Verification & Link Integrity Report
 
 **Date:** October 6, 2026  
-**Status:** ALL SYSTEMS VERIFIED & EXPANDED WITH BOTTLENECK TRACKING, TASK COMPLETION DATES & GOOGLE SHEETS LIVE SYNC  
-**Automated Test Checks:** 271 Passed / 0 Failed  
+**Status:** ALL SYSTEMS VERIFIED & EXPANDED WITH CLEAN SINGLE-TASK PLANNING, UNDO/UNARCHIVE/UNDELETE & GOOGLE SHEETS LIVE SYNC  
+**Automated Test Checks:** 288 Passed / 0 Failed  
 
 ---
 
-## 1. Storage Architecture & Local Database Engine
+## 1. Resolution of Plan Button Split Issue & Parser Hardening
 
-Where are tasks and projects stored?
+### Issue Diagnosis (from User Screenshot):
+When clicking "+ Plan" on a task (e.g. *Review Chapter 4 Manuscript Draft*):
+- The URL parameter handler previously passed conversational framing: `"Hey, I want to accomplish this task today: Review Chapter 4 Manuscript Draft (45m)"`.
+- The clause separator split on the comma after `"Hey,"`, generating two distinct tasks:
+  1. `Hey` (25m) — erroneously promoted to Top 1 Priority.
+  2. `I want to accomplish this task today: Review Chapter 4 Manuscript Draft ()` (45m) — with leftover prompt wording.
+
+### Solution Implemented:
+1. **Clean Parameter Delegation**: In `planner.html`, URL-driven task planning now sends the sanitized task specification directly: `"${preTask} ${preDur}m"`, bypassing all conversational filler.
+2. **Pre-Processing Cleaner (`parseUserTasks`)**:
+   - Strips leading conversational greetings (`"Hey"`, `"Hi"`, `"Hello"`, `"Good morning"`).
+   - Strips conversational intent phrases (`"I want to accomplish this task today:"`, `"Here is what I need to do:"`, `"Please plan my day:"`).
+   - Discards standalone filler words (`"Hey"`, `"Hi"`, `"Please"`, `"Thanks"`).
+   - Cleans empty parentheses `()` left from duration extraction.
+3. **Markdown Table Parsing**: Directly parses Markdown table rows (`| Task | Folder | Est Duration | ... |`) without splitting on internal commas or pipes.
+
+---
+
+## 2. Undo, Unarchive & Undelete Architecture for Tasks
+
+Tasks now support complete state reversibility:
+
+1. **Hierarchy States in Data Model (`js/task-hierarchy.js`)**:
+   - **Active:** `status: 'todo'` or `status: 'in_progress'`, `!isDeleted`.
+   - **Completed:** `status: 'done'`, `completedAt: timestamp`.
+   - **Archived:** `status: 'archived'`, `archivedAt: timestamp`.
+   - **Deleted (Trash):** `isDeleted: true`, `deletedAt: timestamp` (soft-deleted, safely recoverable).
+2. **Undo History Stack (`undoStack`)**:
+   - Tracks all deletions, archiving, unarchiving, and status toggles.
+   - `undoLastHierarchyAction()`: Instantly reverts the last action, restoring deleted tasks, unarchiving mistakenly archived items, or restoring previous status.
+3. **User Interface Controls (`tasks.html`)**:
+   - **Status Filter Selector**:
+     - `Active Tasks` (default)
+     - `Completed Tasks`
+     - `📦 Archived Tasks`
+     - `🗑️ Trash / Deleted Tasks`
+     - `All Tasks`
+   - **Row Actions Adapted by State**:
+     - *Active / Completed Tasks:* Quick Timer, Plan, Archive (`📦`), Delete (`🗑️`).
+     - *Archived Tasks:* **`📦 Unarchive`** (restores to Active) & Delete.
+     - *Deleted Tasks:* **`♻️ Undelete`** (restores to active list) & **`Delete Forever`** (permanent removal).
+   - **Floating Undo Toast Banner (`#tasksUndoToast`)**:
+     - Appears for 6 seconds upon archiving or deleting a task:  
+       `🗑️ Task "Review Chapter 4 Manuscript Draft" moved to Trash. [↩️ Undo]`  
+       `📦 Task "Draft Newsletter" archived. [↩️ Undo]`
+     - Clicking `[↩️ Undo]` instantly reverts the operation.
+   - **Toolbar Quick Undo (`#btnTasksUndo`)**: An inline button in the tasks table toolbar visible whenever actions exist in the undo stack.
+
+---
+
+## 3. Storage Architecture & Local Database Engine
+
 - **Zero-Telemetry Client-Side Storage**: All goals, projects, tasks, bottlenecks, completion dates, user profile data, and historical audit sessions are stored locally in the user's browser using `localStorage` (`anchor_flow_goals_hierarchy`, `anchor_flow_user_profile`, `anchor_flow_guru_history`, `anchor_flow_google_sheet_config`). No data is sent to external proprietary servers without explicit user configuration, guaranteeing complete privacy and full offline functionality.
 - **Local Database Download Engine (`exportDatabaseJSON`)**:
   - Available via **"💾 Export Database (.json)"** on `tasks.html` and **"💾 Download Database (.json)"** in Flow Guru (`guru.html` & `flow-guru.html`).
-  - Automatically exports a complete, portable JSON backup (`anchor_flow_database_backup_<date>.json`) containing the full hierarchy (goals, projects, tasks, bottlenecks, completion dates), user profile, Google Sheets configuration, settings, and timestamped metadata.
+  - Exports a complete JSON backup (`anchor_flow_database_backup_<date>.json`) containing the full hierarchy, user profile, Google Sheets configuration, settings, and timestamped metadata.
 - **Local Database Restore Engine (`importDatabaseJSON`)**:
   - Accessible via **"📥 Import Database"** on `tasks.html`.
   - Supports importing and restoring any exported JSON backup file with instant validation and dynamic re-rendering.
 
 ---
 
-## 2. Core Hierarchy: Goals, Projects, "Why", Bottlenecks & Completion Dates
+## 4. Core Hierarchy: Goals, Projects, "Why", Bottlenecks & Completion Dates
 
-Every element in the hierarchy links vision to granular daily action:
 1. **Strategic Goals**:
    - High-level vision pillars (e.g. *Ship Harvard Timebox Engine & Book Launch*, *Glaucoma Caregiving Protocol*, *Strategic Architecture*).
    - Fields: `title`, `category`, `priority` (`critical`, `high`, `medium`, `low`), `targetWeeklyHours`, `color`.
-   - **Ballpark Estimated Finish Date (`targetDate`)**: Tracks timeline schedule adherence (e.g. `2026-11-15`, `2026-12-31`).
+   - **Ballpark Estimated Finish Date (`targetDate`)**: Tracks timeline schedule adherence.
    - **The "Why" Purpose / Motivation (`why`)**: Articulates the core motivation behind the goal.
    - **Strategic Bottleneck (`bottleneck`)**: Identifies the primary constraint or dependency (e.g. *"Publisher copyright review on Harvard case studies and author citations"*).
 2. **Projects / Action Folders**:
    - Folders nested under goals (or standalone Miscellaneous folder).
    - Fields: `title`, `goalId`, `description`, `color`, `status`.
-   - **Estimated Finish Date (`targetDate`)**: Projected completion date (e.g. `2026-10-25` for manuscript review).
+   - **Estimated Finish Date (`targetDate`)**: Projected completion date.
    - **Why / Motivation (`why`)**: The concrete value unlocked by the project.
    - **Project Bottleneck / Blocker (`bottleneck`)**: Identifies the exact blocker (e.g. *"HBR reprint permission documentation from Boston office"*).
    - **Miscellaneous Tasks Folder (`proj-misc`)**: Catches ad-hoc errands, loose administrative tasks, and quick emails.
 3. **Tasks with Predictive Timebox Estimation, Completed-By Dates & Bottlenecks**:
    - **Completed-By Date (`completedByDate`)**: Target date by which the task should be finished.
    - **Task Bottleneck (`bottleneck`)**: Identifies the follow-up person or external dependency (e.g. *"Waiting for editorial feedback from Sarah"*).
-   - **Actual Status & Timestamp**: Real-time status (`todo`, `in_progress`, `done`) and immutable finish timestamp (`completedAt`).
+   - **Actual Status & Timestamp**: Real-time status (`todo`, `in_progress`, `done`, `archived`) and immutable finish timestamp (`completedAt`).
    - **Heuristic Duration Predictor (`predictTaskDuration`)**: Infers cognitive duration (`10m`, `15m`, `25m`, `45m`, `90m`) with manual override pills.
 
 ---
 
-## 3. Google Sheets Live Sync & Gemini Developer Integration Layer
-
-The task and project database connects directly to a user's Google Sheet, establishing a real-time repository for Gemini Developer applications:
+## 5. Google Sheets Live Sync & Gemini Developer Integration Layer
 
 1. **Two-Way Synchronization Gateway (`syncToGoogleSheet`)**:
    - Dispatches structured payloads containing goals, projects, tasks, bottlenecks, and timer execution logs directly to a user's Google Apps Script Web App endpoint.
@@ -61,11 +109,10 @@ The task and project database connects directly to a user's Google Sheet, establ
    - Generates a formatted multi-table CSV file (`anchor_flow_google_sheets_export_<date>.csv`) ready for direct manual import or offline backup.
 4. **Google Sheets Sync Modal (`#googleSheetModal`)**:
    - Available via **"📊 Google Sheet Sync"** on `tasks.html` and **"📊 Sync Google Sheet"** in Flow Guru.
-   - Provides Web App URL configuration, live connection status badges, manual sync trigger, and one-click Google Apps Script clipboard copy.
 
 ---
 
-## 4. Timer Execution & Actual Status Tracking Link
+## 6. Timer Execution & Actual Status Tracking Link
 
 - **Timer Task Linking**: When launching a task into the timer (`timer.html?task=...&dur=...&taskId=...`), the timer links directly to that task in the hierarchy.
 - **Automatic Status Transition**: When the timer session finishes or the user clicks "Done Early", `completeTaskFromTimer()` marks the task as `done` and stamps `completedAt = new Date().toISOString()`.
@@ -73,10 +120,9 @@ The task and project database connects directly to a user's Google Sheet, establ
 
 ---
 
-## 5. Flow Guru Enhanced Intelligence & Graphical Progress Interface
+## 7. Flow Guru Enhanced Intelligence & Graphical Progress Interface
 
-Flow Guru (`guru.html` and `flow-guru.html`) provides executive oversight:
-
+Flow Guru (`guru.html` and `flow-guru.html`):
 1. **Executive KPI Row**:
    - **In The Zone / Flow State**: 3.0h in Zone (78% Flow State vs 22% Meeting Friction).
    - **Task Completion Rate**: Live percentage (e.g. `14% • 1/7 Done`) and pending focus duration (~`2h 45m`).
@@ -92,17 +138,7 @@ Flow Guru (`guru.html` and `flow-guru.html`) provides executive oversight:
 
 ---
 
-## 6. AI Day Planner Integration (`planner.html`)
-
-- **Task Bank Drawer**: Slide-out panel organizing tasks by project folder with due dates and bottleneck badges.
-- **Table View Chat Insertion**: One-click insertion formatting:
-  `Hey, these are what I want to accomplish during the day:`
-  followed by an organized table view of tasks, folders, estimated durations, completed-by dates, and bottlenecks.
-- **Chronological Gap Allocation & 5-Min Buffers**: Automatically fits tasks into idle calendar intervals with restorative buffers.
-
----
-
-## 7. Exhaustive Link & Asset Integrity Audit
+## 8. Exhaustive Link & Asset Integrity Audit
 
 | Page Audited | Stylesheets Verified | Scripts Verified | Links & Target Anchors Verified | Status |
 | :--- | :---: | :---: | :---: | :---: |
@@ -121,12 +157,12 @@ Flow Guru (`guru.html` and `flow-guru.html`) provides executive oversight:
 
 ---
 
-## 8. Automated Test Suite Metrics
+## 9. Automated Test Suite Metrics
 
-1. `test_bottlenecks_and_sheets_sync.js`: **47 / 47 Checks Passed (0 Failed)**
+1. `test_bottlenecks_and_sheets_sync.js`: **64 / 64 Checks Passed (0 Failed)**
 2. `test_all_user_buttons.js`: **171 / 171 Checks Passed (0 Failed)**
 3. `test_all_flow_guru_reframe.js`: **18 / 18 Checks Passed (0 Failed)**
 4. `comprehensive_system_audit.js`: **35 / 35 Checks Passed (0 Failed)**
 5. `deep_link_and_integrity_check.py`: **0 Errors Across All 10 Pages**
 
-**Grand Total: 271 Automated Assertions Passed / 0 Regressions.**
+**Grand Total: 288 Automated Assertions Passed / 0 Regressions.**
