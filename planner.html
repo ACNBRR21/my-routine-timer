@@ -135,6 +135,94 @@
       font-weight: 700;
       flex-shrink: 0;
     }
+  
+    /* Task Bank & Goals Drawer */
+    .task-bank-drawer {
+      position: fixed;
+      top: 0;
+      right: -440px;
+      width: 420px;
+      max-width: 92vw;
+      height: 100vh;
+      background: #ffffff;
+      border-left: 1px solid var(--border);
+      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .task-bank-drawer.open {
+      right: 0;
+    }
+    .task-bank-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+    }
+    .task-bank-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--bg-page);
+    }
+    .task-bank-footer {
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+      background: #ffffff;
+    }
+    .task-bank-group {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .task-bank-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 6px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.85rem;
+    }
+    .task-bank-item:last-child {
+      border-bottom: none;
+    }
+    .tag-project-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.04);
+    }
+    .gap-recommend-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-size: 0.86rem;
+      color: #065f46;
+    }
+    .critical-alert-card {
+      background: rgba(239, 68, 68, 0.06);
+      border-left: 4px solid #ef4444;
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-size: 0.86rem;
+      color: #991b1b;
+    }
+
   </style>
 </head>
 <body>
@@ -173,6 +261,12 @@
           <a href="timer.html">
             <span class="sidebar-nav-icon">⏱️</span>
             <span>Timers &amp; Routines</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="tasks.html">
+            <span class="sidebar-nav-icon">🎯</span>
+            <span>Goals &amp; Tasks</span>
           </a>
         </li>
         <li class="sidebar-nav-item">
@@ -227,6 +321,9 @@
             </span>
           </div>
           <div style="display: flex; align-items: center; gap: 12px;">
+            <button type="button" class="btn-secondary-launch" id="btnToggleTaskBank" onclick="toggleTaskBank()" style="padding: 4px 10px; font-size: 0.76rem; display: inline-flex; align-items: center; gap: 4px;">
+              🎯 Task Bank &amp; Goals (<span id="taskBankCountBadge">7</span>)
+            </button>
             <div id="plannerCalStatusBadge" style="font-size: 0.78rem; font-weight: 600; color: var(--accent-blue); display: flex; align-items: center; gap: 4px;">
               📅 Anchors loading...
             </div>
@@ -248,6 +345,9 @@
           </a>
 
           <!-- Voice Typing Microphone -->
+          <button class="icon-action-btn" id="openTaskBankIconBtn" onclick="toggleTaskBank()" title="Open Goals &amp; Task Bank" type="button">
+            🎯
+          </button>
           <button class="icon-action-btn" id="plannerVoiceBtn" title="Voice Typing (Speak tasks hands-free)">
             🎙️
           </button>
@@ -309,6 +409,7 @@
     <!-- SCRIPTS -->
   <script src="js/calendar-sync.js?v=20261006a"></script>
   <script src="js/ai-engine.js?v=20261006a"></script>
+  <script src="js/task-hierarchy.js?v=20261006a"></script>
   <script src="js/flow-guru.js?v=20261006a"></script>
   <script>
     // Universal HTML Sanitizer Helper
@@ -336,6 +437,140 @@
     // Speech Recognition state
     let recognition = null;
     let isRecording = false;
+
+    
+    // --- TASK BANK DRAWER & GOAL INTEGRATION ---
+    function toggleTaskBank() {
+      const drawer = document.getElementById('taskBankDrawer');
+      if (drawer) {
+        drawer.classList.toggle('open');
+        if (drawer.classList.contains('open')) {
+          renderTaskBankDrawer();
+        }
+      }
+    }
+
+    function renderTaskBankDrawer() {
+      if (typeof getGoalsHierarchy !== 'function') return;
+      const data = getGoalsHierarchy();
+      const body = document.getElementById('taskBankDrawerBody');
+      const countBadge = document.getElementById('taskBankCountBadge');
+      
+      const pendingTasks = data.tasks.filter(t => t.status !== 'done');
+      if (countBadge) countBadge.textContent = pendingTasks.length;
+      if (!body) return;
+
+      body.innerHTML = '';
+      if (pendingTasks.length === 0) {
+        body.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">All tasks completed! Great job.</div>';
+        return;
+      }
+
+      // Group tasks by project
+      const grouped = {};
+      data.projects.forEach(p => {
+        grouped[p.id] = { project: p, tasks: [] };
+      });
+
+      pendingTasks.forEach(t => {
+        const pId = t.projectId || 'proj-misc';
+        if (!grouped[pId]) {
+          grouped[pId] = {
+            project: { id: pId, title: 'Miscellaneous Tasks', color: '#64748b' },
+            tasks: []
+          };
+        }
+        grouped[pId].tasks.push(t);
+      });
+
+      Object.values(grouped).forEach(grp => {
+        if (grp.tasks.length === 0) return;
+        const p = grp.project;
+        const goal = data.goals.find(g => g.id === p.goalId);
+        const goalLabel = goal ? ` &bull; 🎯 ${escapeHtml(goal.title)}` : '';
+
+        let tasksHtml = '';
+        grp.tasks.forEach(t => {
+          const dueBadge = t.completedByDate ? `<span style="font-size:0.68rem; color:#64748b;">📅 Due: ${t.completedByDate}</span>` : '';
+          const bneckBadge = (t.bottleneck && t.bottleneck.trim() && t.bottleneck.toLowerCase() !== 'none') ? `<div style="font-size:0.68rem; color:#b45309; background:#fffbeb; border:1px solid #fde68a; border-radius:4px; padding:1px 5px; margin-top:3px;">⚠️ ${escapeHtml(t.bottleneck)}</div>` : '';
+
+          tasksHtml += `
+            <div class="task-bank-item">
+              <input type="checkbox" class="task-bank-select-chk" value="${escapeHtml(t.title)}" data-dur="${t.predictedDuration}" data-proj="${escapeHtml(p.title)}" data-due="${t.completedByDate||''}" data-bottleneck="${escapeHtml(t.bottleneck||'')}" style="margin-top: 3px; cursor: pointer;" />
+              <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 6px;">
+                  <strong style="color: var(--text-primary); font-size: 0.85rem; line-height: 1.3;">${escapeHtml(t.title)}</strong>
+                  <span style="font-family: monospace; font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); white-space: nowrap;">${t.predictedDuration}m</span>
+                </div>
+                ${t.notes ? `<div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 2px;">${escapeHtml(t.notes)}</div>` : ''}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                  <span class="tag-project-badge" style="color: ${p.color};">
+                    <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${p.color};"></span>
+                    ${escapeHtml(p.title)}
+                  </span>
+                  <button type="button" class="btn-secondary-launch" style="padding: 2px 8px; font-size: 0.72rem;" onclick="addSingleTaskFromBank('${escapeHtml(t.title)}', ${t.predictedDuration})">
+                    + Add to Day
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        body.innerHTML += `
+          <div class="task-bank-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <strong style="font-size: 0.84rem; color: var(--text-primary);">${escapeHtml(p.title)}</strong>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">${grp.tasks.length} tasks${goalLabel}</span>
+            </div>
+            ${tasksHtml}
+          </div>
+        `;
+      });
+    }
+
+    function addSingleTaskFromBank(title, dur) {
+      const input = document.getElementById('plannerInputField');
+      if (input) {
+        const text = `${title} ${dur}m`;
+        input.value = (input.value ? input.value + ', ' : '') + text;
+        autoResize();
+      }
+      showAppToast(`Added '${title}' to plan input!`);
+    }
+
+    function insertSelectedTasksIntoChat() {
+      const checkboxes = document.querySelectorAll('.task-bank-select-chk:checked');
+      if (checkboxes.length === 0) {
+        showAppToast('Please select at least one task using the checkboxes.');
+        return;
+      }
+
+      const selected = [];
+      checkboxes.forEach(cb => {
+        selected.push({
+          title: cb.value,
+          dur: parseInt(cb.getAttribute('data-dur'), 10) || 25,
+          proj: cb.getAttribute('data-proj') || 'General',
+          due: cb.getAttribute('data-due') || '',
+          bottleneck: cb.getAttribute('data-bottleneck') || ''
+        });
+      });
+
+      toggleTaskBank();
+
+      // Formulate prompt as requested by user with visible table view in chat
+      let promptText = "Hey, these are what I want to accomplish during the day:\n\n";
+      promptText += "| Task | Folder | Est Duration | Completed-By | Bottleneck |\n";
+      promptText += "| :--- | :--- | :---: | :---: | :--- |\n";
+      selected.forEach(s => {
+        promptText += `| ${s.title} | ${s.proj} | ${s.dur}m | ${s.due || 'Today'} | ${s.bottleneck || 'None'} |\n`;
+      });
+      promptText += "\nPlease fit these into my available focus windows around my meetings, and suggest 5m restorative breaks where appropriate.";
+
+      processUserPrompt(promptText.trim());
+    }
+
 
     function initPlanner() {
       userProfile = getStoredProfile();
@@ -412,7 +647,25 @@
         ]);
       }
 
-      setupVoice();
+            setupVoice();
+      renderTaskBankDrawer();
+
+      // Check URL query parameters (e.g. from tasks.html "+ Plan Day" button)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('task')) {
+        const preTask = urlParams.get('task');
+        const preDur = urlParams.get('dur') || '25';
+        setTimeout(() => {
+          processUserPrompt(`Hey, I want to accomplish this task today: ${preTask} (${preDur}m)`);
+        }, 400);
+      }
+    }
+
+    
+    function minutesToTimeStr(totalMins) {
+      const h = Math.floor(totalMins / 60) % 24;
+      const m = totalMins % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
 
     function timeStrToMinutes(timeStr) {
@@ -783,11 +1036,16 @@
             dur = parseInt(minMatch[1], 10);
             cleanedTask = cleanedTask.replace(/(\d+)\s*(?:min|mins|minutes|m\b)/gi, '');
           } else {
-            if (/brush|teeth|water|hydrate/i.test(clause)) dur = 5;
-            else if (/eye\s*drops/i.test(clause)) dur = 2;
-            else if (/yoga|stretch|walk|hiit|tabata/i.test(clause)) dur = 20;
-            else if (/inbox|email|slack|messages/i.test(clause)) dur = 30;
-            else if (/review|proposal|code|architecture|model|deck/i.test(clause)) dur = 45;
+            if (typeof predictTaskDuration === 'function') {
+              const pred = predictTaskDuration(clause);
+              dur = pred.duration;
+            } else {
+              if (/brush|teeth|water|hydrate/i.test(clause)) dur = 5;
+              else if (/eye\s*drops/i.test(clause)) dur = 2;
+              else if (/yoga|stretch|walk|hiit|tabata/i.test(clause)) dur = 20;
+              else if (/inbox|email|slack|messages/i.test(clause)) dur = 30;
+              else if (/review|proposal|code|architecture|model|deck/i.test(clause)) dur = 45;
+            }
           }
 
           cleanedTask = cleanedTask
@@ -850,15 +1108,75 @@
         });
       });
 
-      // Add User Tasks parsed cleanly
+      // Add User Tasks parsed cleanly & match with Goals Hierarchy
       const parsedTasks = parseUserTasks(input);
+      const hierarchy = (typeof getGoalsHierarchy === 'function') ? getGoalsHierarchy() : { goals: [], projects: [], tasks: [] };
+
+      // Chronological Focus Packing & Gap Detection
+      dayAnchors.sort((a, b) => timeStrToMinutes(a.startTime) - timeStrToMinutes(b.startTime));
+
+      let currentMin = 540; // 09:00 AM work start default
+      if (isToday) {
+        const nowMins = now.getHours() * 60 + now.getMinutes() + 5;
+        if (nowMins > currentMin) currentMin = Math.min(1080, nowMins);
+      }
+
+      // Compute open gap blocks between anchors
+      const gaps = [];
+      let cursor = currentMin;
+      dayAnchors.forEach(a => {
+        const aStart = timeStrToMinutes(a.startTime);
+        const aEnd = aStart + (a.duration || 30);
+        if (aStart > cursor) {
+          gaps.push({ start: cursor, end: aStart, duration: aStart - cursor, nextAnchor: a });
+        }
+        cursor = Math.max(cursor, aEnd);
+      });
+      if (cursor < 1080) { // Up to 18:00
+        gaps.push({ start: cursor, end: 1080, duration: 1080 - cursor, nextAnchor: null });
+      }
+
       parsedTasks.forEach(t => {
+        // Link with project and goal if title matches
+        let projectTitle = 'Direct Focus';
+        let projectColor = '#0284c7';
+        let goalTitle = null;
+
+        const matchedTask = hierarchy.tasks.find(ht => ht.title.toLowerCase().includes(t.shortName.toLowerCase()) || t.shortName.toLowerCase().includes(ht.title.toLowerCase()));
+        if (matchedTask) {
+          const proj = hierarchy.projects.find(p => p.id === matchedTask.projectId);
+          if (proj) {
+            projectTitle = proj.title;
+            projectColor = proj.color || '#0284c7';
+            const goal = hierarchy.goals.find(g => g.id === proj.goalId);
+            if (goal) goalTitle = goal.title;
+          }
+        }
+
+        // Fit task into first available gap
+        let assignedStart = '--:--';
+        for (const g of gaps) {
+          if (g.duration >= t.duration) {
+            assignedStart = minutesToTimeStr(g.start);
+            g.start += t.duration;
+            g.duration -= t.duration;
+            // If remaining time before next meeting is 5-10m, note a break
+            if (g.nextAnchor && g.duration >= 5 && g.duration <= 15) {
+              t.notes += ` (5m restorative break before ${g.nextAnchor.title})`;
+            }
+            break;
+          }
+        }
+
         items.push({
           id: items.length + 1,
           shortName: t.shortName,
           duration: t.duration,
           isAnchor: false,
-          startTime: '--:--',
+          startTime: assignedStart,
+          projectTitle,
+          projectColor,
+          goalTitle,
           notes: t.notes
         });
       });
@@ -872,7 +1190,29 @@
         }
       });
 
-      return { items, dayAnchors, parsedTasks };
+      // Evaluate Critical Goal Safeguard
+      const plannedTitles = parsedTasks.map(t => t.shortName);
+      const missingCritical = (typeof getCriticalGoalsMissing === 'function') ? getCriticalGoalsMissing(plannedTitles) : [];
+
+      // Evaluate Gap-Filler Opportunities
+      const gapOpportunities = [];
+      gaps.forEach(g => {
+        if (g.duration >= 20) {
+          const cands = (typeof findTasksForGap === 'function') ? findTasksForGap(g.duration) : [];
+          if (cands.length > 0) {
+            const candProj = hierarchy.projects.find(p => p.id === cands[0].projectId) || { title: 'Focus Task' };
+            gapOpportunities.push({
+              gapStart: minutesToTimeStr(g.start),
+              gapEnd: minutesToTimeStr(g.end),
+              gapMins: g.duration,
+              suggestedTask: cands[0],
+              projectTitle: candProj.title
+            });
+          }
+        }
+      });
+
+      return { items, dayAnchors, parsedTasks, missingCritical, gapOpportunities };
     }
 
     function getSmartNotes(name) {
@@ -885,7 +1225,7 @@
 
     // Render Harvard Timebox with In-Place Editable Table & Verification Dialogue
     function renderScheduleCard(plan, targetDate = new Date(), llmGuidance = null, engineName = 'Local Smart Engine') {
-      const { items, dayAnchors, parsedTasks } = plan;
+      const { items, dayAnchors, parsedTasks, missingCritical, gapOpportunities } = plan;
 
       // Evaluate Living Goal Alignment
       const goals = (typeof getUserGoals === 'function') ? getUserGoals() : [];
@@ -918,6 +1258,40 @@
         coachCallouts += `
           <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid #10b981; padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; font-size: 0.86rem; color: #065f46;">
             <strong>🎯 High-Leverage Recommendation:</strong> Shield 90 minutes in your 9–12 morning peak exclusively for <em>${escapeHtml(goalAlign.topGoal.title)}</em>.
+          </div>
+        `;
+      }
+
+      // Critical Goal Safeguard Alert Banner
+      if (missingCritical && missingCritical.length > 0) {
+        missingCritical.forEach(mc => {
+          const cand = mc.suggestedTasks && mc.suggestedTasks.length > 0 ? mc.suggestedTasks[0] : null;
+          coachCallouts += `
+            <div class="critical-alert-card">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+                <div>
+                  <strong>⚠️ Critical Goal Alert:</strong> Your critical goal <em>"${escapeHtml(mc.goal.title)}"</em> has no focus blocks scheduled today.
+                  ${cand ? `<br/><span style="font-size: 0.8rem; color: #7f1d1d;">Flow Guru suggests slotting in <strong>"${escapeHtml(cand.title)}"</strong> (${cand.predictedDuration}m) to advance your core vision.</span>` : ''}
+                </div>
+                ${cand ? `<button type="button" class="btn-primary-launch" style="padding: 4px 10px; font-size: 0.74rem; background: #b91c1c;" onclick="processUserPrompt('Add ${escapeHtml(cand.title)} ${cand.predictedDuration}m')">+ Add to Day</button>` : ''}
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      // Focus Gap Maximizer & Restorative Break Suggestion Banner
+      if (gapOpportunities && gapOpportunities.length > 0) {
+        const opp = gapOpportunities[0];
+        coachCallouts += `
+          <div class="gap-recommend-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+              <div>
+                <strong>💡 Focus Gap Maximizer:</strong> You have an open <strong>${opp.gapMins}-minute window</strong> (${opp.gapStart}–${opp.gapEnd}).
+                Flow Guru suggests taking a <strong>5-minute decompression break</strong> and slotting in <strong>"${escapeHtml(opp.suggestedTask.title)}"</strong> (${opp.suggestedTask.predictedDuration}m) from <em>${escapeHtml(opp.projectTitle)}</em>.
+              </div>
+              <button type="button" class="btn-primary-launch" style="padding: 4px 10px; font-size: 0.74rem;" onclick="processUserPrompt('Add ${escapeHtml(opp.suggestedTask.title)} ${opp.suggestedTask.predictedDuration}m')">+ Slot into ${opp.gapMins}m Gap</button>
+            </div>
           </div>
         `;
       }
@@ -965,7 +1339,10 @@
                 </select>
               </td>
               <td>
-                <input type="text" class="plan-edit-input" value="${escapeHtml(it.shortName)}" onchange="updatePlanTaskTitle(${idx}, this.value)" title="Click to rename task" />
+                <div style="display:flex; flex-direction:column; gap:3px;">
+                  <input type="text" class="plan-edit-input" value="${escapeHtml(it.shortName)}" onchange="updatePlanTaskTitle(${idx}, this.value)" title="Click to rename task" />
+                  ${it.projectTitle ? `<span class="tag-project-badge" style="color:${it.projectColor || '#0284c7'}; align-self:flex-start;"><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:${it.projectColor || '#0284c7'};"></span>${escapeHtml(it.projectTitle)}</span>` : ''}
+                </div>
               </td>
               <td>
                 <div style="display:flex; align-items:center; gap:4px;">
@@ -973,7 +1350,7 @@
                   <span style="font-size:0.8rem; color:var(--text-secondary);">m</span>
                 </div>
               </td>
-              <td style="font-family:monospace; color:var(--text-muted); font-size:0.85rem;">--:--</td>
+              <td style="font-family:monospace; color:${it.startTime && it.startTime !== '--:--' ? 'var(--accent-blue)' : 'var(--text-muted)'}; font-size:0.88rem; font-weight:600;">${it.startTime || '--:--'}</td>
               <td>
                 <input type="text" class="plan-edit-input" style="font-size:0.8rem; font-weight:normal;" value="${escapeHtml(it.notes || '')}" onchange="updatePlanTaskNotes(${idx}, this.value)" placeholder="Focus note..." />
               </td>
@@ -1390,6 +1767,36 @@ function openEveningQuestionModal() {
   </div>
 
 
+
+
+  <!-- Task Bank & Living Goals Drawer -->
+  <div class="task-bank-drawer" id="taskBankDrawer">
+    <div class="task-bank-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 1.25rem;">🎯</span>
+        <div>
+          <strong style="font-size: 0.95rem; color: var(--text-primary); display: block;">Task Bank &amp; Goals</strong>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Organized by Project folders</span>
+        </div>
+      </div>
+      <button type="button" onclick="toggleTaskBank()" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+    </div>
+
+    <div style="padding: 10px 16px; background: var(--bg-card-subtle); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 600;">Select tasks to insert into day:</span>
+      <a href="tasks.html" style="font-size: 0.75rem; color: var(--accent-blue); text-decoration: none; font-weight: 600;">Manage All &rarr;</a>
+    </div>
+
+    <div class="task-bank-body" id="taskBankDrawerBody">
+      <!-- Dynamically rendered -->
+    </div>
+
+    <div class="task-bank-footer">
+      <button type="button" class="btn-primary-launch" style="width: 100%; justify-content: center; padding: 10px; font-size: 0.88rem;" onclick="insertSelectedTasksIntoChat()">
+        📋 Insert Selected Tasks as Table
+      </button>
+    </div>
+  </div>
 
 </body>
 </html>

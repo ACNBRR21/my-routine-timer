@@ -768,11 +768,19 @@ function completeTimer(finishedEarly = false) {
     });
   }
 
+  // Complete task in hierarchy and trigger Google Sheet sync
+  let completedTask = null;
+  if (typeof completeTaskFromTimer === 'function') {
+    completedTask = completeTaskFromTimer(activeTimer.title, Math.round(actualSec / 60));
+  }
+
   secondsRemaining = 0;
   updatePlayerUI();
   renderTimersList();
 
-  if (rec && rec.insight) {
+  if (completedTask) {
+    showToast(`🎉 "${activeTimer.title}" Finished! Actual status updated in Google Sheet.`, 4500);
+  } else if (rec && rec.insight) {
     showToast(rec.insight, 4000);
   } else {
     showToast(`🎉 "${activeTimer.title}" Completed!`);
@@ -1952,6 +1960,31 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         startTimer(found.id);
       }, 250);
+    }
+  }
+
+  // Handle ?task= and ?dur= and ?taskId= from Goals & Tasks page
+  const taskTitle = urlParams.get('task');
+  const taskDur = parseInt(urlParams.get('dur'), 10) || 25;
+  const taskId = urlParams.get('taskId');
+  if (taskTitle) {
+    const existing = timers.find(t => t.title.toLowerCase() === taskTitle.toLowerCase());
+    if (existing) {
+      setTimeout(() => { startTimer(existing.id); }, 250);
+    } else {
+      const newTimer = {
+        id: taskId || `timer-${Date.now()}`,
+        title: taskTitle,
+        type: 'countdown',
+        folder: 'work',
+        totalSeconds: taskDur * 60,
+        isRoutine: false,
+        steps: []
+      };
+      timers.unshift(newTimer);
+      saveTimers(timers);
+      renderTimersList();
+      setTimeout(() => { startTimer(newTimer.id); }, 250);
     }
   }
 });

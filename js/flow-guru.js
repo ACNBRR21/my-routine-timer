@@ -885,6 +885,16 @@ function getQuoteOfTheDay(targetDate = new Date()) {
 // --- LIVING GOALS ENGINE ---
 function getUserGoals() {
   try {
+    const hierRaw = localStorage.getItem('anchor_flow_goals_hierarchy');
+    if (hierRaw) {
+      const parsedHier = JSON.parse(hierRaw);
+      if (parsedHier && Array.isArray(parsedHier.goals) && parsedHier.goals.length > 0) {
+        return parsedHier.goals;
+      }
+    }
+  } catch(e) {}
+
+  try {
     const raw = localStorage.getItem(STORAGE_KEY_USER_GOALS);
     if (raw) {
       const parsed = JSON.parse(raw);

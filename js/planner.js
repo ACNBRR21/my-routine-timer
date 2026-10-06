@@ -461,13 +461,18 @@ function parseTasksLocally(input) {
     if (durMatch) {
       dur = parseInt(durMatch[1], 10);
     } else {
-      if (/brush(?:ing)?\s+teeth|teeth/i.test(c)) dur = 3;
-      else if (/water|hydrate|drink|vitamin/i.test(c)) dur = 3;
-      else if (/eye\s*drops|drops/i.test(c)) dur = 2;
-      else if (/yoga|stretch|workout|walk/i.test(c)) dur = 15;
-      else if (/visualiz|meditat|mindful|breath/i.test(c)) dur = 10;
-      else if (/meeting|sync|call|review/i.test(c)) dur = 30;
-      else if (/deep\s+work|code|write|proposal|deck/i.test(c)) dur = userProfile.preferredFocusDuration || 45;
+      if (typeof predictTaskDuration === 'function') {
+        const pred = predictTaskDuration(c);
+        dur = pred.duration;
+      } else {
+        if (/brush(?:ing)?\s+teeth|teeth/i.test(c)) dur = 3;
+        else if (/water|hydrate|drink|vitamin/i.test(c)) dur = 3;
+        else if (/eye\s*drops|drops/i.test(c)) dur = 2;
+        else if (/yoga|stretch|workout|walk/i.test(c)) dur = 15;
+        else if (/visualiz|meditat|mindful|breath/i.test(c)) dur = 10;
+        else if (/meeting|sync|call|review/i.test(c)) dur = 30;
+        else if (/deep\s+work|code|write|proposal|deck/i.test(c)) dur = userProfile.preferredFocusDuration || 45;
+      }
     }
 
     let shortName = c.replace(/\b(?:at\s+)?\d{1,2}:\d{2}\b/gi, '')

@@ -370,6 +370,100 @@
       border-bottom: 1px solid var(--border-subtle);
       color: var(--text-primary);
     }
+      /* Goals & Projects Progress against Plan */
+    .guru-progress-section {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 24px 28px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+    .guru-kpi-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .guru-kpi-item {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+    }
+    .guru-kpi-title {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .guru-kpi-val {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .guru-kpi-sub {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: block;
+    }
+    .guru-goal-progress-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      background: #ffffff;
+      transition: all 0.15s ease;
+    }
+    .guru-goal-progress-card:hover {
+      box-shadow: var(--shadow-sm);
+    }
+    .guru-progress-track {
+      background: #f1f5f9;
+      height: 8px;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+    .guru-progress-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.3s ease;
+    }
+    .guru-why-callout {
+      background: #f8fafc;
+      border-left: 3px solid #8b5cf6;
+      border-radius: 0 8px 8px 0;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      color: #334155;
+      font-style: italic;
+      margin: 10px 0;
+      line-height: 1.45;
+    }
+    .guru-proj-mini-card {
+      background: var(--bg-card-subtle);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 8px;
+      font-size: 0.82rem;
+    }
+    .guru-feedback-banner {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border: 1px solid #a7f3d0;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -408,6 +502,12 @@
           <a href="timer.html">
             <span class="sidebar-nav-icon">⏱️</span>
             <span>Timers &amp; Routines</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="tasks.html">
+            <span class="sidebar-nav-icon">🎯</span>
+            <span>Goals &amp; Tasks</span>
           </a>
         </li>
         <li class="sidebar-nav-item">
@@ -535,6 +635,91 @@
           <p class="guru-letter-question" id="letterPara3">
             "Looking ahead to next week, here is the one question worth sitting with: Which recurring meeting on your calendar would you cancel or decline tomorrow if you were completely honest about your highest leverage?"
           </p>
+        </div>
+      </section>
+
+      <!-- 2.5 Strategic Goals & Projects Progress Against Plan -->
+      <section class="guru-progress-section" id="goalsProgressSection">
+        <div class="card-header-row" style="margin-bottom: 18px;">
+          <div>
+            <h3 class="card-title" style="margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">
+              <span>🎯</span> Goals &amp; Projects Progress Against Plan
+            </h3>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+              Flow Guru monitors completion rates, target ballpark finish dates, and zone immersion.
+            </span>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <a href="tasks.html" class="btn-secondary-launch" style="padding: 5px 12px; font-size: 0.78rem; text-decoration: none;">
+              🎯 Manage Tasks &rarr;
+            </a>
+            <button type="button" class="btn-secondary-launch" style="padding: 5px 12px; font-size: 0.78rem; border-color: #10b981; color: #047857; font-weight: 700;" onclick="handleFlowGuruSheetSync()" title="Sync goals, projects, and actual statuses to Google Sheet">
+              📊 Sync Google Sheet
+            </button>
+            <button type="button" class="btn-secondary-launch" style="padding: 5px 12px; font-size: 0.78rem;" onclick="exportDatabaseJSON()" title="Download complete local database as JSON">
+              💾 Download Database (.json)
+            </button>
+          </div>
+        </div>
+
+        <!-- 4-Card Executive KPI Row -->
+        <div class="guru-kpi-bar">
+          <div class="guru-kpi-item">
+            <span class="guru-kpi-title">
+              In The Zone / Flow State
+              <span class="guru-status-tag" id="guruZonePill" style="font-size: 0.65rem; padding: 2px 8px; background: #10b981;">Deep Immersion</span>
+            </span>
+            <div class="guru-kpi-val">
+              <span id="guruFlowHours">3.0h</span>
+              <span class="trend-badge green" id="guruFlowPctBadge">78% Flow</span>
+            </div>
+            <span class="guru-kpi-sub" id="guruFlowSub">Peak 9–12 Protected &bull; 0 Interrupted Hours</span>
+          </div>
+
+          <div class="guru-kpi-item">
+            <span class="guru-kpi-title">Task Completion Rate</span>
+            <div class="guru-kpi-val">
+              <span id="guruTaskRate">14%</span>
+              <span class="trend-badge blue" id="guruTaskFraction">1 / 7 Done</span>
+            </div>
+            <span class="guru-kpi-sub" id="guruTaskSub">6 Pending Action Items (~2h 45m)</span>
+          </div>
+
+          <div class="guru-kpi-item">
+            <span class="guru-kpi-title">Project Completion Rate</span>
+            <div class="guru-kpi-val">
+              <span id="guruProjRate">0%</span>
+              <span class="trend-badge green" id="guruProjFraction">4 Active</span>
+            </div>
+            <span class="guru-kpi-sub" id="guruProjSub">Across 3 Strategic Goals</span>
+          </div>
+
+          <div class="guru-kpi-item">
+            <span class="guru-kpi-title">Schedule Adherence</span>
+            <div class="guru-kpi-val">
+              <span id="guruAdherenceStatus" style="color: #059669;">On Track</span>
+              <span class="trend-badge green">100%</span>
+            </div>
+            <span class="guru-kpi-sub" id="guruAdherenceSub">Next finish: Oct 20 (Local-First Platform)</span>
+          </div>
+        </div>
+
+        <!-- Graphical Goals & Projects Progress Tree -->
+        <div id="guruGoalsProgressTree">
+          <!-- Rendered dynamically by renderGoalsProgressVsPlan() -->
+        </div>
+
+        <!-- Flow Guru Live Feedback Box -->
+        <div class="guru-feedback-banner">
+          <div style="display: flex; gap: 12px; align-items: flex-start;">
+            <span style="font-size: 1.6rem; line-height: 1;">🧘</span>
+            <div>
+              <strong style="color: #065f46; font-size: 0.95rem;">Flow Guru Coaching &bull; Zone &amp; Goal Adherence Feedback</strong>
+              <p id="guruDynamicFeedbackText" style="margin: 6px 0 0 0; line-height: 1.5; font-size: 0.88rem; color: #1e3a8a;">
+                Evaluating your focus hours in the zone against goal target dates...
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -838,6 +1023,7 @@
   </div>
 
   <!-- SCRIPTS -->
+  <script src="js/task-hierarchy.js?v=20261006a"></script>
   <script src="js/flow-guru.js?v=20261006a"></script>
   <script src="js/calendar-sync.js?v=20261006a"></script>
   <script>
@@ -863,6 +1049,7 @@
       const history = (typeof getGuruHistory === 'function') ? getGuruHistory() : [];
       renderGuruHeadline();
       renderWeeklyLetter();
+      renderGoalsProgressVsPlan();
       renderTrendsAndChart(history);
       renderLivingGoals();
       renderGoalSuggestions();
@@ -1280,6 +1467,203 @@
         closeEveningQuestionModal();
       }
     });
+    function renderGoalsProgressVsPlan() {
+      const analytics = (typeof getHierarchyAnalytics === 'function') ? getHierarchyAnalytics() : null;
+      if (!analytics) return;
+
+      // 1. Flow Zone KPIs
+      const hEl = document.getElementById('guruFlowHours');
+      const pBadge = document.getElementById('guruFlowPctBadge');
+      const zPill = document.getElementById('guruZonePill');
+      const fSub = document.getElementById('guruFlowSub');
+      if (hEl) hEl.textContent = `${analytics.flowZone.timeInZoneHours}h`;
+      if (pBadge) pBadge.textContent = `${analytics.flowZone.flowStatePercentage}% Flow`;
+      if (zPill) {
+        zPill.textContent = analytics.flowZone.statusLabel;
+        zPill.style.background = analytics.flowZone.statusColor;
+      }
+      if (fSub) fSub.textContent = `Peak 9–12 Protected • ${100 - analytics.flowZone.flowStatePercentage}% meeting friction`;
+
+      // 2. Task KPIs
+      const tRateEl = document.getElementById('guruTaskRate');
+      const tFracEl = document.getElementById('guruTaskFraction');
+      const tSubEl = document.getElementById('guruTaskSub');
+      if (tRateEl) tRateEl.textContent = `${analytics.taskStats.completionRate}%`;
+      if (tFracEl) tFracEl.textContent = `${analytics.taskStats.completed} / ${analytics.taskStats.total} Done`;
+      if (tSubEl) {
+        const pMins = analytics.taskStats.totalDurationMins - analytics.taskStats.completedDurationMins;
+        const pHours = Math.floor(pMins / 60);
+        const pRemMins = pMins % 60;
+        tSubEl.textContent = `${analytics.taskStats.todo + analytics.taskStats.inProgress} Pending (~${pHours}h ${pRemMins}m remaining)`;
+      }
+
+      // 3. Project KPIs
+      const prRateEl = document.getElementById('guruProjRate');
+      const prFracEl = document.getElementById('guruProjFraction');
+      const prSubEl = document.getElementById('guruProjSub');
+      if (prRateEl) prRateEl.textContent = `${analytics.projectStats.completionRate}%`;
+      if (prFracEl) prFracEl.textContent = `${analytics.projectStats.active} Active`;
+      if (prSubEl) prSubEl.textContent = `${analytics.projectStats.completed} Completed • Across ${analytics.goalStats.total} Goals`;
+
+      // 4. Adherence KPI & Next Target
+      const adhEl = document.getElementById('guruAdherenceStatus');
+      const adhSubEl = document.getElementById('guruAdherenceSub');
+      const allDeadlines = analytics.projectStats.summaries.filter(p => p.targetDate && !p.isCompleted);
+      allDeadlines.sort((a,b) => new Date(a.targetDate) - new Date(b.targetDate));
+      const nextTarget = allDeadlines[0];
+
+      const hasOverdue = analytics.goalStats.summaries.some(g => g.scheduleStatus === 'overdue') || analytics.projectStats.summaries.some(p => p.scheduleStatus === 'overdue');
+      const hasAtRisk = analytics.goalStats.summaries.some(g => g.scheduleStatus === 'at_risk') || analytics.projectStats.summaries.some(p => p.scheduleStatus === 'at_risk');
+
+      if (adhEl) {
+        if (hasOverdue) {
+          adhEl.textContent = 'Attention Needed';
+          adhEl.style.color = '#ef4444';
+        } else if (hasAtRisk) {
+          adhEl.textContent = 'At Risk';
+          adhEl.style.color = '#f59e0b';
+        } else {
+          adhEl.textContent = 'On Track';
+          adhEl.style.color = '#059669';
+        }
+      }
+      if (adhSubEl) {
+        if (nextTarget) {
+          adhSubEl.textContent = `Next finish: ${nextTarget.targetDate} (${nextTarget.title.slice(0, 22)}...)`;
+        } else {
+          adhSubEl.textContent = 'All milestones scheduled';
+        }
+      }
+
+      // 5. Render Graphical Goals & Projects Progress Cards
+      const treeContainer = document.getElementById('guruGoalsProgressTree');
+      if (treeContainer) {
+        let html = '';
+        analytics.goalStats.summaries.forEach(g => {
+          const statusBadge = g.scheduleStatus === 'overdue' 
+            ? '<span style="font-size:0.7rem; background:#fee2e2; color:#dc2626; font-weight:700; padding:2px 8px; border-radius:999px;">🔴 Overdue</span>'
+            : (g.scheduleStatus === 'at_risk'
+              ? '<span style="font-size:0.7rem; background:#fef3c7; color:#d97706; font-weight:700; padding:2px 8px; border-radius:999px;">🟡 At Risk</span>'
+              : '<span style="font-size:0.7rem; background:#dcfce7; color:#15803d; font-weight:700; padding:2px 8px; border-radius:999px;">🟢 On Track</span>');
+
+          const targetDateText = g.targetDate 
+            ? `<span style="font-size:0.75rem; color:#64748b; font-weight:600;">📅 Target Finish: <strong>${g.targetDate}</strong> (${g.daysRemaining !== null ? (g.daysRemaining >= 0 ? g.daysRemaining + ' days left' : Math.abs(g.daysRemaining) + ' days overdue') : ''})</span>`
+            : '<span style="font-size:0.75rem; color:#94a3b8;">No deadline set</span>';
+
+          let projectsHtml = '';
+          g.childProjects.forEach(cp => {
+            const cpStatusBadge = cp.scheduleStatus === 'overdue'
+              ? '<span style="font-size:0.65rem; color:#dc2626; font-weight:700;">Overdue</span>'
+              : (cp.scheduleStatus === 'at_risk' ? '<span style="font-size:0.65rem; color:#d97706; font-weight:700;">At Risk</span>' : '<span style="font-size:0.65rem; color:#16a34a; font-weight:700;">On Track</span>');
+            
+            projectsHtml += `
+              <div class="guru-proj-mini-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <strong style="color:var(--text-primary); font-size:0.82rem;">📁 ${escapeHtml(cp.title)}</strong>
+                  <div style="display:flex; gap:6px; align-items:center;">
+                    <span style="font-size:0.72rem; color:var(--text-muted);">${cp.targetDate ? 'Finish: ' + cp.targetDate : ''}</span>
+                    ${cpStatusBadge}
+                  </div>
+                </div>
+                <div class="guru-progress-track" style="height:6px; margin:4px 0;">
+                  <div class="guru-progress-fill" style="background:${cp.color || g.color}; width:${cp.completionRate}%;"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted);">
+                  <span>${cp.completedTasks}/${cp.totalTasks} Tasks Done (${cp.completionRate}%)</span>
+                  <div style="display:flex; gap:6px; align-items:center; max-width:65%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                    ${cp.why ? `<span style="font-style:italic;">Why: "${escapeHtml(cp.why)}"</span>` : ''}
+                    ${(cp.bottleneck && cp.bottleneck.trim() && cp.bottleneck.toLowerCase() !== 'none') ? `<span style="font-size:0.68rem; color:#b45309; background:#fffbeb; padding:1px 5px; border-radius:4px; border:1px solid #fde68a;">⚠️ ${escapeHtml(cp.bottleneck)}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+
+          html += `
+            <div class="guru-goal-progress-card">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:8px;">
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+                    <span style="color:${g.color}; font-size:1.1rem;">🎯</span>
+                    <strong style="font-size:0.98rem; color:var(--text-primary);">${escapeHtml(g.title)}</strong>
+                    <span class="goal-priority-tag priority-${g.priority}">${g.priority}</span>
+                  </div>
+                  <div>${targetDateText}</div>
+                </div>
+                <div>${statusBadge}</div>
+              </div>
+
+              <!-- Main Goal Graphical Progress Bar -->
+              <div class="guru-progress-track">
+                <div class="guru-progress-fill" style="background:${g.color}; width:${g.completionRate}%;"></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:0.74rem; color:var(--text-muted); margin-bottom:8px;">
+                <span>Overall Goal Progress: ${g.completedTasks} / ${g.totalTasks} Tasks (${g.completionRate}%)</span>
+                <span>${g.childProjects.length} Active Projects</span>
+              </div>
+
+              <!-- Goal Why Callout -->
+              ${g.why ? `
+                <div class="guru-why-callout" style="border-left-color:${g.color};">
+                  💡 <strong>The "Why":</strong> "${escapeHtml(g.why)}"
+                </div>
+              ` : ''}
+
+              <!-- Goal Bottleneck Callout -->
+              ${(g.bottleneck && g.bottleneck.trim() && g.bottleneck.toLowerCase() !== 'none') ? `
+                <div class="guru-why-callout" style="border-left-color: #f59e0b; background: #fffbeb; color: #92400e; margin-top: 6px;">
+                  ⚠️ <strong>Strategic Bottleneck / Constraint:</strong> "${escapeHtml(g.bottleneck)}"
+                </div>
+              ` : ''}
+
+              <!-- Nested Projects -->
+              <div style="margin-top:10px;">
+                <div style="font-size:0.74rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">
+                  Projects &amp; Action Folders Progress:
+                </div>
+                ${projectsHtml}
+              </div>
+            </div>
+          `;
+        });
+        treeContainer.innerHTML = html;
+      }
+
+      // 6. Dynamic Flow Guru Coaching Assessment
+      const feedbackEl = document.getElementById('guruDynamicFeedbackText');
+      if (feedbackEl) {
+        let feedback = `You are spending <strong>${analytics.flowZone.timeInZoneHours} hours</strong> in your daily focus zone (<strong>${analytics.flowZone.flowStatePercentage}% Flow State</strong>), keeping meeting fragmentation under control. `;
+        if (analytics.taskStats.completionRate >= 50) {
+          feedback += `Task velocity is high with ${analytics.taskStats.completed}/${analytics.taskStats.total} action items completed (${analytics.taskStats.completionRate}% rate). `;
+        } else {
+          feedback += `Your task completion rate stands at <strong>${analytics.taskStats.completionRate}%</strong> (${analytics.taskStats.completed} done, ${analytics.taskStats.todo} todo). `;
+        }
+
+        if (nextTarget) {
+          feedback += `To maintain adherence to your estimated finish date for <em>"${escapeHtml(nextTarget.title)}"</em> (target: <strong>${nextTarget.targetDate}</strong>, ${nextTarget.daysRemaining} days left), allocate tomorrow's protected 9–12 peak block to its pending high-priority tasks. `;
+        } else {
+          feedback += `All critical goals and projects are currently proceeding on schedule. `;
+        }
+
+        if (analytics.bottleneckStats && analytics.bottleneckStats.total > 0) {
+          feedback += `<strong>Focus Constraint:</strong> You have <em>${analytics.bottleneckStats.total} active bottlenecks</em> logged across your goals, projects, and tasks. Direct your high-energy focus blocks to follow up and unblock these constraints.`;
+        }
+
+        feedbackEl.innerHTML = feedback;
+      }
+    }
+
+    async function handleFlowGuruSheetSync() {
+      if (typeof syncToGoogleSheet === 'function') {
+        const res = await syncToGoogleSheet({ silent: false });
+        if (res && res.success) {
+          alert('✅ ' + (res.message || 'Synced to Google Sheet successfully!'));
+        } else {
+          alert(res ? (res.message || res.error || 'Google Sheet sync completed.') : 'Sync completed.');
+        }
+      }
+    }
+    window.handleFlowGuruSheetSync = handleFlowGuruSheetSync;
   </script>
 </body>
 </html>

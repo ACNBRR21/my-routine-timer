@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f8fafc" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Goals, Projects &amp; Tasks — Anchor &amp; Flow</title>
+  <meta name="description" content="Living Goals, Projects, and Tasks hierarchy with intelligent duration prediction and Harvard Timeboxing alignment." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>" />
+  <link rel="stylesheet" href="css/style.css?v=20261006a" />
+  <style>
+    /* Goals & Tasks Hierarchy Styles */
+    .tasks-header-action-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hierarchy-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 18px 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .kpi-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .kpi-val {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    .kpi-sub {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Quick Task Add Bar */
+    .quick-add-task-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+    .quick-add-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    @media (max-width: 900px) {
+      .quick-add-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .prediction-pill-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+    }
+    .pred-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(2, 132, 199, 0.1);
+      color: var(--accent-blue);
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 9999px;
+    }
+    .dur-override-pill {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 3px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+    .dur-override-pill:hover, .dur-override-pill.selected {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+    }
+
+    /* Hierarchy Tree & Folder Sections */
+    .hierarchy-split-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 1080px) {
+      .hierarchy-split-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Sidebar: Goals & Projects Tree */
+    .goals-tree-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .tree-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .tree-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .goal-tree-node {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      background: #ffffff;
+      transition: all 0.15s ease;
+    }
+    .goal-tree-node:hover {
+      box-shadow: var(--shadow-sm);
+      border-color: #cbd5e1;
+    }
+    .goal-node-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .goal-node-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .goal-priority-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 6px;
+      letter-spacing: 0.03em;
+    }
+    .priority-critical {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .priority-high {
+      background: #ffedd5;
+      color: #c2410c;
+    }
+    .priority-medium {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+    .priority-low {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .project-node-list {
+      margin-top: 10px;
+      padding-left: 8px;
+      border-left: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .project-node-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+    .project-node-row:hover, .project-node-row.active {
+      background: var(--bg-card-subtle);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    .project-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    /* Right Section: Tasks Table */
+    .tasks-table-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+    }
+    .table-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .task-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .task-table th {
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 2px solid var(--border);
+    }
+    .task-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
+    }
+    .task-table tr:hover {
+      background: #f8fafc;
+    }
+    .task-table tr.task-done td {
+      opacity: 0.6;
+      text-decoration: line-through;
+    }
+
+    .status-check-btn {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid #cbd5e1;
+      background: #ffffff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: #ffffff;
+      transition: all 0.12s ease;
+    }
+    .status-check-btn.checked {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+    }
+
+    .btn-plan-today {
+      background: linear-gradient(135deg, #0284c7 0%, #8b5cf6 100%);
+      color: #ffffff !important;
+      border: none;
+      border-radius: 9999px;
+      padding: 5px 12px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    .btn-plan-today:hover {
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.88rem;
+      font-family: inherit;
+      box-sizing: border-box;
+      outline: none;
+      background: #ffffff;
+      color: var(--text-primary);
+    }
+    .form-control:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+
+    /* Modal card styling */
+    .modal-dialog-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: var(--shadow-lg);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Standard Left Navigation Sidebar (Unified across all pages) -->
+    <aside class="app-sidebar">
+      <a href="index.html" class="sidebar-logo">
+        <div class="logo-badge">⚡</div>
+        <div>
+          <div class="logo-text-title">Anchor &amp; Flow</div>
+          <div class="logo-text-sub">Harvard Timebox Engine</div>
+        </div>
+      </a>
+
+      <ul class="sidebar-nav-list">
+        <li class="sidebar-nav-item">
+          <a href="index.html">
+            <span class="sidebar-nav-icon">🏠</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="guru.html">
+            <span class="sidebar-nav-icon">🧘</span>
+            <span>Flow Guru</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="planner.html">
+            <span class="sidebar-nav-icon">🧠</span>
+            <span>AI Day Planner</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="timer.html">
+            <span class="sidebar-nav-icon">⏱️</span>
+            <span>Timers &amp; Routines</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item active">
+          <a href="tasks.html">
+            <span class="sidebar-nav-icon">🎯</span>
+            <span>Goals &amp; Tasks</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="profile.html">
+            <span class="sidebar-nav-icon">👤</span>
+            <span>Overview &amp; Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="guide.html">
+            <span class="sidebar-nav-icon">📖</span>
+            <span>Guide &amp; Calendar Help</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-motivation-card">
+        <span class="plant-icon">🌿</span>
+        <p>A calmer mind leads to a brighter tomorrow. Focus on the Top 3.</p>
+      </div>
+
+      <!-- Creator & Direct Feedback Card -->
+      <div style="margin-top: 14px; background: #ffffff; border: 1px solid var(--border); border-radius: 14px; padding: 12px; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <div class="avatar-small" style="width: 26px; height: 26px; font-size: 0.7rem; background: linear-gradient(135deg, #0284c7, #8b5cf6); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">RR</div>
+          <div>
+            <strong style="color: var(--text-primary); font-size: 0.84rem;">Rishi Roy</strong>
+            <div style="font-size: 0.7rem; color: var(--accent-blue); font-weight: 600;">Creator &bull; The Productivity Guy</div>
+          </div>
+        </div>
+        <p style="margin-bottom: 8px; font-size: 0.76rem; color: var(--text-muted);">
+          Have feedback or suggestions? Send directly to Rishi:
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <a href="https://www.linkedin.com/in/rishiroy/" target="_blank" rel="noopener noreferrer" style="color: #0a66c2; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            <span>💼</span> LinkedIn Profile &rarr;
+          </a>
+          <a href="https://wa.me/919136228725?text=Hi%20Rishi,%20feedback%20on%20Anchor%20%26%20Flow:" target="_blank" rel="noopener noreferrer" style="color: #059669; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            <span>💬</span> WhatsApp: +91 9136228725
+          </a>
+          <a href="mailto:rishi@birdblast.com?subject=Feedback%20on%20Anchor%20%26%20Flow" style="color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            <span>✉️</span> rishi@birdblast.com
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Viewport -->
+    <main class="main-viewport">
+      
+      <!-- Top Header -->
+      <header class="dashboard-top-header">
+        <div class="greeting-block">
+          <h1>Goals, Projects &amp; Tasks 🎯</h1>
+          <p>A living execution hierarchy: transform high-level vision into focused projects and daily timeboxed tasks.</p>
+        </div>
+
+        <div class="tasks-header-action-group">
+          <button type="button" class="btn-secondary-launch" onclick="openGoogleSheetModal()" style="border-color: #10b981; color: #047857; font-weight: 700;" title="Connect & Sync to Google Sheet">
+            <span>📊</span> Google Sheet Sync
+          </button>
+          <button type="button" class="btn-secondary-launch" onclick="exportDatabaseJSON()" title="Export local database as JSON file">
+            💾 Export Database (.json)
+          </button>
+          <button type="button" class="btn-secondary-launch" onclick="triggerImportDatabase()" title="Restore local database from JSON file">
+            📥 Import Database
+          </button>
+          <input type="file" id="importDatabaseFileInput" accept=".json" style="display:none;" onchange="handleImportDatabaseFile(event)">
+          <button type="button" class="btn-secondary-launch" onclick="openNewGoalModal()">
+            + New Goal
+          </button>
+          <button type="button" class="btn-secondary-launch" onclick="openNewProjectModal()">
+            📁 New Project
+          </button>
+          <a href="planner.html" class="btn-primary-launch" title="Plan your schedule with AI">
+            🧠 Plan Day with Tasks &rarr;
+          </a>
+        </div>
+      </header>
+
+      <!-- KPI Summary Cards -->
+      <section class="hierarchy-kpi-grid">
+        <div class="kpi-card">
+          <span class="kpi-title">Strategic Goals</span>
+          <div class="kpi-val" id="kpiGoalsCount">3</div>
+          <span class="kpi-sub" id="kpiGoalsSub">2 Critical Priority</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-title">Active Projects / Folders</span>
+          <div class="kpi-val" id="kpiProjectsCount">5</div>
+          <span class="kpi-sub" id="kpiProjectsSub">Includes Miscellaneous Tasks</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-title">Task Completion Rate</span>
+          <div class="kpi-val" id="kpiTaskCompletionRate" style="color: var(--accent-green);">14%</div>
+          <span class="kpi-sub" id="kpiTaskCompletionSub">1 / 7 tasks completed</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-title">Project Completion Rate</span>
+          <div class="kpi-val" id="kpiProjectCompletionRate" style="color: var(--accent-blue);">0%</div>
+          <span class="kpi-sub" id="kpiProjectCompletionSub">4 active in progress</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-title">Pending Action Items</span>
+          <div class="kpi-val" id="kpiTasksCount">6</div>
+          <span class="kpi-sub" id="kpiTasksDuration">Total Est: ~2h 45m</span>
+        </div>
+      </section>
+
+      <!-- Quick Task Entry with Smart Duration Predictor -->
+      <section class="quick-add-task-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <strong style="font-size: 0.95rem; color: var(--text-primary);">⚡ Quick Task Entry &amp; Duration Predictor</strong>
+          <span style="font-size: 0.78rem; color: var(--text-muted);">Predicts time based on cognitive complexity</span>
+        </div>
+
+        <div class="quick-add-grid" style="grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr auto;">
+          <div>
+            <input type="text" id="quickTaskTitleInput" class="form-control" placeholder="Task title (e.g. Review Chapter 4 Draft)" oninput="onTaskTitleInput(this.value)" />
+          </div>
+          <div>
+            <select id="quickTaskProjectSelect" class="form-control">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          <div>
+            <select id="quickTaskPrioritySelect" class="form-control">
+              <option value="critical">🔴 Critical Priority</option>
+              <option value="high" selected>🟠 High Priority</option>
+              <option value="medium">🔵 Medium Priority</option>
+              <option value="low">⚪ Low Priority</option>
+            </select>
+          </div>
+          <div>
+            <input type="date" id="quickTaskDueDateInput" class="form-control" title="Completed-By Target Date" />
+          </div>
+          <div>
+            <input type="text" id="quickTaskBottleneckInput" class="form-control" placeholder="Bottleneck (e.g. Waiting on Sarah)" />
+          </div>
+          <div>
+            <button type="button" class="btn-primary-launch" onclick="handleQuickAddTask()" style="padding: 9px 18px; font-size: 0.88rem;">
+              + Add Task
+            </button>
+          </div>
+        </div>
+
+        <div class="prediction-pill-row">
+          <span class="pred-badge" id="predictedBadge">⏱️ Predicted Duration: 25 mins</span>
+          <span style="color: var(--text-muted); font-size: 0.78rem;">Quick overrides:</span>
+          <button type="button" class="dur-override-pill" onclick="setOverrideDuration(10)">10m (Micro)</button>
+          <button type="button" class="dur-override-pill" onclick="setOverrideDuration(15)">15m (Quick)</button>
+          <button type="button" class="dur-override-pill selected" onclick="setOverrideDuration(25)" id="pill25m">25m (Standard)</button>
+          <button type="button" class="dur-override-pill" onclick="setOverrideDuration(45)">45m (Deep Focus)</button>
+          <button type="button" class="dur-override-pill" onclick="setOverrideDuration(60)">60m (Sprint)</button>
+          <button type="button" class="dur-override-pill" onclick="setOverrideDuration(90)">90m (Extended)</button>
+        </div>
+      </section>
+
+      <!-- Main Split View: Left Hierarchy Tree, Right Tasks Table -->
+      <section class="hierarchy-split-grid">
+        
+        <!-- Left: Goals & Project Folders Tree -->
+        <div class="goals-tree-card">
+          <div class="tree-header">
+            <span class="tree-title">📁 Goals &amp; Project Folders</span>
+            <button type="button" class="btn-secondary-launch" style="padding: 4px 10px; font-size: 0.75rem;" onclick="filterByProject('all')">
+              Show All
+            </button>
+          </div>
+
+          <div id="goalsTreeContainer">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Right: Tasks Table View -->
+        <div class="tasks-table-card">
+          <div class="table-toolbar">
+            <div>
+              <h2 style="font-size: 1.15rem; color: var(--text-primary); margin: 0;" id="tableFilterTitle">All Tasks</h2>
+              <span style="font-size: 0.78rem; color: var(--text-muted);" id="tableFilterCount">Showing all active tasks</span>
+            </div>
+
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <select id="statusFilterSelect" class="form-control" style="width: auto; padding: 6px 10px; font-size: 0.8rem;" onchange="renderTasksTable()">
+                <option value="all">All Statuses</option>
+                <option value="pending" selected>Active / To Do</option>
+                <option value="done">Completed</option>
+              </select>
+
+              <select id="priorityFilterSelect" class="form-control" style="width: auto; padding: 6px 10px; font-size: 0.8rem;" onchange="renderTasksTable()">
+                <option value="all">All Priorities</option>
+                <option value="critical">Critical Only</option>
+                <option value="high">High Only</option>
+                <option value="medium">Medium Only</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="task-table">
+              <thead>
+                <tr>
+                  <th style="width: 32px;"></th>
+                  <th>Task Title</th>
+                  <th style="width: 130px;">Folder / Project</th>
+                  <th style="width: 80px;">Priority</th>
+                  <th style="width: 70px;">Est. Time</th>
+                  <th style="width: 110px;">Completed-By</th>
+                  <th>Bottleneck / Constraint</th>
+                  <th style="width: 160px; text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tasksTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal: Add / Edit Goal -->
+  <div class="side-drawer-backdrop" id="goalModal" onclick="if(event.target===this)closeGoalModal()">
+    <div class="modal-dialog-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="margin: 0; font-size: 1.15rem;" id="goalModalTitle">New Strategic Goal</h3>
+        <button type="button" onclick="closeGoalModal()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer;">&times;</button>
+      </div>
+      <form onsubmit="event.preventDefault(); handleSaveGoal();">
+        <input type="hidden" id="goalModalId" />
+        <div class="form-group">
+          <label>Goal Title</label>
+          <input type="text" id="goalModalTitleInput" class="form-control" placeholder="e.g. Ship Harvard Timebox Engine & Book Launch" required />
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="goalModalCategoryInput" class="form-control">
+            <option value="work">💼 Professional / Career</option>
+            <option value="health">🧴 Health &amp; Caregiving</option>
+            <option value="personal">🌱 Personal Mastery</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Strategic Priority</label>
+          <select id="goalModalPriorityInput" class="form-control">
+            <option value="critical">🔴 Critical Priority (Must hit daily/weekly)</option>
+            <option value="high" selected>🟠 High Priority</option>
+            <option value="medium">🔵 Medium Priority</option>
+            <option value="low">⚪ Low Priority</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Target Weekly Hours</label>
+          <input type="number" id="goalModalHoursInput" class="form-control" value="10" min="1" max="80" />
+        </div>
+        <div class="form-group">
+          <label>Accent Color</label>
+          <select id="goalModalColorInput" class="form-control">
+            <option value="#8b5cf6">Purple (#8b5cf6)</option>
+            <option value="#0284c7">Blue (#0284c7)</option>
+            <option value="#ec4899">Pink (#ec4899)</option>
+            <option value="#10b981">Green (#10b981)</option>
+            <option value="#f97316">Orange (#f97316)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Estimated Finish Date (Ballpark Target Date)</label>
+          <input type="date" id="goalModalDateInput" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label>Why / Purpose (Core Motivation)</label>
+          <textarea id="goalModalWhyInput" class="form-control" rows="2" placeholder="Why is this goal critical? Fundamental purpose and motivation..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Strategic Bottleneck / Constraint (Mental Focus Trigger)</label>
+          <textarea id="goalModalBottleneckInput" class="form-control" rows="2" placeholder="What is the critical bottleneck holding this goal up? (Follow-up person, legal approval, clinic consultation...)"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+          <button type="button" class="btn-secondary-launch" onclick="closeGoalModal()">Cancel</button>
+          <button type="submit" class="btn-primary-launch">Save Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add / Edit Project -->
+  <div class="side-drawer-backdrop" id="projectModal" onclick="if(event.target===this)closeProjectModal()">
+    <div class="modal-dialog-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="margin: 0; font-size: 1.15rem;" id="projectModalTitle">New Project / Folder</h3>
+        <button type="button" onclick="closeProjectModal()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer;">&times;</button>
+      </div>
+      <form onsubmit="event.preventDefault(); handleSaveProject();">
+        <input type="hidden" id="projectModalId" />
+        <div class="form-group">
+          <label>Project / Folder Name</label>
+          <input type="text" id="projectModalTitleInput" class="form-control" placeholder="e.g. Manuscript Revisions & Publication" required />
+        </div>
+        <div class="form-group">
+          <label>Parent Strategic Goal</label>
+          <select id="projectModalGoalSelect" class="form-control">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Description / Scope</label>
+          <input type="text" id="projectModalDescInput" class="form-control" placeholder="e.g. Final review of chapters, footnotes, and layout" />
+        </div>
+        <div class="form-group">
+          <label>Estimated Finish Date (Ballpark Target Date)</label>
+          <input type="date" id="projectModalDateInput" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label>Why / Motivation (Value Delivered)</label>
+          <textarea id="projectModalWhyInput" class="form-control" rows="2" placeholder="Why does this project matter? Value unlocked upon completion..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Project Bottleneck / Key Dependency (Mental Focus Trigger)</label>
+          <textarea id="projectModalBottleneckInput" class="form-control" rows="2" placeholder="What is holding this project up? (e.g. Waiting for Sarah's review, design agency deliverable...)"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+          <button type="button" class="btn-secondary-launch" onclick="closeProjectModal()">Cancel</button>
+          <button type="submit" class="btn-primary-launch">Save Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Google Sheets Two-Way Synchronization -->
+  <div class="side-drawer-backdrop" id="googleSheetModal" onclick="if(event.target===this)closeGoogleSheetModal()">
+    <div class="modal-dialog-card" style="max-width: 620px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.4rem;">📊</span>
+          <h3 style="margin: 0; font-size: 1.2rem; color: var(--text-primary);">Google Sheet Live Sync Gateway</h3>
+        </div>
+        <button type="button" onclick="closeGoogleSheetModal()" style="background: none; border: none; font-size: 1.3rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.45; margin: 0 0 16px 0;">
+        Connect your personal Google Sheet to mirror all goals, projects, tasks, bottlenecks, and actual timer completion statuses in real time. Use this Google Sheet as a live repository for Gemini Developer applications.
+      </p>
+
+      <div style="background: var(--bg-card-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <strong style="font-size: 0.82rem; color: var(--text-primary);">Sync Status:</strong>
+          <span id="sheetSyncStatusBadge" style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #e2e8f0; color: #475569;">
+            Not Configured
+          </span>
+        </div>
+        <div style="font-size: 0.76rem; color: var(--text-muted);" id="sheetLastSyncedText">
+          Never synced.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Google Apps Script Web App URL</label>
+        <input type="url" id="sheetWebAppUrlInput" class="form-control" placeholder="https://script.google.com/macros/s/AKfycb.../exec" />
+        <span style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; display: block;">
+          Deploy our provided Google Apps Script in your sheet as a Web App (Execute as: Me, Access: Anyone).
+        </span>
+      </div>
+
+      <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin: 12px 0;">
+        <input type="checkbox" id="sheetAutoSyncCheckbox" style="cursor: pointer;" checked />
+        <label for="sheetAutoSyncCheckbox" style="margin: 0; font-size: 0.84rem; cursor: pointer;">
+          Automatically sync to Google Sheet when a task is completed in the Timer
+        </label>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 18px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn-primary-launch" style="flex: 1; justify-content: center; background: #059669; color: #fff;" onclick="handleSyncGoogleSheet()">
+            ⚡ Sync to Google Sheet Now
+          </button>
+          <button type="button" class="btn-secondary-launch" onclick="exportHierarchyToSheetsCSV()" title="Download multi-table CSV formatted for Google Sheets import">
+            📥 Download Sheet CSV (.csv)
+          </button>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+          <button type="button" class="btn-secondary-launch" style="font-size: 0.78rem;" onclick="handleCopyAppsScript()">
+            📋 Copy Google Apps Script Code
+          </button>
+          <button type="button" class="btn-secondary-launch" onclick="closeGoogleSheetModal()">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Scripts -->
+  <script src="js/task-hierarchy.js?v=20261006a"></script>
+  <script src="js/flow-guru.js?v=20261006a"></script>
+  <script>
+    let currentFilterProjectId = 'all';
+    let currentOverrideDuration = 25;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTasksPage();
+    });
+
+    function initTasksPage() {
+      renderKPIs();
+      populateProjectSelects();
+      renderGoalsTree();
+      renderTasksTable();
+    }
+
+    function renderKPIs() {
+      const data = getGoalsHierarchy();
+      const analytics = (typeof getHierarchyAnalytics === 'function') ? getHierarchyAnalytics() : null;
+
+      const critGoals = data.goals.filter(g => g.priority === 'critical').length;
+      document.getElementById('kpiGoalsCount').textContent = data.goals.length;
+      document.getElementById('kpiGoalsSub').textContent = `${critGoals} Critical Priority`;
+
+      document.getElementById('kpiProjectsCount').textContent = data.projects.length;
+
+      const pendingTasks = data.tasks.filter(t => t.status !== 'done');
+      const totalMins = pendingTasks.reduce((s, t) => s + (t.predictedDuration || 15), 0);
+      const hours = Math.floor(totalMins / 60);
+      const mins = totalMins % 60;
+      document.getElementById('kpiTasksCount').textContent = pendingTasks.length;
+      document.getElementById('kpiTasksDuration').textContent = `Total Est: ~${hours}h ${mins}m`;
+
+      if (analytics) {
+        const tEl = document.getElementById('kpiTaskCompletionRate');
+        const tsEl = document.getElementById('kpiTaskCompletionSub');
+        const pEl = document.getElementById('kpiProjectCompletionRate');
+        const psEl = document.getElementById('kpiProjectCompletionSub');
+        if (tEl) tEl.textContent = `${analytics.taskStats.completionRate}%`;
+        if (tsEl) tsEl.textContent = `${analytics.taskStats.completed} / ${analytics.taskStats.total} tasks completed`;
+        if (pEl) pEl.textContent = `${analytics.projectStats.completionRate}%`;
+        if (psEl) psEl.textContent = `${analytics.projectStats.completed} completed • ${analytics.projectStats.active} active`;
+      }
+    }
+
+    function triggerImportDatabase() {
+      const input = document.getElementById('importDatabaseFileInput');
+      if (input) input.click();
+    }
+
+    function handleImportDatabaseFile(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const res = (typeof importDatabaseJSON === 'function') ? importDatabaseJSON(e.target.result) : { success: false, error: 'importDatabaseJSON unavailable' };
+        if (res && res.success) {
+          alert(`Database successfully imported! Restored ${res.goalsCount} goals, ${res.projectsCount} projects, and ${res.tasksCount} tasks.`);
+          initTasksPage();
+        } else {
+          alert(`Database import error: ${res ? res.error : 'Unknown error'}`);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function populateProjectSelects() {
+      const data = getGoalsHierarchy();
+      const select = document.getElementById('quickTaskProjectSelect');
+      const projModalSelect = document.getElementById('projectModalGoalSelect');
+      
+      select.innerHTML = '';
+      data.projects.forEach(p => {
+        const goal = data.goals.find(g => g.id === p.goalId);
+        const prefix = goal ? `${goal.title.slice(0, 20)}... / ` : '';
+        select.innerHTML += `<option value="${p.id}">${prefix}${p.title}</option>`;
+      });
+
+      projModalSelect.innerHTML = `<option value="">-- No Specific Goal (Miscellaneous) --</option>`;
+      data.goals.forEach(g => {
+        projModalSelect.innerHTML += `<option value="${g.id}">🎯 ${g.title}</option>`;
+      });
+    }
+
+    function onTaskTitleInput(val) {
+      const pred = predictTaskDuration(val);
+      currentOverrideDuration = pred.duration;
+      document.getElementById('predictedBadge').textContent = `⏱️ Predicted: ${pred.duration}m (${pred.reason})`;
+      
+      // Update selected override pill
+      document.querySelectorAll('.dur-override-pill').forEach(btn => {
+        const d = parseInt(btn.textContent, 10);
+        btn.classList.toggle('selected', d === currentOverrideDuration);
+      });
+    }
+
+    function setOverrideDuration(mins) {
+      currentOverrideDuration = mins;
+      document.getElementById('predictedBadge').textContent = `⏱️ Selected Duration: ${mins} mins`;
+      document.querySelectorAll('.dur-override-pill').forEach(btn => {
+        const d = parseInt(btn.textContent, 10);
+        btn.classList.toggle('selected', d === mins);
+      });
+    }
+
+    function handleQuickAddTask() {
+      const title = document.getElementById('quickTaskTitleInput').value.trim();
+      if (!title) return;
+
+      const projectId = document.getElementById('quickTaskProjectSelect').value;
+      const priority = document.getElementById('quickTaskPrioritySelect').value;
+      const completedByDate = document.getElementById('quickTaskDueDateInput') ? document.getElementById('quickTaskDueDateInput').value : null;
+      const bottleneck = document.getElementById('quickTaskBottleneckInput') ? document.getElementById('quickTaskBottleneckInput').value.trim() : '';
+
+      addTask({
+        title,
+        projectId,
+        priority,
+        predictedDuration: currentOverrideDuration,
+        completedByDate,
+        bottleneck,
+        status: 'todo'
+      });
+
+      document.getElementById('quickTaskTitleInput').value = '';
+      if (document.getElementById('quickTaskDueDateInput')) document.getElementById('quickTaskDueDateInput').value = '';
+      if (document.getElementById('quickTaskBottleneckInput')) document.getElementById('quickTaskBottleneckInput').value = '';
+      initTasksPage();
+    }
+
+    function renderGoalsTree() {
+      const data = getGoalsHierarchy();
+      const container = document.getElementById('goalsTreeContainer');
+      container.innerHTML = '';
+
+      data.goals.forEach(g => {
+        const childProjects = data.projects.filter(p => p.goalId === g.id);
+        const projectIds = childProjects.map(p => p.id);
+        const goalTasks = data.tasks.filter(t => projectIds.includes(t.projectId));
+        const doneTasks = goalTasks.filter(t => t.status === 'done').length;
+        const pct = goalTasks.length > 0 ? Math.round((doneTasks / goalTasks.length) * 100) : 0;
+
+        let targetHtml = '';
+        if (g.targetDate) {
+          const now = new Date();
+          const target = new Date(g.targetDate);
+          const diffDays = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+          const badgeClass = diffDays < 0 ? '#ef4444' : (diffDays <= 14 ? '#f59e0b' : '#0284c7');
+          const statusText = diffDays < 0 ? 'Overdue' : `${diffDays}d left`;
+          targetHtml = `<span style="font-size: 0.68rem; background: rgba(0,0,0,0.05); color: ${badgeClass}; font-weight: 700; padding: 2px 6px; border-radius: 6px;">📅 ${g.targetDate} (${statusText})</span>`;
+        }
+
+        let whyHtml = '';
+        if (g.why) {
+          whyHtml = `<div style="font-size: 0.72rem; color: #475569; font-style: italic; background: #f8fafc; border-left: 3px solid ${g.color}; padding: 4px 8px; margin: 6px 0; border-radius: 0 6px 6px 0;"><strong>Why:</strong> "${g.why}"</div>`;
+        }
+
+        let gBottleneckHtml = '';
+        if (g.bottleneck && g.bottleneck.trim() && g.bottleneck.toLowerCase() !== 'none') {
+          gBottleneckHtml = `<div style="font-size: 0.72rem; color: #92400e; background: #fffbeb; border-left: 3px solid #f59e0b; padding: 4px 8px; margin: 4px 0; border-radius: 0 6px 6px 0;"><strong>⚠️ Bottleneck:</strong> "${g.bottleneck}"</div>`;
+        }
+
+        let projHtml = '';
+        childProjects.forEach(cp => {
+          const taskCount = data.tasks.filter(t => t.projectId === cp.id && t.status !== 'done').length;
+          const isActive = currentFilterProjectId === cp.id;
+          const cpTarget = cp.targetDate ? `<span style="font-size: 0.65rem; color: #64748b; margin-left: 6px;">(${cp.targetDate})</span>` : '';
+          const cpWhy = cp.why ? `<div style="font-size: 0.68rem; color: #64748b; font-style: italic; margin-left: 14px; margin-bottom: 2px;">"${cp.why}"</div>` : '';
+          const cpBneck = (cp.bottleneck && cp.bottleneck.trim() && cp.bottleneck.toLowerCase() !== 'none')
+            ? `<div style="font-size: 0.68rem; color: #b45309; margin-left: 14px; margin-bottom: 4px;">⚠️ ${cp.bottleneck}</div>`
+            : '';
+
+          projHtml += `
+            <div class="project-node-row ${isActive ? 'active' : ''}" onclick="filterByProject('${cp.id}')">
+              <span><span class="project-dot" style="background: ${cp.color};"></span>${cp.title} ${cpTarget}</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">${taskCount}</span>
+            </div>
+            ${cpWhy}
+            ${cpBneck}
+          `;
+        });
+
+        container.innerHTML += `
+          <div class="goal-tree-node">
+            <div class="goal-node-header">
+              <span class="goal-node-title" onclick="filterByGoal('${g.id}')">
+                <span style="color: ${g.color};">🎯</span> ${g.title}
+              </span>
+              <span class="goal-priority-tag priority-${g.priority}">${g.priority}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin: 4px 0;">
+              <span style="font-size: 0.72rem; color: var(--text-muted);">
+                ${childProjects.length} Projects &bull; ${doneTasks}/${goalTasks.length} Done (${pct}%)
+              </span>
+              ${targetHtml}
+            </div>
+            ${whyHtml}
+            ${gBottleneckHtml}
+            <div class="project-node-list">
+              ${projHtml}
+            </div>
+          </div>
+        `;
+      });
+
+      // Miscellaneous Tasks Project Folder
+      const miscProj = data.projects.find(p => p.id === 'proj-misc');
+      if (miscProj) {
+        const miscTasksCount = data.tasks.filter(t => t.projectId === 'proj-misc' && t.status !== 'done').length;
+        const isActive = currentFilterProjectId === 'proj-misc';
+        container.innerHTML += `
+          <div class="goal-tree-node" style="border-style: dashed;">
+            <div class="project-node-row ${isActive ? 'active' : ''}" onclick="filterByProject('proj-misc')">
+              <span>📁 <strong>${miscProj.title}</strong></span>
+              <span style="font-size: 0.75rem; background: var(--bg-card-subtle); padding: 2px 8px; border-radius: 999px; font-weight: 700;">${miscTasksCount}</span>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function filterByProject(projId) {
+      currentFilterProjectId = projId;
+      const data = getGoalsHierarchy();
+      const proj = data.projects.find(p => p.id === projId);
+      if (proj) {
+        document.getElementById('tableFilterTitle').textContent = `Folder: ${proj.title}`;
+        document.getElementById('tableFilterCount').textContent = proj.description || 'Filtered by project folder';
+      } else {
+        document.getElementById('tableFilterTitle').textContent = 'All Tasks';
+        document.getElementById('tableFilterCount').textContent = 'Showing all active tasks';
+      }
+      renderGoalsTree();
+      renderTasksTable();
+    }
+
+    function filterByGoal(goalId) {
+      const data = getGoalsHierarchy();
+      const goal = data.goals.find(g => g.id === goalId);
+      if (goal) {
+        document.getElementById('tableFilterTitle').textContent = `Goal: ${goal.title}`;
+        document.getElementById('tableFilterCount').textContent = `Priority: ${goal.priority.toUpperCase()} • Target: ${goal.targetWeeklyHours}h/week`;
+      }
+      currentFilterProjectId = `goal-${goalId}`;
+      renderTasksTable();
+    }
+
+    function renderTasksTable() {
+      const data = getGoalsHierarchy();
+      const tbody = document.getElementById('tasksTableBody');
+      const statusFilter = document.getElementById('statusFilterSelect').value;
+      const priorityFilter = document.getElementById('priorityFilterSelect').value;
+
+      let filtered = data.tasks;
+
+      if (currentFilterProjectId.startsWith('goal-')) {
+        const gId = currentFilterProjectId.replace('goal-', '');
+        const pIds = data.projects.filter(p => p.goalId === gId).map(p => p.id);
+        filtered = filtered.filter(t => pIds.includes(t.projectId));
+      } else if (currentFilterProjectId !== 'all') {
+        filtered = filtered.filter(t => t.projectId === currentFilterProjectId);
+      }
+
+      if (statusFilter === 'pending') {
+        filtered = filtered.filter(t => t.status !== 'done');
+      } else if (statusFilter === 'done') {
+        filtered = filtered.filter(t => t.status === 'done');
+      }
+
+      if (priorityFilter !== 'all') {
+        filtered = filtered.filter(t => t.priority === priorityFilter);
+      }
+
+      tbody.innerHTML = '';
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">No matching tasks found. Add a task above to get started!</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(t => {
+        const proj = data.projects.find(p => p.id === t.projectId) || { title: 'Miscellaneous', color: '#64748b' };
+        const isDone = t.status === 'done';
+
+        // Format Completed-By Date
+        let dateHtml = '';
+        if (isDone) {
+          const finishedDateStr = t.completedAt ? t.completedAt.split('T')[0] : 'Done';
+          dateHtml = `<span style="color:#059669; font-weight:700; font-size:0.75rem;">✓ ${finishedDateStr}</span>`;
+        } else if (t.completedByDate) {
+          const now = new Date();
+          const target = new Date(t.completedByDate);
+          const diffDays = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+          const color = diffDays < 0 ? '#dc2626' : (diffDays <= 2 ? '#d97706' : '#475569');
+          const badge = diffDays < 0 ? ' (Overdue)' : (diffDays === 0 ? ' (Today)' : '');
+          dateHtml = `<span style="font-size:0.78rem; font-weight:600; color:${color};">📅 ${t.completedByDate}${badge}</span>`;
+        } else {
+          dateHtml = `<span style="color:#94a3b8; font-size:0.75rem;">No date</span>`;
+        }
+
+        // Format Bottleneck
+        let bottleneckHtml = '';
+        if (t.bottleneck && t.bottleneck.trim() && t.bottleneck.toLowerCase() !== 'none') {
+          bottleneckHtml = `<div style="font-size:0.74rem; color:#92400e; background:#fef3c7; border:1px solid #fde68a; border-radius:6px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px;"><span>⚠️</span> ${t.bottleneck}</div>`;
+        } else {
+          bottleneckHtml = `<span style="color:#94a3b8; font-size:0.74rem;">None</span>`;
+        }
+
+        tbody.innerHTML += `
+          <tr class="${isDone ? 'task-done' : ''}">
+            <td>
+              <button type="button" class="status-check-btn ${isDone ? 'checked' : ''}" onclick="handleToggleStatus('${t.id}')" title="${isDone ? 'Mark Todo' : 'Mark Done'}">
+                ${isDone ? '✓' : ''}
+              </button>
+            </td>
+            <td>
+              <strong style="color: var(--text-primary); font-size: 0.92rem;">${t.title}</strong>
+              ${t.notes ? `<div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 2px;">${t.notes}</div>` : ''}
+            </td>
+            <td>
+              <span style="font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: rgba(0,0,0,0.04); color: ${proj.color}; display: inline-flex; align-items: center; gap: 4px;">
+                <span class="project-dot" style="background: ${proj.color};"></span> ${proj.title}
+              </span>
+            </td>
+            <td>
+              <span class="goal-priority-tag priority-${t.priority}">${t.priority}</span>
+            </td>
+            <td>
+              <span style="font-weight: 600; font-family: monospace; font-size: 0.85rem; color: var(--text-secondary);">
+                ${t.predictedDuration}m
+              </span>
+            </td>
+            <td>
+              ${dateHtml}
+            </td>
+            <td>
+              ${bottleneckHtml}
+            </td>
+            <td style="text-align: right;">
+              <a href="timer.html?task=${encodeURIComponent(t.title)}&dur=${t.predictedDuration}&taskId=${t.id}" class="btn-plan-today" style="background:linear-gradient(135deg, #7c3aed, #4f46e5);" title="Start focused timer for this task">
+                ⏱️ Timer
+              </a>
+              <a href="planner.html?task=${encodeURIComponent(t.title)}&dur=${t.predictedDuration}" class="btn-plan-today" style="background:#0f172a; margin-left:4px;" title="Add to AI Day Planner">
+                🧠 Plan
+              </a>
+              <button onclick="handleDeleteTask('${t.id}')" style="background: none; border: none; cursor: pointer; color: var(--text-muted); margin-left: 6px; font-size: 0.9rem;" title="Delete Task">&times;</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function handleToggleStatus(id) {
+      toggleTaskStatus(id);
+      initTasksPage();
+    }
+
+    function handleDeleteTask(id) {
+      deleteTask(id);
+      initTasksPage();
+    }
+
+    // Modal Handlers
+    function openNewGoalModal(goalId = null) {
+      const isEdit = typeof goalId === 'string' && goalId;
+      document.getElementById('goalModalTitle').textContent = isEdit ? 'Edit Strategic Goal' : 'New Strategic Goal';
+      document.getElementById('goalModalId').value = isEdit ? goalId : '';
+      if (isEdit) {
+        const data = getGoalsHierarchy();
+        const g = data.goals.find(x => x.id === goalId);
+        if (g) {
+          document.getElementById('goalModalTitleInput').value = g.title || '';
+          document.getElementById('goalModalCategoryInput').value = g.category || 'work';
+          document.getElementById('goalModalPriorityInput').value = g.priority || 'high';
+          document.getElementById('goalModalHoursInput').value = g.targetWeeklyHours || 10;
+          document.getElementById('goalModalColorInput').value = g.color || '#8b5cf6';
+          document.getElementById('goalModalDateInput').value = g.targetDate || '';
+          document.getElementById('goalModalWhyInput').value = g.why || '';
+          if (document.getElementById('goalModalBottleneckInput')) document.getElementById('goalModalBottleneckInput').value = g.bottleneck || '';
+        }
+      } else {
+        document.getElementById('goalModalTitleInput').value = '';
+        document.getElementById('goalModalCategoryInput').value = 'work';
+        document.getElementById('goalModalPriorityInput').value = 'high';
+        document.getElementById('goalModalHoursInput').value = '10';
+        document.getElementById('goalModalColorInput').value = '#8b5cf6';
+        document.getElementById('goalModalDateInput').value = '';
+        document.getElementById('goalModalWhyInput').value = '';
+        if (document.getElementById('goalModalBottleneckInput')) document.getElementById('goalModalBottleneckInput').value = '';
+      }
+      document.getElementById('goalModal').classList.add('open');
+    }
+    function closeGoalModal() {
+      document.getElementById('goalModal').classList.remove('open');
+    }
+    function handleSaveGoal() {
+      const id = document.getElementById('goalModalId').value;
+      const title = document.getElementById('goalModalTitleInput').value.trim();
+      const category = document.getElementById('goalModalCategoryInput').value;
+      const priority = document.getElementById('goalModalPriorityInput').value;
+      const targetWeeklyHours = parseInt(document.getElementById('goalModalHoursInput').value, 10);
+      const color = document.getElementById('goalModalColorInput').value;
+      const targetDate = document.getElementById('goalModalDateInput').value || null;
+      const why = document.getElementById('goalModalWhyInput').value.trim();
+      const bottleneck = document.getElementById('goalModalBottleneckInput') ? document.getElementById('goalModalBottleneckInput').value.trim() : '';
+
+      if (id) {
+        updateGoal(id, { title, category, priority, targetWeeklyHours, color, targetDate, why, bottleneck });
+      } else {
+        addGoal({ title, category, priority, targetWeeklyHours, color, targetDate, why, bottleneck });
+      }
+      closeGoalModal();
+      initTasksPage();
+    }
+
+    function openNewProjectModal(projId = null) {
+      const isEdit = typeof projId === 'string' && projId;
+      document.getElementById('projectModalTitle').textContent = isEdit ? 'Edit Project / Folder' : 'New Project / Folder';
+      document.getElementById('projectModalId').value = isEdit ? projId : '';
+      populateProjectSelects();
+      if (isEdit) {
+        const data = getGoalsHierarchy();
+        const p = data.projects.find(x => x.id === projId);
+        if (p) {
+          document.getElementById('projectModalTitleInput').value = p.title || '';
+          document.getElementById('projectModalGoalSelect').value = p.goalId || '';
+          document.getElementById('projectModalDescInput').value = p.description || '';
+          document.getElementById('projectModalDateInput').value = p.targetDate || '';
+          document.getElementById('projectModalWhyInput').value = p.why || '';
+          if (document.getElementById('projectModalBottleneckInput')) document.getElementById('projectModalBottleneckInput').value = p.bottleneck || '';
+        }
+      } else {
+        document.getElementById('projectModalTitleInput').value = '';
+        document.getElementById('projectModalDescInput').value = '';
+        document.getElementById('projectModalDateInput').value = '';
+        document.getElementById('projectModalWhyInput').value = '';
+        if (document.getElementById('projectModalBottleneckInput')) document.getElementById('projectModalBottleneckInput').value = '';
+      }
+      document.getElementById('projectModal').classList.add('open');
+    }
+    function closeProjectModal() {
+      document.getElementById('projectModal').classList.remove('open');
+    }
+    function handleSaveProject() {
+      const id = document.getElementById('projectModalId').value;
+      const title = document.getElementById('projectModalTitleInput').value.trim();
+      const goalId = document.getElementById('projectModalGoalSelect').value || null;
+      const description = document.getElementById('projectModalDescInput').value.trim();
+      const targetDate = document.getElementById('projectModalDateInput').value || null;
+      const why = document.getElementById('projectModalWhyInput').value.trim();
+      const bottleneck = document.getElementById('projectModalBottleneckInput') ? document.getElementById('projectModalBottleneckInput').value.trim() : '';
+
+      if (id) {
+        updateProject(id, { title, goalId, description, targetDate, why, bottleneck });
+      } else {
+        addProject({ title, goalId, description, targetDate, why, bottleneck });
+      }
+      closeProjectModal();
+      initTasksPage();
+    }
+
+    // Google Sheet Integration Handlers
+    function openGoogleSheetModal() {
+      const cfg = (typeof getGoogleSheetConfig === 'function') ? getGoogleSheetConfig() : { sheetUrl: '', autoSync: true, lastSyncedAt: null };
+      const urlInput = document.getElementById('sheetWebAppUrlInput');
+      const autoSyncChk = document.getElementById('sheetAutoSyncCheckbox');
+      const statusBadge = document.getElementById('sheetSyncStatusBadge');
+      const lastSyncedText = document.getElementById('sheetLastSyncedText');
+
+      if (urlInput) urlInput.value = cfg.sheetUrl || '';
+      if (autoSyncChk) autoSyncChk.checked = cfg.autoSync !== false;
+      if (statusBadge) {
+        if (cfg.sheetUrl) {
+          statusBadge.textContent = 'Connected (Live Relay)';
+          statusBadge.style.background = '#dcfce7';
+          statusBadge.style.color = '#15803d';
+        } else {
+          statusBadge.textContent = 'Not Configured';
+          statusBadge.style.background = '#e2e8f0';
+          statusBadge.style.color = '#475569';
+        }
+      }
+      if (lastSyncedText) {
+        lastSyncedText.textContent = cfg.lastSyncedAt ? `Last synced: ${new Date(cfg.lastSyncedAt).toLocaleString()}` : 'Never synced.';
+      }
+      document.getElementById('googleSheetModal').classList.add('open');
+    }
+
+    function closeGoogleSheetModal() {
+      const urlInput = document.getElementById('sheetWebAppUrlInput');
+      const autoSyncChk = document.getElementById('sheetAutoSyncCheckbox');
+      if (urlInput && typeof saveGoogleSheetConfig === 'function') {
+        const cfg = getGoogleSheetConfig();
+        cfg.sheetUrl = urlInput.value.trim();
+        cfg.autoSync = autoSyncChk ? autoSyncChk.checked : true;
+        saveGoogleSheetConfig(cfg);
+      }
+      document.getElementById('googleSheetModal').classList.remove('open');
+    }
+
+    async function handleSyncGoogleSheet() {
+      const urlInput = document.getElementById('sheetWebAppUrlInput');
+      const autoSyncChk = document.getElementById('sheetAutoSyncCheckbox');
+      if (urlInput && typeof saveGoogleSheetConfig === 'function') {
+        const cfg = getGoogleSheetConfig();
+        cfg.sheetUrl = urlInput.value.trim();
+        cfg.autoSync = autoSyncChk ? autoSyncChk.checked : true;
+        saveGoogleSheetConfig(cfg);
+      }
+
+      if (typeof syncToGoogleSheet === 'function') {
+        const res = await syncToGoogleSheet({ silent: false });
+        if (res && res.success) {
+          alert('✅ ' + (res.message || 'Synced to Google Sheet successfully!'));
+          openGoogleSheetModal();
+        } else {
+          alert(res ? (res.message || res.error || 'Sync completed.') : 'Sync completed.');
+        }
+      }
+    }
+
+    function handleCopyAppsScript() {
+      if (typeof generateGoogleAppsScriptCode !== 'function') return;
+      const code = generateGoogleAppsScriptCode();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+          alert('📋 Google Apps Script code copied to clipboard! Paste into Extensions > Apps Script in your Google Sheet.');
+        }).catch(() => {
+          prompt('Copy the Google Apps Script code below:', code);
+        });
+      } else {
+        prompt('Copy the Google Apps Script code below:', code);
+      }
+    }
+  </script>
+</body>
+</html>
